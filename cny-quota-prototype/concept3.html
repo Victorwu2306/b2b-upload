@@ -2108,6 +2108,15 @@ const ERP_REQUIRED_FIELDS = [
   { name:'transaction_date', desc:'Order or transaction date (YYYY-MM-DD)', example:'2026-07-15' },
   { name:'trade_type', desc:'Goods · Service · Drop Shipping', example:'Goods' },
 ];
+
+function formatFieldLabel(name) {
+  const words = String(name || '').split('_').filter(Boolean).map(function(word) {
+    return word.toLowerCase() === 'id' ? 'ID' : word.toLowerCase();
+  });
+  if (!words.length) return '';
+  words[0] = words[0] === 'ID' ? 'ID' : (words[0].charAt(0).toUpperCase() + words[0].slice(1));
+  return words.join(' ');
+}
 const ERP_MAP_SOURCES = [
   { id:'s1', index:1, colName:'order_id', sample:'ERP-2026-001', ai:true },
   { id:'s2', index:2, colName:'supplier_name', sample:'Shenzhen Tech Co.', ai:true },
@@ -2138,11 +2147,11 @@ const ERP_INCOMPLETE_SOURCES = [
 ];
 const ERP_TARGET_OPTIONS = [
   { value:'', label:'— Not mapped —' },
-  { value:'order_id', label:'order_id' }, { value:'supplier_name', label:'supplier_name' },
-  { value:'buyer_name', label:'buyer_name' }, { value:'sku', label:'sku' },
-  { value:'quantity', label:'quantity' }, { value:'unit_price', label:'unit_price' },
-  { value:'currency', label:'currency' }, { value:'total_amount', label:'total_amount' },
-  { value:'transaction_date', label:'transaction_date' }, { value:'trade_type', label:'trade_type' },
+  { value:'order_id', label:'Order ID' }, { value:'supplier_name', label:'Supplier name' },
+  { value:'buyer_name', label:'Buyer name' }, { value:'sku', label:'Sku' },
+  { value:'quantity', label:'Quantity' }, { value:'unit_price', label:'Unit price' },
+  { value:'currency', label:'Currency' }, { value:'total_amount', label:'Total amount' },
+  { value:'transaction_date', label:'Transaction date' }, { value:'trade_type', label:'Trade type' },
 ];
 const ERP_DEFAULT_MAP = {
   s1:'order_id', s2:'supplier_name', s3:'buyer_name', s4:'sku',
@@ -3611,7 +3620,7 @@ function erpGuidePanel() {
           <div class="table-card"><div style="overflow-x:auto"><table class="data" style="min-width:0;font-size:12px">
             <thead><tr><th>Column name</th><th>Description</th><th>Example</th></tr></thead>
             <tbody>${ERP_REQUIRED_FIELDS.map(f=>`<tr>
-              <td class="mono" style="color:var(--primary);font-weight:600">${f.name}</td>
+              <td style="color:var(--primary);font-weight:600">${formatFieldLabel(f.name)}</td>
               <td style="color:var(--muted-foreground)">${f.desc}</td>
               <td class="mono">${f.example}</td>
             </tr>`).join('')}</tbody>
@@ -4828,7 +4837,7 @@ function erpExampleModal() {
       <div style="padding:16px 20px;overflow:auto">
         <div style="border:1px solid var(--border);border-radius:8px;overflow:auto">
           <table class="data" style="min-width:1200px;font-size:11px">
-            <thead><tr>${ERP_EXAMPLE_COLS.map(c=>`<th class="mono" style="color:var(--primary)">${c.key}<div style="font-size:9px;font-weight:500;text-transform:none;letter-spacing:0;margin-top:2px;opacity:.7">required</div></th>`).join('')}</tr></thead>
+            <thead><tr>${ERP_EXAMPLE_COLS.map(c=>`<th class="mono" style="color:var(--primary)">${formatFieldLabel(c.key)}<div style="font-size:9px;font-weight:500;text-transform:none;letter-spacing:0;margin-top:2px;opacity:.7">required</div></th>`).join('')}</tr></thead>
             <tbody>${ERP_EXAMPLE_ROWS.map(row=>`<tr>${row.map(cell=>`<td class="mono" style="color:var(--muted-foreground)">${cell||'—'}</td>`).join('')}</tr>`).join('')}</tbody>
           </table>
         </div>
@@ -4899,7 +4908,7 @@ function stepERPInfoConcept2(w, stats) {
       ${erp2TargetMappingTable(mappedTargetNames, stats.sources, w.mappings, 'updateERP2TargetMapping', false)}
     </div>` : ''}
   </div>`;
-  const missingList = `<ul class="mapping-c2-missing-list">${missingNames.map(name=>`<li>${name}</li>`).join('')}</ul>`;
+  const missingList = `<ul class="mapping-c2-missing-list">${missingNames.map(name=>`<li>${formatFieldLabel(name)}</li>`).join('')}</ul>`;
   const statusBlock = missing ? `<div class="mapping-c2-error">
       <div class="mapping-c2-error-icon">${I.alert}</div>
       <div>
@@ -4928,7 +4937,7 @@ function stepERPInfoConcept2(w, stats) {
           <div><strong>Upload a complete corrected file</strong><p>Add the missing headers to the original document. Existing automatic and manual mappings will be reused.</p></div>
         </div>
         <div class="mapping-c2-choice-actions">
-          <p>Missing headers: ${resolutionNames.map(name=>`<span class="mono">${name}</span>`).join(', ')}</p>
+          <p>Missing headers: ${resolutionNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join(', ')}</p>
           <button type="button" class="btn btn-secondary" onclick="openERPReplaceDialog()">${I.rotate} Update and re-upload file</button>
         </div>
       </div>
@@ -4941,7 +4950,7 @@ function stepERPInfoConcept2(w, stats) {
           : `The file is missing ${stats.missing.length} required column${stats.missing.length===1?'':'s'} and has no unmapped columns available for manual matching.`}</p>
       </div>
       <div class="mapping-c2-reupload">
-        <p>Add ${missingNames.map(name=>`<span class="mono">${name}</span>`).join(' and ')} to the file, then upload the corrected version.</p>
+        <p>Add ${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join(' and ')} to the file, then upload the corrected version.</p>
         <button type="button" class="btn btn-primary" onclick="openERPReplaceDialog()">${I.rotate} Update and re-upload file</button>
       </div>
     </div>` : '';
@@ -4997,7 +5006,7 @@ function erp2StaticMapRow(source, w) {
       </div>
     </div>
     <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
-    <div class="map-target"><div class="erp2-static-target">${target}</div></div>
+    <div class="map-target"><div class="erp2-static-target">${target==='—'?target:formatFieldLabel(target)}</div></div>
   </div>`;
 }
 function erp2MappingTable(sources, w, editable, stats, manualStage, updater) {
@@ -5034,7 +5043,7 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
       const noneSelected = !!(manualStage && state.wiz && state.wiz.erp2NoneSelections && state.wiz.erp2NoneSelections[targetName]);
       return `<div class="map-row ${selectedSource?(manualStage?'manually-matched':''):'unmapped'}">
         <div class="system-required">
-          <strong class="mono">${targetName}</strong>
+          <strong>${formatFieldLabel(targetName)}</strong>
           <small>${field ? field.desc : 'Required system field'}</small>
         </div>
         <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
@@ -5045,7 +5054,7 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
               ${availableSources.map(source => {
                 const mappedTarget = (mappings || {})[source.id] || '';
                 const usedElsewhere = mappedTarget && mappedTarget !== targetName;
-                return `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''} ${usedElsewhere?'disabled':''}>${source.colName}${usedElsewhere?` · Used for ${mappedTarget}`:''}</option>`;
+                return `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''} ${usedElsewhere?'disabled':''}>${source.colName}${usedElsewhere?` · Used for ${formatFieldLabel(mappedTarget)}`:''}</option>`;
               }).join('')}
               ${manualStage?`<option value="__none__" ${noneSelected?'selected':''}>None of above</option>`:''}
             </select>
@@ -5270,9 +5279,9 @@ function stepERP2Missing(w) {
     </div>
     <div class="erp2-missing-card">
       <div class="erp2-missing-card-h">
-        <h3>Details about the ${missingNames.map(n=>n.replace(/_/g,' ')).join(' and ')} are missing</h3>
+        <h3>Details about the ${missingNames.map(formatFieldLabel).join(' and ')} are missing</h3>
         <p>Add the missing headers to the original document, complete the new columns, and submit your updated file again.</p>
-        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${name}</span>`).join('')}</div>
+        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
       </div>
       <div class="erp2-supplement-body">
         <div class="erp2-draft-note">${I.info}<p>Existing automatic and manual field mappings will be reused on the corrected file, so you won’t need to match the same headers again. You can also save this upload as a draft and return later.</p></div>
@@ -5281,7 +5290,7 @@ function stepERP2Missing(w) {
           <div class="upload-zone" style="cursor:pointer" onclick="simulateERP2CorrectedUpload()">
             <div style="color:var(--muted-foreground);margin-bottom:10px">${I.upload}</div>
             <p style="font-size:15px;font-weight:600">Upload transaction document</p>
-            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include all original columns plus the ${missingNames.join(' and ')} columns.</p>
+            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include all original columns plus the ${missingNames.map(formatFieldLabel).join(' and ')} columns.</p>
             <button type="button" class="btn btn-primary" onclick="event.stopPropagation();simulateERP2CorrectedUpload()">Choose file</button>
           </div>`}
       </div>
@@ -5472,9 +5481,9 @@ function stepERPInfo() {
           ${stats.missing.map(field => `<div class="missing-field">
             <span style="color:var(--destructive);margin-top:1px">${I.alert}</span>
             <div style="flex:1;min-width:0">
-              <p class="mono" style="font-size:12px;font-weight:600;color:var(--destructive)">${field.name} <span style="font-family:var(--font-sans);font-weight:500">· Required target</span></p>
+              <p class="mono" style="font-size:12px;font-weight:600;color:var(--destructive)">${formatFieldLabel(field.name)} <span style="font-family:var(--font-sans);font-weight:500">· Required target</span></p>
               <p style="font-size:12px;color:var(--muted-foreground);line-height:1.4;margin-top:3px">${field.desc}</p>
-              <p style="font-size:11px;color:#B42318;margin-top:5px">${stats.requiresReplacement?`This column is not present in the uploaded file. Upload a corrected file that includes <span class="mono">${field.name}</span>.`:`Choose <span class="mono">${field.name}</span> from a file-column row below.`}</p>
+              <p style="font-size:11px;color:#B42318;margin-top:5px">${stats.requiresReplacement?`This column is not present in the uploaded file. Upload a corrected file that includes <span>${formatFieldLabel(field.name)}</span>.`:`Choose <span>${formatFieldLabel(field.name)}</span> from a file-column row below.`}</p>
             </div>
           </div>`).join('')}
         </div>` : ''}
@@ -5522,7 +5531,7 @@ function mapRow(s, w, stats, manualStage, updater) {
         }).join('')}
       </select>
       ${conflict
-        ? `<div class="map-row-error">${I.alert}<span><span class="mono">${val}</span> is also mapped from ${conflictingSources.map(source=>`<span class="mono">${source.colName}</span>`).join(', ')}.</span></div>`
+        ? `<div class="map-row-error">${I.alert}<span>${formatFieldLabel(val)} is also mapped from ${conflictingSources.map(source=>`<span class="mono">${source.colName}</span>`).join(', ')}.</span></div>`
         : manualStage && val
           ? `<span class="map-row-success">${I.check} Manually matched</span>`
           : `<span style="font-size:10px;color:var(--muted-foreground)">${targetKind}</span>`}
@@ -6987,7 +6996,7 @@ function viewUploadDetails() {
           <table class="data">
             <thead><tr>${['Fields we need','Column in your file','Match method'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
             <tbody>${erpFieldMappings.map(([source,target,method])=>`<tr>
-              <td class="mono">${target}</td>
+              <td>${formatFieldLabel(target)}</td>
               <td class="mono" style="font-weight:600">${source}</td>
               <td>${method==='System identified'
                 ? `<span style="color:var(--muted-foreground)">—</span>`
