@@ -5002,7 +5002,7 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
               ${availableSources.map(source => {
                 const mappedTarget = (mappings || {})[source.id] || '';
                 const usedElsewhere = mappedTarget && mappedTarget !== targetName;
-                return `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''} ${usedElsewhere?'disabled':''}>${source.colName}${usedElsewhere?` · Used for ${erpRequiredLabel(mappedTarget)}`:''}</option>`;
+                return `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''} ${usedElsewhere?'disabled':''}>${formatFieldLabel(source.colName)}${usedElsewhere?` · Used for ${erpRequiredLabel(mappedTarget)}`:''}</option>`;
               }).join('')}
               ${manualStage?`<option value="__none__" ${noneSelected?'selected':''}>None of above</option>`:''}
             </select>
@@ -5475,7 +5475,8 @@ function mapRow(s, w, stats, manualStage, updater) {
     <div class="map-target">
       <select aria-label="Map ${s.colName} to a system field" onchange="${updater || 'updateERPMapping'}('${s.id}',this.value)">
         ${ERP_TARGET_OPTIONS.map(option => {
-          return `<option value="${option.value}" ${val===option.value?'selected':''}>${option.label}</option>`;
+          const optionLabel = option.value ? erpRequiredLabel(option.value) : option.label;
+          return `<option value="${option.value}" ${val===option.value?'selected':''}>${optionLabel}</option>`;
         }).join('')}
       </select>
       ${conflict
