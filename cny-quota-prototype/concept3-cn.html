@@ -4577,6 +4577,7 @@ function simulateErp(incomingFileName) {
     }
     w.dsState='mapped';
     w.isReplacement=false;
+    if (w.erpFlowVersion === 'v1') w.mappingExpanded = true;
     if (w.erpFlowVersion === 'v2') {
       const stats = getERPMappingStats(w);
       w.erp2IdentifiedSourceIds = stats.mapped.map(source => source.id);
