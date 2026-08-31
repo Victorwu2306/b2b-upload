@@ -4795,7 +4795,7 @@ function stepTemplateResult() {
 function stepTemplateV2Review() {
   const w=state.wiz,category=(TEMPLATE_TYPES.find(type=>type.key===w.category)||{}).label||'—';
   const details=[['File Name',w.fileName||'template_transactions.csv'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[]),['File Type','Template CSV']];
-  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the info of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} Uploaded file summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p class="${label==='File Name'?'mono':''}">${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} Uploaded file summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p class="${label==='File Name'?'mono':''}">${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
 }
 
 function viewWizardTemplate() {
@@ -5280,7 +5280,7 @@ function stepERP2Missing(w) {
     <div class="erp2-missing-card">
       <div class="erp2-missing-card-h">
         <h3>Details about the ${missingNames.map(formatFieldLabel).join(' and ')} are missing</h3>
-        <p>Add the missing headers to the original document, complete the new columns, and submit your updated file again.</p>
+        <p>Add the missing headers to your file, complete the new columns, and submit your updated file again.</p>
         <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
       </div>
       <div class="erp2-supplement-body">
@@ -5592,7 +5592,7 @@ function stepERPReview() {
   return `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
     <div>
       <h2 style="font-size:18px;font-weight:700">Review</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the info of your document before submitting.</p>
+      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p>
     </div>
     <div class="review-card">
       <div class="review-card-h">${I.file} Uploaded file summary</div>
@@ -6244,7 +6244,7 @@ function stepTradeReview() {
   return `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
     <div>
       <h2 style="font-size:18px;font-weight:700">Review</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the info of your document before submitting.</p>
+      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p>
     </div>
     <div class="review-card">
       <div class="review-card-h">${I.file} Uploaded file summary</div>

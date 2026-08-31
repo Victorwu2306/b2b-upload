@@ -5227,7 +5227,7 @@ function stepERP2Missing(w) {
     <div class="erp2-missing-card">
       <div class="erp2-missing-card-h">
         <h3>Details about the ${missingNames.map(n=>erpRequiredLabel(n)).join(' and ')} are missing</h3>
-        <p>Add the missing headers to the original document, complete the new columns, and submit your updated file again.</p>
+        <p>Add the missing headers to your file, complete the new columns, and submit your updated file again.</p>
         <div class="erp2-required-headers">${missingNames.map(name=>`<span>${erpRequiredLabel(name)}</span>`).join('')}</div>
       </div>
       <div class="erp2-supplement-body">
@@ -5539,7 +5539,7 @@ function stepERPReview() {
   return `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
     <div>
       <h2 style="font-size:18px;font-weight:700">Review</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the info of your document before submitting.</p>
+      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p>
     </div>
     <div class="review-card">
       <div class="review-card-h">${I.file} Uploaded file summary</div>
@@ -6191,7 +6191,7 @@ function stepTradeReview() {
   return `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
     <div>
       <h2 style="font-size:18px;font-weight:700">Review</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the info of your document before submitting.</p>
+      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p>
     </div>
     <div class="review-card">
       <div class="review-card-h">${I.file} Uploaded file summary</div>
@@ -7217,7 +7217,7 @@ const CN_UI_REPLACEMENTS = [
   [/Back to Upload V2/g, '返回 Upload V2'], [/Back to upload options/g, '返回上传选项'],
   [/Complete upload details/g, '补充上传信息'], [/Review the selected category and complete any required marketplace information\./g, '请确认所选类别，并补充所需的电商平台信息。'],
   [/Review Upload V2 details/g, '查看 Upload V2 信息'], [/The category and marketplace association were completed before upload\./g, '交易类别及电商平台关联信息已在上传前完成。'],
-  [/Confirm the uploaded CSV information, then submit\./g, '提交前确认单据信息。'], [/Confirm the info of your document before submitting\./g, '提交前确认单据信息。'],
+  [/Confirm the uploaded CSV information, then submit\./g, '提交前确认单据信息。'], [/Confirm the details of your document before submitting\./g, '提交前确认单据详情。'],
   [/Upload your document/g, '上传您的单据'], [/Upload transaction document/g, '上传交易单据'],
   [/Complete trade info/g, '完善贸易信息'], [/Complete the trade info below/g, '完善下方贸易信息'], [/Confirm the following details we prefilled based on your document\./g, '确认以下根据单据预填的信息。'],
   [/Check the columns we matched/g, '核对我们匹配的列'], [/Confirm the processing results/g, '确认处理结果'],
@@ -7443,7 +7443,7 @@ const CN_UI_REPLACEMENTS = [
   [/The supplementary CSV must include order_id so each row can be linked to this draft\./g, '补充 CSV 必须包含 order_id，系统才能将每一行关联到当前草稿。'],
   [/The supplementary CSV must include /g, '补充 CSV 必须包含 '], [/ so each row can be linked to this draft\./g, '，系统才能将每一行关联到当前草稿。'],
   [/Identifying headers in the supplementary CSV…/g, '正在识别补充 CSV 的表头…'],
-  [/Add the missing headers to the original document, complete the new columns, and submit your updated file again\./g, '请在原文件中补充缺少的表头，填写新列内容，然后再次提交更新后的文件。'],
+  [/Add the missing headers to your file, complete the new columns, and submit your updated file again\./g, '请在文件中补充缺少的表头，填写新列内容，然后再次提交更新后的文件。'],
   [/Add the missing headers to the original document, then upload the complete corrected file\. It will replace the current upload\./g, '请在原文件中补充缺少的表头，然后上传完整修正版。修正版将覆盖当前文件。'],
   [/Existing automatic and manual field mappings will be reused on the corrected file, so you won’t need to match the same headers again\. You can also save this upload as a draft and return later\./g, '修正版将复用已有的自动及手动字段对应关系，无需再次处理相同表头。您也可以保存草稿后稍后继续。'],
   [/Analyzing the corrected file and reusing previous mappings…/g, '正在分析修正版并复用已有字段对应关系…'],
@@ -7476,7 +7476,7 @@ const CN_UI_REPLACEMENTS = [
   [/Field Mapping Results/g, '核对结果'], [/Resolve issues from top to bottom, then review all successful mappings\./g, '请从上到下处理问题，然后检查已处理完成的列。'], [/Changes are saved automatically/g, '更改会自动保存'],
   [/Your file columns/g, '文件列'], [/Source columns and sample values/g, '来源列和示例值'], [/System field \(target\)/g, '系统字段（目标）'], [/Choose where each column maps/g, '选择每列对应的系统字段'], [/Required target/g, '必填目标'],
   [/Map useful columns or leave them unmapped/g, '可为需要的列选择对应字段，也可暂不处理'], [/No unmapped file columns\./g, '没有待处理的文件列。'], [/Review or change any mapping/g, '检查或更改对应关系'], [/Select a target field/g, '选择目标字段'], [/Matched by AI/g, '由 AI 识别'],
-  [/Review and submit/g, '检查'], [/Confirm the info of your document before submitting\./g, '提交前确认单据信息。'], [/Review the uploaded records and field mapping before submitting\./g, '提交前请检查上传的记录和字段对应情况。'],
+  [/Review and submit/g, '检查'], [/Confirm the details of your document before submitting\./g, '提交前确认单据详情。'], [/Review the uploaded records and field mapping before submitting\./g, '提交前请检查上传的记录和字段对应情况。'],
   [/Review & Submit/g, '检查并提交'], [/Review & submit/g, '检查并提交'],
   [/Original file processing summary/g, '原文件处理结果汇总'], [/Supplementary file processing summary/g, '补充文件处理结果汇总'],
   [/Headers Detected/g, '识别到的表头'], [/Headers Matched/g, '已对应表头'], [/Processing Status/g, '处理状态'], [/All supplementary headers matched/g, '补充文件表头已全部对应'], [/Review required/g, '需要核对'], [/(\d+) columns/g, '$1 个表头'],
