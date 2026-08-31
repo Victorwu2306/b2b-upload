@@ -3257,11 +3257,11 @@ function homeCardsHomepage2() {
           </div>
         </section>
         <section class="homepage2-pane upload">
-          <h4>Upload a marketplace CSV</h4>
+          <h4>Upload transaction records</h4>
           <p>Use this option if you can’t connect your marketplace. <button type="button" class="inline-link" onclick="state.templateType='marketplace';state.templatePanel=true;render()">Download our template</button> and upload records manually.</p>
           <div class="card-footer">
             <div class="cta-cluster">
-              <button type="button" class="btn btn-gradient" onclick="startMarketplaceTemplateWizard()">Upload CSV</button>
+              <button type="button" class="btn btn-gradient" onclick="startMarketplaceTemplateWizard()">Upload records</button>
             </div>
           </div>
         </section>
@@ -7258,7 +7258,7 @@ const CN_UI_REPLACEMENTS = [
   [/Order Status/g, '订单状态'], [/Remaining Unshipped Quota/g, '剩余未发货额度'], [/Available quota/g, '可用额度'], [/Total documents/g, '单据总数'], [/Quota added through uploads, with a breakdown by method and a full list of each upload\./g, '查看上传带来的额度、各方式明细及全部上传记录。'],
   [/Unshipped orders temporarily occupy quota\. To release it, filter/g, '未发货订单会暂时占用额度。如需释放，请筛选'], [/Supplement Logistics Documents/g, '补充物流材料'],
   [/Goods · Service · Drop Shipping/g, '货物 · 服务 · 代发货'], [/Goods · Service/g, '货物 · 服务'], [/download template/g, '下载模板'],
-  [/^([\s]*)Upload([\s]*)$/g, '$1上传$2'], [/Upload CSV/g, '上传 CSV'],
+  [/^([\s]*)Upload([\s]*)$/g, '$1上传$2'], [/Upload records/g, '上传记录'], [/Upload CSV/g, '上传 CSV'],
   [/CNY Quota Management/g, '人民币结汇额度管理'],
   [/Back to 人民币结汇额度管理/g, '返回人民币结汇额度管理'],
   [/Return to 人民币结汇额度管理/g, '返回人民币结汇额度管理'],
@@ -7335,7 +7335,7 @@ const CN_UI_REPLACEMENTS = [
   [/ERP CSV files – transaction records exported from your ERP for automated field mapping\./g, 'ERP 文件：从 ERP 导出的交易记录，用于自动字段识别。'],
   [/Use this option if you can’t connect your marketplace\. /g, '无法绑定电商平台时，可'], [/Download our template/g, '下载模板'], [/ and upload records manually\./g, '并手动上传交易记录。'],
   [/Connect a store/g, '绑定店铺'],
-  [/Upload a marketplace CSV/g, '上传电商平台 CSV'], [/Connect a marketplace/g, '绑定电商平台'],
+  [/Upload transaction records/g, '上传交易记录'], [/Connect a marketplace/g, '绑定电商平台'],
   [/Automatic quota increase/g, '自动提高额度'], [/Eligible payments from these marketplaces can update your quota automatically\./g, '来自这些电商平台的符合条件收款可自动更新额度。'], [/Upload using the marketplace template/g, '使用电商平台模板上传'],
   [/Use the marketplace CSV template for transaction records from these marketplaces\./g, '这些电商平台的交易记录请使用电商平台 CSV 模板。'], [/Marketplace transactions/g, '电商平台交易'], [/Goods trading/g, '货物贸易'], [/Services/g, '服务'],
   [/Transaction types that can increase your CNY quota/g, '可提高人民币额度的交易类型'], [/Marketplace transactions that can increase your CNY quota/g, '可提高人民币额度的电商平台交易'],
