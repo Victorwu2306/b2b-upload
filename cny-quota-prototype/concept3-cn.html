@@ -2601,7 +2601,7 @@ function detectUploadV2Route(category,extension,headers) {
   if(extension==='csv'){const template=isUploadV2TemplateCSV(category,headers);if(category==='marketplace')return template?{route:'template',label:'Template CSV'}:{route:'erp',label:'ERP CSV'};return template?{route:'template',label:'Template CSV'}:{route:'erp',label:'ERP CSV'};}
   return {route:'',error:'This file format is not supported.'};
 }
-function uploadV2StepsForRoute(route,w){if(route==='template')return [{n:1,label:'Upload document'},{n:2,label:'Review'}];if(route==='trade')return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Review'}];if(route==='erp'){if(w&&w.erpFlowVersion==='v1')return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Review'}];const hasUnrecognized=w&&w.kind==='upload'?true:!!(w&&w.erp2HadUnrecognized);const steps=[{n:1,label:'Upload document'},{n:2,label:'Confirm info'}];if(hasUnrecognized)steps.push({n:3,label:'Manual verification'});steps.push({n:steps.length+1,label:'Complete missing'});steps.push({n:steps.length+1,label:'Review'});return steps;}return [{n:1,label:'Upload document'}];}
+function uploadV2StepsForRoute(route,w){if(route==='template')return [{n:1,label:'Upload document'},{n:2,label:'Review'}];if(route==='trade')return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Review'}];if(route==='erp'){if(w&&w.erpFlowVersion==='v1')return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Review'}];const hasUnrecognized=w&&w.kind==='upload'?true:!!(w&&w.erp2HadUnrecognized);const steps=[{n:1,label:'Upload document'},{n:2,label:'Confirm info'}];if(hasUnrecognized)steps.push({n:3,label:'Identify other details'});steps.push({n:steps.length+1,label:'Resubmit'});steps.push({n:steps.length+1,label:'Review'});return steps;}return [{n:1,label:'Upload document'}];}
 function uploadV2ERPDisplayStep(w){const stage=w.erp2Stage||1;if(stage<=1)return 1;if(stage===2)return 2;if(stage===3)return 3;if(stage===4)return w.erp2HadUnrecognized?4:3;return w.erp2HadUnrecognized?5:4;}
 function openUploadV2SamplePicker(){const w=state.wiz;if(!w||w.uploadVersion!==2)return;if(!w.category){toast('Select a category before uploading.');return;}if(w.category==='marketplace'&&!w.marketplace){toast('Select a marketplace before uploading.');return;}if(uploadV2NeedsSellerId(w)&&!String(w.sellerId||'').trim()){toast(`Enter the Seller ID for ${w.marketplace} before uploading.`);return;}w.v2PickerOpen=true;render();}
 function closeUploadV2SamplePicker(){const w=state.wiz;if(!w)return;w.v2PickerOpen=false;render();}
@@ -4731,7 +4731,7 @@ function stepTemplateResult() {
 function stepTemplateV2Review() {
   const w=state.wiz,category=(TEMPLATE_TYPES.find(type=>type.key===w.category)||{}).label||'—';
   const details=[['File Name',w.fileName||'template_transactions.csv'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[]),['File Type','Template CSV']];
-  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review and submit</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the uploaded CSV information, then submit.</p></div><div class="review-card"><div class="review-card-h">${I.file} Uploaded file summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p class="${label==='File Name'?'mono':''}">${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the uploaded CSV information, then submit.</p></div><div class="review-card"><div class="review-card-h">${I.file} Uploaded file summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p class="${label==='File Name'?'mono':''}">${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
 }
 
 function viewWizardTemplate() {
@@ -4862,8 +4862,8 @@ function stepERPInfoConcept2(w, stats) {
     </div>`;
   const manualResolutionBlock = showManualResolution ? `<div class="erp2-stage">
       <div class="erp2-stage-head">
-        <h2>Match available columns</h2>
-        <p>For each missing required system field, choose a corresponding column from your uploaded file.</p>
+        <h2>Tell us where these details are in your file</h2>
+        <p>For the other details we ask for, tell us whether you have those in your document.</p>
       </div>
       <div class="alert-info">${I.info}<p>If no uploaded column matches a field, select <strong>None of above</strong> and upload a complete corrected file below.</p></div>
       ${erp2TargetMappingTable(resolutionNames, manualSources, w.mappings, 'updateERP2TargetMapping', true)}
@@ -5132,7 +5132,7 @@ function stepERP2Unrecognized(w) {
   if (!resolutionNames.length) {
     return `<div class="erp2-stage">
       <div class="erp2-stage-head">
-        <h2>Match available columns</h2>
+        <h2>Tell us where these details are in your file</h2>
         <p>No manual matching is needed. Continue to check whether anything else is missing.</p>
       </div>
       <div class="mapping-c2-success">${I.check}<div><strong>All required columns are covered</strong><p>Unrecognized extra columns will be ignored. Continue to review whether anything else is missing.</p></div></div>
@@ -5140,10 +5140,10 @@ function stepERP2Unrecognized(w) {
   }
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
-      <h2>Match available columns</h2>
-      <p>For each missing required system field, choose a corresponding column from your uploaded file.</p>
+      <h2>Tell us where these details are in your file</h2>
+      <p>For the other details we ask for, tell us whether you have those in your document.</p>
     </div>
-    <div class="alert-info">${I.info}<p>If no uploaded column matches a field, leave it unselected and continue to the next step.</p></div>
+    <div class="alert-info">${I.info}<p>Move on to next if you don't have any of those in your document.</p></div>
     ${erp2TargetMappingTable(resolutionNames, unrecognizedSources, w.mappings, 'updateERP2TargetMapping', true)}
   </div>`;
 }
@@ -5197,7 +5197,7 @@ function stepERP2Missing(w) {
   const missingNames = stats.missing.map(field => field.name);
   if (!missingNames.length) {
     return `<div class="erp2-stage">
-      <div class="erp2-stage-head"><h2>Complete missing columns</h2><p>Check whether the file still needs any required system fields.</p></div>
+      <div class="erp2-stage-head"><h2>Resubmit your document</h2><p>Check whether the file still needs any required system fields.</p></div>
       <div class="mapping-c2-success">${I.check}<div><strong>All required columns are covered</strong><p>${w.erp2ReplacementState==='done'?'The corrected full file replaced the previous upload. Existing automatic and manual mappings were reused.':'No corrected file is needed.'}</p></div></div>
       ${w.erp2ReplacementState==='done' ? `<div class="file-ok">${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
         <div style="flex:1"><p style="font-weight:600">${w.erp2ReplacementFileName}</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Current file · ${w.erp2ReusedMappings} previous mappings reused · ${w.erp2NewHeaders.length} new header${w.erp2NewHeaders.length===1?'':'s'} matched</p></div>
@@ -5206,13 +5206,12 @@ function stepERP2Missing(w) {
   }
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
-      <h2>Complete missing columns</h2>
-      <p>Add the remaining required fields now, or save this upload as a draft and continue later.</p>
+      <h2>Resubmit your document</h2>
     </div>
     <div class="erp2-missing-card">
       <div class="erp2-missing-card-h">
-        <h3>${missingNames.length} required column${missingNames.length===1?' is':'s are'} still missing</h3>
-        <p>Add the missing headers to the original document, then upload the complete corrected file. It will replace the current upload.</p>
+        <h3>Details about the ${missingNames.map(n=>n.replace(/_/g,' ')).join(' and ')} are missing</h3>
+        <p>Add the missing headers to the original document, complete the new columns, and submit your updated file again.</p>
         <div class="erp2-required-headers">${missingNames.map(name=>`<span>${erpRequiredLabel(name)}</span>`).join('')}</div>
       </div>
       <div class="erp2-supplement-body">
@@ -5221,8 +5220,8 @@ function stepERP2Missing(w) {
           <div class="upload-zone"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing the corrected file and reusing previous mappings…</p></div>` : `
           <div class="upload-zone" style="cursor:pointer" onclick="simulateERP2CorrectedUpload()">
             <div style="color:var(--muted-foreground);margin-bottom:10px">${I.upload}</div>
-            <p style="font-size:15px;font-weight:600">Upload complete corrected CSV</p>
-            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include all original columns plus: ${missingNames.join(', ')}</p>
+            <p style="font-size:15px;font-weight:600">Upload transaction document</p>
+            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include all original columns plus the ${missingNames.join(' and ')} columns.</p>
             <button type="button" class="btn btn-primary" onclick="event.stopPropagation();simulateERP2CorrectedUpload()">Choose file</button>
           </div>`}
       </div>
@@ -5234,9 +5233,9 @@ function erp2Steps(w) {
     {n:1,label:'Upload CSV'},
     {n:2,label:'Confirm info'},
   ];
-  if (w.erp2HadUnrecognized) steps.push({n:3,label:'Manual verification'});
-  steps.push({n:4,label:'Complete missing'});
-  steps.push({n:5,label:'Review & submit'});
+  if (w.erp2HadUnrecognized) steps.push({n:3,label:'Identify other details'});
+  steps.push({n:4,label:'Resubmit'});
+  steps.push({n:5,label:'Review'});
   return steps.map((step,index) => Object.assign({}, step, { displayN:index + 1 }));
 }
 function erp2Back() {
@@ -5523,13 +5522,13 @@ function stepERPReview() {
   const paymentLinkingActive = LINK_PAYMENT_VISIBLE && !w.skipLink;
   return `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
     <div>
-      <h2 style="font-size:18px;font-weight:700">Review and submit</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Review the uploaded records and field mapping before submitting.</p>
+      <h2 style="font-size:18px;font-weight:700">Review</h2>
+      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the info of your document before submitting.</p>
     </div>
     <div class="review-card">
       <div class="review-card-h">${I.file} Uploaded file summary</div>
       <div class="review-card-b"><div class="kv-grid">
-        ${[['File Name',w.fileName||'drop_shipping_orders_Q3.csv'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['File Type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['Upload Date','2026-07-20'],['Records Detected', DS_TX_PREVIEW.length+' transaction records'],['Mapping Status', `${coveredCount} columns covered · All required fields covered`]].map(([k,v])=>`<div><label>${k}</label><p>${escapeHTML(v)}</p></div>`).join('')}
+        ${[['File Name',w.fileName||'drop_shipping_orders_Q3.csv'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['File Type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['Upload Date','2026-07-20'],['Records Detected', DS_TX_PREVIEW.length+' transaction records']].map(([k,v])=>`<div><label>${k}</label><p>${escapeHTML(v)}</p></div>`).join('')}
       </div></div>
     </div>
     ${paymentLinkingActive?`<div class="review-card">
@@ -5591,7 +5590,7 @@ function viewWizardERP() {
       ? [
         {n:2,displayN:1,label:'Upload & map'},
         {n:3,displayN:2,label:'Link payment'},
-        {n:4,displayN:3,label:'Review & submit'},
+        {n:4,displayN:3,label:'Review'},
       ]
       : [
         {n:2,label:'Order Information'},
@@ -5601,7 +5600,7 @@ function viewWizardERP() {
     : (state.concept !== 2
       ? [
         {n:2,displayN:1,label:'Upload & map'},
-        {n:4,displayN:2,label:'Review & submit'},
+        {n:4,displayN:2,label:'Review'},
       ]
       : [
         {n:2,displayN:1,label:'Order Information'},
@@ -7191,7 +7190,7 @@ const CN_UI_REPLACEMENTS = [
   [/Tour packages, destination services, and related travel fees/g, '旅游套餐、目的地服务及相关旅行费用'],
   [/Choose an upload flow/g, '选择上传流程'], [/Upload V2 starts with a category and routes the file automatically\./g, 'Upload V2 先选择交易类别，再自动识别并分流文件。'], [/Upload flow version/g, '上传流程版本'],
   [/Select a category and upload/g, '上传您的单据'], [/Choose a transaction category, then upload a related file on this page\./g, ''],
-  [/^Upload document$/g, '上传单据'], [/^Confirm info$/g, '确认信息'], [/^Manual verification$/g, '手动核对'], [/^Review$/g, '检查'],
+  [/^Upload document$/g, '上传单据'], [/^Confirm info$/g, '确认信息'], [/^Identify other details$/g, '确认其他信息'], [/^Resubmit$/g, '重新提交'], [/^Review$/g, '检查'],
   [/Process & review/g, '确认信息'], [/Choose a sample file/g, '选择模拟文件'], [/This prototype simulates file selection and processing\./g, '此原型将模拟文件选择和处理。'],
   [/PDF document/g, 'PDF 单据'], [/standard template/g, '标准模板'], [/ERP transaction export/g, 'ERP 交易导出文件'], [/Select a category to enable upload\./g, '选择类别后即可上传。'], [/Select a category before uploading\./g, '请先选择类别再上传。'],
   [/Select the marketplace/g, '选择电商平台'], [/Choose the marketplace associated with these transaction records\./g, '请选择与这些交易记录关联的电商平台。'], [/Complete the category details to enable upload\./g, '请先补充类别相关信息，再上传文件。'],
@@ -7384,10 +7383,11 @@ const CN_UI_REPLACEMENTS = [
   [/Your uploaded file column/g, '上传文件中的列'], [/Choose a file header and review its sample value/g, '选择文件表头并核对示例值'],
   [/Choose an uploaded file column for/g, '为以下字段选择上传文件列：'], [/— Select an uploaded file column —/g, '— 选择上传文件中的列 —'], [/None of above/g, '以上均不匹配'],
   [/File column selected/g, '已选择文件列'], [/No file column selected/g, '未选择文件列'], [/Used for/g, '已用于'],
+  [/For the other details we ask for, tell us whether you have those in your document\./g, '对于我们要求的其他信息，请告诉我们这些信息是否在您的文件中。'],
   [/For each missing required system field, choose a corresponding column from your uploaded file\./g, '请为每个缺少的系统必填字段选择对应的上传文件列。'],
   [/Review how required system fields correspond to uploaded file headers\./g, '查看系统必填字段与上传文件表头的对应关系。'],
   [/Review identified fields, handle unrecognized headers, and complete missing columns\./g, '核对已识别字段，处理未识别表头，并补充缺少字段。'],
-  [/Upload CSV/g, '上传 CSV'], [/Confirm identified(?! columns)/g, '核对已识别字段'], [/Match available columns/g, '选择可用列对应'], [/Match available/g, '选择可用列'], [/Match unrecognized(?! columns)/g, '处理未识别字段'], [/Complete missing(?! columns)/g, '补充缺少字段'],
+  [/Upload CSV/g, '上传 CSV'], [/Confirm identified(?! columns)/g, '核对已识别字段'], [/Tell us where these details are in your file/g, '告诉我们这些信息在文件中的位置'], [/Match available columns/g, '选择可用列对应'], [/Match available/g, '选择可用列'], [/Match unrecognized(?! columns)/g, '处理未识别字段'], [/Complete missing(?! columns)/g, '补充缺少字段'],
   [/Upload your ERP export\. We’ll identify the file headers before you review them step by step\./g, '上传 ERP 导出文件。系统识别表头后，请按步骤核对。'],
   [/We’ll identify the file headers before you review them step by step\./g, '系统识别表头后，请按步骤核对。'],
   [/Keep the original header row\./g, '请保留原表头。'], [/AI is analyzing your file and identifying fields…/g, 'AI 正在分析文件并识别字段…'],
@@ -7395,6 +7395,7 @@ const CN_UI_REPLACEMENTS = [
   [/Identified columns/g, '已识别字段'], [/Identified by system/g, '系统已识别'], [/System-detected field/g, '系统识别字段'], [/File headers and sample values/g, '文件表头和示例值'],
   [/Match unrecognized columns/g, '处理未识别字段'], [/Choose a system field for useful file headers\. Leave a column as “Not mapped” if it is not needed\./g, '为需要的文件表头选择对应系统字段；不需要的列可保留为“未选择”。'],
   [/For each missing required field, select a corresponding column from your uploaded file\./g, '请为每个缺少的必填字段选择对应的上传列。'],
+  [/Move on to next if you don't have any of those in your document\./g, '如果文件中没有这些信息，请继续下一步。'],
   [/If no uploaded column matches a field, leave it unselected and continue to the next step\./g, '如果没有对应的上传列，请保持未选择并继续下一步。'],
   [/If no uploaded column matches a field, select None of above and upload a complete corrected file below\./g, '如果没有对应的上传列，请选择“以上均不匹配”，并在下方上传完整修正版。'],
   [/If no uploaded column matches a field, select /g, '如果没有对应的上传列，请选择'], [/ and upload a complete corrected file below\./g, '，并在下方上传完整修正版。'], [/^or$/g, '或'], [/^OR$/g, '或'],
@@ -7406,8 +7407,9 @@ const CN_UI_REPLACEMENTS = [
   [/Each system field can only be selected once\. Resolve duplicate selections before confirming\./g, '每个系统字段只能选择一次。请处理重复选择后再确认。'],
   [/Each system field can only be selected once\. Resolve duplicate selections before continuing\./g, '每个系统字段只能选择一次。请处理重复选择后继续。'],
   [/All unrecognized columns have been reviewed/g, '所有未识别字段均已处理'], [/Continue to check whether any required system fields are still missing\./g, '继续检查是否仍有缺少的必填字段。'],
-  [/Complete missing columns/g, '补充缺少字段'], [/Check whether the file still needs any required system fields\./g, '检查文件是否仍缺少必填字段。'],
+  [/Resubmit your document/g, '重新提交您的单据'], [/Complete missing columns/g, '补充缺少字段'], [/Check whether the file still needs any required system fields\./g, '检查文件是否仍缺少必填字段。'],
   [/Add the remaining required fields now, or save this upload as a draft and continue later\./g, '现在补充剩余必填字段，或保存草稿后再继续。'],
+  [/Details about the (.+) are missing/g, '缺少关于 $1 的信息'],
   [/required column is still missing/g, '个必填字段仍缺少'], [/required columns are still missing/g, '个必填字段仍缺少'],
   [/Upload a supplementary CSV containing order_id and the missing columns below\. The file will be merged with this saved upload\./g, '上传包含 order_id 和下列缺少字段的补充 CSV。文件会合并到当前草稿。'],
   [/You can select Save draft and return later from Upload history\. You only need to upload order_id plus the missing columns—not the full original file\./g, '你可以选择“保存草稿”，稍后从上传历史继续。只需上传 order_id 和缺少字段，无需重新上传完整原文件。'],
@@ -7417,10 +7419,12 @@ const CN_UI_REPLACEMENTS = [
   [/The supplementary CSV must include order_id so each row can be linked to this draft\./g, '补充 CSV 必须包含 order_id，系统才能将每一行关联到当前草稿。'],
   [/The supplementary CSV must include /g, '补充 CSV 必须包含 '], [/ so each row can be linked to this draft\./g, '，系统才能将每一行关联到当前草稿。'],
   [/Identifying headers in the supplementary CSV…/g, '正在识别补充 CSV 的表头…'],
+  [/Add the missing headers to the original document, complete the new columns, and submit your updated file again\./g, '请在原文件中补充缺少的表头，填写新列内容，然后再次提交更新后的文件。'],
   [/Add the missing headers to the original document, then upload the complete corrected file\. It will replace the current upload\./g, '请在原文件中补充缺少的表头，然后上传完整修正版。修正版将覆盖当前文件。'],
   [/Existing automatic and manual field mappings will be reused on the corrected file, so you won’t need to match the same headers again\. You can also save this upload as a draft and return later\./g, '修正版将复用已有的自动及手动字段对应关系，无需再次处理相同表头。您也可以保存草稿后稍后继续。'],
   [/Analyzing the corrected file and reusing previous mappings…/g, '正在分析修正版并复用已有字段对应关系…'],
-  [/Upload complete corrected CSV/g, '上传完整修正版 CSV'], [/Include all original columns plus:/g, '请包含全部原始列，并补充：'],
+  [/Include all original columns plus the (.+) columns\./g, '请包含全部原始列，并补充 $1 列。'],
+  [/Include all original columns plus:/g, '请包含全部原始列，并补充：'],
   [/The corrected full file replaced the previous upload\. Existing automatic and manual mappings were reused\./g, '完整修正版已覆盖之前上传的文件，并复用了已有的自动及手动字段对应关系。'],
   [/No corrected file is needed\./g, '无需上传修正版。'], [/All required columns are covered/g, '已覆盖全部必填字段'],
   [/Current file · (\d+) previous mappings reused · (\d+) new header matched/g, '当前文件 · 已复用 $1 个字段对应关系 · 已识别 $2 个新增表头'],
@@ -7448,7 +7452,8 @@ const CN_UI_REPLACEMENTS = [
   [/Field Mapping Results/g, '核对结果'], [/Resolve issues from top to bottom, then review all successful mappings\./g, '请从上到下处理问题，然后检查已处理完成的列。'], [/Changes are saved automatically/g, '更改会自动保存'],
   [/Your file columns/g, '文件列'], [/Source columns and sample values/g, '来源列和示例值'], [/System field \(target\)/g, '系统字段（目标）'], [/Choose where each column maps/g, '选择每列对应的系统字段'], [/Required target/g, '必填目标'],
   [/Map useful columns or leave them unmapped/g, '可为需要的列选择对应字段，也可暂不处理'], [/No unmapped file columns\./g, '没有待处理的文件列。'], [/Review or change any mapping/g, '检查或更改对应关系'], [/Select a target field/g, '选择目标字段'], [/Matched by AI/g, '由 AI 识别'],
-  [/Review and submit/g, '检查并提交'], [/Review & Submit/g, '检查并提交'], [/Review & submit/g, '检查并提交'], [/Review the uploaded records and field mapping before submitting\./g, '提交前请检查上传的记录和字段对应情况。'],
+  [/Review and submit/g, '检查'], [/Confirm the info of your document before submitting\./g, '提交前确认单据信息。'], [/Review the uploaded records and field mapping before submitting\./g, '提交前请检查上传的记录和字段对应情况。'],
+  [/Review & Submit/g, '检查并提交'], [/Review & submit/g, '检查并提交'],
   [/Original file processing summary/g, '原文件处理结果汇总'], [/Supplementary file processing summary/g, '补充文件处理结果汇总'],
   [/Headers Detected/g, '识别到的表头'], [/Headers Matched/g, '已对应表头'], [/Processing Status/g, '处理状态'], [/All supplementary headers matched/g, '补充文件表头已全部对应'], [/Review required/g, '需要核对'], [/(\d+) columns/g, '$1 个表头'],
   [/Uploaded file summary/g, '上传文件汇总'], [/File Name/g, '文件名'], [/File Type/g, '文件类型'], [/Records Detected/g, '识别到的记录'], [/Mapping Status/g, '处理状态'], [/Processing summary/g, '处理结果汇总'], [/Your file field/g, '文件表头字段'], [/Sample values/g, '示例值'], [/Mapped field/g, '系统对应表头字段'],

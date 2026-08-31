@@ -2693,8 +2693,8 @@ function uploadV2StepsForRoute(route,w) {
     if(w&&w.erpFlowVersion==='v1')return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Review'}];
     const hasUnrecognized = w && w.kind === 'upload' ? true : !!(w && w.erp2HadUnrecognized);
     const steps=[{n:1,label:'Upload document'},{n:2,label:'Confirm info'}];
-    if (hasUnrecognized) steps.push({n:3,label:'Manual verification'});
-    steps.push({n:steps.length+1,label:'Complete missing'});
+    if (hasUnrecognized) steps.push({n:3,label:'Identify other details'});
+    steps.push({n:steps.length+1,label:'Resubmit'});
     steps.push({n:steps.length+1,label:'Review'});
     return steps;
   }
@@ -5127,8 +5127,8 @@ function stepERPInfoConcept2(w, stats) {
     </div>`;
   const manualResolutionBlock = showManualResolution ? `<div class="erp2-stage">
       <div class="erp2-stage-head">
-        <h2>Match available columns</h2>
-        <p>For each missing required system field, choose a corresponding column from your uploaded file.</p>
+        <h2>Tell us where these details are in your file</h2>
+        <p>For the other details we ask for, tell us whether you have those in your document.</p>
       </div>
       <div class="alert-info">${I.info}<p>If no uploaded column matches a field, select <strong>None of above</strong> and upload a complete corrected file below.</p></div>
       ${erp2TargetMappingTable(resolutionNames, manualSources, w.mappings, 'updateERP2TargetMapping', true)}
@@ -5396,7 +5396,7 @@ function stepERP2Unrecognized(w) {
   if (!resolutionNames.length) {
     return `<div class="erp2-stage">
       <div class="erp2-stage-head">
-        <h2>Match available columns</h2>
+        <h2>Tell us where these details are in your file</h2>
         <p>No manual matching is needed. Continue to check whether anything else is missing.</p>
       </div>
       <div class="mapping-c2-success">${I.check}<div><strong>All required columns are covered</strong><p>Unrecognized extra columns will be ignored. Continue to review whether anything else is missing.</p></div></div>
@@ -5404,10 +5404,10 @@ function stepERP2Unrecognized(w) {
   }
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
-      <h2>Match available columns</h2>
-      <p>For each missing required system field, choose a corresponding column from your uploaded file.</p>
+      <h2>Tell us where these details are in your file</h2>
+      <p>For the other details we ask for, tell us whether you have those in your document.</p>
     </div>
-    <div class="alert-info">${I.info}<p>If no uploaded column matches a field, leave it unselected and continue to the next step.</p></div>
+    <div class="alert-info">${I.info}<p>Move on to next if you don't have any of those in your document.</p></div>
     ${erp2TargetMappingTable(resolutionNames, unrecognizedSources, w.mappings, 'updateERP2TargetMapping', true)}
   </div>`;
 }
@@ -5466,7 +5466,7 @@ function stepERP2Missing(w) {
   const missingNames = stats.missing.map(field => field.name);
   if (!missingNames.length) {
     return `<div class="erp2-stage">
-      <div class="erp2-stage-head"><h2>Complete missing columns</h2><p>Check whether the file still needs any required system fields.</p></div>
+      <div class="erp2-stage-head"><h2>Resubmit your document</h2><p>Check whether the file still needs any required system fields.</p></div>
       <div class="mapping-c2-success">${I.check}<div><strong>All required columns are covered</strong><p>${w.erp2ReplacementState==='done'?'The corrected full file replaced the previous upload. Existing automatic and manual mappings were reused.':'No corrected file is needed.'}</p></div></div>
       ${w.erp2ReplacementState==='done' ? `<div class="file-ok">${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
         <div style="flex:1"><p style="font-weight:600">${w.erp2ReplacementFileName}</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Current file · ${w.erp2ReusedMappings} previous mappings reused · ${w.erp2NewHeaders.length} new header${w.erp2NewHeaders.length===1?'':'s'} matched</p></div>
@@ -5475,13 +5475,12 @@ function stepERP2Missing(w) {
   }
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
-      <h2>Complete missing columns</h2>
-      <p>Add the remaining required fields now, or save this upload as a draft and continue later.</p>
+      <h2>Resubmit your document</h2>
     </div>
     <div class="erp2-missing-card">
       <div class="erp2-missing-card-h">
-        <h3>${missingNames.length} required column${missingNames.length===1?' is':'s are'} still missing</h3>
-        <p>Add the missing headers to the original document, then upload the complete corrected file. It will replace the current upload.</p>
+        <h3>Details about the ${missingNames.map(n=>n.replace(/_/g,' ')).join(' and ')} are missing</h3>
+        <p>Add the missing headers to the original document, complete the new columns, and submit your updated file again.</p>
         <div class="erp2-required-headers">${missingNames.map(name=>`<span>${name}</span>`).join('')}</div>
       </div>
       <div class="erp2-supplement-body">
@@ -5490,8 +5489,8 @@ function stepERP2Missing(w) {
           <div class="upload-zone"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing the corrected file and reusing previous mappings…</p></div>` : `
           <div class="upload-zone" style="cursor:pointer" onclick="simulateERP2CorrectedUpload()">
             <div style="color:var(--muted-foreground);margin-bottom:10px">${I.upload}</div>
-            <p style="font-size:15px;font-weight:600">Upload complete corrected CSV</p>
-            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include all original columns plus: ${missingNames.join(', ')}</p>
+            <p style="font-size:15px;font-weight:600">Upload transaction document</p>
+            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include all original columns plus the ${missingNames.join(' and ')} columns.</p>
             <button type="button" class="btn btn-primary" onclick="event.stopPropagation();simulateERP2CorrectedUpload()">Choose file</button>
           </div>`}
       </div>
@@ -5503,9 +5502,9 @@ function erp2Steps(w) {
     {n:1,label:'Upload CSV'},
     {n:2,label:'Confirm info'},
   ];
-  if (w.erp2HadUnrecognized) steps.push({n:3,label:'Manual verification'});
-  steps.push({n:4,label:'Complete missing'});
-  steps.push({n:5,label:'Review & submit'});
+  if (w.erp2HadUnrecognized) steps.push({n:3,label:'Identify other details'});
+  steps.push({n:4,label:'Resubmit'});
+  steps.push({n:5,label:'Review'});
   return steps.map((step,index) => Object.assign({}, step, { displayN:index + 1 }));
 }
 function erp2Back() {
@@ -5792,13 +5791,13 @@ function stepERPReview() {
   const paymentLinkingActive = LINK_PAYMENT_VISIBLE && !w.skipLink;
   return `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
     <div>
-      <h2 style="font-size:18px;font-weight:700">Review and submit</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Review the uploaded records and field mapping before submitting.</p>
+      <h2 style="font-size:18px;font-weight:700">Review</h2>
+      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the info of your document before submitting.</p>
     </div>
     <div class="review-card">
       <div class="review-card-h">${I.file} Uploaded file summary</div>
       <div class="review-card-b"><div class="kv-grid">
-        ${[['File Name',w.fileName||'drop_shipping_orders_Q3.csv'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['File Type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['Upload Date','2026-07-20'],['Records Detected', DS_TX_PREVIEW.length+' transaction records'],['Mapping Status', `${coveredCount} columns covered · All required fields covered`]].map(([k,v])=>`<div><label>${k}</label><p>${escapeHTML(v)}</p></div>`).join('')}
+        ${[['File Name',w.fileName||'drop_shipping_orders_Q3.csv'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['File Type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['Upload Date','2026-07-20'],['Records Detected', DS_TX_PREVIEW.length+' transaction records']].map(([k,v])=>`<div><label>${k}</label><p>${escapeHTML(v)}</p></div>`).join('')}
       </div></div>
     </div>
     ${paymentLinkingActive?`<div class="review-card">
@@ -5860,7 +5859,7 @@ function viewWizardERP() {
       ? [
         {n:2,displayN:1,label:'Upload & map'},
         {n:3,displayN:2,label:'Link payment'},
-        {n:4,displayN:3,label:'Review & submit'},
+        {n:4,displayN:3,label:'Review'},
       ]
       : [
         {n:2,label:'Order Information'},
@@ -5870,7 +5869,7 @@ function viewWizardERP() {
     : (state.concept !== 2
       ? [
         {n:2,displayN:1,label:'Upload & map'},
-        {n:4,displayN:2,label:'Review & submit'},
+        {n:4,displayN:2,label:'Review'},
       ]
       : [
         {n:2,displayN:1,label:'Order Information'},
