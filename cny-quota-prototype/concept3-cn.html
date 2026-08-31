@@ -119,6 +119,7 @@ a { color: inherit; }
 .home-section-head { display: flex; flex-direction: column; gap: 4px; }
 .home-section-sub-row { display:flex; align-items:center; justify-content:space-between; gap:20px; min-width:0; }
 .home-section-sub-row .section-sub { flex:1; min-width:0; margin-top:0; }
+.home-section-sub-row .home-quota-title { flex:1; min-width:0; margin:0; }
 .home-section-history { flex:0 0 auto; color:var(--primary); background:none; border:0; font-size:14px; line-height:22px; font-weight:600; cursor:pointer; }
 .home-section-history:hover { text-decoration:underline; }
 
@@ -3311,13 +3312,12 @@ function viewHome() {
 
         <section class="home-section">
           <div class="home-section-head">
-            <h2 class="section-title home-quota-title">Choose a way to increase your quota</h2>
-            ${state.concept!==1 && state.homepageVersion!==2
-              ? ''
-              : `<div class="home-section-sub-row">
-                  <p class="section-sub">Increase your quota by connecting a store or uploading transaction records.</p>
-                  ${state.concept!==1&&state.homepageVersion===2?`<button type="button" class="home-section-history" onclick="go('upload-history')">View upload history</button>`:''}
-                </div>`}
+            ${state.concept!==1 && state.homepageVersion===2
+              ? `<div class="home-section-sub-row">
+                  <h2 class="section-title home-quota-title">Choose a way to increase your quota</h2>
+                  <button type="button" class="home-section-history" onclick="go('upload-history')">View upload history</button>
+                </div>`
+              : `<h2 class="section-title home-quota-title">Choose a way to increase your quota</h2>`}
           </div>
 
           ${state.concept!==1
