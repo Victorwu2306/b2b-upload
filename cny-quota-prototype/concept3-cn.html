@@ -3226,13 +3226,13 @@ function homeCardsHomepage2() {
   return `<div class="homepage2-layout">
     <article class="action-card home-pair-card homepage2-card">
       <div class="homepage2-card-head">
-        <h3>Marketplace transactions</h3>
-        <p class="desc">Choose one of two ways to add marketplace transaction records and increase your quota.<br><button type="button" class="inline-link homepage2-support-link" onclick="state.homepage2MarketplaceSupport=true;render()">View supported marketplaces</button></p>
+        <h3>Marketplace sales</h3>
+        <p class="desc">We offer 2 ways for you to provide transactions to us.<br><button type="button" class="inline-link homepage2-support-link" onclick="state.homepage2MarketplaceSupport=true;render()">View supported marketplaces</button></p>
       </div>
       <div class="homepage2-split">
         <section class="homepage2-pane connect">
           <h4>Connect a store</h4>
-          <p>This allows us to automatically receive your store data.</p>
+          <p>When you get a new payment to your store, we increase your quota automatically.</p>
           <div class="store-plain-list">
             <div class="store-plain-row">
               <div class="platform-logo" style="color:#FF9900;font-style:italic;font-family:serif;border:none">a</div>
@@ -3258,7 +3258,7 @@ function homeCardsHomepage2() {
         </section>
         <section class="homepage2-pane upload">
           <h4>Upload transaction records</h4>
-          <p>Use this option if you can’t connect your marketplace. <button type="button" class="inline-link" onclick="state.templateType='marketplace';state.templatePanel=true;render()">Download our template</button> and upload records manually.</p>
+          <p>Use this option for your stores not on Amazon, Shopify, or Walmart. <button type="button" class="inline-link" onclick="state.templateType='marketplace';state.templatePanel=true;render()">Download our template</button> and upload records manually.</p>
           <div class="card-footer">
             <div class="cta-cluster">
               <button type="button" class="btn btn-gradient" onclick="startMarketplaceTemplateWizard()">Upload records</button>
@@ -3270,8 +3270,8 @@ function homeCardsHomepage2() {
 
     <article class="action-card home-pair-card homepage2-card">
       <div class="homepage2-card-head">
-        <h3>Other transaction documents</h3>
-        <p class="desc">Upload trade documents or an ERP export to increase quota from eligible transactions.</p>
+        <h3>Goods or service trading</h3>
+        <p class="desc">Upload trade documents or CSV transaction records. We increase your quota based on the transaction amount.</p>
       </div>
       <div class="homepage2-docs">
         <div class="homepage2-doc-items">
@@ -3280,8 +3280,8 @@ function homeCardsHomepage2() {
             <p>Commercial or proforma invoice, purchase order, contract, or shipping and customs documents.</p>
           </div>
           <div>
-            <strong>ERP CSV files</strong>
-            <p>Transaction records exported from your ERP for automated field mapping. <button type="button" class="inline-link" onclick="state.erpGuide=true;render()">View requirements</button></p>
+            <strong>CSV transaction records</strong>
+            <p>You can use our template, or export them from your business platforms like ERP. <button type="button" class="inline-link" onclick="state.erpGuide=true;render()">View requirements</button></p>
           </div>
         </div>
         <div class="card-footer">
@@ -7223,7 +7223,9 @@ const CN_UI_REPLACEMENTS = [
   [/Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents/g, '贸易单据：商业发票或形式发票、采购订单、合同、运输及报关单据'],
   [/Commercial or proforma invoice, purchase order, contract, or shipping and customs documents\./g, '商业发票或形式发票、采购订单、合同、运输及报关单据。'],
   [/Transaction records exported from your ERP for automated field mapping\./g, '从 ERP 导出的交易记录，用于自动字段识别。'],
+  [/You can use our template, or export them from your business platforms like ERP\./g, '您可以使用我们的模板，或从 ERP 等业务平台导出。'],
   [/ERP CSV files/g, 'ERP 文件'],
+  [/CSV transaction records/g, 'CSV 交易记录'],
   [/Select a business type to enable document upload\./g, '选择业务类型后才能上传单据。'],
   [/Business-to-business trade documents — Goods and Service\. Upload documents to release CNY quota per transaction\./g, '企业间货物或服务贸易单据。上传单据后，可按交易释放人民币额度。'],
   [/Track quota from uploaded trade documents and take action when needed\./g, '查看贸易单据带来的额度，并在需要时处理。'], [/Document List/g, '单据列表'], [/Quota from this channel/g, '此渠道带来的额度'], [/Unshipped Settlement Quota/g, '未发货结算额度'], [/Releasable quota/g, '可释放额度'],
@@ -7281,7 +7283,8 @@ const CN_UI_REPLACEMENTS = [
   [/Connect stores you’re selling on/g, '绑定正在使用的店铺'], [/Connect Stores/g, '绑定店铺'], [/Connect stores/g, '绑定店铺'], [/Connect a Store/g, '绑定店铺'],
   [/(\d+) stores connected/g, '已绑定 $1 家店铺'], [/(\d+) connected/g, '已绑定 $1 家'], [/Not connected/g, '未绑定'], [/(\d+) to connect/g, '可绑定 $1 家'], [/No stores connected yet/g, '尚未绑定店铺'],
   [/Choose your e-commerce platform/g, '选择电商平台'], [/Creative Marketplace/g, '创意商品平台'], [/Social Commerce/g, '社交电商'],
-  [/Upload your transaction documents/g, '上传交易材料'], [/Other transaction documents/g, '其他交易材料'], [/We’ll increase your quota based on the transaction amounts\./g, '将根据交易金额提高额度。'],
+  [/Upload your transaction documents/g, '上传交易材料'], [/Goods or service trading/g, '货物或服务贸易'], [/We’ll increase your quota based on the transaction amounts\./g, '将根据交易金额提高额度。'],
+  [/Upload trade documents or CSV transaction records\. We increase your quota based on the transaction amount\./g, '上传贸易单据或 CSV 交易记录。我们将根据交易金额提高额度。'],
   [/We support:/g, '支持以下材料：'],
   [/Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents/g, '贸易单据：商业发票或形式发票、采购订单、合同、运输及报关单据'],
   [/CSV transaction records – exported from your business platform like ERP, or prepared using our template/g, 'CSV 交易记录：从 ERP 等业务平台导出，或使用标准模板填写'],
@@ -7331,13 +7334,14 @@ const CN_UI_REPLACEMENTS = [
   [/Marketplace template & supported marketplaces/g, '电商平台模板与支持列表'], [/Upload marketplace records or check how each marketplace is supported\./g, '上传电商平台交易记录，或查看各平台的支持方式。'], [/Upload marketplace CSV/g, '上传电商平台 CSV'],
   [/Download the standard marketplace template, add your transaction records, then upload the completed file\./g, '下载标准电商平台模板，添加交易记录后上传。'], [/Choose the relevant path based on how your marketplace is supported\./g, '请根据电商平台的支持方式选择相应路径。'],
   [/Choose one of two ways to add marketplace transaction records and increase your quota\./g, '选择以下任一方式添加电商平台交易记录并提高额度。'],
+  [/We offer 2 ways for you to provide transactions to us\./g, '我们提供 2 种方式供您提交交易记录。'],
   [/This allows us to automatically receive your store data\./g, '这样我们就能自动获取您的店铺数据。'], [/Connect these marketplaces to increase quota automatically from eligible payments\./g, '绑定这些电商平台后，符合条件的收款可自动提高额度。'],
   [/ERP CSV files – transaction records exported from your ERP for automated field mapping\./g, 'ERP 文件：从 ERP 导出的交易记录，用于自动字段识别。'],
-  [/Use this option if you can’t connect your marketplace\. /g, '无法绑定电商平台时，可'], [/Download our template/g, '下载模板'], [/ and upload records manually\./g, '并手动上传交易记录。'],
+  [/Use this option if you can’t connect your marketplace\. /g, '无法绑定电商平台时，可'], [/Use this option for your stores not on Amazon, Shopify, or Walmart\. /g, '适用于不在 Amazon、Shopify 或 Walmart 上的店铺，可'], [/Download our template/g, '下载模板'], [/ and upload records manually\./g, '并手动上传交易记录。'],
   [/Connect a store/g, '绑定店铺'],
   [/Upload transaction records/g, '上传交易记录'], [/Connect a marketplace/g, '绑定电商平台'],
   [/Automatic quota increase/g, '自动提高额度'], [/Eligible payments from these marketplaces can update your quota automatically\./g, '来自这些电商平台的符合条件收款可自动更新额度。'], [/Upload using the marketplace template/g, '使用电商平台模板上传'],
-  [/Use the marketplace CSV template for transaction records from these marketplaces\./g, '这些电商平台的交易记录请使用电商平台 CSV 模板。'], [/Marketplace transactions/g, '电商平台交易'], [/Goods trading/g, '货物贸易'], [/Services/g, '服务'],
+  [/Use the marketplace CSV template for transaction records from these marketplaces\./g, '这些电商平台的交易记录请使用电商平台 CSV 模板。'], [/Marketplace sales/g, '电商平台销售'], [/Marketplace transactions/g, '电商平台交易'], [/Goods trading/g, '货物贸易'], [/Services/g, '服务'],
   [/Transaction types that can increase your CNY quota/g, '可提高人民币额度的交易类型'], [/Marketplace transactions that can increase your CNY quota/g, '可提高人民币额度的电商平台交易'],
   [/Uploaded successfully/g, '上传成功'], [/Your trade documents have been submitted and the corresponding CNY quota has been released\./g, '贸易单据已提交，相应人民币额度已释放。'], [/Your file has been submitted and the corresponding CNY quota has been released\./g, '文件已提交，相应人民币额度已释放。'],
   [/View upload history/g, '查看上传历史'], [/Upload another file/g, '再上传一个文件'], [/Select a transaction category before choosing a file\./g, '请先选择交易类别，再选择文件。'], [/Select a category and upload your file, then review the validation results\./g, '选择类别并上传文件，然后查看校验结果。'], [/Select the transaction category/g, '选择交易类别'], [/Select a category/g, '选择类别'],

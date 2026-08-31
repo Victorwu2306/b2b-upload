@@ -3278,13 +3278,13 @@ function homeCardsHomepage2() {
   return `<div class="homepage2-layout">
     <article class="action-card home-pair-card homepage2-card">
       <div class="homepage2-card-head">
-        <h3>Marketplace transactions</h3>
-        <p class="desc">Choose one of two ways to add marketplace transaction records and increase your quota.<br><button type="button" class="inline-link homepage2-support-link" onclick="state.homepage2MarketplaceSupport=true;render()">View supported marketplaces</button></p>
+        <h3>Marketplace sales</h3>
+        <p class="desc">We offer 2 ways for you to provide transactions to us.<br><button type="button" class="inline-link homepage2-support-link" onclick="state.homepage2MarketplaceSupport=true;render()">View supported marketplaces</button></p>
       </div>
       <div class="homepage2-split">
         <section class="homepage2-pane connect">
           <h4>Connect a store</h4>
-          <p>This allows us to automatically receive your store data.</p>
+          <p>When you get a new payment to your store, we increase your quota automatically.</p>
           <div class="store-plain-list">
             <div class="store-plain-row">
               <div class="platform-logo" style="color:#FF9900;font-style:italic;font-family:serif;border:none">a</div>
@@ -3310,7 +3310,7 @@ function homeCardsHomepage2() {
         </section>
         <section class="homepage2-pane upload">
           <h4>Upload transaction records</h4>
-          <p>Use this option if you can’t connect your marketplace. <button type="button" class="inline-link" onclick="state.templateType='marketplace';state.templatePanel=true;render()">Download our template</button> and upload records manually.</p>
+          <p>Use this option for your stores not on Amazon, Shopify, or Walmart. <button type="button" class="inline-link" onclick="state.templateType='marketplace';state.templatePanel=true;render()">Download our template</button> and upload records manually.</p>
           <div class="card-footer">
             <div class="cta-cluster">
               <button type="button" class="btn btn-gradient" onclick="startMarketplaceTemplateWizard()">Upload records</button>
@@ -3322,8 +3322,8 @@ function homeCardsHomepage2() {
 
     <article class="action-card home-pair-card homepage2-card">
       <div class="homepage2-card-head">
-        <h3>Other transaction documents</h3>
-        <p class="desc">Upload trade documents or an ERP export to increase quota from eligible transactions.</p>
+        <h3>Goods or service trading</h3>
+        <p class="desc">Upload trade documents or CSV transaction records. We increase your quota based on the transaction amount.</p>
       </div>
       <div class="homepage2-docs">
         <div class="homepage2-doc-items">
@@ -3332,8 +3332,8 @@ function homeCardsHomepage2() {
             <p>Commercial or proforma invoice, purchase order, contract, or shipping and customs documents.</p>
           </div>
           <div>
-            <strong>ERP CSV files</strong>
-            <p>Transaction records exported from your ERP for automated field mapping. <button type="button" class="inline-link" onclick="state.erpGuide=true;render()">View requirements</button></p>
+            <strong>CSV transaction records</strong>
+            <p>You can use our template, or export them from your business platforms like ERP. <button type="button" class="inline-link" onclick="state.erpGuide=true;render()">View requirements</button></p>
           </div>
         </div>
         <div class="card-footer">
