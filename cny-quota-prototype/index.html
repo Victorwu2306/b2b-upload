@@ -5680,7 +5680,7 @@ function erp3TargetMappingTable(w) {
           <div class="erp-file-select-row">
             <select aria-label="Choose an uploaded file column for ${row.field.name}" ${isMissing?'disabled':''} onchange="updateERP2TargetMapping('${row.field.name}',this.value)">
               <option value="">${isMissing?'Not found in your file':'— Select an uploaded file column —'}</option>
-              ${availableSources.map(source => `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''}>${source.colName}</option>`).join('')}
+              ${availableSources.map(source => `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''}>${formatFieldLabel(source.colName)}</option>`).join('')}
             </select>
           </div>
           <span class="erp-sample-value">Sample: <span class="mono">${selectedSource ? selectedSource.sample : '—'}</span></span>
