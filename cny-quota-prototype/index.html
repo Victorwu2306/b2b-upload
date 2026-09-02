@@ -4600,10 +4600,7 @@ function validationFooterSummary(kind, w) {
   </div>`;
 }
 function validationWizardFooter(kind, w, navigation) {
-  return `<div class="validation-footer">
-    ${validationFooterSummary(kind,w)}
-    <div class="validation-footer-actions">${navigation}</div>
-  </div>`;
+  return navigation;
 }
 function templateNeedsSellerId(w) {
   return w && w.category === 'marketplace' && (w.marketplace === 'Amazon' || w.marketplace === 'Walmart');
@@ -5034,40 +5031,7 @@ function stepTemplateUpload() {
 }
 
 function stepTemplateResult() {
-  const w = state.wiz;
-  getValidationRows('template',w);
-  const problemRows = getValidationProblemRows('template',w);
-  const total = 78;
-  const errors = problemRows.length;
-  const selectedCategory = TEMPLATE_TYPES.find(type => type.key === w.category);
-  const sourceLabel = `${selectedCategory ? selectedCategory.label : '—'}${w.category==='marketplace' && w.marketplace ? ` · ${w.marketplace}` : ''}`;
-  return `<div class="validation-result" data-kind="template" style="display:flex;flex-direction:column;gap:20px;width:100%">
-    <div>
-      <h2 style="font-size:20px;font-weight:700">Review upload results</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Review accepted and excluded rows before submitting.</p>
-    </div>
-    <div class="card" style="overflow:hidden">
-      <div style="display:flex;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted)">
-        <div style="display:flex;align-items:center;gap:8px;font-weight:600">${I.file} Validation results</div>
-      </div>
-      <div style="padding:20px">
-        <div class="template-result">
-          <div class="template-result-file-row">
-            <div class="template-result-file">
-              <p class="mono" style="font-weight:600">${w.fileName || 'template_transactions.csv'}</p>
-              <p>Uploaded · ${sourceLabel}</p>
-            </div>
-            <button type="button" class="template-text-link" onclick="resetTemplateFile()">${I.rotate} Replace file</button>
-          </div>
-          ${errors ? `<div class="alert-warn template-result-alert">
-            <div class="template-result-alert-copy">${I.alert}<p style="font-size:13px;line-height:1.45">Select Edit table to update any cell. Invalid formats are highlighted immediately. Unresolved rows will be skipped if you submit now.</p></div>
-            <button type="button" class="template-text-link" onclick="downloadTemplateIssueRows()">${I.download} Download issue rows</button>
-          </div>` : `<div class="template-result-resolved">${I.check}<div><strong>All issue rows have been fixed</strong><p>All ${total} rows are ready to submit.</p></div></div>`}
-          ${validationTableBlock('template',w)}
-        </div>
-      </div>
-    </div>
-  </div>`;
+  return stepTemplateV2Review();
 }
 function stepTemplateV2Review() {
   const w = state.wiz;
@@ -6178,36 +6142,7 @@ function stepERPReview() {
 }
 
 function stepERPValidationResults(w, embedded=false) {
-  getValidationRows('erp',w);
-  const problems = getValidationProblemRows('erp',w);
-  const total = validationTotalRows('erp');
-  const errors = problems.length;
-  return `<div class="validation-result" data-kind="erp" style="display:flex;flex-direction:column;gap:20px;width:100%">
-    ${embedded?'':`<div>
-      <h2 style="font-size:18px;font-weight:700">Review validation results</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Review accepted and issue rows before submitting the ERP CSV.</p>
-    </div>`}
-    <div class="card" style="overflow:hidden">
-      <div style="display:flex;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted)">
-        <div style="display:flex;align-items:center;gap:8px;font-weight:600">${I.file} Validation results</div>
-      </div>
-      <div style="padding:20px">
-        <div class="template-result">
-          ${embedded?'':`<div class="template-result-file-row">
-            <div class="template-result-file">
-              <p class="mono" style="font-weight:600">${w.fileName || 'drop_shipping_orders_Q3.csv'}</p>
-              <p>Uploaded · ERP CSV</p>
-            </div>
-            <button type="button" class="template-text-link" onclick="replaceERPFile()">${I.rotate} Replace file</button>
-          </div>`}
-          ${errors ? `<div class="alert-warn template-result-alert">
-            <div class="template-result-alert-copy">${I.alert}<p style="font-size:13px;line-height:1.45">Select Edit table to update any cell. Invalid formats are highlighted immediately. Unresolved rows will be skipped if you submit now.</p></div>
-          </div>` : `<div class="template-result-resolved">${I.check}<div><strong>All issue rows have been fixed</strong><p>All ${total} rows are ready to submit.</p></div></div>`}
-          ${validationTableBlock('erp',w)}
-        </div>
-      </div>
-    </div>
-  </div>`;
+  return '';
 }
 
 function viewWizardERP() {
