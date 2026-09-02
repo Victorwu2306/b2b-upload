@@ -1391,6 +1391,16 @@ table.data tr:hover td { background: var(--muted); }
   padding:10px 14px 10px 28px; display:flex; align-items:center;
   background:#EEF1F6; border-top:3px solid #73788C;
 }
+.erp2-target-map .map-head .system-head .map-head-copy,
+.erp2-target-map .map-head .uploaded-head .map-head-copy {
+  gap:0;
+}
+.erp2-target-map .map-head .system-head strong {
+  color:#4326C7;
+}
+.erp2-target-map .map-head .uploaded-head strong {
+  color:#3F4352;
+}
 .erp2-target-map .system-required {
   padding:12px 28px 12px 14px; display:flex; flex-direction:column; justify-content:center;
   gap:3px; background:#F8F6FF;
@@ -2151,6 +2161,21 @@ function formatFieldLabel(name) {
   if (!words.length) return '';
   words[0] = words[0] === 'ID' ? 'ID' : (words[0].charAt(0).toUpperCase() + words[0].slice(1));
   return words.join(' ');
+}
+function formatSentenceFieldLabel(name) {
+  const label = formatFieldLabel(name);
+  if (!label) return '';
+  return label.charAt(0).toLowerCase() + label.slice(1);
+}
+function formatEnglishList(items) {
+  const list = (items || []).filter(Boolean);
+  if (!list.length) return '';
+  if (list.length === 1) return list[0];
+  if (list.length === 2) return list[0] + ' and ' + list[1];
+  return list.slice(0, -1).join(', ') + ', and ' + list[list.length - 1];
+}
+function formatMissingFieldsList(names) {
+  return formatEnglishList((names || []).map(formatSentenceFieldLabel));
 }
 const ERP_MAP_SOURCES = [
   { id:'s1', index:1, colName:'order_id', sample:'ERP-2026-001', ai:true },
@@ -5209,7 +5234,7 @@ function stepERPInfoConcept2(w, stats) {
           : `The file is missing ${stats.missing.length} required column${stats.missing.length===1?'':'s'} and has no unmapped columns available for manual matching.`}</p>
       </div>
       <div class="mapping-c2-reupload">
-        <p>Add ${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join(' and ')} to the file, then upload the corrected version.</p>
+        <p>Add ${formatEnglishList(missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`))} to the file, then upload the corrected version.</p>
         <button type="button" class="btn btn-primary" onclick="openERPReplaceDialog()">${I.rotate} Update and re-upload file</button>
       </div>
     </div>` : '';
@@ -5287,9 +5312,7 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
   const systemHead = manualStage
     ? `<strong>Fields we need</strong><small>Still required — ${uniqueTargets.length} left</small>`
     : `<strong>Fields we need</strong>`;
-  const uploadedHead = manualStage
-    ? `<strong>Column in your file</strong>`
-    : `<strong>Column in your file</strong><small>Check the sample value to confirm the match</small>`;
+  const uploadedHead = `<strong>Column in your file</strong>`;
   return `<div class="map-table erp2-target-map">
     <div class="map-head">
       <div class="system-head"><div class="map-head-copy">${systemHead}</div></div>
@@ -5543,7 +5566,7 @@ function stepERP2Missing(w) {
     </div>
     <div class="erp2-missing-card">
       <div class="erp2-missing-card-h">
-        <h3>Details about the ${missingNames.map(formatFieldLabel).join(' and ')} are missing</h3>
+        <h3>Details about the ${formatMissingFieldsList(missingNames)} are missing</h3>
         <p>Add the missing headers to your file, complete the new columns, and submit your updated file again.</p>
         <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
       </div>
@@ -5554,7 +5577,7 @@ function stepERP2Missing(w) {
           <div class="upload-zone" style="cursor:pointer" onclick="simulateERP2CorrectedUpload()">
             <div style="color:var(--muted-foreground);margin-bottom:10px">${I.upload}</div>
             <p style="font-size:15px;font-weight:600">Upload transaction document</p>
-            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include all original columns plus the ${missingNames.map(formatFieldLabel).join(' and ')} columns.</p>
+            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include all original columns plus the ${formatMissingFieldsList(missingNames)} columns.</p>
             <button type="button" class="btn btn-primary" onclick="event.stopPropagation();simulateERP2CorrectedUpload()">Choose file</button>
           </div>`}
       </div>
@@ -5661,7 +5684,7 @@ function erp3TargetMappingTable(w) {
     <div class="map-head">
       <div class="system-head"><div class="map-head-copy"><strong>Fields we need</strong></div></div>
       <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
-      <div class="uploaded-head"><div class="map-head-copy"><strong>Column in your file</strong><small>Check the sample value to confirm the match</small></div></div>
+      <div class="uploaded-head"><div class="map-head-copy"><strong>Column in your file</strong></div></div>
     </div>
     ${rows.map(row => {
       const selectedSource = row.source;
@@ -5787,7 +5810,7 @@ function stepERP3Missing(w) {
     </div>
     <div class="erp3-corrected-card">
       <div class="erp3-corrected-card-h">
-        <h3>Details about the ${missingNames.map(formatFieldLabel).join(' and ')} are missing</h3>
+        <h3>Details about the ${formatMissingFieldsList(missingNames)} are missing</h3>
         <p>All original headers have been renamed to the fields we need, and the missing headers have already been added. You only need to fill in the corresponding data.</p>
         <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
       </div>
@@ -5799,7 +5822,7 @@ function stepERP3Missing(w) {
           <div class="upload-zone" style="cursor:pointer" onclick="simulateERP3CorrectedUpload()">
             <div style="color:var(--muted-foreground);margin-bottom:10px">${I.upload}</div>
             <p style="font-size:15px;font-weight:600">Upload the complete corrected file</p>
-            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include every required header and the missing ${missingNames.map(formatFieldLabel).join(' and ')} data.</p>
+            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include every required header and the missing ${formatMissingFieldsList(missingNames)} data.</p>
             <button type="button" class="btn btn-primary" onclick="event.stopPropagation();simulateERP3CorrectedUpload()">Choose file</button>
           </div>`}
       </div>
