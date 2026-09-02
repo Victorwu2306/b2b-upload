@@ -1416,6 +1416,12 @@ table.data tr:hover td { background: var(--muted); }
 .erp2-target-map .map-row.manually-matched .uploaded-choice { background:#F6FEF9; }
 .erp2-target-map .uploaded-choice select { font-family:var(--font-sans); }
 .erp2-target-map .uploaded-choice option { font-family:var(--font-sans); }
+.erp-option-divider { color:#C5C6D0; background:#F5F5F8; }
+.erp-none-option { color:#555568; font-style:italic; font-weight:600; background:#F3F1FB; }
+.erp3-map .map-row.none .system-required,
+.erp3-map .map-row.none .uploaded-choice { background:#F7F6FB; }
+.erp3-map .map-row.none select { border-color:#D8D1FF; }
+.erp3-status-hint.none { color:#5B3BE8; }
 .erp3-map .map-row.mapped .system-required { background:#F3F9F5; }
 .erp3-map .map-row.mapped .uploaded-choice { background:#F8FCF9; }
 .erp3-map .map-row.unrecognized .system-required { background:#FFF8EB; }
@@ -5338,7 +5344,7 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
                 const usedElsewhere = mappedTarget && mappedTarget !== targetName;
                 return `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''} ${usedElsewhere?'disabled':''}>${formatFieldLabel(source.colName)}${usedElsewhere?` · Used for ${formatFieldLabel(mappedTarget)}`:''}</option>`;
               }).join('')}
-              ${manualStage?`<option value="__none__" ${noneSelected?'selected':''}>None of above</option>`:''}
+              ${manualStage?erpNoneOfAboveOption(noneSelected):''}
             </select>
           </div>
           <span class="erp-sample-value">Sample: <span class="mono">${selectedSource ? selectedSource.sample : '—'}</span></span>
@@ -5654,6 +5660,9 @@ function viewWizardERP2(w) {
   }) + erpExampleModal();
 }
 
+function erpNoneOfAboveOption(selected) {
+  return `<option disabled class="erp-option-divider" value="">────────</option><option value="__none__" class="erp-none-option" ${selected?'selected':''}>None of above</option>`;
+}
 function getERP3FieldRows(w) {
   const stats = getERPMappingStats(w);
   const unusedCount = stats.unmapped.length;
@@ -5661,8 +5670,9 @@ function getERP3FieldRows(w) {
     const source = erp2TargetSource(field.name, stats.sources, w.mappings);
     const conflict = !!(source && stats.conflictIds.includes(source.id));
     const manual = !!(w.manualSelections && w.manualSelections[field.name]);
+    const noneSelected = !!(w.erp2NoneSelections && w.erp2NoneSelections[field.name]);
     let status = 'mapped';
-    if (!source) status = unusedCount ? 'unrecognized' : 'missing';
+    if (!source) status = noneSelected ? 'none' : unusedCount ? 'unrecognized' : 'missing';
     else if (conflict) status = 'conflict';
     else if (manual) status = 'manually-matched';
     return { field, source, status };
@@ -5672,6 +5682,7 @@ function erp3StatusHint(status, attempted) {
   if (status === 'mapped') return 'Mapped';
   if (status === 'manually-matched') return 'Manually matched';
   if (status === 'unrecognized') return attempted ? 'Select a file column to continue' : 'Unrecognized — select a file column';
+  if (status === 'none') return 'None of above';
   if (status === 'missing') return 'Missing from your file';
   if (status === 'conflict') return 'Resolve the duplicate mapping';
   return '';
@@ -5693,6 +5704,7 @@ function erp3TargetMappingTable(w) {
         return !mappedTarget || mappedTarget === row.field.name;
       });
       const isMissing = row.status === 'missing';
+      const noneSelected = row.status === 'none';
       return `<div class="map-row ${row.status}">
         <div class="system-required">
           <strong>${formatFieldLabel(row.field.name)}</strong>
@@ -5704,6 +5716,7 @@ function erp3TargetMappingTable(w) {
             <select aria-label="Choose an uploaded file column for ${row.field.name}" ${isMissing?'disabled':''} onchange="updateERP2TargetMapping('${row.field.name}',this.value)">
               <option value="">${isMissing?'Not found in your file':'— Select an uploaded file column —'}</option>
               ${availableSources.map(source => `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''}>${formatFieldLabel(source.colName)}</option>`).join('')}
+              ${isMissing?'':erpNoneOfAboveOption(noneSelected)}
             </select>
           </div>
           <span class="erp-sample-value">Sample: <span class="mono">${selectedSource ? selectedSource.sample : '—'}</span></span>
@@ -5851,7 +5864,7 @@ function erp3Next() {
   const stats = getERPMappingStats(w);
   const rows = getERP3FieldRows(w);
   const unrecognizedEmpty = rows.some(row => row.status === 'unrecognized');
-  const missingCount = rows.filter(row => row.status === 'missing').length;
+  const missingCount = rows.filter(row => row.status === 'missing' || row.status === 'none').length;
   if ((w.erp3Stage || 1) === 1 && w.dsState === 'mapped') {
     w.erp3Stage = 2;
     render();
