@@ -1407,6 +1407,19 @@ table.data tr:hover td { background: var(--muted); }
   gap:4px; background:#F8F9FC;
 }
 .erp2-target-map .map-row.unmapped .uploaded-choice { background:#FFFCF5; }
+.erp2-target-map .map-row.none .system-required,
+.erp2-target-map .map-row.none .uploaded-choice { background:#F7F6FB; }
+.erp2-target-map .map-row.none select { border-color:#D8D1FF; }
+.erp2-target-map .map-row.needs-selection .system-required,
+.erp2-target-map .map-row.needs-selection .uploaded-choice,
+.erp3-map .map-row.needs-selection .system-required,
+.erp3-map .map-row.needs-selection .uploaded-choice { background:#FEF3F2; }
+.map-row.needs-selection select,
+.map-row select.invalid {
+  border-color:var(--destructive);
+  box-shadow:0 0 0 2px rgba(211,47,47,.08);
+}
+.uploaded-choice .field-error { display:flex; }
 .erp2-target-map .map-row.manually-matched .system-required,
 .erp2-target-map .map-row.manually-matched .uploaded-choice { background:#F6FEF9; }
 .erp2-target-map .uploaded-choice select { font-family:var(--font-sans); }
@@ -4724,6 +4737,17 @@ function simulateErp(incomingFileName) {
 function attemptERPNext() {
   const w = state.wiz; if (!w) return;
   const stats = getERPMappingStats(w);
+  const unanswered = getERPUnansweredManualFields(w, w.manualResolutionFields);
+  if (unanswered.length) {
+    w.mappingAttempted = true;
+    toast('Select a file column or None of above for every field. The selection cannot be empty.');
+    render();
+    requestAnimationFrame(() => {
+      const target = document.querySelector('.map-row.needs-selection');
+      if (target) target.scrollIntoView({ behavior:'smooth', block:'center' });
+    });
+    return;
+  }
   if (!stats.valid) {
     w.mappingAttempted = true;
     if (stats.requiresReplacement) {
@@ -5050,6 +5074,14 @@ function erp2MappingTable(sources, w, editable, stats, manualStage, updater) {
 function erp2TargetSource(targetName, sources, mappings) {
   return (sources || []).find(source => (mappings || {})[source.id] === targetName) || null;
 }
+function erpFieldHasManualAnswer(w, targetName) {
+  if (!w || !targetName) return false;
+  if (w.erp2NoneSelections && w.erp2NoneSelections[targetName]) return true;
+  return !!erp2TargetSource(targetName, getERPMappingStats(w).sources, w.mappings);
+}
+function getERPUnansweredManualFields(w, targetNames) {
+  return (targetNames || []).filter(name => !erpFieldHasManualAnswer(w, name));
+}
 function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualStage) {
   const uniqueTargets = Array.from(new Set((targetNames || []).filter(Boolean)));
   const availableSources = sources || [];
@@ -5067,7 +5099,9 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
       const field = ERP_REQUIRED_FIELDS.find(item => item.name === targetName);
       const selectedSource = erp2TargetSource(targetName, availableSources, mappings);
       const noneSelected = !!(manualStage && state.wiz && state.wiz.erp2NoneSelections && state.wiz.erp2NoneSelections[targetName]);
-      return `<div class="map-row ${selectedSource?(manualStage?'manually-matched':''):'unmapped'}">
+      const showError = !!(manualStage && state.wiz && state.wiz.mappingAttempted && !selectedSource && !noneSelected);
+      const rowState = selectedSource ? (manualStage ? 'manually-matched' : '') : noneSelected ? 'none' : 'unmapped';
+      return `<div class="map-row ${rowState}${showError?' needs-selection':''}">
         <div class="system-required">
           <strong>${formatFieldLabel(targetName)}</strong>
           <small>${field ? field.desc : 'Required system field'}</small>
@@ -5075,7 +5109,7 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
         <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
         <div class="uploaded-choice">
           <div class="erp-file-select-row">
-            <select aria-label="Choose an uploaded file column for ${targetName}" onchange="${updater}('${targetName}',this.value)">
+            <select class="${showError?'invalid':''}" aria-label="Choose an uploaded file column for ${targetName}" onchange="${updater}('${targetName}',this.value)">
               <option value="">— Select an uploaded file column —</option>
               ${availableSources.map(source => {
                 const mappedTarget = (mappings || {})[source.id] || '';
@@ -5086,6 +5120,7 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
             </select>
           </div>
           <span class="erp-sample-value">Sample: <span class="mono">${selectedSource ? selectedSource.sample : '—'}</span></span>
+          ${showError?`<div class="field-error">${I.alert}<span>Select a file column or None of above.</span></div>`:''}
         </div>
       </div>`;
     }).join('')}
@@ -5358,7 +5393,27 @@ function erp2Next() {
       w.erp2Stage = 4;
     }
   }
-  else if (w.erp2Stage === 3 && !stats.duplicateTargets.length) w.erp2Stage = 4;
+  else if (w.erp2Stage === 3) {
+    if (stats.duplicateTargets.length) {
+      w.mappingAttempted = true;
+      toast('Each required field can only be mapped once. Resolve duplicate mappings before continuing.');
+      render();
+      return;
+    }
+    const unanswered = getERPUnansweredManualFields(w, w.manualResolutionFields);
+    if (unanswered.length) {
+      w.mappingAttempted = true;
+      toast('Select a file column or None of above for every field. The selection cannot be empty.');
+      render();
+      requestAnimationFrame(() => {
+        const target = document.querySelector('.map-row.needs-selection');
+        if (target) target.scrollIntoView({ behavior:'smooth', block:'center' });
+      });
+      return;
+    }
+    w.mappingAttempted = false;
+    w.erp2Stage = 4;
+  }
   else if (w.erp2Stage === 4 && stats.valid && !getERP2SupplementStats(w).duplicateTargets.length) w.erp2Stage = 5;
   else if (w.erp2Stage === 5 && stats.valid) { submitWizard(); return; }
   render();
@@ -5411,7 +5466,7 @@ function getERP3FieldRows(w) {
 function erp3StatusHint(status, attempted) {
   if (status === 'mapped') return 'Mapped';
   if (status === 'manually-matched') return 'Manually matched';
-  if (status === 'unrecognized') return attempted ? 'Select a file column to continue' : 'Unrecognized — select a file column';
+  if (status === 'unrecognized') return attempted ? 'Select a file column or None of above' : 'Unrecognized — select a file column';
   if (status === 'none') return 'None of above';
   if (status === 'missing') return 'Missing from your file';
   if (status === 'conflict') return 'Resolve the duplicate mapping';
@@ -5435,7 +5490,8 @@ function erp3TargetMappingTable(w) {
       });
       const isMissing = row.status === 'missing';
       const noneSelected = row.status === 'none';
-      return `<div class="map-row ${row.status}">
+      const showError = !!(w.mappingAttempted && row.status === 'unrecognized');
+      return `<div class="map-row ${row.status}${showError?' needs-selection':''}">
         <div class="system-required">
           <strong>${formatFieldLabel(row.field.name)}</strong>
           <small>${row.field.desc}</small>
@@ -5443,7 +5499,7 @@ function erp3TargetMappingTable(w) {
         <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
         <div class="uploaded-choice">
           <div class="erp-file-select-row">
-            <select aria-label="Choose an uploaded file column for ${row.field.name}" ${isMissing?'disabled':''} onchange="updateERP2TargetMapping('${row.field.name}',this.value)">
+            <select class="${showError?'invalid':''}" aria-label="Choose an uploaded file column for ${row.field.name}" ${isMissing?'disabled':''} onchange="updateERP2TargetMapping('${row.field.name}',this.value)">
               <option value="">${isMissing?'Not found in your file':'— Select an uploaded file column —'}</option>
               ${availableSources.map(source => `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''}>${formatFieldLabel(source.colName)}</option>`).join('')}
               ${isMissing?'':erpNoneOfAboveOption(noneSelected)}
@@ -5451,6 +5507,7 @@ function erp3TargetMappingTable(w) {
           </div>
           <span class="erp-sample-value">Sample: <span class="mono">${selectedSource ? selectedSource.sample : '—'}</span></span>
           <span class="erp3-status-hint ${row.status}">${erp3StatusHint(row.status, w.mappingAttempted)}</span>
+          ${showError?`<div class="field-error">${I.alert}<span>Select a file column or None of above.</span></div>`:''}
         </div>
       </div>`;
     }).join('')}
@@ -5609,7 +5666,7 @@ function erp3Next() {
     }
     if (unrecognizedEmpty) {
       w.mappingAttempted = true;
-      toast('Select a file column for every unrecognized field. The selection cannot be empty.');
+      toast('Select a file column or None of above for every field. The selection cannot be empty.');
       render();
       return;
     }
@@ -5652,7 +5709,7 @@ function viewWizardERP3(w) {
   else if (stage === 3) body = stepERP3Missing(w);
   else body = stepERPReview();
   const canNext = stage === 1 ? w.dsState === 'mapped'
-    : stage === 2 ? !stats.duplicateTargets.length && !getERP3FieldRows(w).some(row => row.status === 'unrecognized')
+    : stage === 2 ? !stats.duplicateTargets.length
       : stage === 3 ? stats.valid
         : stats.valid;
   const versionControl = stage === 1 ? erpVersionSelector() : '';
