@@ -3707,11 +3707,11 @@ function viewTradeOrders() {
 function templateDownloadPanel() {
   if (!state.templatePanel) return '';
   const selected = TEMPLATE_TYPES.find(t => t.key === state.templateType) || TEMPLATE_TYPES[0];
-  return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.templatePanel=false;state.templateMenuOpen=false;render()}">
+  return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()}">
     <div class="drawer wide">
       <div class="drawer-h">
         <h3>Find and download template</h3>
-        <button type="button" onclick="state.templatePanel=false;state.templateMenuOpen=false;render()">${I.x}</button>
+        <button type="button" onclick="state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()">${I.x}</button>
       </div>
       <div class="drawer-b" style="padding:24px">
         <div class="template-picker">
@@ -3734,12 +3734,17 @@ function templateDownloadPanel() {
           ${I.info}
           <p style="font-size:12px;line-height:1.5">The templates we provide are <strong>CSV files</strong>. Upload the completed CSV using the same column headers.</p>
         </div>
+        <button type="button" class="btn btn-secondary" style="width:100%;margin-top:16px;justify-content:flex-start;text-align:left" onclick="state.templateMenuOpen=false;state.templateGuide=true;render()">
+          ${I.file}
+          <span style="font-weight:600">How to fill in the transaction record file</span>
+          <span style="margin-left:auto">${I.chevronR}</span>
+        </button>
       </div>
       <div class="drawer-f">
-        <button type="button" class="btn btn-gradient" style="width:100%" onclick="toast('Downloading ${selected.label} template…');state.templatePanel=false;state.templateMenuOpen=false;render()">${I.download} Download</button>
+        <button type="button" class="btn btn-gradient" style="width:100%" onclick="toast('Downloading ${selected.label} template…');state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()">${I.download} Download</button>
       </div>
     </div>
-  </div>`;
+  </div>${templateFillGuidePanel()}`;
 }
 
 function templateFillGuidePanel() {
@@ -3759,14 +3764,17 @@ function templateFillGuidePanel() {
     ['Logistics company (optional)', 'The name of the logistics company that delivered the order.'],
     ['Logistics number (optional)', 'The tracking number from the logistics provider.'],
   ];
-  return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.templateGuide=false;render()}">
-    <div class="drawer">
+  return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.templateGuide=false;state.templatePanel=false;state.templateMenuOpen=false;render()}">
+    <div class="drawer wide">
       <div class="drawer-h">
-        <div>
-          <h3>How to fill in the transaction record file</h3>
-          <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;font-weight:400">Prepare your template correctly before uploading</p>
+        <div style="display:flex;align-items:flex-start;gap:10px;min-width:0">
+          <button type="button" aria-label="Back to template download" onclick="state.templateGuide=false;render()">${I.chevronL}</button>
+          <div>
+            <h3>How to fill in the transaction record file</h3>
+            <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;font-weight:400">Prepare your template correctly before uploading</p>
+          </div>
         </div>
-        <button type="button" onclick="state.templateGuide=false;render()">${I.x}</button>
+        <button type="button" onclick="state.templateGuide=false;state.templatePanel=false;state.templateMenuOpen=false;render()">${I.x}</button>
       </div>
       <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
         <details open style="border:1px solid var(--border);border-radius:8px;background:#fff;overflow:hidden">
@@ -7737,16 +7745,7 @@ function viewWizardUpload() {
     ? UPLOAD_METHODS.filter(method => w.allowedTypes.includes(method.key))
     : UPLOAD_METHODS;
   let helper = '';
-  if (w.uploadType === 'template') {
-    helper = `<div class="upload-helper">
-      <span class="helper-label">Before uploading</span>
-      <span class="helper-sub">Download and prepare the standard CSV template before uploading.</span>
-      <div class="helper-actions">
-        <button type="button" class="btn-link" onclick="state.templatePanel=true;render()">${I.download} Download template</button>
-        <button type="button" class="btn-link" onclick="state.templateGuide=true;render()">${I.file} How to fill in the transaction record file</button>
-      </div>
-    </div>`;
-  } else if (w.uploadType === 'erp') {
+  if (w.uploadType === 'erp') {
     helper = `<div class="upload-helper">
       <span class="helper-label">Before uploading</span>
       <span class="helper-sub">Review required columns for a successful ERP mapping.</span>
@@ -7781,7 +7780,7 @@ function viewWizardUpload() {
     onBack:"go('home')",
     body,
     footer: wizNavFooter("go('home')", 'Cancel', 'continueUnifiedUpload()', 'Next', !!w.uploadType)
-  }) + templateDownloadPanel() + templateFillGuidePanel() + erpGuidePanel();
+  }) + templateDownloadPanel() + erpGuidePanel();
 }
 
 function viewUploadHistory() {
