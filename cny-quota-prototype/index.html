@@ -1406,6 +1406,28 @@ table.data tr:hover td { background: var(--muted); }
 .erp2-target-map .map-row.manually-matched .uploaded-choice { background:#F6FEF9; }
 .erp2-target-map .uploaded-choice select { font-family:var(--font-sans); }
 .erp2-target-map .uploaded-choice option { font-family:var(--font-sans); }
+.erp3-map .map-row.mapped .system-required { background:#F3F9F5; }
+.erp3-map .map-row.mapped .uploaded-choice { background:#F8FCF9; }
+.erp3-map .map-row.unrecognized .system-required { background:#FFF8EB; }
+.erp3-map .map-row.unrecognized .uploaded-choice { background:#FFFCF5; }
+.erp3-map .map-row.unrecognized select { border-color:#F5D9A8; }
+.erp3-map .map-row.missing .system-required,
+.erp3-map .map-row.missing .uploaded-choice { background:#FEF3F2; }
+.erp3-map .map-row.missing select { border-color:#FECDCA; }
+.erp3-map .map-row.missing .erp-sample-value { color:#B42318; }
+.erp3-map .map-row.manually-matched .system-required,
+.erp3-map .map-row.manually-matched .uploaded-choice { background:#F6FEF9; }
+.erp3-status-hint { font-size:10px; line-height:15px; font-weight:600; }
+.erp3-status-hint.mapped,
+.erp3-status-hint.manually-matched { color:#067647; }
+.erp3-status-hint.unrecognized { color:#B54708; }
+.erp3-status-hint.missing,
+.erp3-status-hint.conflict { color:#B42318; }
+.erp3-corrected-card { border:1px solid #FECDCA; border-radius:10px; overflow:hidden; background:#fff; }
+.erp3-corrected-card-h { padding:18px 20px; background:#FFF8F7; border-bottom:1px solid #FECDCA; }
+.erp3-corrected-card-h h3 { color:#B42318; font-size:16px; line-height:24px; }
+.erp3-corrected-card-h p { margin-top:4px; color:#7A271A; font-size:12px; line-height:18px; }
+.erp3-corrected-body { padding:20px; display:flex; flex-direction:column; gap:16px; }
 .erp-file-select-row {
   display:block;
 }
@@ -2432,6 +2454,7 @@ function resetWiz(kind) {
     erp2UnrecognizedSourceIds:[], erp2SupplementSources:[], erp2SupplementTargetNames:[], erp2SupplementMaps:{},
     erp2ReplacementState:'empty', erp2ReplacementFileName:null,
     erp2PreviousFileName:null, erp2ReusedMappings:0, erp2NewHeaders:[], erp2NoneSelections:{},
+    erp3Stage:1, erp3NeedsReplacement:false, erp3ReplacementState:'empty',
     erpResultRows:null, erpTableEditing:false,
     mappings: Object.assign({}, ERP_INCOMPLETE_MAP),
     mappingAttempted:false, mappingCache:null, cachedMatches:0,
@@ -2700,6 +2723,12 @@ function uploadV2StepsForRoute(route,w) {
   if (route === 'trade') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Review'}];
   if (route === 'erp') {
     if(w&&w.erpFlowVersion==='v1')return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Review'}];
+    if(w&&w.erpFlowVersion==='v3'){
+      const steps=[{n:1,label:'Upload document'},{n:2,label:'Confirm info'}];
+      if(w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
+      steps.push({n:steps.length+1,label:'Review'});
+      return steps;
+    }
     const hasUnrecognized = w && w.kind === 'upload' ? true : !!(w && w.erp2HadUnrecognized);
     const steps=[{n:1,label:'Upload document'},{n:2,label:'Confirm info'}];
     if (hasUnrecognized) steps.push({n:3,label:'Match remaining fields'});
@@ -2710,6 +2739,12 @@ function uploadV2StepsForRoute(route,w) {
   return [{n:1,label:'Upload document'}];
 }
 function uploadV2ERPDisplayStep(w) {
+  if(w&&w.erpFlowVersion==='v3'){
+    const stage=w.erp3Stage||1;
+    if(stage<=2)return stage;
+    if(w.erp3NeedsReplacement) return stage;
+    return 3;
+  }
   const stage=w.erp2Stage||1;
   if(stage<=1)return 1;
   if(stage===2)return 2;
@@ -2928,6 +2963,7 @@ function draftTypeKey(w) {
   return 'upload';
 }
 function draftFileType(typeKey, w) {
+  if (typeKey === 'erp' && w && w.erpFlowVersion === 'v3') return 'ERP CSV 3';
   if (typeKey === 'erp' && w && w.erpFlowVersion === 'v2') return 'ERP CSV 2';
   return ({
     trade: 'Trade documents',
@@ -4617,7 +4653,7 @@ function setERPFlowVersion(version) {
   const current = state.wiz;
   if (!current || current.erpFlowVersion === version || current.dsState === 'processing') return;
   const next = resetWiz('erp');
-  next.erpFlowVersion = version === 'v1' ? 'v1' : 'v2';
+  next.erpFlowVersion = version === 'v1' ? 'v1' : version === 'v3' ? 'v3' : 'v2';
   ['fromUnified','uploadType','allowedTypes','draftId','uploadOriginVersion','uploadV2Context','entryCategory'].forEach(key => {
     if (Object.prototype.hasOwnProperty.call(current, key)) {
       next[key] = Array.isArray(current[key]) ? current[key].slice() : current[key];
@@ -4629,14 +4665,20 @@ function setERPFlowVersion(version) {
 function erpVersionSelector() {
   const w = state.wiz;
   const locked = w.dsState !== 'empty';
+  const versionCopy = w.erpFlowVersion === 'v3'
+    ? 'ERP CSV 3 shows every required field in one list, including mapped, unrecognized, and missing columns.'
+    : w.erpFlowVersion === 'v1'
+      ? 'ERP CSV keeps mapping, unrecognized columns, and missing fields on a single review page.'
+      : 'ERP CSV 2 separates field review, manual matching, and missing-column completion into clear steps.';
   return `<div class="erp-version-card">
     <div class="erp-version-copy">
       <strong>Choose an ERP CSV flow</strong>
-      <p>ERP CSV 2 separates field review, manual matching, and missing-column completion into clear steps.</p>
+      <p>${versionCopy}</p>
     </div>
     <div class="erp-version-switch" role="group" aria-label="ERP CSV flow version">
       <button type="button" class="mono ${w.erpFlowVersion==='v1'?'on':''}" ${locked?'disabled':''} onclick="setERPFlowVersion('v1')">ERP CSV</button>
-      <button type="button" class="mono ${w.erpFlowVersion!=='v1'?'on':''}" ${locked?'disabled':''} onclick="setERPFlowVersion('v2')">ERP CSV 2</button>
+      <button type="button" class="mono ${w.erpFlowVersion==='v2'?'on':''}" ${locked?'disabled':''} onclick="setERPFlowVersion('v2')">ERP CSV 2</button>
+      <button type="button" class="mono ${w.erpFlowVersion==='v3'?'on':''}" ${locked?'disabled':''} onclick="setERPFlowVersion('v3')">ERP CSV 3</button>
     </div>
   </div>`;
 }
@@ -4718,6 +4760,7 @@ function replaceERPFile() {
   w.erp2NewHeaders = [];
   w.erp2NoneSelections = {};
   if (w.erpFlowVersion === 'v2') w.erp2Stage = 1;
+  else if (w.erpFlowVersion === 'v3') { w.erp3Stage = 1; w.erp3NeedsReplacement = false; w.erp3ReplacementState = 'empty'; }
   else w.step = 2;
   render();
 }
@@ -4771,8 +4814,8 @@ function simulateErp(incomingFileName) {
   w.fileName = typeof incomingFileName === 'string' && incomingFileName
     ? incomingFileName
     : w.isReplacement
-      ? (w.erpFlowVersion === 'v2' ? 'drop_shipping_orders_Q3_corrected.csv' : 'drop_shipping_orders_Q3_corrected.xlsx')
-      : (w.erpFlowVersion === 'v2' ? scenarioFileName.replace(/\.xlsx$/i,'.csv') : scenarioFileName);
+      ? (w.erpFlowVersion !== 'v1' ? 'drop_shipping_orders_Q3_corrected.csv' : 'drop_shipping_orders_Q3_corrected.xlsx')
+      : (w.erpFlowVersion !== 'v1' ? scenarioFileName.replace(/\.xlsx$/i,'.csv') : scenarioFileName);
   w.dsState = 'processing'; render();
   setTimeout(() => {
     if (state.wiz!==w) return;
@@ -4832,6 +4875,11 @@ function simulateErp(incomingFileName) {
       w.erp2ReusedMappings = 0;
       w.erp2NewHeaders = [];
       w.erp2NoneSelections = {};
+    }
+    if (w.erpFlowVersion === 'v3') {
+      w.erp3Stage = 2;
+      w.erp3NeedsReplacement = false;
+      w.erp3ReplacementState = 'empty';
     }
     render();
   }, 2000);
@@ -5194,7 +5242,7 @@ function erp2FileSummary(w, stats) {
   const entryCategory = w.entryCategory ? (TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label : '';
   const entryMarketplace = w.entryCategory==='marketplace' && w.marketplace ? w.marketplace : '';
   return `<div class="card erp-file-card" style="overflow:hidden">
-    <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} ERP CSV 2</div>
+    <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} ${w.erpFlowVersion==='v3'?'ERP CSV 3':'ERP CSV 2'}</div>
     <div style="padding:20px">
       <div class="file-ok">
         ${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
@@ -5292,7 +5340,7 @@ function updateERP2TargetMapping(targetName, sourceId) {
   Object.keys(w.manualSelections).forEach(name => {
     if (name === targetName || w.manualSelections[name] === actualSourceId) delete w.manualSelections[name];
   });
-  const isManualStage = w.erpFlowVersion === 'v2' ? w.erp2Stage === 3 : w.step === 2;
+  const isManualStage = w.erpFlowVersion === 'v2' ? w.erp2Stage === 3 : w.erpFlowVersion === 'v3' ? w.erp3Stage === 2 : w.step === 2;
   if (isManualStage && actualSourceId) w.manualSelections[targetName] = actualSourceId;
   w.missingResolvedManually = Object.keys(w.manualSelections).length > 0;
   w.mappingAttempted = false;
@@ -5583,6 +5631,280 @@ function viewWizardERP2(w) {
   }) + erpExampleModal();
 }
 
+function getERP3FieldRows(w) {
+  const stats = getERPMappingStats(w);
+  const unusedCount = stats.unmapped.length;
+  return ERP_REQUIRED_FIELDS.map(field => {
+    const source = erp2TargetSource(field.name, stats.sources, w.mappings);
+    const conflict = !!(source && stats.conflictIds.includes(source.id));
+    const manual = !!(w.manualSelections && w.manualSelections[field.name]);
+    let status = 'mapped';
+    if (!source) status = unusedCount ? 'unrecognized' : 'missing';
+    else if (conflict) status = 'conflict';
+    else if (manual) status = 'manually-matched';
+    return { field, source, status };
+  });
+}
+function erp3StatusHint(status, attempted) {
+  if (status === 'mapped') return 'Mapped';
+  if (status === 'manually-matched') return 'Manually matched';
+  if (status === 'unrecognized') return attempted ? 'Select a file column to continue' : 'Unrecognized — select a file column';
+  if (status === 'missing') return 'Missing from your file';
+  if (status === 'conflict') return 'Resolve the duplicate mapping';
+  return '';
+}
+function erp3TargetMappingTable(w) {
+  const stats = getERPMappingStats(w);
+  const rows = getERP3FieldRows(w);
+  const mappedCount = rows.filter(row => row.source && row.status !== 'conflict').length;
+  return `<div class="map-table erp2-target-map erp3-map">
+    <div class="map-head">
+      <div class="system-head"><div class="map-head-copy"><strong>Fields we need</strong></div></div>
+      <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
+      <div class="uploaded-head"><div class="map-head-copy"><strong>Column in your file</strong><small>Check the sample value to confirm the match</small></div></div>
+    </div>
+    ${rows.map(row => {
+      const selectedSource = row.source;
+      const availableSources = stats.sources.filter(source => {
+        const mappedTarget = (w.mappings || {})[source.id] || '';
+        return !mappedTarget || mappedTarget === row.field.name;
+      });
+      const isMissing = row.status === 'missing';
+      return `<div class="map-row ${row.status}">
+        <div class="system-required">
+          <strong>${formatFieldLabel(row.field.name)}</strong>
+          <small>${row.field.desc}</small>
+        </div>
+        <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
+        <div class="uploaded-choice">
+          <div class="erp-file-select-row">
+            <select aria-label="Choose an uploaded file column for ${row.field.name}" ${isMissing?'disabled':''} onchange="updateERP2TargetMapping('${row.field.name}',this.value)">
+              <option value="">${isMissing?'Not found in your file':'— Select an uploaded file column —'}</option>
+              ${availableSources.map(source => `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''}>${source.colName}</option>`).join('')}
+            </select>
+          </div>
+          <span class="erp-sample-value">Sample: <span class="mono">${selectedSource ? selectedSource.sample : '—'}</span></span>
+          <span class="erp3-status-hint ${row.status}">${erp3StatusHint(row.status, w.mappingAttempted)}</span>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>
+  <p style="font-size:12px;color:var(--muted-foreground);margin-top:10px">${mappedCount} of ${ERP_REQUIRED_FIELDS.length} required fields are mapped.</p>`;
+}
+function downloadERP3CorrectedFile() {
+  const w = state.wiz; if (!w) return;
+  const stats = getERPMappingStats(w);
+  const csvCell = value => `"${String(value == null ? '' : value).replace(/"/g, '""')}"`;
+  const headers = ERP_REQUIRED_FIELDS.map(field => field.name);
+  const rows = ERP_EXAMPLE_ROWS.map((exampleRow, rowIndex) => ERP_REQUIRED_FIELDS.map((field, index) => {
+    const source = erp2TargetSource(field.name, stats.sources, w.mappings);
+    if (source) return rowIndex === 0 ? source.sample : (exampleRow[index] || source.sample);
+    return '';
+  }));
+  const csv = [headers].concat(rows).map(row => row.map(csvCell).join(',')).join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'erp_system_corrected_headers.csv';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  toast('System-corrected file downloaded. Fill in the missing columns and upload the complete file.');
+}
+function simulateERP3CorrectedUpload() {
+  const w = state.wiz; if (!w || w.erpFlowVersion !== 'v3') return;
+  const missingFields = getERPMappingStats(w).missing.map(field => field.name);
+  const previousFileName = w.fileName || 'erp_missing_columns.csv';
+  const cachedByColumn = {};
+  getERPSources(w).forEach(source => {
+    cachedByColumn[source.colName] = (w.mappings && w.mappings[source.id]) || '';
+  });
+  w.erp3ReplacementState = 'processing';
+  render();
+  setTimeout(() => {
+    if (state.wiz !== w) return;
+    const nextMappings = {};
+    const usedTargets = new Set();
+    ERP_MAP_SOURCES.forEach(source => {
+      const cachedTarget = cachedByColumn[source.colName] || '';
+      if (cachedTarget) {
+        nextMappings[source.id] = cachedTarget;
+        usedTargets.add(cachedTarget);
+      }
+    });
+    ERP_MAP_SOURCES.forEach(source => {
+      if (Object.prototype.hasOwnProperty.call(nextMappings, source.id)) return;
+      const target = ERP_DEFAULT_MAP[source.id] || '';
+      nextMappings[source.id] = target && !usedTargets.has(target) ? target : '';
+      if (nextMappings[source.id]) usedTargets.add(nextMappings[source.id]);
+    });
+    w.fileName = 'erp_missing_columns_corrected.csv';
+    w.erp2PreviousFileName = previousFileName;
+    w.erp2ReplacementFileName = w.fileName;
+    w.erp2ReusedMappings = Object.values(cachedByColumn).filter(Boolean).length;
+    w.erp2NewHeaders = missingFields.slice();
+    w.erpScenario = 'all-matched';
+    w.mappings = getERPScenarioMappings('all-matched');
+    w.manualSelections = {};
+    w.manualResolutionFields = [];
+    w.missingResolvedManually = false;
+    w.erp3ReplacementState = 'done';
+    w.mappingAttempted = false;
+    render();
+  }, 1200);
+}
+function stepERP3Confirm(w) {
+  const stats = getERPMappingStats(w);
+  const rows = getERP3FieldRows(w);
+  const mappedCount = rows.filter(row => row.source && row.status !== 'conflict').length;
+  return `<div class="erp2-stage">
+    <div class="erp2-stage-head">
+      <h2>Check the columns we matched</h2>
+      <p>We matched ${mappedCount} of the ${ERP_REQUIRED_FIELDS.length} fields we need. Change any mapping that isn't right.</p>
+    </div>
+    ${erp2FileSummary(w, stats)}
+    ${erp3TargetMappingTable(w)}
+  </div>`;
+}
+function stepERP3Missing(w) {
+  const stats = getERPMappingStats(w);
+  const missingNames = stats.missing.map(field => field.name);
+  if (!missingNames.length) {
+    return `<div class="erp2-stage">
+      <div class="erp2-stage-head"><h2>Update and re-upload</h2><p>The missing fields have been added to the corrected file.</p></div>
+      <div class="mapping-c2-success">${I.check}<div><strong>All required columns are covered</strong><p>The system-corrected file replaced the previous upload. Existing mappings were reused, and missing headers were added.</p></div></div>
+      <div class="file-ok">${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
+        <div style="flex:1"><p style="font-weight:600">${w.erp2ReplacementFileName || w.fileName}</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Current file · ${w.erp2ReusedMappings || 0} previous mappings reused · ${(w.erp2NewHeaders||[]).length} new header${(w.erp2NewHeaders||[]).length===1?'':'s'} added</p></div>
+      </div>
+    </div>`;
+  }
+  return `<div class="erp2-stage">
+    <div class="erp2-stage-head">
+      <h2>Add the missing fields and re-upload</h2>
+      <p>These required fields are still missing. Download the system-corrected file, fill in the new columns, and upload the complete file.</p>
+    </div>
+    <div class="erp3-corrected-card">
+      <div class="erp3-corrected-card-h">
+        <h3>Details about the ${missingNames.map(formatFieldLabel).join(' and ')} are missing</h3>
+        <p>All original headers have been renamed to the fields we need, and the missing headers have already been added. You only need to fill in the corresponding data.</p>
+        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
+      </div>
+      <div class="erp3-corrected-body">
+        <div class="erp2-draft-note">${I.info}<p>Download the system-corrected document first if you want a file that already uses the required headers. Then complete the empty columns and upload the full file.</p></div>
+        <button type="button" class="btn btn-secondary" onclick="downloadERP3CorrectedFile()">${I.download} Download system-corrected file</button>
+        ${w.erp3ReplacementState === 'processing' ? `
+          <div class="upload-zone"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing the corrected file and reusing previous mappings…</p></div>` : `
+          <div class="upload-zone" style="cursor:pointer" onclick="simulateERP3CorrectedUpload()">
+            <div style="color:var(--muted-foreground);margin-bottom:10px">${I.upload}</div>
+            <p style="font-size:15px;font-weight:600">Upload the complete corrected file</p>
+            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include every required header and the missing ${missingNames.map(formatFieldLabel).join(' and ')} data.</p>
+            <button type="button" class="btn btn-primary" onclick="event.stopPropagation();simulateERP3CorrectedUpload()">Choose file</button>
+          </div>`}
+      </div>
+    </div>
+  </div>`;
+}
+function erp3Steps(w) {
+  const steps = [{n:1,label:'Upload CSV'},{n:2,label:'Confirm info'}];
+  if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
+  steps.push({n:w.erp3NeedsReplacement?4:3,label:'Review'});
+  return steps.map((step,index) => Object.assign({}, step, { displayN:index + 1 }));
+}
+function erp3Back() {
+  const w = state.wiz; if (!w) return;
+  if ((w.erp3Stage || 1) <= 1) {
+    if (w.fromUnified) returnToUploadSelect();
+    else go('home');
+    return;
+  }
+  if (w.erp3Stage === 4 && !w.erp3NeedsReplacement) w.erp3Stage = 2;
+  else w.erp3Stage -= 1;
+  render();
+}
+function erp3Next() {
+  const w = state.wiz; if (!w) return;
+  const stats = getERPMappingStats(w);
+  const rows = getERP3FieldRows(w);
+  const unrecognizedEmpty = rows.some(row => row.status === 'unrecognized');
+  const missingCount = rows.filter(row => row.status === 'missing').length;
+  if ((w.erp3Stage || 1) === 1 && w.dsState === 'mapped') {
+    w.erp3Stage = 2;
+    render();
+    return;
+  }
+  if (w.erp3Stage === 2) {
+    if (stats.duplicateTargets.length) {
+      w.mappingAttempted = true;
+      toast('Each required field can only be mapped once. Resolve duplicate mappings before continuing.');
+      render();
+      return;
+    }
+    if (unrecognizedEmpty) {
+      w.mappingAttempted = true;
+      toast('Select a file column for every unrecognized field. The selection cannot be empty.');
+      render();
+      return;
+    }
+    if (missingCount) {
+      w.mappingAttempted = true;
+      w.erp3NeedsReplacement = true;
+      w.erp3Stage = 3;
+      toast('Add the missing fields, then upload a complete corrected file.');
+      render();
+      return;
+    }
+    w.mappingAttempted = false;
+    w.erp3Stage = 4;
+    render();
+    return;
+  }
+  if (w.erp3Stage === 3) {
+    if (!stats.valid) {
+      w.mappingAttempted = true;
+      toast('Upload a complete corrected file that includes every missing required field.');
+      render();
+      return;
+    }
+    w.erp3Stage = 4;
+    render();
+    return;
+  }
+  if (w.erp3Stage === 4 && stats.valid && !w.erpTableEditing) {
+    submitWizard();
+    return;
+  }
+  render();
+}
+function viewWizardERP3(w) {
+  const stats = getERPMappingStats(w);
+  const stage = w.erp3Stage || 1;
+  const isUploadV2 = w.uploadOriginVersion === 2;
+  let body = '';
+  if (stage === 1) body = stepERP2Upload(w);
+  else if (stage === 2) body = stepERP3Confirm(w);
+  else if (stage === 3) body = stepERP3Missing(w);
+  else body = stepERPReview();
+  const canNext = stage === 1 ? w.dsState === 'mapped'
+    : stage === 2 ? !stats.duplicateTargets.length && !getERP3FieldRows(w).some(row => row.status === 'unrecognized')
+      : stage === 3 ? stats.valid
+        : stats.valid && (isUploadV2 || !w.erpTableEditing);
+  const validationIssues = stage === 4 && !isUploadV2 ? getValidationProblemRows('erp',w).length : 0;
+  const versionControl = stage === 1 ? erpVersionSelector() : '';
+  const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('erp',w) : erp3Steps(w);
+  const displayStep = w.uploadOriginVersion===2 ? uploadV2ERPDisplayStep(w) : (stage <= 2 ? stage : (w.erp3NeedsReplacement ? stage : 3));
+  const navigation = wizNavFooter('erp3Back()', stage===1?'Cancel':'Previous', 'erp3Next()', stage===4?(isUploadV2?'Submit':(validationIssues?'Ignore and submit':'Submit records')):'Next', canNext);
+  return wizShell({
+    title:'Upload CSV from ERP — ERP CSV 3',
+    sub:'Review every required field in one list, then complete anything that is still missing.',
+    steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
+    shellClass:stage===4&&!isUploadV2?'template-result-wide validation-summary-footer':'',
+    body:`<div style="display:flex;flex-direction:column;gap:20px">${versionControl}${body}</div>`,
+    footer:stage===4&&!isUploadV2?validationWizardFooter('erp',w,navigation):navigation,
+  }) + erpExampleModal();
+}
+
 function stepERPInfo() {
   const w = state.wiz;
   const stats = getERPMappingStats(w);
@@ -5802,7 +6124,7 @@ function toggleWizPay(id) {
 function stepERPReview() {
   const w = state.wiz;
   const mappingStats = getERPMappingStats(w);
-  const isERP2 = w.erpFlowVersion === 'v2';
+  const isERP2 = w.erpFlowVersion === 'v2' || w.erpFlowVersion === 'v3';
   const coveredCount = mappingStats.mapped.length + mappingStats.supplemented.length;
   const linkedPays = PAYMENTS.filter(p => w.linked.includes(p.id));
   const paymentLinkingActive = LINK_PAYMENT_VISIBLE && !w.skipLink;
@@ -5868,6 +6190,7 @@ function viewWizardERP() {
   const w = state.wiz || resetWiz('erp');
   if (!state.wiz) state.wiz = w;
   if (w.done) return wizSuccess('erp') + erpExampleModal();
+  if ((w.erpFlowVersion || 'v2') === 'v3') return viewWizardERP3(w);
   if ((w.erpFlowVersion || 'v2') === 'v2') return viewWizardERP2(w);
   const isUploadV2 = w.uploadOriginVersion === 2;
   if (!LINK_PAYMENT_VISIBLE && w.step===3) w.step = 4;
