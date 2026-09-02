@@ -4872,23 +4872,18 @@ function viewWizardTemplate() {
   if (!state.wiz) state.wiz = w;
   if (w.done) return wizSuccess('template');
   const stage = w.templateStage || 1;
-  const steps = [{n:1,label:'Upload document'},{n:2,label:'Review results'}];
+  const steps = [{n:1,label:'Upload document'},{n:2,label:'Review'}];
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('template',w) : steps;
   const displayStep = w.uploadOriginVersion===2 ? 2 : stage;
-  const isUploadV2 = w.uploadOriginVersion===2;
   const canContinue = w.csvState === 'mapped' && getTemplateUploadIssues(w).length === 0;
-  const resultIssues = stage === 2 && !isUploadV2 ? getValidationProblemRows('template',w).length : 0;
   return wizShell({
     title:'Upload CSV from templates',
-    sub:'Select a category and upload your file, then review the validation results.',
+    sub:'Select a category and upload your file, then review the details before submitting.',
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
-    shellClass:stage === 2 && !isUploadV2 ? 'template-result-wide validation-summary-footer' : '',
-    body:stage === 1 ? stepTemplateUpload() : (isUploadV2?stepTemplateV2Review():stepTemplateResult()),
+    body:stage === 1 ? stepTemplateUpload() : stepTemplateV2Review(),
     footer:stage === 1
-      ? wizNavFooter(wizHomeBack(w), 'Cancel', 'templateNext()', 'Review results', canContinue)
-      : isUploadV2
-        ? wizNavFooter('templateBack()','Previous','attemptTemplateSubmit()','Submit',canContinue)
-        : validationWizardFooter('template',w,wizNavFooter('templateBack()', 'Previous', 'attemptTemplateSubmit()', resultIssues ? 'Ignore and submit' : 'Submit records', canContinue && !w.templateTableEditing))
+      ? wizNavFooter(wizHomeBack(w), 'Cancel', 'templateNext()', 'Review', canContinue)
+      : wizNavFooter('templateBack()','Previous','attemptTemplateSubmit()','Submit',canContinue)
   });
 }
 
@@ -5401,13 +5396,12 @@ function erp2Next() {
   }
   else if (w.erp2Stage === 3 && !stats.duplicateTargets.length) w.erp2Stage = 4;
   else if (w.erp2Stage === 4 && stats.valid && !getERP2SupplementStats(w).duplicateTargets.length) w.erp2Stage = 5;
-  else if (w.erp2Stage === 5 && stats.valid && !w.erpTableEditing) { submitWizard(); return; }
+  else if (w.erp2Stage === 5 && stats.valid) { submitWizard(); return; }
   render();
 }
 function viewWizardERP2(w) {
   const stats = getERPMappingStats(w);
   const stage = w.erp2Stage || 1;
-  const isUploadV2=w.uploadOriginVersion===2;
   let body = '';
   if (stage === 1) body = stepERP2Upload(w);
   else if (stage === 2) body = stepERP2Confirm(w);
@@ -5418,19 +5412,17 @@ function viewWizardERP2(w) {
     : stage === 2 ? !stats.duplicateTargets.length
       : stage === 3 ? !stats.duplicateTargets.length
         : stage === 4 ? stats.valid && !getERP2SupplementStats(w).duplicateTargets.length
-          : stats.valid && (isUploadV2||!w.erpTableEditing);
-  const validationIssues = stage === 5&&!isUploadV2 ? getValidationProblemRows('erp',w).length : 0;
+          : stats.valid;
   const versionControl = stage === 1 ? erpVersionSelector() : '';
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('erp',w) : erp2Steps(w);
   const displayStep = w.uploadOriginVersion===2 ? uploadV2ERPDisplayStep(w) : stage;
-  const navigation = wizNavFooter('erp2Back()',stage===1?'Cancel':'Previous','erp2Next()',stage===5?(isUploadV2?'Submit':(validationIssues?'Ignore and submit':'Submit records')):'Next',canNext);
+  const navigation = wizNavFooter('erp2Back()',stage===1?'Cancel':'Previous','erp2Next()',stage===5?'Submit':'Next',canNext);
   return wizShell({
     title:'Upload CSV from ERP — ERP CSV 2',
     sub:'Match the columns in your file to the fields we need.',
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
-    shellClass:stage===5&&!isUploadV2?'template-result-wide validation-summary-footer':'',
     body:`<div style="display:flex;flex-direction:column;gap:20px">${versionControl}${body}</div>`,
-    footer:stage===5&&!isUploadV2?validationWizardFooter('erp',w,navigation):navigation,
+    footer:navigation,
   }) + erpExampleModal();
 }
 
@@ -5681,7 +5673,7 @@ function erp3Next() {
     render();
     return;
   }
-  if (w.erp3Stage === 4 && stats.valid && !w.erpTableEditing) {
+  if (w.erp3Stage === 4 && stats.valid) {
     submitWizard();
     return;
   }
@@ -5690,7 +5682,6 @@ function erp3Next() {
 function viewWizardERP3(w) {
   const stats = getERPMappingStats(w);
   const stage = w.erp3Stage || 1;
-  const isUploadV2 = w.uploadOriginVersion === 2;
   let body = '';
   if (stage === 1) body = stepERP2Upload(w);
   else if (stage === 2) body = stepERP3Confirm(w);
@@ -5699,19 +5690,17 @@ function viewWizardERP3(w) {
   const canNext = stage === 1 ? w.dsState === 'mapped'
     : stage === 2 ? !stats.duplicateTargets.length && !getERP3FieldRows(w).some(row => row.status === 'unrecognized')
       : stage === 3 ? stats.valid
-        : stats.valid && (isUploadV2 || !w.erpTableEditing);
-  const validationIssues = stage === 4 && !isUploadV2 ? getValidationProblemRows('erp',w).length : 0;
+        : stats.valid;
   const versionControl = stage === 1 ? erpVersionSelector() : '';
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('erp',w) : erp3Steps(w);
   const displayStep = w.uploadOriginVersion===2 ? uploadV2ERPDisplayStep(w) : (stage <= 2 ? stage : (w.erp3NeedsReplacement ? stage : 3));
-  const navigation = wizNavFooter('erp3Back()', stage===1?'Cancel':'Previous', 'erp3Next()', stage===4?(isUploadV2?'Submit':(validationIssues?'Ignore and submit':'Submit records')):'Next', canNext);
+  const navigation = wizNavFooter('erp3Back()', stage===1?'Cancel':'Previous', 'erp3Next()', stage===4?'Submit':'Next', canNext);
   return wizShell({
     title:'Upload CSV from ERP — ERP CSV 3',
     sub:'Review every required field in one list, then complete anything that is still missing.',
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
-    shellClass:stage===4&&!isUploadV2?'template-result-wide validation-summary-footer':'',
     body:`<div style="display:flex;flex-direction:column;gap:20px">${versionControl}${body}</div>`,
-    footer:stage===4&&!isUploadV2?validationWizardFooter('erp',w,navigation):navigation,
+    footer:navigation,
   }) + erpExampleModal();
 }
 
@@ -5959,7 +5948,6 @@ function stepERPReview() {
         </table></div></div>`}
       </div>
     </div>`:''}
-    ${w.uploadOriginVersion===2?'':stepERPValidationResults(w,true)}
   </div>`;
 }
 
@@ -6002,7 +5990,6 @@ function viewWizardERP() {
   if (w.done) return wizSuccess('erp') + erpExampleModal();
   if ((w.erpFlowVersion || 'v2') === 'v3') return viewWizardERP3(w);
   if ((w.erpFlowVersion || 'v2') === 'v2') return viewWizardERP2(w);
-  const isUploadV2=w.uploadOriginVersion===2;
   if (!LINK_PAYMENT_VISIBLE && w.step===3) w.step = 4;
   const steps = LINK_PAYMENT_VISIBLE
     ? (state.concept !== 2
@@ -6029,7 +6016,7 @@ function viewWizardERP() {
   if (w.step===2) body = `<div style="display:flex;flex-direction:column;gap:20px">${erpVersionSelector()}${stepERPInfo()}</div>`;
   else if (LINK_PAYMENT_VISIBLE && w.step===3) body = stepERPLink();
   else body = stepERPReview();
-  const canNext = w.step===2 ? w.dsState==='mapped' : w.step===4 ? (isUploadV2||!w.erpTableEditing) : true;
+  const canNext = w.step===2 ? w.dsState==='mapped' : true;
   const back = w.step===2
     ? wizHomeBack(w)
     : (!LINK_PAYMENT_VISIBLE && w.step===4 ? `state.wiz.step=2;render()` : `state.wiz.step=${w.step-1};render()`);
@@ -6038,8 +6025,7 @@ function viewWizardERP() {
     : w.step===2
       ? `attemptERPNext()`
       : `state.wiz.step=${w.step+1};render()`;
-  const validationIssues = w.step===4&&!isUploadV2 ? getValidationProblemRows('erp',w).length : 0;
-  const nextLabel = w.step===4 ? (isUploadV2?'Submit':(validationIssues?'Ignore and submit':'Submit records')) : 'Next';
+  const nextLabel = w.step===4 ? 'Submit' : 'Next';
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('erp',w) : steps;
   const displayStep = w.uploadOriginVersion===2 ? (w.step===4?3:2) : w.step;
   const navigation = wizNavFooter(back, w.step===2?'Cancel':'Previous', next, nextLabel, canNext);
@@ -6047,9 +6033,8 @@ function viewWizardERP() {
     title:'Upload CSV from ERP',
     sub:'Upload your ERP CSV export for field mapping and quota release.',
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
-    shellClass:w.step===4&&!isUploadV2?'template-result-wide validation-summary-footer':'',
     body,
-    footer:w.step===4&&!isUploadV2?validationWizardFooter('erp',w,navigation):navigation
+    footer:navigation
   }) + erpExampleModal();
 }
 
