@@ -5594,7 +5594,7 @@ function stepERP2Missing(w) {
         <div class="erp2-required-headers">${missingNames.map(name=>`<span>${erpRequiredLabel(name)}</span>`).join('')}</div>
       </div>
       <div class="erp2-supplement-body">
-        <div class="erp2-draft-note">${I.info}<p>Existing automatic and manual field mappings will be reused on the corrected file, so you won’t need to match the same headers again. You can also save this upload as a draft and return later.</p></div>
+        <div class="erp2-draft-note">${I.info}<p>If you’ll complete the file later, save your progress as a draft for now.</p></div>
         ${w.erp2ReplacementState === 'processing' ? `
           <div class="upload-zone"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing the corrected file and reusing previous mappings…</p></div>` : `
           <div class="upload-zone" style="cursor:pointer" onclick="simulateERP2CorrectedUpload()">
@@ -8107,7 +8107,7 @@ const CN_UI_REPLACEMENTS = [
   [/Identifying headers in the supplementary CSV…/g, '正在识别补充 CSV 的表头…'],
   [/Add the missing headers to your file, complete the new columns, and submit your updated file again\./g, '请在文件中补充缺少的表头，填写新列内容，然后再次提交更新后的文件。'],
   [/Add the missing headers to the original document, then upload the complete corrected file\. It will replace the current upload\./g, '请在原文件中补充缺少的表头，然后上传完整修正版。修正版将覆盖当前文件。'],
-  [/Existing automatic and manual field mappings will be reused on the corrected file, so you won’t need to match the same headers again\. You can also save this upload as a draft and return later\./g, '修正版将复用已有的自动及手动字段对应关系，无需再次处理相同表头。您也可以保存草稿后稍后继续。'],
+  [/If you’ll complete the file later, save your progress as a draft for now\./g, '如果稍后补全文件，请先将进度保存为草稿。'],
   [/Analyzing the corrected file and reusing previous mappings…/g, '正在分析修正版并复用已有字段对应关系…'],
   [/Include all original columns plus the (.+) columns\./g, '请包含全部原始列，并补充 $1 列。'],
   [/Include all original columns plus:/g, '请包含全部原始列，并补充：'],
