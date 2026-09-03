@@ -168,8 +168,9 @@ a { color: inherit; }
 }
 .details-table-wrap table.data th,
 .details-table-wrap table.data td {
-  padding: 12px 14px; white-space: nowrap;
+  padding: 14px 16px; white-space: nowrap;
 }
+.details-table-wrap table.data th { background:#F5F3FF; font-weight:700; }
 .history-tabs {
   display:flex; align-items:center; gap:24px;
   border-bottom:1px solid var(--border);
@@ -651,8 +652,8 @@ tr.draft-row td { background: rgba(91,59,232,.03); }
 .table-card { background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
 table.data { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 960px; }
 table.data th {
-  text-align: left; padding: 12px 16px; background: var(--muted);
-  font-weight: 600; white-space: nowrap; border-bottom: 1px solid var(--border);
+  text-align: left; padding: 12px 16px; background: #F5F3FF;
+  font-weight: 700; color: var(--foreground); white-space: nowrap; border-bottom: 1px solid var(--border);
 }
 table.data td { padding: 16px; border-bottom: 1px solid var(--muted); vertical-align: top; }
 table.data tr:last-child td { border-bottom: none; }
@@ -1348,140 +1349,107 @@ table.data tr:hover td { background: var(--muted); }
 .map-stat.error { background:#FEF3F2; border-color:#FECDCA; }
 .map-stat.error .value { color:var(--destructive); }
 .map-table {
-  border:1px solid #D8DBE7; border-radius:8px; overflow:hidden; background:#fff;
-  box-shadow:0 1px 3px rgba(28,28,46,.04);
+  border:1px solid var(--border); border-radius:8px; overflow:auto; background:#fff;
+}
+.map-head,
+.map-row {
+  display:grid;
+  grid-template-columns:minmax(200px,1.35fr) 28px minmax(220px,1.1fr) minmax(140px,.85fr);
+  min-width:720px;
+  align-items:center;
 }
 .map-head {
-  position:relative; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-  min-height:52px; border-bottom:1px solid #D8DBE7;
+  min-height:44px; background:#F5F3FF; border-bottom:1px solid var(--border);
 }
-.map-head > div { padding:10px 14px; display:flex; align-items:center; }
-.map-head .file-head {
-  background:#EEF1F6; border-top:3px solid #73788C;
-  padding-right:28px;
+.map-head > div {
+  padding:12px 16px; display:flex; align-items:center;
+  background:transparent; border-top:none;
 }
-.map-head .target-head {
-  background:#EDE9FF; border-top:3px solid var(--primary);
-  padding-left:28px;
-}
-.map-head-copy { display:flex; flex-direction:column; gap:2px; }
+.map-head .map-col-arrow { padding:0; justify-content:center; }
+.map-head-copy { display:flex; flex-direction:column; gap:0; }
 .map-head-copy strong {
-  color:var(--foreground); font-size:12px; font-weight:700;
-  text-transform:uppercase; letter-spacing:.045em;
-}
-.map-head-copy small {
-  color:var(--muted-foreground); font-size:10px; font-weight:500;
+  color:var(--foreground); font-size:13px; font-weight:700;
   text-transform:none; letter-spacing:0;
 }
-.map-row {
-  position:relative; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-  border-bottom:1px solid #DDE0E9; transition:.15s;
-}
+.map-head-copy small { display:none; }
+.map-row { background:#fff; border-bottom:1px solid #E8E8F0; }
 .map-row:last-child { border-bottom:none; }
-.map-row > div { min-width:0; font-size:12px; }
+.map-row > div { min-width:0; }
 .map-source {
-  padding:10px 12px; display:grid; grid-template-columns:28px minmax(0,1fr);
-  gap:8px; align-items:center; background:#F8F9FC; padding-right:28px;
+  padding:16px; display:flex; flex-direction:column; justify-content:center;
+  gap:4px; background:transparent;
 }
-.map-source-main { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.9fr); gap:10px; min-width:0; align-items:center; }
+.map-source-main { display:flex; flex-direction:column; gap:4px; min-width:0; }
 .mapping-direction {
-  position:absolute; left:50%; top:50%; z-index:2;
-  transform:translate(-50%,-50%); display:grid; place-items:center;
-  width:24px; height:16px; color:#746AA8; pointer-events:none;
+  position:static; transform:none; display:grid; place-items:center;
+  width:28px; height:20px; color:var(--primary); pointer-events:none;
 }
-.mapping-direction svg { width:22px; height:14px; display:block; }
+.mapping-direction svg { width:16px; height:16px; display:block; }
 .map-target {
-  padding:8px 12px; display:flex; flex-direction:column; justify-content:center;
-  gap:4px; background:#F8F6FF; padding-left:28px;
+  padding:12px 8px 12px 0; display:flex; flex-direction:column; justify-content:center;
+  gap:6px; background:transparent;
 }
 .map-row select {
-  width:100%; height:34px; border:1px solid var(--border); border-radius:6px;
-  padding:0 8px; background:#fff; font-family:var(--font-mono); font-size:12px;
+  width:100%; max-width:100%; height:40px; border:1px solid #2B2B3D; border-radius:8px;
+  padding:0 8px; background:#fff; font-family:var(--font-sans); font-size:14px; color:var(--foreground);
 }
-.map-row.unmapped .map-target { background:#FFFCF5; }
 .map-row.unmapped select { border-color:#F5D9A8; }
 .map-row.manually-matched { box-shadow:inset 3px 0 0 var(--success); }
-.map-row.manually-matched .map-source,
-.map-row.manually-matched .map-target { background:#F6FEF9; }
 .map-row.manually-matched select { border-color:#75C98D; }
 .map-row-success {
   display:flex; align-items:center; gap:5px; color:#067647;
-  font-size:10px; line-height:14px; font-weight:600;
+  font-size:11px; line-height:14px; font-weight:600;
 }
 .map-row-success svg { width:12px; height:12px; flex:0 0 12px; }
 .map-row.conflict { box-shadow:inset 3px 0 0 var(--destructive); }
-.map-row.conflict .map-source,
-.map-row.conflict .map-target { background:#FEF3F2; }
 .map-row.conflict select { border-color:var(--destructive); box-shadow:0 0 0 2px rgba(211,47,47,.08); }
 .map-row select:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 2px rgba(91,59,232,.2); }
 .map-row.conflict select:focus { border-color:var(--destructive); box-shadow:0 0 0 2px rgba(211,47,47,.12); }
-.erp2-target-map .map-head .system-head {
-  padding:10px 28px 10px 14px; display:flex; align-items:center;
-  background:#EDE9FF; border-top:3px solid var(--primary);
-}
-.erp2-target-map .map-head .uploaded-head {
-  padding:10px 14px 10px 28px; display:flex; align-items:center;
-  background:#EEF1F6; border-top:3px solid #73788C;
-}
-.erp2-target-map .map-head .system-head .map-head-copy,
-.erp2-target-map .map-head .uploaded-head .map-head-copy {
-  gap:0;
-}
-.erp2-target-map .map-head .system-head strong {
-  color:#4326C7;
-}
-.erp2-target-map .map-head .uploaded-head strong {
-  color:#3F4352;
-}
 .erp2-target-map .system-required {
-  padding:12px 28px 12px 14px; display:flex; flex-direction:column; justify-content:center;
-  gap:3px; background:#F8F6FF;
+  padding:16px; display:flex; flex-direction:column; justify-content:center;
+  gap:4px; background:transparent;
 }
-.erp2-target-map .system-required strong { font-size:12px; }
-.erp2-target-map .system-required small { color:var(--muted-foreground); font-size:10px; line-height:15px; }
+.erp2-target-map .system-required strong { font-size:14px; font-weight:700; color:var(--foreground); }
+.erp2-target-map .system-required small { color:var(--muted-foreground); font-size:12px; line-height:18px; }
 .erp2-target-map .uploaded-choice {
-  padding:9px 14px 9px 28px; display:flex; flex-direction:column; justify-content:center;
-  gap:4px; background:#F8F9FC;
+  padding:12px 8px 12px 0; display:flex; flex-direction:column; justify-content:center;
+  gap:6px; background:transparent;
 }
-.erp2-target-map .map-row.unmapped .uploaded-choice { background:#FFFCF5; }
 .erp2-target-map .map-row.none { box-shadow:inset 3px 0 0 #F79009; }
 .erp2-target-map .map-row.none .system-required,
-.erp2-target-map .map-row.none .uploaded-choice { background:#FFF8EB; }
+.erp2-target-map .map-row.none .uploaded-choice,
+.erp2-target-map .map-row.none .map-sample { background:#FFF8EB; }
 .erp2-target-map .map-row.none select { border-color:#F5D9A8; color:#B54708; background:#FFFCF5; }
-.erp2-target-map .map-row.none .erp-sample-value { color:#B54708; }
+.erp2-target-map .map-row.none .map-sample { color:#B54708; }
 .erp2-target-map .map-row.needs-selection .system-required,
 .erp2-target-map .map-row.needs-selection .uploaded-choice,
+.erp2-target-map .map-row.needs-selection .map-sample,
 .erp3-map .map-row.needs-selection .system-required,
-.erp3-map .map-row.needs-selection .uploaded-choice { background:#FEF3F2; }
+.erp3-map .map-row.needs-selection .uploaded-choice,
+.erp3-map .map-row.needs-selection .map-sample { background:#FEF3F2; }
 .map-row.needs-selection select,
 .map-row select.invalid {
   border-color:var(--destructive);
   box-shadow:0 0 0 2px rgba(211,47,47,.08);
 }
 .uploaded-choice .field-error { display:flex; }
-.erp2-target-map .map-row.manually-matched .system-required,
-.erp2-target-map .map-row.manually-matched .uploaded-choice { background:#F6FEF9; }
 .erp2-target-map .uploaded-choice select { font-family:var(--font-sans); }
 .erp2-target-map .uploaded-choice option { font-family:var(--font-sans); }
 .erp-option-divider { color:#C5C6D0; background:#F5F5F8; }
 .erp-none-option { color:#B54708; font-style:italic; font-weight:600; background:#FFF8EB; }
 .erp3-map .map-row.none { box-shadow:inset 3px 0 0 #F79009; }
 .erp3-map .map-row.none .system-required,
-.erp3-map .map-row.none .uploaded-choice { background:#FFF8EB; }
+.erp3-map .map-row.none .uploaded-choice,
+.erp3-map .map-row.none .map-sample { background:#FFF8EB; }
 .erp3-map .map-row.none select { border-color:#F5D9A8; color:#B54708; background:#FFFCF5; }
 .erp3-status-hint.none { color:#B54708; }
-.erp3-map .map-row.mapped .system-required { background:#F3F9F5; }
-.erp3-map .map-row.mapped .uploaded-choice { background:#F8FCF9; }
-.erp3-map .map-row.unrecognized .system-required { background:#FFF8EB; }
-.erp3-map .map-row.unrecognized .uploaded-choice { background:#FFFCF5; }
 .erp3-map .map-row.unrecognized select { border-color:#F5D9A8; }
 .erp3-map .map-row.missing .system-required,
-.erp3-map .map-row.missing .uploaded-choice { background:#FEF3F2; }
+.erp3-map .map-row.missing .uploaded-choice,
+.erp3-map .map-row.missing .map-sample { background:#FEF3F2; }
 .erp3-map .map-row.missing select { border-color:#FECDCA; }
-.erp3-map .map-row.missing .erp-sample-value { color:#B42318; }
-.erp3-map .map-row.manually-matched .system-required,
-.erp3-map .map-row.manually-matched .uploaded-choice { background:#F6FEF9; }
-.erp3-status-hint { font-size:10px; line-height:15px; font-weight:600; }
+.erp3-map .map-row.missing .map-sample { color:#B42318; }
+.erp3-status-hint { font-size:11px; line-height:16px; font-weight:600; }
 .erp3-status-hint.mapped,
 .erp3-status-hint.manually-matched { color:#067647; }
 .erp3-status-hint.unrecognized { color:#B54708; }
@@ -1492,11 +1460,19 @@ table.data tr:hover td { background: var(--muted); }
 .erp3-corrected-card-h h3 { color:#B42318; font-size:16px; line-height:24px; }
 .erp3-corrected-card-h p { margin-top:4px; color:#7A271A; font-size:12px; line-height:18px; }
 .erp3-corrected-body { padding:20px; display:flex; flex-direction:column; gap:16px; }
-.erp-file-select-row {
-  display:block;
+.erp-file-select-row { display:block; }
+.erp2-static-target {
+  height:40px; display:flex; align-items:center;
+  padding:0 12px; border:1px solid #2B2B3D; border-radius:8px;
+  background:#fff; font-size:14px; color:var(--foreground);
+}
+.map-sample {
+  padding:16px 16px 16px 8px; color:var(--muted-foreground);
+  font-size:13px; line-height:20px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .erp-sample-value {
-  color:var(--muted-foreground); font-size:10px; line-height:15px;
+  color:var(--muted-foreground); font-size:12px; line-height:16px;
 }
 .erp-sample-value .mono { color:var(--foreground); }
 .map-section-title {
@@ -1867,8 +1843,8 @@ body.concept-3 {
 .concept-3 .table-card {
   border-color:var(--border); border-radius:12px; box-shadow:none; background:#fff;
 }
-.concept-3 table.data thead { background:var(--muted); }
-.concept-3 table.data th { padding:8px 16px; color:#555568; }
+.concept-3 table.data thead { background:#F5F3FF; }
+.concept-3 table.data th { padding:12px 16px; color:var(--foreground); font-weight:700; }
 .concept-3 table.data td { padding:16px; border-bottom-color:var(--border); }
 .concept-3 .table-footer { padding:16px; background:#fff; }
 .concept-3 .filters { gap:16px; }
@@ -2015,30 +1991,14 @@ body.concept-3 {
 .concept-3 .review-card-h { padding:16px 24px; background:#fff; border-bottom:1px solid var(--border); }
 .concept-3 .review-card-b { padding:24px; }
 .concept-3 .map-table {
-  border-color:#CFD2DE; border-radius:12px; box-shadow:none;
+  border-color:var(--border); border-radius:8px; box-shadow:none;
 }
-.concept-3 .map-head { border-bottom-color:#CFD2DE; }
-.concept-3 .map-head .file-head {
-  background:#EFF1F6; border-top:4px solid #6F7488;
-}
-.concept-3 .map-head .target-head {
-  background:#F0EDFF; border-top:4px solid var(--primary);
-}
-.concept-3 .map-head .file-head strong { color:#3F4352; }
-.concept-3 .map-head .target-head strong { color:#4326C7; }
-.concept-3 .map-source { background:#F6F7FA; border-right:0; }
-.concept-3 .map-target { background:#FBFAFF; border-left:0; }
-.concept-3 .mapping-direction { color:#6B5FA8; }
+.concept-3 .map-head { background:#F5F3FF; border-bottom-color:var(--border); }
+.concept-3 .mapping-direction { color:var(--primary); }
 .concept-3 .map-section-title.missing { background:#FFF1F0; }
 .concept-3 .missing-field { background:#FFF8F7; }
 .concept-3 .map-section-title.unmapped { background:#FFF5E3; }
-.concept-3 .map-row.unmapped .map-source { background:#FFF9EE; }
-.concept-3 .map-row.unmapped .map-target { background:#FFFDF6; }
 .concept-3 .map-section-title.mapped { background:#EDF8F1; }
-.concept-3 .map-row:not(.unmapped):not(.conflict):not(.none) .map-source { background:#F3F9F5; }
-.concept-3 .map-row:not(.unmapped):not(.conflict):not(.none) .map-target { background:#F8FCF9; }
-.concept-3 .map-row.none .map-source { background:#FFF9EE; }
-.concept-3 .map-row.none .map-target { background:#FFFDF6; }
 .concept-3 .drawer { width:548px; box-shadow:-8px 0 24px rgba(28,28,46,.12); }
 .concept-3 .drawer.wide { width:548px; }
 .concept-3 .drawer-h { padding:24px; }
@@ -2490,7 +2450,7 @@ const I = {
   zoomOut: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3M8 11h6"/></svg>`,
   chevronL: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>`,
   chevronR: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>`,
-  mapArrow: `<svg viewBox="0 0 38 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h30M24 3l9 9-9 9"/></svg>`,
+  mapArrow: `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h11M11 5l5 5-5 5"/></svg>`,
   package: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.3 9 5.2M7.5 4.3 3 7v10l9 5 9-5V7l-4.5-2.7M12 22V12M3 7l9 5 9-5"/></svg>`,
   cart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L21.2 7H6.2"/></svg>`,
   file: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>`,
@@ -5290,28 +5250,34 @@ function erp2FileSummary(w, stats) {
     </div>
   </div>`;
 }
+function mapTableHead() {
+  return `<div class="map-head">
+    <div class="map-col-field"><div class="map-head-copy"><strong>Field we need</strong></div></div>
+    <div class="map-col-arrow" aria-hidden="true"></div>
+    <div class="map-col-file"><div class="map-head-copy"><strong>Column in your file</strong></div></div>
+    <div class="map-col-sample"><div class="map-head-copy"><strong>Sample</strong></div></div>
+  </div>`;
+}
+function mapSampleCell(value) {
+  const text = value == null || value === '' ? '—' : String(value);
+  return `<div class="map-sample" title="${text}">${text}</div>`;
+}
 function erp2StaticMapRow(source, w) {
-  const target = (w.mappings && w.mappings[source.id]) || '—';
-  const targetLabel = target === '—' ? target : erpRequiredLabel(target);
+  const target = (w.mappings && w.mappings[source.id]) || '';
+  const field = ERP_REQUIRED_FIELDS.find(item => item.name === target);
   return `<div class="map-row">
-    <div class="map-source">
-      <span class="mono" style="color:var(--muted-foreground)">${source.index}</span>
-      <div class="map-source-main">
-        <span class="mono" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${source.colName}${source.ai?` <span style="color:var(--primary)" title="Matched by AI">${I.sparkles}</span>`:''}</span>
-        <span style="color:var(--muted-foreground);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${source.sample}">${source.sample}</span>
-      </div>
+    <div class="system-required">
+      <strong>${target ? erpRequiredLabel(target) : 'Unmapped column'}</strong>
+      <small>${field ? field.desc : source.colName}</small>
     </div>
     <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
-    <div class="map-target"><div class="erp2-static-target">${targetLabel}</div></div>
+    <div class="uploaded-choice"><div class="erp2-static-target">${formatFieldLabel(source.colName)}</div></div>
+    ${mapSampleCell(source.sample)}
   </div>`;
 }
 function erp2MappingTable(sources, w, editable, stats, manualStage, updater) {
   return `<div class="map-table">
-    <div class="map-head">
-      <div class="file-head"><div class="map-head-copy"><strong>Your file columns</strong><small>File headers and sample values</small></div></div>
-      <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
-      <div class="target-head"><div class="map-head-copy"><strong>System field (target)</strong><small>${editable?'Choose a corresponding system field':'System-detected field'}</small></div></div>
-    </div>
+    ${mapTableHead()}
     ${sources.map(source => editable ? mapRow(source, w, stats, manualStage, updater) : erp2StaticMapRow(source, w)).join('')}
   </div>`;
 }
@@ -5329,16 +5295,8 @@ function getERPUnansweredManualFields(w, targetNames) {
 function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualStage) {
   const uniqueTargets = Array.from(new Set((targetNames || []).filter(Boolean)));
   const availableSources = (sources || []).filter(source => !source.unmappable);
-  const systemHead = manualStage
-    ? `<strong>Fields we need</strong><small>Still required — ${uniqueTargets.length} left</small>`
-    : `<strong>Fields we need</strong>`;
-  const uploadedHead = `<strong>Column in your file</strong>`;
   return `<div class="map-table erp2-target-map">
-    <div class="map-head">
-      <div class="system-head"><div class="map-head-copy">${systemHead}</div></div>
-      <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
-      <div class="uploaded-head"><div class="map-head-copy">${uploadedHead}</div></div>
-    </div>
+    ${mapTableHead()}
     ${uniqueTargets.map((targetName, index) => {
       const field = ERP_REQUIRED_FIELDS.find(item => item.name === targetName);
       const selectedSource = erp2TargetSource(targetName, availableSources, mappings);
@@ -5363,9 +5321,9 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
               ${manualStage?erpNoneOfAboveOption(noneSelected):''}
             </select>
           </div>
-          <span class="erp-sample-value">Sample: <span class="mono">${selectedSource ? selectedSource.sample : '—'}</span></span>
           ${showError?`<div class="field-error">${I.alert}<span>Select a file column or None of above.</span></div>`:''}
         </div>
+        ${mapSampleCell(selectedSource ? selectedSource.sample : '—')}
       </div>`;
     }).join('')}
   </div>`;
@@ -5731,11 +5689,7 @@ function erp3TargetMappingTable(w) {
   const rows = getERP3FieldRows(w);
   const mappedCount = rows.filter(row => row.source && row.status !== 'conflict').length;
   return `<div class="map-table erp2-target-map erp3-map">
-    <div class="map-head">
-      <div class="system-head"><div class="map-head-copy"><strong>Fields we need</strong></div></div>
-      <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
-      <div class="uploaded-head"><div class="map-head-copy"><strong>Column in your file</strong></div></div>
-    </div>
+    ${mapTableHead()}
     ${rows.map(row => {
       const selectedSource = row.source;
       const availableSources = stats.sources.filter(source => {
@@ -5759,10 +5713,10 @@ function erp3TargetMappingTable(w) {
               ${isMissing?'':erpNoneOfAboveOption(noneSelected)}
             </select>
           </div>
-          <span class="erp-sample-value">Sample: <span class="mono">${selectedSource ? selectedSource.sample : '—'}</span></span>
           <span class="erp3-status-hint ${row.status}">${erp3StatusHint(row.status, w.mappingAttempted)}</span>
           ${showError?`<div class="field-error">${I.alert}<span>Select a file column or None of above.</span></div>`:''}
         </div>
+        ${mapSampleCell(selectedSource ? selectedSource.sample : '—')}
       </div>`;
     }).join('')}
   </div>
@@ -6079,11 +6033,7 @@ function stepERPInfo() {
         <span style="font-size:12px;color:var(--muted-foreground)">Changes are saved automatically</span>
       </div>
       <div class="map-table">
-        <div class="map-head">
-          <div class="file-head"><div class="map-head-copy"><strong>Your file columns</strong><small>Source columns and sample values</small></div></div>
-          <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
-          <div class="target-head"><div class="map-head-copy"><strong>System field (target)</strong><small>Choose where each column maps</small></div></div>
-        </div>
+        ${mapTableHead()}
 
         <div class="map-section-title ${stats.missing.length?'missing':'mapped'}">
           <span>${stats.missing.length?I.alert:I.check} Missing required columns · ${stats.missing.length}</span>
@@ -6127,13 +6077,11 @@ function mapRow(s, w, stats, manualStage, updater) {
     ? stats.sources.filter(other => other.id !== s.id && w.mappings[other.id] === val)
     : [];
   const targetKind = val ? 'Required target' : 'Select a target field';
+  const field = ERP_REQUIRED_FIELDS.find(item => item.name === val);
   return `<div class="map-row ${conflict?'conflict':manualStage&&val?'manually-matched':val?'':'unmapped'}">
-    <div class="map-source">
-      <span class="mono" style="color:var(--muted-foreground)">${s.index}</span>
-      <div class="map-source-main">
-        <span class="mono" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.colName}${s.ai&&val?` <span style="color:var(--primary)" title="Matched by AI">${I.sparkles}</span>`:''}</span>
-        <span style="color:var(--muted-foreground);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.sample}">${s.sample}</span>
-      </div>
+    <div class="system-required">
+      <strong>${val ? erpRequiredLabel(val) : formatFieldLabel(s.colName)}</strong>
+      <small>${field ? field.desc : targetKind}</small>
     </div>
     <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
     <div class="map-target">
@@ -6147,8 +6095,9 @@ function mapRow(s, w, stats, manualStage, updater) {
         ? `<div class="map-row-error">${I.alert}<span>${erpRequiredLabel(val)} is also mapped from ${conflictingSources.map(source=>`<span class="mono">${source.colName}</span>`).join(', ')}.</span></div>`
         : manualStage && val
           ? `<span class="map-row-success">${I.check} Manually matched</span>`
-          : `<span style="font-size:10px;color:var(--muted-foreground)">${targetKind}</span>`}
+          : ''}
     </div>
+    ${mapSampleCell(s.sample)}
   </div>`;
 }
 
@@ -7470,16 +7419,16 @@ function viewUploadDetails() {
   const order = r.typeKey === 'trade' ? RECORDS.find(x => x.id === r.recordId) : null;
   const unshipped = r.typeKey === 'trade' && (r.shipmentStatus === 'Unshipped' || (order && order.shipmentStatus === 'Unshipped'));
   const erpFieldMappings = r.typeKey === 'erp' ? [
-    ['order_id','order_id','System identified'],
-    ['supplier_name','supplier_name','System identified'],
-    ['sku_code','sku','System identified'],
-    ['qty','quantity','System identified'],
-    ['price_per_unit','unit_price','System identified'],
-    ['total','total_amount','System identified'],
-    ['order_date','transaction_date','System identified'],
-    ['type','trade_type','System identified'],
-    ['invoice_currency','currency','Manually matched'],
-    ['payment_terms','—','Not mapped'],
+    ['order_id','order_id','System identified','ERP-2026-001'],
+    ['supplier_name','supplier_name','System identified','Shenzhen Tech Co.'],
+    ['sku_code','sku','System identified','PROD-4829'],
+    ['qty','quantity','System identified','500'],
+    ['price_per_unit','unit_price','System identified','38.50'],
+    ['total','total_amount','System identified','19250.00'],
+    ['order_date','transaction_date','System identified','2026-07-15'],
+    ['type','trade_type','System identified','Goods'],
+    ['invoice_currency','currency','Manually matched','USD'],
+    ['payment_terms','—','Not mapped','Net 30'],
   ] : [];
 
   /* Header CTAs only: status · download file · download result (template) · full order (trade) · re-upload */
@@ -7575,15 +7524,13 @@ function viewUploadDetails() {
         </div>
         <div class="details-table-wrap" style="margin-top:16px">
           <table class="data">
-            <thead><tr>${['Fields we need','Column in your file','Match method'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
-            <tbody>${erpFieldMappings.map(([source,target,method])=>`<tr>
-              <td>${erpRequiredLabel(target)}</td>
-              <td class="mono" style="font-weight:600">${source}</td>
-              <td>${method==='System identified'
-                ? `<span style="color:var(--muted-foreground)">—</span>`
-                : method==='Manually matched'
-                  ? `<span class="chip" style="background:#F0EDFF;color:var(--primary)">${method}</span>`
-                  : `<span class="chip" style="background:#FFF7E8;color:#946200">${method}</span>`}</td>
+            <thead><tr>${['Field we need','Column in your file','Sample'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+            <tbody>${erpFieldMappings.map(([source,target,method,sample])=>`<tr>
+              <td>
+                <div style="font-weight:700">${erpRequiredLabel(target)}</div>
+              </td>
+              <td>${source==='—'?'—':formatFieldLabel(source)}</td>
+              <td style="color:var(--muted-foreground)">${sample||'—'}</td>
             </tr>`).join('')}</tbody>
           </table>
         </div>
@@ -7857,7 +7804,7 @@ const CN_UI_REPLACEMENTS = [
   [/Check the columns we matched/g, '核对我们匹配的列'], [/Confirm the processing results/g, '确认处理结果'],
   [/We matched (\d+) of the (\d+) fields we need\. Change any mapping that isn't right\./g, '我们已匹配所需 $2 个字段中的 $1 个。如有不正确，请修改对应关系。'],
   [/We identified (\d+) columns as what we require\. Modify the result if needed\./g, '我们已识别出 $1 个所需字段，如有需要可修改结果。'],
-  [/Fields we need/g, '我们需要的字段'], [/Column in your file/g, '您文件中的列'], [/Still required — (\d+) left/g, '仍需补充 — 还剩 $1 个'],
+  [/Unmapped column(?!s)/g, '未匹配列'], [/Fields we need/g, '我们需要的字段'], [/Field we need/g, '我们需要的字段'], [/Column in your file/g, '您文件中的列'], [/<strong>Sample<\/strong>/g, '<strong>示例</strong>'], [/<th>Sample<\/th>/g, '<th>示例</th>'], [/Still required — (\d+) left/g, '仍需补充 — 还剩 $1 个'],
   [/Info we ask for/g, '我们需要的信息'], [/What we find in your document/g, '我们在单据中识别的信息'],
   [/Match the columns in your file to the fields we need\./g, '将文件中的列与我们需要的字段进行匹配。'],
   [/Confirm processing results, manually verify available columns, and complete any remaining required fields\./g, '确认处理结果，手动核对可用字段，并补充剩余必填信息。'],
@@ -8208,7 +8155,7 @@ const CN_UI_REPLACEMENTS = [
   [/Something unexpected happened/g, '系统暂时无法处理此文件。请稍后重试。'],
   [/^Method$/g, '方式'], [/^Company$/g, '公司'],
   [/上传 模板 CSV/g, '上传模板 CSV'], [/上传 CSV from templates/g, '上传模板 CSV'], [/已接受 formats/g, '支持的格式'], [/ERP CSV(?! 2)/g, 'ERP 文件'],
-  [/Option 1/g, '方案 1'], [/Option 2/g, '方案 2'], [/OPTION 1/g, '方案 1'], [/OPTION 2/g, '方案 2'], [/Sample:/g, '示例：'],
+  [/Option 1/g, '方案 1'], [/Option 2/g, '方案 2'], [/OPTION 1/g, '方案 1'], [/OPTION 2/g, '方案 2'], [/Sample:/g, '示例：'], [/\bSample\b/g, '示例'],
   [/Add ([a-z_]+) and ([a-z_]+) 添加到文件后/g, '将 $1 和 $2 添加到文件后'],
   [/Excel Spreadsheet/g, 'Excel 工作簿'], [/Row (\d+)/g, '第 $1 行'],
   [/金额 must be greater than 0/g, '金额必须大于 0'], [/Wireless Adapter/g, '无线适配器'],
