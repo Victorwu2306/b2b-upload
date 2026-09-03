@@ -2864,14 +2864,89 @@ function uploadV2ERPDisplayStep(w) {
   return idx >= 0 ? idx + 1 : steps.length;
 }
 function openUploadV2SamplePicker() {
-  const w=state.wiz;if(!w||w.uploadVersion!==2)return;
-  if(!w.category){toast('Select a category before uploading.');return;}
-  if(w.category==='marketplace'&&!w.marketplace){toast('Select a marketplace before uploading.');return;}
-  if(uploadV2NeedsSellerId(w)&&!String(w.sellerId||'').trim()){toast(`Enter the Seller ID for ${w.marketplace} before uploading.`);return;}
-  w.v2PickerOpen=true;render();
+  const w = state.wiz; if (!w) return;
+  if (w.uploadVersion === 2) {
+    if (!w.category) { toast('Select a category before uploading.'); return; }
+    if (w.category === 'marketplace' && !w.marketplace) { toast('Select a marketplace before uploading.'); return; }
+    if (uploadV2NeedsSellerId(w) && !String(w.sellerId || '').trim()) { toast(`Enter the Seller ID for ${w.marketplace} before uploading.`); return; }
+  } else if (w.kind === 'template') {
+    const issues = getTemplateUploadIssues(w);
+    if (issues.length) {
+      w.validationAttempted = true;
+      const message = issues.includes('sellerId')
+        ? `Enter the Seller ID for ${w.marketplace} before choosing a file.`
+        : issues.includes('marketplace')
+          ? 'Select the marketplace you are uploading data from.'
+          : 'Select a transaction category before choosing a file.';
+      toast(message);
+      render();
+      return;
+    }
+  }
+  w.v2PickerOpen = true;
+  render();
 }
 function closeUploadV2SamplePicker() {
   const w=state.wiz;if(!w)return;w.v2PickerOpen=false;render();
+}
+function samplePickerCategory(w) {
+  return (w && (w.category || w.entryCategory)) || 'transaction';
+}
+function samplePickerGroup(w) {
+  if (!w || w.uploadVersion === 2) return '';
+  if (w.kind === 'template' || w.kind === 'erp' || w.kind === 'trade') return w.kind;
+  return '';
+}
+function applyChildSampleFile(profileId) {
+  const w = state.wiz; if (!w) return;
+  const sample = uploadV2SampleFiles(samplePickerCategory(w)).find(file => file.id === profileId);
+  if (!sample) return;
+  w.v2PickerOpen = false;
+  w.fileName = sample.name;
+  w.erpScenario = sample.scenario || '';
+  w.v2UseCase = sample.useCase ? sample.useCase.id : '';
+  w.v2UseCaseTitle = sample.useCase ? sample.useCase.title : '';
+  if (w.kind === 'template') {
+    if (sample.route === 'template') {
+      w.templateIssueRows = null;
+      w.templateFixedRows = [];
+      w.templateEditingRow = null;
+      w.templateEditValue = '';
+      w.templateEditError = '';
+      w.templateTableEditing = false;
+      w.csvState = 'processing';
+      render();
+      setTimeout(() => { if (state.wiz !== w) return; w.csvState = 'mapped'; render(); }, 1800);
+      return;
+    }
+    const next = resetWiz('erp');
+    ['fromUnified','allowedTypes','draftId','uploadOriginVersion','uploadV2Context'].forEach(key => {
+      if (Object.prototype.hasOwnProperty.call(w, key)) {
+        next[key] = Array.isArray(w[key]) ? w[key].slice() : w[key];
+      }
+    });
+    next.fromUnified = !!w.fromUnified;
+    next.uploadOriginVersion = w.uploadOriginVersion || 1;
+    next.uploadType = 'erp';
+    next.entryCategory = w.category || w.entryCategory || '';
+    next.marketplace = w.marketplace || '';
+    next.sellerId = w.sellerId || '';
+    next.fileName = sample.name;
+    next.erpScenario = sample.scenario || 'all-matched';
+    next.v2UseCase = sample.useCase ? sample.useCase.id : '';
+    next.v2UseCaseTitle = sample.useCase ? sample.useCase.title : '';
+    state.wiz = next;
+    state.view = 'wizard-erp';
+    simulateErp(sample.name);
+    return;
+  }
+  if (w.kind === 'erp') {
+    simulateErp(sample.name);
+    return;
+  }
+  if (w.kind === 'trade') {
+    simulateTradeUpload();
+  }
 }
 function uploadV2UseCaseFileName(baseName, suffix) {
   if (!suffix) return baseName;
@@ -2913,8 +2988,12 @@ function uploadV2SampleFiles(category) {
   return files;
 }
 function simulateUploadV2File(profileId) {
-  const w = state.wiz; if (!w || w.uploadVersion !== 2) return;
-  const sample = uploadV2SampleFiles(w.category).find(file => file.id === profileId);
+  const w = state.wiz; if (!w) return;
+  if (w.uploadVersion !== 2) {
+    applyChildSampleFile(profileId);
+    return;
+  }
+  const sample = uploadV2SampleFiles(samplePickerCategory(w)).find(file => file.id === profileId);
   if (!sample) return;
   const requestId = (w.v2RequestId || 0) + 1, selectedCategory = w.category;
   Object.assign(w, {
@@ -2940,8 +3019,9 @@ function simulateUploadV2File(profileId) {
   }, 650);
 }
 function uploadV2SamplePicker(w) {
-  if (!w || w.uploadVersion !== 2 || !w.v2PickerOpen) return '';
-  const files = uploadV2SampleFiles(w.category);
+  if (!w || !w.v2PickerOpen) return '';
+  const group = samplePickerGroup(w);
+  const files = uploadV2SampleFiles(samplePickerCategory(w)).filter(file => !group || file.group === group);
   const groups = [
     { key:'trade', title:'Trade document' },
     { key:'template', title:'Template CSV' },
@@ -5173,11 +5253,11 @@ function stepTemplateUpload() {
       </div>
       <div style="padding:20px">`;
   if (w.csvState==='empty') {
-    body += `<div class="upload-zone" style="cursor:${canChooseFile?'pointer':'not-allowed'};opacity:${canChooseFile?'1':'.55'}" ${canChooseFile?'onclick="simulateCsv()"':''}>
+    body += `<div class="upload-zone" style="cursor:${canChooseFile?'pointer':'not-allowed'};opacity:${canChooseFile?'1':'.55'}" ${canChooseFile?'onclick="openUploadV2SamplePicker()"':''}>
       <div style="color:var(--muted-foreground);margin-bottom:12px">${I.upload}</div>
       <p style="font-size:15px;font-weight:600">Upload transaction CSV</p>
       <p style="font-size:13px;color:var(--muted-foreground);margin:6px 0 14px">CSV · Max 50 MB</p>
-      <button class="btn btn-sm btn-primary" ${canChooseFile?'onclick="event.stopPropagation();simulateCsv()"':'disabled'}>Upload file</button>
+      <button class="btn btn-sm btn-primary" ${canChooseFile?'onclick="event.stopPropagation();openUploadV2SamplePicker()"':'disabled'}>Upload file</button>
       ${canChooseFile?'':`<p style="font-size:12px;color:var(--muted-foreground);margin-top:12px">Complete the required category information to enable file upload.</p>`}
     </div>`;
   } else if (w.csvState==='processing') {
@@ -5190,7 +5270,7 @@ function stepTemplateUpload() {
     const sourceLabel = `${selectedCategory ? selectedCategory.label : '—'}${w.category==='marketplace' && w.marketplace ? ` · ${w.marketplace}` : ''}`;
     body += `<div class="file-ok">
       ${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
-      <div style="flex:1"><p class="mono" style="font-weight:600">${w.fileName || 'template_transactions.csv'}</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Uploaded · ${sourceLabel}</p></div>
+      <div style="flex:1"><p class="mono" style="font-weight:600">${w.fileName || 'template_transactions.csv'}</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Uploaded · ${sourceLabel}${w.v2UseCaseTitle?` · ${w.v2UseCaseTitle}`:''}</p></div>
       <button type="button" class="btn btn-xs btn-secondary" onclick="resetTemplateFile()">${I.rotate} Replace</button>
     </div>`;
   }
@@ -5237,7 +5317,7 @@ function viewWizardTemplate() {
     footer:stage === 1
       ? wizNavFooter(wizHomeBack(w), 'Cancel', 'templateNext()', 'Review', canContinue)
       : wizNavFooter('templateBack()', 'Previous', 'attemptTemplateSubmit()', 'Submit', canContinue)
-  });
+  }) + uploadV2SamplePicker(w);
 }
 
 function erpExampleModal() {
@@ -5406,7 +5486,7 @@ function erp2FileSummary(w, stats) {
         ${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
         <div style="flex:1;min-width:0">
           <p style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${w.fileName || 'erp_missing_columns.csv'}</p>
-          <p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Uploaded successfully · ${stats.sources.length} columns detected${entryCategory?` · Category: ${entryCategory}`:''}${entryMarketplace?` · Marketplace: ${entryMarketplace}`:''}</p>
+          <p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Uploaded successfully · ${stats.sources.length} columns detected${entryCategory?` · Category: ${entryCategory}`:''}${entryMarketplace?` · Marketplace: ${entryMarketplace}`:''}${w.v2UseCaseTitle?` · ${w.v2UseCaseTitle}`:''}</p>
         </div>
       </div>
     </div>
@@ -5586,11 +5666,11 @@ function stepERP2Upload(w) {
           <p style="font-size:13px;color:var(--muted-foreground)">CSV · Max 50 MB · Keep the original header row.</p>
         </div>
       </div>
-      <div class="upload-zone" style="cursor:pointer;padding:48px 32px" onclick="simulateErp()">
+      <div class="upload-zone" style="cursor:pointer;padding:48px 32px" onclick="${w.isReplacement?'simulateErp()':'openUploadV2SamplePicker()'}">
         <div style="color:var(--muted-foreground);margin-bottom:12px">${I.upload}</div>
         <p style="font-size:15px;font-weight:600">Upload ERP CSV</p>
         <p style="font-size:13px;color:var(--muted-foreground);margin:6px 0 14px">CSV · Max 50 MB</p>
-        <button type="button" class="btn btn-sm btn-primary" onclick="event.stopPropagation();simulateErp()">Upload file</button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="event.stopPropagation();${w.isReplacement?'simulateErp()':'openUploadV2SamplePicker()'}">Upload file</button>
       </div>`}
   </div>`;
 }
@@ -5822,7 +5902,7 @@ function viewWizardERP2(w) {
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body:`<div style="display:flex;flex-direction:column;gap:20px">${versionControl}${body}</div>`,
     footer:navigation,
-  }) + erpExampleModal();
+  }) + erpExampleModal() + uploadV2SamplePicker(w);
 }
 
 function erpNoneOfAboveOption(selected) {
@@ -6102,7 +6182,7 @@ function viewWizardERP3(w) {
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body:`<div style="display:flex;flex-direction:column;gap:20px">${versionControl}${body}</div>`,
     footer:navigation,
-  }) + erpExampleModal();
+  }) + erpExampleModal() + uploadV2SamplePicker(w);
 }
 
 function stepERPInfo() {
@@ -6133,11 +6213,11 @@ function stepERPInfo() {
         ${I.info}
         <p style="font-size:12px;line-height:1.45"><strong>Upload the corrected file.</strong> Existing mappings are cached, and matching column names will keep their previous mapping.</p>
       </div>` : ''}
-      <div class="upload-zone" style="cursor:pointer" onclick="simulateErp()">
+      <div class="upload-zone" style="cursor:pointer" onclick="${w.isReplacement?'simulateErp()':'openUploadV2SamplePicker()'}">
       <div style="color:var(--muted-foreground);margin-bottom:12px">${I.upload}</div>
       <p style="font-size:15px;font-weight:600">${w.isReplacement?'Upload corrected ERP CSV':'Upload ERP CSV'}</p>
       <p style="font-size:13px;color:var(--muted-foreground);margin:6px 0 14px">CSV · Max 50 MB</p>
-      <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();simulateErp()">Upload file</button>
+      <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();${w.isReplacement?'simulateErp()':'openUploadV2SamplePicker()'}">Upload file</button>
     </div>`;
   } else if (w.dsState==='processing') {
     html += `<div class="upload-zone" style="border-color:var(--primary);background:var(--accent)">
@@ -6407,7 +6487,7 @@ function viewWizardERP() {
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body,
     footer:navigation
-  }) + erpExampleModal();
+  }) + erpExampleModal() + uploadV2SamplePicker(w);
 }
 
 
