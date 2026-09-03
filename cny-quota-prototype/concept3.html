@@ -913,6 +913,29 @@ table.data tr:hover td { background: var(--muted); }
   display:grid; place-items:center; color:var(--primary); margin-bottom:4px;
 }
 .source-card.selected .ico { background:var(--primary); color:#fff; }
+
+.sample-picker-body {
+  display:flex !important;
+  flex-direction:column;
+  gap:16px;
+  max-height:min(64vh, 680px);
+  overflow-y:auto;
+  grid-template-columns:none;
+}
+.sample-group { display:flex; flex-direction:column; gap:8px; }
+.sample-group-h {
+  font-size:12px; font-weight:600; color:var(--muted-foreground);
+  letter-spacing:.02em; text-transform:uppercase; padding:2px 2px 0;
+}
+.sample-use-case { font-size:12px; color:var(--muted-foreground); margin-top:4px; line-height:1.45; }
+.sample-use-case-tag {
+  display:inline-block; margin-right:8px; padding:1px 8px; border-radius:999px;
+  background:#F3F0FF; color:var(--primary); font-size:11px; font-weight:600; line-height:18px;
+}
+.sample-use-case-tag.full { background:#ECFDF3; color:#027A48; }
+.sample-use-case-tag.partial { background:#FFF4E5; color:#B54708; }
+.sample-use-case-tag.nomatch { background:#FEF3F2; color:#B42318; }
+
 .field-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px 16px; }
 .field { display:flex; flex-direction:column; gap:6px; }
 .field.full { grid-column:1 / -1; }
@@ -2235,7 +2258,29 @@ const ERP_SCENARIOS = [
   { value:'recoverable-missing', label:'2 missing · 3 unmapped (manual or replace)', fileName:'erp_missing_columns.xlsx' },
   { value:'replace-required', label:'2 missing · 1 unmapped (replace required)', fileName:'erp_multiple_missing.xlsx' },
   { value:'missing-only', label:'Missing columns only (replace required)', fileName:'erp_required_columns_missing.xlsx' },
+  { value:'no-match-partial', label:'No auto-match · some headers can be mapped (re-upload required)', fileName:'erp_no_match_partial.xlsx' },
+  { value:'no-match-unrecognized', label:'No headers recognized (re-upload required)', fileName:'erp_no_match_unrecognized.xlsx' },
 ];
+const ERP_NO_MATCH_PARTIAL_SOURCES = [
+  { id:'x1', index:1, colName:'customer_name', sample:'Global Trade LLC', ai:false },
+  { id:'x2', index:2, colName:'invoice_currency', sample:'USD', ai:false },
+  { id:'x3', index:3, colName:'payment_terms', sample:'Net 30', ai:false },
+  { id:'x4', index:4, colName:'ref_no', sample:'REF-8841', ai:false },
+  { id:'x5', index:5, colName:'memo', sample:'Q3 export', ai:false },
+];
+const ERP_NO_MATCH_UNRECOGNIZED_SOURCES = [
+  { id:'u1', index:1, colName:'col_a', sample:'N/A', ai:false, unmappable:true },
+  { id:'u2', index:2, colName:'flag', sample:'1', ai:false, unmappable:true },
+  { id:'u3', index:3, colName:'misc_note', sample:'internal', ai:false, unmappable:true },
+];
+const UPLOAD_V2_USE_CASES = [
+  { id:'full-match', scenario:'all-matched', title:'Full match', detail:'All columns are recognized and mapped automatically', suffix:'', tone:'full' },
+  { id:'partial-recoverable', scenario:'recoverable-missing', title:'Partial match', detail:'Some headers are unrecognized, but you can map them all manually', suffix:'_partial', tone:'partial' },
+  { id:'partial-missing', scenario:'replace-required', title:'Partial match', detail:'Some headers are unrecognized, and required fields stay missing after mapping · Re-upload required', suffix:'_partial_missing', tone:'partial' },
+  { id:'no-match-missing', scenario:'no-match-partial', title:'No match', detail:'No columns are auto-matched, and required fields stay missing after mapping · Re-upload required', suffix:'_nomatch', tone:'nomatch' },
+  { id:'no-match-unrecognized', scenario:'no-match-unrecognized', title:'No match', detail:'No headers can be recognized or mapped manually · Re-upload required', suffix:'_unrecognized', tone:'nomatch' },
+];
+
 const DS_TX_PREVIEW = [
   { buyer:'Alice Trading Co.', amount:'USD 1,200.00', currency:'USD', date:'2026-06-12', orderNo:'DS-001', product:'EL-4821', status:'Matched' },
   { buyer:'Global Buyer Ltd.', amount:'USD 3,450.50', currency:'USD', date:'2026-06-18', orderNo:'DS-002', product:'PM-0032', status:'Matched' },
@@ -2509,6 +2554,7 @@ function uploadV2ContextFrom(w) {
     allowedTypes:Array.isArray(source.allowedTypes) ? source.allowedTypes.slice() : null,
     v2RequestId:Number(source.v2RequestId)||0,
     v2PickerOpen:false,
+    erpScenario:source.erpScenario || '', v2UseCase:source.v2UseCase || '', v2UseCaseTitle:source.v2UseCaseTitle || '',
   };
 }
 function createUploadV2State(context, allowedTypes) {
@@ -2516,7 +2562,7 @@ function createUploadV2State(context, allowedTypes) {
     kind:'upload', uploadVersion:2, v2Stage:1, category:'',
     v2FileState:'empty', fileName:null, fileExtension:'', fileSize:0,
     csvHeaders:[], detectedRoute:'', detectedLabel:'', routeError:'', uploadType:null,
-    marketplace:'', sellerId:'', v2RequestId:0, v2PickerOpen:false,
+    marketplace:'', sellerId:'', v2RequestId:0, v2PickerOpen:false, erpScenario:'', v2UseCase:'', v2UseCaseTitle:'',
   }, context || {});
   if(!TEMPLATE_TYPES.some(type=>type.key===w.category))w.category='';
   if(w.category!=='marketplace'){w.marketplace='';w.sellerId='';}
@@ -2611,7 +2657,7 @@ function returnToUploadSelect() {
 }
 function replaceUploadV2FromChild() {
   const current=state.wiz,context=uploadV2ContextFrom(current)||{},draftId=current&&current.draftId;
-  Object.assign(context,{v2Stage:1,v2FileState:'empty',fileName:null,fileExtension:'',fileSize:0,csvHeaders:[],detectedRoute:'',detectedLabel:'',routeError:'',uploadType:null,v2PickerOpen:true});
+  Object.assign(context,{v2Stage:1,v2FileState:'empty',fileName:null,fileExtension:'',fileSize:0,csvHeaders:[],detectedRoute:'',detectedLabel:'',routeError:'',uploadType:null,v2PickerOpen:true,erpScenario:'',v2UseCase:'',v2UseCaseTitle:''});
   state.wiz=createUploadV2State(context);if(draftId)state.wiz.draftId=draftId;state.view='wizard-upload';render();
 }
 function continueUnifiedUpload() {
@@ -2635,14 +2681,14 @@ function setUploadV2Category(value) {
   const category=TEMPLATE_TYPES.some(type=>type.key===value)?value:'';
   if (w.category !== category) {
     w.v2RequestId=(w.v2RequestId||0)+1;
-    Object.assign(w,{category,v2FileState:'empty',fileName:null,fileExtension:'',fileSize:0,csvHeaders:[],detectedRoute:'',detectedLabel:'',routeError:'',uploadType:null,marketplace:'',sellerId:'',v2PickerOpen:false});
+    Object.assign(w,{category,v2FileState:'empty',fileName:null,fileExtension:'',fileSize:0,csvHeaders:[],detectedRoute:'',detectedLabel:'',routeError:'',uploadType:null,marketplace:'',sellerId:'',v2PickerOpen:false,erpScenario:'',v2UseCase:'',v2UseCaseTitle:''});
   }
   render();
 }
 function resetUploadV2File() {
   const w = state.wiz; if (!w || w.uploadVersion !== 2) return;
   w.v2RequestId=(w.v2RequestId||0)+1;
-  Object.assign(w,{v2FileState:'empty',fileName:null,fileExtension:'',fileSize:0,csvHeaders:[],detectedRoute:'',detectedLabel:'',routeError:'',uploadType:null,v2PickerOpen:false});
+  Object.assign(w,{v2FileState:'empty',fileName:null,fileExtension:'',fileSize:0,csvHeaders:[],detectedRoute:'',detectedLabel:'',routeError:'',uploadType:null,v2PickerOpen:false,erpScenario:'',v2UseCase:'',v2UseCaseTitle:''});
   render();
 }
 function uploadV2NeedsSellerId(w){return !!(w&&w.category==='marketplace'&&(w.marketplace==='Amazon'||w.marketplace==='Walmart'));}
@@ -2679,42 +2725,147 @@ function detectUploadV2Route(category,extension,headers) {
   }
   return {route:'',error:'This file format is not supported.'};
 }
-function uploadV2StepsForRoute(route,w){
-  if(route==='template')return [{n:1,label:'Upload document'},{n:2,label:'Review'}];
-  if(route==='trade')return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Review'}];
-  if(route==='erp'){
-    if(w&&w.erpFlowVersion==='v1')return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Review'}];
-    if(w&&w.erpFlowVersion==='v3'){const steps=[{n:1,label:'Upload document'},{n:2,label:'Confirm info'}];if(w.erp3NeedsReplacement)steps.push({n:3,label:'Update and re-upload'});steps.push({n:steps.length+1,label:'Review'});return steps;}
-    const hasUnrecognized=w&&w.kind==='upload'?true:!!(w&&w.erp2HadUnrecognized);
-    const steps=[{n:1,label:'Upload document'},{n:2,label:'Confirm info'}];
-    if(hasUnrecognized)steps.push({n:3,label:'Match remaining fields'});
-    steps.push({n:steps.length+1,label:'Update and re-upload'});steps.push({n:steps.length+1,label:'Review'});return steps;
+function uploadV2StepsForRoute(route,w) {
+  if (route === 'template') return [{n:1,label:'Upload document'},{n:2,label:'Review'}];
+  if (route === 'trade') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Review'}];
+  if (route === 'erp') {
+    if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Review'}];
+    if (w && w.erpFlowVersion === 'v3') {
+      const steps = [{n:1,label:'Upload document'},{n:2,label:'Confirm info'}];
+      if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
+      steps.push({n:steps.length + 1,label:'Review'});
+      return steps;
+    }
+    const stats = w && w.kind === 'erp' ? getERPMappingStats(w) : null;
+    const hasUnrecognized = !!(w && w.erp2HadUnrecognized);
+    const needsReplacement = !!(stats && stats.missing.length);
+    const steps = [{n:1,label:'Upload document'},{n:2,label:'Confirm info'}];
+    if (hasUnrecognized) steps.push({n:steps.length + 1,label:'Match remaining fields'});
+    if (needsReplacement) steps.push({n:steps.length + 1,label:'Update and re-upload'});
+    steps.push({n:steps.length + 1,label:'Review'});
+    return steps;
   }
   return [{n:1,label:'Upload document'}];
 }
-function uploadV2ERPDisplayStep(w){if(w&&w.erpFlowVersion==='v3'){const stage=w.erp3Stage||1;if(stage<=2)return stage;if(w.erp3NeedsReplacement)return stage;return 3;}const stage=w.erp2Stage||1;if(stage<=1)return 1;if(stage===2)return 2;if(stage===3)return 3;if(stage===4)return w.erp2HadUnrecognized?4:3;return w.erp2HadUnrecognized?5:4;}
+function uploadV2ERPDisplayStep(w) {
+  const steps = uploadV2StepsForRoute('erp', w);
+  let label = 'Upload document';
+  if (w && w.erpFlowVersion === 'v3') {
+    const stage = w.erp3Stage || 1;
+    if (stage <= 1) label = 'Upload document';
+    else if (stage === 2) label = 'Confirm info';
+    else if (stage === 3 && w.erp3NeedsReplacement) label = 'Update and re-upload';
+    else label = 'Review';
+  } else if (w && w.erpFlowVersion === 'v1') {
+    label = w.step === 4 ? 'Review' : 'Confirm info';
+  } else {
+    const stage = (w && w.erp2Stage) || 1;
+    if (stage <= 1) label = 'Upload document';
+    else if (stage === 2) label = 'Confirm info';
+    else if (stage === 3) label = 'Match remaining fields';
+    else if (stage === 4) label = 'Update and re-upload';
+    else label = 'Review';
+  }
+  const idx = steps.findIndex(step => step.label === label);
+  return idx >= 0 ? idx + 1 : steps.length;
+}
 function openUploadV2SamplePicker(){const w=state.wiz;if(!w||w.uploadVersion!==2)return;if(!w.category){toast('Select a category before uploading.');return;}if(w.category==='marketplace'&&!w.marketplace){toast('Select a marketplace before uploading.');return;}if(uploadV2NeedsSellerId(w)&&!String(w.sellerId||'').trim()){toast(`Enter the Seller ID for ${w.marketplace} before uploading.`);return;}w.v2PickerOpen=true;render();}
 function closeUploadV2SamplePicker(){const w=state.wiz;if(!w)return;w.v2PickerOpen=false;render();}
-function uploadV2SampleFiles(category){
-  const categoryLabel=(TEMPLATE_TYPES.find(type=>type.key===category)||{}).label||category;
-  const templateHeaders=category==='marketplace'?['store_name','store_url','order_id','order_date','item_name','quantity','price','currency']:['order_id','product_service','quantity','unit_price','currency'];
-  const files=[
-    {id:'trade',name:`${category||'trade'}_document.pdf`,extension:'pdf',headers:[],label:'Trade document',detail:'PDF document'},
-    {id:'template',name:`${category||'transaction'}_transaction_template.csv`,extension:'csv',headers:templateHeaders,label:'Template CSV',detail:`${categoryLabel} standard template`},
-    {id:'erp',name:`${category||'transaction'}_erp_export.csv`,extension:'csv',headers:['order_id','supplier_name','buyer_name','sku','quantity','unit_price','currency','total_amount','transaction_date','trade_type'],label:'ERP CSV',detail:'ERP transaction export'},
+function uploadV2UseCaseFileName(baseName, suffix) {
+  if (!suffix) return baseName;
+  return String(baseName || '').replace(/(\.[^.]+)$/, suffix + '$1');
+}
+function uploadV2HeadersForScenario(scenario) {
+  return getERPScenarioSources(scenario).map(source => source.colName);
+}
+function uploadV2SampleFiles(category) {
+  const categoryLabel = (TEMPLATE_TYPES.find(type => type.key === category) || {}).label || category;
+  const categorySlug = category || 'transaction';
+  const templateHeaders = category === 'marketplace'
+    ? ['store_name','store_url','order_id','order_date','item_name','quantity','price','currency']
+    : ['order_id','product_service','quantity','unit_price','currency'];
+  const files = [];
+  if (category !== 'marketplace') {
+    files.push({
+      id:'trade', group:'trade', name:`${categorySlug}_document.pdf`, extension:'pdf', headers:[],
+      route:'trade', label:'Trade document', detail:'PDF document', useCase:null,
+    });
+  }
+  UPLOAD_V2_USE_CASES.forEach(useCase => {
+    const isFull = useCase.id === 'full-match';
+    files.push({
+      id:'template:' + useCase.id, group:'template',
+      name:uploadV2UseCaseFileName(`${categorySlug}_transaction_template.csv`, useCase.suffix),
+      extension:'csv', headers:isFull ? templateHeaders.slice() : uploadV2HeadersForScenario(useCase.scenario),
+      route:isFull ? 'template' : 'erp', scenario:useCase.scenario,
+      label:'Template CSV', detail:`${categoryLabel} standard template`, useCase,
+    });
+    files.push({
+      id:'erp:' + useCase.id, group:'erp',
+      name:uploadV2UseCaseFileName(`${categorySlug}_erp_export.csv`, useCase.suffix),
+      extension:'csv', headers:uploadV2HeadersForScenario(useCase.scenario),
+      route:'erp', scenario:useCase.scenario,
+      label:'ERP CSV', detail:'ERP transaction export', useCase,
+    });
+  });
+  return files;
+}
+function simulateUploadV2File(profileId) {
+  const w = state.wiz; if (!w || w.uploadVersion !== 2) return;
+  const sample = uploadV2SampleFiles(w.category).find(file => file.id === profileId);
+  if (!sample) return;
+  const requestId = (w.v2RequestId || 0) + 1, selectedCategory = w.category;
+  Object.assign(w, {
+    v2RequestId:requestId, v2PickerOpen:false, v2FileState:'analyzing',
+    fileName:sample.name, fileExtension:sample.extension, fileSize:128000,
+    csvHeaders:sample.headers.slice(), detectedRoute:sample.route || sample.id,
+    detectedLabel:sample.label, routeError:'', uploadType:null,
+    erpScenario:sample.scenario || '', v2UseCase:sample.useCase ? sample.useCase.id : '',
+    v2UseCaseTitle:sample.useCase ? sample.useCase.title : '',
+  });
+  render();
+  setTimeout(() => {
+    if (state.wiz !== w || w.v2RequestId !== requestId || w.category !== selectedCategory) return;
+    const result = sample.route
+      ? { route:sample.route, label:sample.label }
+      : detectUploadV2Route(selectedCategory, sample.extension, sample.headers);
+    Object.assign(w, {
+      detectedRoute:result.route || '', detectedLabel:result.label || '',
+      routeError:result.error || '', uploadType:result.route || null,
+      v2FileState:result.route ? 'ready' : 'error',
+    });
+    render();
+  }, 650);
+}
+function uploadV2SamplePicker(w) {
+  if (!w || w.uploadVersion !== 2 || !w.v2PickerOpen) return '';
+  const files = uploadV2SampleFiles(w.category);
+  const groups = [
+    { key:'trade', title:'Trade document' },
+    { key:'template', title:'Template CSV' },
+    { key:'erp', title:'ERP CSV' },
   ];
-  return category==='marketplace'?files.filter(file=>file.id!=='trade'):files;
-}
-function simulateUploadV2File(profileId){
-  const w=state.wiz;if(!w||w.uploadVersion!==2)return;
-  const sample=uploadV2SampleFiles(w.category).find(file=>file.id===profileId);if(!sample)return;
-  const requestId=(w.v2RequestId||0)+1,selectedCategory=w.category;
-  Object.assign(w,{v2RequestId:requestId,v2PickerOpen:false,v2FileState:'analyzing',fileName:sample.name,fileExtension:sample.extension,fileSize:128000,csvHeaders:sample.headers.slice(),detectedRoute:sample.id,detectedLabel:sample.label,routeError:'',uploadType:null});render();
-  setTimeout(()=>{if(state.wiz!==w||w.v2RequestId!==requestId||w.category!==selectedCategory)return;const result=detectUploadV2Route(selectedCategory,sample.extension,sample.headers);Object.assign(w,{detectedRoute:result.route||'',detectedLabel:result.label||'',routeError:result.error||'',uploadType:result.route||null,v2FileState:result.route?'ready':'error'});render();},650);
-}
-function uploadV2SamplePicker(w){
-  if(!w||w.uploadVersion!==2||!w.v2PickerOpen)return '';
-  return `<div class="modal-backdrop open" style="align-items:center" onclick="if(event.target===this)closeUploadV2SamplePicker()"><div class="modal" style="width:560px;max-width:92vw"><div class="modal-h"><div><h3>Choose a sample file</h3><p>This prototype simulates file selection and processing.</p></div><button type="button" onclick="closeUploadV2SamplePicker()">${I.x}</button></div><div class="modal-b" style="display:flex;flex-direction:column;gap:10px">${uploadV2SampleFiles(w.category).map(file=>`<button type="button" class="source-card" style="text-align:left;width:100%;flex-direction:row;align-items:center;padding:14px" onclick="simulateUploadV2File('${file.id}')"><div class="ico" style="margin-bottom:0;flex:0 0 40px">${file.id==='trade'?I.clipboard:file.id==='template'?I.upload:I.db}</div><div><strong>${file.name}</strong><p style="font-size:12px;color:var(--muted-foreground);margin-top:3px">${file.label} · ${file.detail}</p></div></button>`).join('')}</div></div></div>`;
+  const card = file => {
+    const useCase = file.useCase;
+    const icon = file.group === 'trade' ? I.clipboard : file.group === 'template' ? I.upload : I.db;
+    const meta = useCase
+      ? `<p class="sample-use-case"><span class="sample-use-case-tag ${useCase.tone}">${useCase.title}</span> ${useCase.detail}</p>`
+      : `<p style="font-size:12px;color:var(--muted-foreground);margin-top:3px">${file.label} · ${file.detail}</p>`;
+    return `<button type="button" class="source-card" style="text-align:left;width:100%;flex-direction:row;align-items:flex-start;padding:14px" onclick="simulateUploadV2File('${file.id}')"><div class="ico" style="margin-bottom:0;flex:0 0 40px">${icon}</div><div style="min-width:0"><strong class="mono">${file.name}</strong>${meta}</div></button>`;
+  };
+  return `<div class="modal-backdrop open" style="align-items:center" onclick="if(event.target===this)closeUploadV2SamplePicker()">
+    <div class="modal" style="width:640px;max-width:92vw;max-height:86vh;display:flex;flex-direction:column">
+      <div class="modal-h"><div><h3>Choose a sample file</h3><p>This prototype simulates file selection and processing.</p></div><button type="button" onclick="closeUploadV2SamplePicker()">${I.x}</button></div>
+      <div class="modal-b sample-picker-body">
+        ${groups.map(group => {
+          const items = files.filter(file => file.group === group.key);
+          if (!items.length) return '';
+          const heading = items.some(file => file.useCase) ? `<div class="sample-group-h">${group.title}</div>` : '';
+          return `<div class="sample-group">${heading}${items.map(card).join('')}</div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>`;
 }
 function uploadV2Back(){go('home');}
 function routeUploadV2() {
@@ -2738,7 +2889,7 @@ function routeUploadV2() {
   }
   if(current.detectedRoute!=='erp'){current.v2FileState='error';current.routeError='We couldn’t determine the correct processing flow.';current.uploadType=null;render();return;}
   next=resetWiz('erp'); attachUnifiedOrigin(next,2,context);
-  Object.assign(next,{uploadType:'erp',entryCategory:current.category,marketplace:current.marketplace||'',sellerId:current.sellerId||'',fileName:current.fileName});
+  Object.assign(next,{uploadType:'erp',entryCategory:current.category,marketplace:current.marketplace||'',sellerId:current.sellerId||'',fileName:current.fileName,erpScenario:current.erpScenario||'all-matched',v2UseCase:current.v2UseCase||'',v2UseCaseTitle:current.v2UseCaseTitle||''});
   if (draftId) next.draftId=draftId;
   state.wiz=next; state.view='wizard-erp'; simulateErp(current.fileName);
 }
@@ -4476,14 +4627,21 @@ function getERPScenarioSources(scenario) {
   if (scenario === 'missing-only') {
     return reindexERPSources(ERP_MAP_SOURCES.filter(source => !['s3','s7','x1','x2','x3'].includes(source.id)));
   }
+  if (scenario === 'no-match-partial') return reindexERPSources(ERP_NO_MATCH_PARTIAL_SOURCES);
+  if (scenario === 'no-match-unrecognized') return reindexERPSources(ERP_NO_MATCH_UNRECOGNIZED_SOURCES);
   return reindexERPSources(ERP_INCOMPLETE_SOURCES);
 }
 function getERPScenarioMappings(scenario) {
   if (scenario === 'recoverable-missing') return Object.assign({}, ERP_INCOMPLETE_MAP);
+  if (scenario === 'no-match-partial') return { x1:'', x2:'', x3:'', x4:'', x5:'' };
+  if (scenario === 'no-match-unrecognized') return { u1:'', u2:'', u3:'' };
   const mappings = Object.assign({}, ERP_DEFAULT_MAP, { x1:'', x2:'', x3:'' });
   if (scenario === 'replace-required' || scenario === 'missing-only') {
     delete mappings.s3;
     delete mappings.s7;
+  }
+  if (scenario === 'all-matched') {
+    Object.keys(mappings).forEach(id => { if (!id.startsWith('s')) delete mappings[id]; });
   }
   return mappings;
 }
@@ -4558,19 +4716,20 @@ function getERPSources(w) {
 }
 function getERPMappingStats(w) {
   const sources = getERPSources(w);
+  const mappableSources = sources.filter(source => !source.unmappable);
   const supplemented = (w.erp2SupplementedFields || []).filter(Boolean);
-  const values = sources.map(s => (w.mappings && w.mappings[s.id]) || '').filter(Boolean).concat(supplemented);
+  const values = mappableSources.map(s => (w.mappings && w.mappings[s.id]) || '').filter(Boolean).concat(supplemented);
   const targetCounts = values.reduce((acc, value) => {
     acc[value] = (acc[value] || 0) + 1;
     return acc;
   }, {});
   const duplicateTargets = Object.keys(targetCounts).filter(value => targetCounts[value] > 1);
-  const conflictIds = sources
+  const conflictIds = mappableSources
     .filter(s => duplicateTargets.includes((w.mappings && w.mappings[s.id]) || ''))
     .map(s => s.id);
   const missing = ERP_REQUIRED_FIELDS.filter(field => !values.includes(field.name));
-  const mapped = sources.filter(s => w.mappings && w.mappings[s.id]);
-  const unmapped = sources.filter(s => !w.mappings || !w.mappings[s.id]);
+  const mapped = mappableSources.filter(s => w.mappings && w.mappings[s.id]);
+  const unmapped = mappableSources.filter(s => !w.mappings || !w.mappings[s.id]);
   const canManuallyResolve = missing.length > 0 && unmapped.length > missing.length;
   const requiresReplacement = missing.length > 0 && !canManuallyResolve;
   return {
@@ -5092,7 +5251,7 @@ function getERPUnansweredManualFields(w, targetNames) {
 }
 function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualStage) {
   const uniqueTargets = Array.from(new Set((targetNames || []).filter(Boolean)));
-  const availableSources = sources || [];
+  const availableSources = (sources || []).filter(source => !source.unmappable);
   const systemHead = manualStage
     ? `<strong>Fields we need</strong><small>Still required — ${uniqueTargets.length} left</small>`
     : `<strong>Fields we need</strong>`;
@@ -5242,6 +5401,9 @@ function stepERP2Confirm(w) {
   const identifiedTargetNames = (w.erp2IdentifiedTargetNames || []).length
     ? w.erp2IdentifiedTargetNames
     : Array.from(new Set((w.erp2IdentifiedSourceIds || []).map(id => w.mappings[id]).filter(Boolean)));
+  const emptyHint = w.erpScenario === 'no-match-unrecognized'
+    ? 'None of the uploaded headers can be mapped. You’ll need to update the file and upload it again.'
+    : 'Review the file, then match any columns you recognize in the next step.';
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
       <h2>Check the columns we matched</h2>
@@ -5251,7 +5413,9 @@ function stepERP2Confirm(w) {
       <div style="margin-bottom:12px">
         <p style="font-size:15px;font-weight:600">We matched ${identifiedTargetNames.length} of the ${ERP_REQUIRED_FIELDS.length} fields we need. Change any mapping that isn't right.</p>
       </div>
-      ${erp2TargetMappingTable(identifiedTargetNames, stats.sources, w.mappings, 'updateERP2TargetMapping', false)}
+      ${identifiedTargetNames.length
+        ? erp2TargetMappingTable(identifiedTargetNames, stats.sources, w.mappings, 'updateERP2TargetMapping', false)
+        : `<div class="alert-info">${I.info}<p>${emptyHint}</p></div>`}
     </div>
   </div>`;
 }
@@ -5367,12 +5531,13 @@ function stepERP2Missing(w) {
   </div>`;
 }
 function erp2Steps(w) {
+  const stats = getERPMappingStats(w);
   const steps = [
     {n:1,label:'Upload CSV'},
     {n:2,label:'Confirm info'},
   ];
   if (w.erp2HadUnrecognized) steps.push({n:3,label:'Match remaining fields'});
-  steps.push({n:4,label:'Update and re-upload'});
+  if (stats.missing.length) steps.push({n:4,label:'Update and re-upload'});
   steps.push({n:5,label:'Review'});
   return steps.map((step,index) => Object.assign({}, step, { displayN:index + 1 }));
 }
@@ -5383,7 +5548,9 @@ function erp2Back() {
     else go('home');
     return;
   }
-  if (w.erp2Stage === 4 && !w.erp2HadUnrecognized) w.erp2Stage = 2;
+  const stats = getERPMappingStats(w);
+  if (w.erp2Stage === 5 && !stats.missing.length) w.erp2Stage = w.erp2HadUnrecognized ? 3 : 2;
+  else if (w.erp2Stage === 4 && !w.erp2HadUnrecognized) w.erp2Stage = 2;
   else w.erp2Stage -= 1;
   render();
 }
@@ -5397,8 +5564,10 @@ function erp2Next() {
       const selectedNames = Object.keys(w.manualSelections || {}).filter(name => w.manualSelections[name]);
       w.manualResolutionFields = Array.from(new Set(missingNames.concat(selectedNames)));
       w.erp2Stage = 3;
-    } else {
+    } else if (stats.missing.length) {
       w.erp2Stage = 4;
+    } else {
+      w.erp2Stage = 5;
     }
   }
   else if (w.erp2Stage === 3) {
@@ -5420,7 +5589,7 @@ function erp2Next() {
       return;
     }
     w.mappingAttempted = false;
-    w.erp2Stage = 4;
+    w.erp2Stage = getERPMappingStats(w).missing.length ? 4 : 5;
   }
   else if (w.erp2Stage === 4 && stats.valid && !getERP2SupplementStats(w).duplicateTargets.length) w.erp2Stage = 5;
   else if (w.erp2Stage === 5 && stats.valid) { submitWizard(); return; }
@@ -7425,7 +7594,7 @@ function uploadV2Body(w) {
   const canUpload=uploadV2PrerequisitesComplete(w);
   let fileContent='';
   if (w.v2FileState==='analyzing') fileContent=`<div class="upload-zone" style="border-color:var(--primary);background:var(--accent)"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing file type and structure…</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:4px">Selecting the appropriate processing flow</p></div>`;
-  else if (w.v2FileState==='ready') fileContent=`<div class="file-ok">${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}<div style="flex:1;min-width:0"><p class="mono" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(w.fileName)}</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Ready to continue · ${w.detectedLabel} detected</p></div><button type="button" class="btn btn-xs btn-secondary" onclick="openUploadV2SamplePicker()">${I.rotate} Replace</button></div>`;
+  else if (w.v2FileState==='ready') fileContent=`<div class="file-ok">${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}<div style="flex:1;min-width:0"><p class="mono" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(w.fileName)}</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Ready to continue · ${w.detectedLabel} detected${w.v2UseCaseTitle?` · ${w.v2UseCaseTitle}`:''}</p></div><button type="button" class="btn btn-xs btn-secondary" onclick="openUploadV2SamplePicker()">${I.rotate} Replace</button></div>`;
   else if (w.v2FileState==='error') fileContent=`<div style="display:flex;flex-direction:column;gap:12px"><div class="file-problem">${I.alert}<div style="flex:1"><p class="mono" style="font-weight:600">${escapeHTML(w.fileName||'File not accepted')}</p><p style="font-size:12px;margin-top:3px">${w.routeError}</p></div></div><button type="button" class="btn btn-secondary" style="align-self:flex-start" onclick="openUploadV2SamplePicker()">Choose another file</button></div>`;
   else fileContent=`<div class="upload-zone" data-upload-v2-zone style="cursor:${canUpload?'pointer':'not-allowed'};padding:52px 32px;opacity:${canUpload?'1':'.55'}" onclick="openUploadV2SamplePicker()"><div style="color:var(--muted-foreground);margin-bottom:12px">${I.upload}</div><p style="font-size:15px;font-weight:600">Upload transaction document</p><p style="font-size:13px;color:var(--muted-foreground);margin:6px 0 14px">PDF, JPG, PNG, TIFF, DOC, DOCX, CSV · Max 50 MB</p><button type="button" class="btn btn-primary" data-upload-v2-button onclick="event.stopPropagation();openUploadV2SamplePicker()" ${canUpload?'':'disabled'}>Choose file</button>${canUpload?'':'<p style="font-size:12px;color:var(--muted-foreground);margin-top:12px">Complete the category details to enable upload.</p>'}</div>`;
   return `<div style="display:flex;flex-direction:column;gap:20px">
