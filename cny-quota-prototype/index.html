@@ -6777,7 +6777,8 @@ function updateTradeGoodUnit(id, unit) {
 
 function tradeGoodsTable() {
   const w = state.wiz;
-  const items = w.goods || [];
+  const item = ((w.goods && w.goods[0]) || TRADE_GOODS[0] || null);
+  const items = item ? [item] : [];
   const view = TRADE_GOODS_TABLE_VIEW_VISIBLE ? (w.goodsView || 'table') : 'cards';
   const switcher = TRADE_GOODS_TABLE_VIEW_VISIBLE ? `<div class="seg">
       <button type="button" class="${view==='table'?'on':''}" onclick="state.wiz.goodsView='table';render()">Table</button>
@@ -6795,20 +6796,11 @@ function tradeGoodsTable() {
           <td class="mono" style="font-weight:600">USD ${line.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
         </tr>`;
       }).join('')}</tbody>
-    </table></div>
-    <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-start;align-items:center;gap:12px">
-      <button type="button" class="btn-link" onclick="toast('Add item (prototype)')">${I.plus} Add Item</button>
-    </div>`;
+    </table></div>`;
 
-  const cardsBody = `<div style="padding:16px;display:flex;flex-direction:column;gap:12px">
-      ${items.map((r,i) => {
+  const cardsBody = items.map(r => {
         const line = (parseFloat(r.qty)||0)*(parseFloat(r.unitPrice)||0);
-        return `<div class="goods-card">
-          <div class="goods-card-h">
-            <span style="font-size:13px;font-weight:600">Item ${i+1}</span>
-            <button type="button" class="btn-link" onclick="state.wiz.goods=state.wiz.goods.filter(g=>g.id!=='${r.id}');render()">Remove</button>
-          </div>
-          <div class="field-grid" style="padding:14px">
+        return `<div class="field-grid">
             <div class="field"><label>Product Name (CN)</label><input value="${r.nameCN}" readonly /></div>
             <div class="field"><label>Product Name (EN)</label><input value="${r.nameEN}" readonly /></div>
             <div class="field"><label>Quantity</label><input class="mono" value="${r.qty}" readonly /></div>
@@ -6819,18 +6811,15 @@ function tradeGoodsTable() {
                 ${line>0?`USD ${line.toLocaleString('en-US',{minimumFractionDigits:2})}`:'—'}
               </div>
             </div>
-          </div>
-        </div>`;
-      }).join('')}
-      <button type="button" class="goods-add" onclick="toast('Add item (prototype)')">${I.plus} Add Item</button>
-    </div>`;
+          </div>`;
+      }).join('');
 
   return `<div class="review-card">
     <div class="review-card-h" style="justify-content:space-between;gap:12px">
       <span style="display:flex;align-items:center;gap:8px;min-width:0">${I.package} Goods Information</span>
       ${switcher}
     </div>
-    <div class="review-card-b" style="padding:0">
+    <div class="review-card-b" style="${view==='cards'?'':'padding:0'}">
       ${view==='cards' ? cardsBody : tableBody}
     </div>
   </div>`;
@@ -7786,8 +7775,7 @@ function viewDetails() {
           <table class="data">
             <thead><tr>${['Product Name CN','Product Name EN','Qty','Unit','Unit Price','Total'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
             <tbody>
-              <tr><td>电子元件</td><td>Electronic Components</td><td>500</td><td>pcs</td><td>USD 50.00</td><td>USD 25,000.00</td></tr>
-              <tr><td>包装材料</td><td>Packaging Materials</td><td>200</td><td>box</td><td>USD 117.50</td><td>USD 23,500.00</td></tr>
+              <tr><td>电子元件</td><td>Electronic Components</td><td>500</td><td>pcs</td><td>USD 48.50</td><td>USD 24,250.00</td></tr>
             </tbody>
           </table>
         </div>
