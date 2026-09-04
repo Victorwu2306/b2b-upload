@@ -2161,6 +2161,16 @@ function erpRequiredLabel(name) {
   const cn = field && field.labelCN;
   return cn || formatFieldLabel(name);
 }
+const CN_FILE_COLUMN_LABELS = {
+  sku_code:'SKU 代码', qty:'数量', price_per_unit:'单价', ccy:'币种', total:'总金额',
+  order_date:'订单日期', type:'类型', customer_name:'客户名称', invoice_currency:'发票币种',
+  payment_terms:'付款条件', ref_no:'参考号', memo:'备注', col_a:'列 A', flag:'标记', misc_note:'内部备注',
+};
+function fileColumnLabel(name) {
+  if (CN_FILE_COLUMN_LABELS[name]) return CN_FILE_COLUMN_LABELS[name];
+  const field = ERP_REQUIRED_FIELDS.find(item => item.name === name);
+  return field ? erpRequiredLabel(name) : formatFieldLabel(name);
+}
 function formatChineseList(items) {
   const list = (items || []).filter(Boolean);
   if (!list.length) return '';
@@ -5298,10 +5308,10 @@ function erp2StaticMapRow(source, w) {
   return `<div class="map-row">
     <div class="system-required">
       <strong>${target ? erpRequiredLabel(target) : 'Unmapped column'}</strong>
-      <small>${field ? field.desc : source.colName}</small>
+      <small>${field ? field.desc : fileColumnLabel(source.colName)}</small>
     </div>
     <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
-    <div class="uploaded-choice"><div class="erp2-static-target">${formatFieldLabel(source.colName)}</div></div>
+    <div class="uploaded-choice"><div class="erp2-static-target">${fileColumnLabel(source.colName)}</div></div>
     ${mapSampleCell(source.sample)}
   </div>`;
 }
@@ -5346,7 +5356,7 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
               ${availableSources.map(source => {
                 const mappedTarget = (mappings || {})[source.id] || '';
                 const usedElsewhere = mappedTarget && mappedTarget !== targetName;
-                return `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''} ${usedElsewhere?'disabled':''}>${formatFieldLabel(source.colName)}${usedElsewhere?` · Used for ${erpRequiredLabel(mappedTarget)}`:''}</option>`;
+                return `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''} ${usedElsewhere?'disabled':''}>${fileColumnLabel(source.colName)}${usedElsewhere?` · Used for ${erpRequiredLabel(mappedTarget)}`:''}</option>`;
               }).join('')}
               ${manualStage?erpNoneOfAboveOption(noneSelected):''}
             </select>
@@ -5739,7 +5749,7 @@ function erp3TargetMappingTable(w) {
           <div class="erp-file-select-row">
             <select class="${showError?'invalid':''}" aria-label="Choose an uploaded file column for ${row.field.name}" ${isMissing?'disabled':''} onchange="updateERP2TargetMapping('${row.field.name}',this.value)">
               <option value="">${isMissing?'Not found in your file':'— Select an uploaded file column —'}</option>
-              ${availableSources.map(source => `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''}>${formatFieldLabel(source.colName)}</option>`).join('')}
+              ${availableSources.map(source => `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''}>${fileColumnLabel(source.colName)}</option>`).join('')}
               ${isMissing?'':erpNoneOfAboveOption(noneSelected)}
             </select>
           </div>
@@ -6110,7 +6120,7 @@ function mapRow(s, w, stats, manualStage, updater) {
   const field = ERP_REQUIRED_FIELDS.find(item => item.name === val);
   return `<div class="map-row ${conflict?'conflict':manualStage&&val?'manually-matched':val?'':'unmapped'}">
     <div class="system-required">
-      <strong>${val ? erpRequiredLabel(val) : formatFieldLabel(s.colName)}</strong>
+      <strong>${val ? erpRequiredLabel(val) : fileColumnLabel(s.colName)}</strong>
       <small>${field ? field.desc : targetKind}</small>
     </div>
     <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
@@ -6122,7 +6132,7 @@ function mapRow(s, w, stats, manualStage, updater) {
         }).join('')}
       </select>
       ${conflict
-        ? `<div class="map-row-error">${I.alert}<span>${erpRequiredLabel(val)} is also mapped from ${conflictingSources.map(source=>`<span class="mono">${source.colName}</span>`).join(', ')}.</span></div>`
+        ? `<div class="map-row-error">${I.alert}<span>${erpRequiredLabel(val)} is also mapped from ${conflictingSources.map(source=>`<span class="mono">${fileColumnLabel(source.colName)}</span>`).join(', ')}.</span></div>`
         : manualStage && val
           ? `<span class="map-row-success">${I.check} Manually matched</span>`
           : ''}
@@ -7559,7 +7569,7 @@ function viewUploadDetails() {
               <td>
                 <div style="font-weight:700">${erpRequiredLabel(target)}</div>
               </td>
-              <td>${source==='—'?'—':formatFieldLabel(source)}</td>
+              <td>${source==='—'?'—':fileColumnLabel(source)}</td>
               <td style="color:var(--muted-foreground)">${sample||'—'}</td>
             </tr>`).join('')}</tbody>
           </table>
