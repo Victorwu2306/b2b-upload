@@ -1346,18 +1346,15 @@ table.data tr:hover td { background: var(--muted); }
 .map-head,
 .map-row {
   display:grid;
-  grid-template-columns:minmax(200px,1.35fr) 28px minmax(220px,1.1fr) minmax(140px,.85fr);
-  min-width:720px;
+  grid-template-columns:minmax(220px,1.05fr) minmax(360px,1.25fr) minmax(110px,.5fr);
+  min-width:740px;
   align-items:center;
 }
-.map-head {
-  min-height:48px; background:#f7f3ff; border-bottom:1px solid #ede8f5;
-}
+.map-head { background:#f7f3ff; border-bottom:1px solid #ede8f5; }
 .map-head > div {
   padding:16px; display:flex; align-items:center;
   background:transparent; border-top:none;
 }
-.map-head .map-col-arrow { padding:0; justify-content:center; }
 .map-head-copy { display:flex; flex-direction:column; gap:0; }
 .map-head-copy strong {
   color:#888; font-size:13px; font-weight:600;
@@ -1372,28 +1369,47 @@ table.data tr:hover td { background: var(--muted); }
   gap:2px; background:transparent;
 }
 .map-source-main { display:flex; flex-direction:column; gap:2px; min-width:0; }
+.row-mapping {
+  display:flex; align-items:center; gap:10px; min-width:0;
+}
 .mapping-direction {
   position:static; transform:none; display:grid; place-items:center;
-  width:28px; height:20px; color:#c0c0c0; pointer-events:none;
+  width:13px; height:13px; color:#c0c0c0; pointer-events:none; flex-shrink:0;
 }
-.mapping-direction svg { width:14px; height:14px; display:block; }
-.map-target {
-  padding:14px 8px 14px 0; display:flex; flex-direction:column; justify-content:center;
+.mapping-direction svg { width:13px; height:13px; display:block; }
+.map-target,
+.erp2-target-map .uploaded-choice {
+  padding:14px 16px; display:flex; flex-direction:column; justify-content:center;
   gap:6px; background:transparent;
 }
-.map-row select {
-  width:100%; max-width:280px; height:40px; border:1px solid #d9d9d9; border-radius:6px;
-  padding:0 12px; background:#fff; font-family:var(--font-sans); font-size:14px; color:#252526;
+.map-row select,
+.erp2-static-target {
+  width:280px; max-width:280px; height:40px; flex:0 0 280px;
+  border:1px solid #d9d9d9; border-radius:6px;
+  padding:0 32px 0 12px; background:#fff;
+  font-family:var(--font-sans); font-size:14px; color:#252526;
 }
-.map-row.unmapped select { border-color:#e8a020; color:#aaa; }
-.map-row.manually-matched { box-shadow:inset 3px 0 0 #1a8a4a; }
-.map-row.manually-matched select { border-color:#1a8a4a; }
+.erp2-static-target { display:flex; align-items:center; padding-right:12px; }
+.map-row.unmapped select,
+.map-row.unrecognized select,
+.erp3-map .map-row.missing select { border-color:#e8a020; color:#aaa; }
+.map-row.unmapped .uploaded-choice,
+.map-row.unmapped .map-target,
+.map-row.unrecognized .uploaded-choice,
+.erp3-map .map-row.missing .uploaded-choice { background:#FFF8EB; }
+.map-status-icon {
+  width:16px; height:16px; flex:0 0 16px;
+  display:grid; place-items:center; line-height:0;
+}
+.map-status-icon svg { width:16px; height:16px; display:block; }
+.map-status-icon.success { color:#1a8a4a; }
+.map-status-icon.warning,
+.map-status-icon.pending { color:#e8a020; }
 .map-row-success {
   display:flex; align-items:center; gap:5px; color:#1a8a4a;
   font-size:12px; line-height:16px; font-weight:500;
 }
 .map-row-success svg { width:12px; height:12px; flex:0 0 12px; }
-.map-row.conflict { box-shadow:inset 3px 0 0 var(--destructive); }
 .map-row.conflict select { border-color:var(--destructive); box-shadow:0 0 0 2px rgba(211,47,47,.08); }
 .map-row select:focus { outline:none; border-color:#4716b3; box-shadow:0 0 0 2px rgba(71,22,179,.16); }
 .map-row.conflict select:focus { border-color:var(--destructive); box-shadow:0 0 0 2px rgba(211,47,47,.12); }
@@ -1401,24 +1417,8 @@ table.data tr:hover td { background: var(--muted); }
   padding:14px 16px; display:flex; flex-direction:column; justify-content:center;
   gap:2px; background:transparent;
 }
-.erp2-target-map .system-required strong { font-size:14px; font-weight:600; color:#252526; }
+.erp2-target-map .system-required strong { font-size:14px; font-weight:600; color:#252526; line-height:1.4; }
 .erp2-target-map .system-required small { color:#aaa; font-size:12px; line-height:1.4; }
-.erp2-target-map .uploaded-choice {
-  padding:14px 8px 14px 0; display:flex; flex-direction:column; justify-content:center;
-  gap:6px; background:transparent;
-}
-.erp2-target-map .map-row.none { box-shadow:inset 3px 0 0 #e8a020; }
-.erp2-target-map .map-row.none .system-required,
-.erp2-target-map .map-row.none .uploaded-choice,
-.erp2-target-map .map-row.none .map-sample { background:#FFF8EB; }
-.erp2-target-map .map-row.none select { border-color:#e8a020; color:#B54708; background:#fff; }
-.erp2-target-map .map-row.none .map-sample { color:#aaa; }
-.erp2-target-map .map-row.needs-selection .system-required,
-.erp2-target-map .map-row.needs-selection .uploaded-choice,
-.erp2-target-map .map-row.needs-selection .map-sample,
-.erp3-map .map-row.needs-selection .system-required,
-.erp3-map .map-row.needs-selection .uploaded-choice,
-.erp3-map .map-row.needs-selection .map-sample { background:#FEF3F2; }
 .map-row.needs-selection select,
 .map-row select.invalid {
   border-color:var(--destructive);
@@ -1429,37 +1429,14 @@ table.data tr:hover td { background: var(--muted); }
 .erp2-target-map .uploaded-choice option { font-family:var(--font-sans); }
 .erp-option-divider { color:#C5C6D0; background:#F5F5F8; }
 .erp-none-option { color:#B54708; font-style:italic; font-weight:600; background:#FFF8EB; }
-.erp3-map .map-row.none { box-shadow:inset 3px 0 0 #e8a020; }
-.erp3-map .map-row.none .system-required,
-.erp3-map .map-row.none .uploaded-choice,
-.erp3-map .map-row.none .map-sample { background:#FFF8EB; }
-.erp3-map .map-row.none select { border-color:#e8a020; color:#B54708; background:#fff; }
-.erp3-status-hint.none { color:#e8a020; }
-.erp3-map .map-row.unrecognized select { border-color:#e8a020; color:#aaa; }
-.erp3-map .map-row.missing .system-required,
-.erp3-map .map-row.missing .uploaded-choice,
-.erp3-map .map-row.missing .map-sample { background:#FEF3F2; }
-.erp3-map .map-row.missing select { border-color:#FECDCA; }
-.erp3-map .map-row.missing .map-sample { color:#aaa; }
-.erp3-status-hint { font-size:12px; line-height:16px; font-weight:500; }
-.erp3-status-hint.mapped,
-.erp3-status-hint.manually-matched { color:#1a8a4a; }
-.erp3-status-hint.unrecognized { color:#e8a020; }
-.erp3-status-hint.missing,
-.erp3-status-hint.conflict { color:#B42318; }
 .erp3-corrected-card { border:1px solid #FECDCA; border-radius:10px; overflow:hidden; background:#fff; }
 .erp3-corrected-card-h { padding:18px 20px; background:#FFF8F7; border-bottom:1px solid #FECDCA; }
 .erp3-corrected-card-h h3 { color:#B42318; font-size:16px; line-height:24px; }
 .erp3-corrected-card-h p { margin-top:4px; color:#7A271A; font-size:12px; line-height:18px; }
 .erp3-corrected-body { padding:20px; display:flex; flex-direction:column; gap:16px; }
-.erp-file-select-row { display:block; }
-.erp2-static-target {
-  width:100%; max-width:280px; height:40px; display:flex; align-items:center;
-  padding:0 12px; border:1px solid #d9d9d9; border-radius:6px;
-  background:#fff; font-size:14px; color:#252526;
-}
+.erp-file-select-row { display:contents; }
 .map-sample {
-  padding:14px 16px 14px 8px; color:#aaa;
+  padding:14px 16px; color:#aaa;
   font-size:14px; line-height:20px;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
@@ -1695,9 +1672,10 @@ table.data tr:hover td { background: var(--muted); }
   cursor:pointer;
 }
 .map-row select {
-  background-position:right 10px center;
-  background-size:14px 14px;
-  padding-left:10px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23bbbbbb' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position:right 12px center;
+  background-size:10px 10px;
+  padding-left:12px;
   padding-right:32px;
 }
 .filter-field select:disabled,
@@ -2435,6 +2413,9 @@ const I = {
   chevronL: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>`,
   chevronR: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>`,
   mapArrow: `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h11M11 5l5 5-5 5"/></svg>`,
+  mapStatusSuccess: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.8 12.2 10.6 15l5.6-5.6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  mapStatusWarning: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 3 1.8 20.6c-.4.7.1 1.4.9 1.4h18.6c.8 0 1.3-.7.9-1.4L12 3z"/><path fill="#fff" d="M11 9h2v6h-2V9zm1 9a1.15 1.15 0 1 1 0-2.3 1.15 1.15 0 0 1 0 2.3z"/></svg>`,
+  mapStatusPending: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 7v5.2L15.4 14.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   package: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.3 9 5.2M7.5 4.3 3 7v10l9 5 9-5V7l-4.5-2.7M12 22V12M3 7l9 5 9-5"/></svg>`,
   cart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L21.2 7H6.2"/></svg>`,
   file: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>`,
@@ -2537,6 +2518,7 @@ function uploadV2ContextFrom(w) {
     marketplace:source.marketplace || '',
     sellerId:source.sellerId || '',
     allowedTypes:Array.isArray(source.allowedTypes) ? source.allowedTypes.slice() : null,
+    allowedCategories:Array.isArray(source.allowedCategories) ? source.allowedCategories.slice() : null,
     v2RequestId:Number(source.v2RequestId) || 0,
     v2PickerOpen:false,
     erpScenario:source.erpScenario || '', v2UseCase:source.v2UseCase || '', v2UseCaseTitle:source.v2UseCaseTitle || '',
@@ -2560,6 +2542,9 @@ function createUploadV2State(context, allowedTypes) {
     w.routeError = 'We couldn’t determine the correct processing flow.';
   }
   if (allowedTypes) w.allowedTypes = allowedTypes.slice();
+  if (Array.isArray(w.allowedCategories) && w.allowedCategories.length && !w.allowedCategories.includes(w.category)) {
+    w.category = w.allowedCategories.length === 1 ? w.allowedCategories[0] : '';
+  }
   return w;
 }
 function attachUnifiedOrigin(w, originVersion, context) {
@@ -2567,11 +2552,13 @@ function attachUnifiedOrigin(w, originVersion, context) {
   w.uploadOriginVersion = originVersion || 1;
   if (context) w.uploadV2Context = context;
   if (context && Array.isArray(context.allowedTypes)) w.allowedTypes = context.allowedTypes.slice();
+  if (context && Array.isArray(context.allowedCategories)) w.allowedCategories = context.allowedCategories.slice();
 }
 function startTemplateWizard(fromUnified) {
   const current = state.wiz;
   const draftId = fromUnified && current && current.draftId;
   const allowedTypes = fromUnified && current && current.allowedTypes;
+  const allowedCategories = fromUnified && current && current.allowedCategories;
   const originVersion = fromUnified && current ? (current.uploadVersion || current.uploadOriginVersion || 1) : null;
   const v2Context = fromUnified ? uploadV2ContextFrom(current) : null;
   state.templatePanel = false;
@@ -2580,6 +2567,7 @@ function startTemplateWizard(fromUnified) {
   state.wiz = resetWiz('template');
   if (fromUnified) { attachUnifiedOrigin(state.wiz,originVersion,v2Context); state.wiz.uploadType = uploadType; }
   if (allowedTypes) state.wiz.allowedTypes = allowedTypes.slice();
+  if (allowedCategories) state.wiz.allowedCategories = allowedCategories.slice();
   if (draftId) state.wiz.draftId = draftId;
   state.view = 'wizard-template';
   render();
@@ -2588,12 +2576,14 @@ function startERPWizard(fromUnified) {
   const current = state.wiz;
   const draftId = fromUnified && current && current.draftId;
   const allowedTypes = fromUnified && current && current.allowedTypes;
+  const allowedCategories = fromUnified && current && current.allowedCategories;
   const originVersion = fromUnified && current ? (current.uploadVersion || current.uploadOriginVersion || 1) : null;
   const v2Context = fromUnified ? uploadV2ContextFrom(current) : null;
   state.erpGuide = false;
   state.wiz = resetWiz('erp');
   if (fromUnified) { attachUnifiedOrigin(state.wiz,originVersion,v2Context); state.wiz.uploadType = 'erp'; }
   if (allowedTypes) state.wiz.allowedTypes = allowedTypes.slice();
+  if (allowedCategories) state.wiz.allowedCategories = allowedCategories.slice();
   if (draftId) state.wiz.draftId = draftId;
   state.view = 'wizard-erp';
   render();
@@ -2602,42 +2592,57 @@ function startTradeWizard(fromUnified) {
   const current = state.wiz;
   const draftId = fromUnified && current && current.draftId;
   const allowedTypes = fromUnified && current && current.allowedTypes;
+  const allowedCategories = fromUnified && current && current.allowedCategories;
   const originVersion = fromUnified && current ? (current.uploadVersion || current.uploadOriginVersion || 1) : null;
   const v2Context = fromUnified ? uploadV2ContextFrom(current) : null;
   state.wiz = resetWiz('trade');
   if (fromUnified) { attachUnifiedOrigin(state.wiz,originVersion,v2Context); state.wiz.uploadType = 'trade'; }
   if (allowedTypes) state.wiz.allowedTypes = allowedTypes.slice();
+  if (allowedCategories) state.wiz.allowedCategories = allowedCategories.slice();
   if (draftId) state.wiz.draftId = draftId;
   state.view = 'wizard-trade';
   render();
 }
-function startUploadWizard(keepType, allowedTypes) {
+function wizardCategoryOptions(w) {
+  const allowed = w && Array.isArray(w.allowedCategories) && w.allowedCategories.length ? w.allowedCategories : null;
+  return allowed ? TEMPLATE_TYPES.filter(type => allowed.includes(type.key)) : TEMPLATE_TYPES;
+}
+function isAllowedWizardCategory(w, key) {
+  return wizardCategoryOptions(w).some(type => type.key === key);
+}
+function startUploadWizard(keepType, allowedTypes, allowedCategories) {
   const current = state.wiz;
   const inheritedTypes = keepType && current && current.allowedTypes;
   const allowed = Array.isArray(allowedTypes) ? allowedTypes.slice() : (inheritedTypes ? inheritedTypes.slice() : null);
+  const inheritedCategories = keepType && current && current.allowedCategories;
+  const categories = Array.isArray(allowedCategories) ? allowedCategories.slice() : (inheritedCategories ? inheritedCategories.slice() : null);
   const candidate = keepType && current && current.uploadType;
   const prev = candidate && (!allowed || allowed.includes(candidate)) ? candidate : null;
   const draftId = keepType && current && current.draftId;
   const originVersion = keepType && current
     ? (current.uploadOriginVersion || current.uploadVersion || (current.uploadV2Context ? 2 : (current.fromUnified ? 1 : 2)))
     : 2;
+  const context = Object.assign({}, uploadV2ContextFrom(current) || {});
+  if (categories) context.allowedCategories = categories;
   if (originVersion === 2) {
-    state.wiz = createUploadV2State(uploadV2ContextFrom(current),allowed);
+    state.wiz = createUploadV2State(context, allowed);
   } else {
     state.wiz = { kind:'upload', uploadVersion:1, uploadType:prev };
     if (allowed) state.wiz.allowedTypes = allowed;
+    if (categories) state.wiz.allowedCategories = categories;
   }
   if (draftId) state.wiz.draftId = draftId;
   state.view = 'wizard-upload';
   render();
 }
 function startDocumentUploadWizard() {
-  startUploadWizard(false,['trade','erp']);
+  startUploadWizard(false, ['trade','erp'], TEMPLATE_TYPES.filter(type => type.key !== 'marketplace').map(type => type.key));
 }
 function startMarketplaceTemplateWizard() {
   state.templatePanel = false;
   state.templateMenuOpen = false;
   state.wiz = resetWiz('template');
+  state.wiz.allowedCategories = ['marketplace'];
   state.wiz.category = 'marketplace';
   state.view = 'wizard-template';
   render();
@@ -2669,16 +2674,19 @@ function setUploadFlowVersion(version) {
   const current = state.wiz || {};
   const allowed = current.allowedTypes;
   const draftId = current.draftId;
+  const categories = Array.isArray(current.allowedCategories) ? current.allowedCategories.slice() : null;
+  const context = {};
+  if (categories) context.allowedCategories = categories;
   state.wiz = version === 2
-    ? createUploadV2State(null,allowed)
-    : Object.assign({kind:'upload',uploadVersion:1,uploadType:null},allowed?{allowedTypes:allowed.slice()}:{});
+    ? createUploadV2State(context, allowed)
+    : Object.assign({kind:'upload',uploadVersion:1,uploadType:null}, allowed?{allowedTypes:allowed.slice()}:{}, categories?{allowedCategories:categories}:{});
   if (draftId) state.wiz.draftId = draftId;
   state.view = 'wizard-upload';
   render();
 }
 function setUploadV2Category(value) {
   const w = state.wiz; if (!w || w.uploadVersion !== 2) return;
-  const category = TEMPLATE_TYPES.some(type=>type.key===value) ? value : '';
+  const category = isAllowedWizardCategory(w, value) ? value : '';
   if (w.category !== category) {
     w.v2RequestId = (w.v2RequestId || 0) + 1;
     w.category = category;
@@ -2881,7 +2889,7 @@ function applyChildSampleFile(profileId) {
       return;
     }
     const next = resetWiz('erp');
-    ['fromUnified','allowedTypes','draftId','uploadOriginVersion','uploadV2Context'].forEach(key => {
+    ['fromUnified','allowedTypes','allowedCategories','draftId','uploadOriginVersion','uploadV2Context'].forEach(key => {
       if (Object.prototype.hasOwnProperty.call(w, key)) {
         next[key] = Array.isArray(w[key]) ? w[key].slice() : w[key];
       }
@@ -3080,8 +3088,10 @@ function uploadV2Next() {
   if (!w.category) { toast('Select a category before continuing.'); return; }
   routeUploadV2();
 }
+const SHOW_CONCEPT_1 = false;
 const SHOW_CONCEPT_2 = false;
 function setConcept(n) {
+  if (n === 1 && !SHOW_CONCEPT_1) n = 3;
   if (n === 2 && !SHOW_CONCEPT_2) n = 3;
   state.concept = n;
   state.wiz = null;
@@ -3505,7 +3515,7 @@ function conceptBar() {
   return `<div class="concept-bar">
     <span class="lbl">Prototype concept</span>
     <div class="seg">
-      <button type="button" class="${state.concept===1?'on':''}" onclick="setConcept(1)">Concept 1 — Separate cards</button>
+      ${SHOW_CONCEPT_1?`<button type="button" class="${state.concept===1?'on':''}" onclick="setConcept(1)">Concept 1 — Separate cards</button>`:''}
       ${SHOW_CONCEPT_2?`<button type="button" class="${state.concept===2?'on':''}" onclick="setConcept(2)">Concept 2 — Unified upload</button>`:''}
       <button type="button" class="${state.concept===3?'on':''}" onclick="setConcept(3)">Concept 3 — X-NOB redesign</button>
     </div>
@@ -4355,6 +4365,7 @@ function simulateCsv() {
 }
 function setTemplateCategory(value) {
   const w = state.wiz; if (!w) return;
+  if (value && !isAllowedWizardCategory(w, value)) return;
   if (w.category !== value) {
     w.category = value;
     w.marketplace = '';
@@ -4896,7 +4907,7 @@ function setERPFlowVersion(version) {
   if (!current || current.erpFlowVersion === version || current.dsState === 'processing') return;
   const next = resetWiz('erp');
   next.erpFlowVersion = version === 'v1' ? 'v1' : version === 'v3' ? 'v3' : 'v2';
-  ['fromUnified','uploadType','allowedTypes','draftId','uploadOriginVersion','uploadV2Context','entryCategory'].forEach(key => {
+  ['fromUnified','uploadType','allowedTypes','allowedCategories','draftId','uploadOriginVersion','uploadV2Context','entryCategory'].forEach(key => {
     if (Object.prototype.hasOwnProperty.call(current, key)) {
       next[key] = Array.isArray(current[key]) ? current[key].slice() : current[key];
     }
@@ -5176,7 +5187,7 @@ function templateCategoryFields(w) {
       <div class="business-type-select-wrap">
         <select class="business-type-select ${w.category?'':'placeholder'} ${issues.includes('category')?'invalid':''}" onchange="setTemplateCategory(this.value)">
           <option value="">Select a category</option>
-          ${TEMPLATE_TYPES.map(type => `<option value="${type.key}" ${w.category===type.key?'selected':''}>${type.label}</option>`).join('')}
+          ${wizardCategoryOptions(w).map(type => `<option value="${type.key}" ${w.category===type.key?'selected':''}>${type.label}</option>`).join('')}
         </select>
         <span class="business-type-chevron" aria-hidden="true">${I.chevron}</span>
       </div>
@@ -5473,7 +5484,6 @@ function erp2FileSummary(w, stats) {
 function mapTableHead() {
   return `<div class="map-head">
     <div class="map-col-field"><div class="map-head-copy"><strong>Field we need</strong></div></div>
-    <div class="map-col-arrow" aria-hidden="true"></div>
     <div class="map-col-file"><div class="map-head-copy"><strong>Column in your file</strong></div></div>
     <div class="map-col-sample"><div class="map-head-copy"><strong>Sample</strong></div></div>
   </div>`;
@@ -5482,26 +5492,45 @@ function mapSampleCell(value) {
   const text = value == null || value === '' ? '' : String(value);
   return `<div class="map-sample"${text?` title="${text}"`:''}>${text}</div>`;
 }
-function mappingStatusHintHTML(rowState, selectedSource, showError) {
-  if (showError) return '';
-  if (rowState === 'none') return '<span class="erp3-status-hint none">None of above</span>';
-  if (rowState === 'manually-matched') return '<span class="erp3-status-hint manually-matched">Manually matched</span>';
-  if (selectedSource) return '<span class="erp3-status-hint mapped">Mapped</span>';
-  return '';
+function mappingStatusIconHTML(kind, label) {
+  if (!kind) return '';
+  const svg = kind === 'pending' ? I.mapStatusPending
+    : (kind === 'warning' || kind === 'conflict') ? I.mapStatusWarning
+    : I.mapStatusSuccess;
+  const cls = kind === 'conflict' ? 'warning' : kind;
+  const title = label || '';
+  return `<span class="map-status-icon ${cls}"${title ? ` title="${title}" aria-label="${title}"` : ' aria-hidden="true"'}>${svg}</span>`;
+}
+function mappingStatusFromState(rowState, selectedSource) {
+  if (rowState === 'none') return { kind:'pending', label:'None of above' };
+  if (rowState === 'unmapped' || rowState === 'unrecognized' || rowState === 'missing') {
+    return { kind:'warning', label: rowState === 'missing' ? 'Missing from your file' : 'Select a column from your file' };
+  }
+  if (rowState === 'conflict') return { kind:'warning', label:'Resolve the duplicate mapping' };
+  if (rowState === 'manually-matched') return { kind:'success', label:'Manually matched' };
+  if (selectedSource) return { kind:'success', label:'Mapped' };
+  return { kind:'', label:'' };
+}
+function mappingControlHTML(controlHTML, iconKind, iconLabel, extraHTML) {
+  return `<div class="uploaded-choice">
+    <div class="row-mapping">
+      <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
+      ${controlHTML}
+      ${mappingStatusIconHTML(iconKind, iconLabel)}
+    </div>
+    ${extraHTML || ''}
+  </div>`;
 }
 function erp2StaticMapRow(source, w) {
   const target = (w.mappings && w.mappings[source.id]) || '';
   const field = ERP_REQUIRED_FIELDS.find(item => item.name === target);
-  return `<div class="map-row">
+  const status = mappingStatusFromState(target ? 'mapped' : 'unmapped', target);
+  return `<div class="map-row ${target?'':'unmapped'}">
     <div class="system-required">
       <strong>${target ? formatFieldLabel(target) : 'Unmapped column'}</strong>
       <small>${field ? field.desc : source.colName}</small>
     </div>
-    <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
-    <div class="uploaded-choice">
-      <div class="erp2-static-target">${formatFieldLabel(source.colName)}</div>
-      ${mappingStatusHintHTML('', target, false)}
-    </div>
+    ${mappingControlHTML(`<div class="erp2-static-target">${formatFieldLabel(source.colName)}</div>`, status.kind, status.label)}
     ${mapSampleCell(source.sample)}
   </div>`;
 }
@@ -5533,15 +5562,8 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
       const noneSelected = !!(manualStage && state.wiz && state.wiz.erp2NoneSelections && state.wiz.erp2NoneSelections[targetName]);
       const showError = !!(manualStage && state.wiz && state.wiz.mappingAttempted && !selectedSource && !noneSelected);
       const rowState = selectedSource ? (manualStage ? 'manually-matched' : '') : noneSelected ? 'none' : 'unmapped';
-      return `<div class="map-row ${rowState}${showError?' needs-selection':''}">
-        <div class="system-required">
-          <strong>${formatFieldLabel(targetName)}</strong>
-          <small>${field ? field.desc : 'Required system field'}</small>
-        </div>
-        <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
-        <div class="uploaded-choice">
-          <div class="erp-file-select-row">
-            <select class="${showError?'invalid':''}" aria-label="Choose an uploaded file column for ${targetName}" onchange="${updater}('${targetName}',this.value)">
+      const status = mappingStatusFromState(rowState, selectedSource);
+      const selectHTML = `<select class="${showError?'invalid':''}" aria-label="Choose an uploaded file column for ${targetName}" onchange="${updater}('${targetName}',this.value)">
               <option value="">Select a column from your file</option>
               ${availableSources.map(source => {
                 const mappedTarget = (mappings || {})[source.id] || '';
@@ -5549,12 +5571,14 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
                 return `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''} ${usedElsewhere?'disabled':''}>${formatFieldLabel(source.colName)}${usedElsewhere?` · Used for ${formatFieldLabel(mappedTarget)}`:''}</option>`;
               }).join('')}
               ${manualStage?erpNoneOfAboveOption(noneSelected):''}
-            </select>
-          </div>
-          ${mappingStatusHintHTML(rowState, selectedSource, showError)}
-          ${showError?`<div class="field-error">${I.alert}<span>Select a file column or None of above.</span></div>`:''}
+            </select>`;
+      return `<div class="map-row ${rowState}${showError?' needs-selection':''}">
+        <div class="system-required">
+          <strong>${formatFieldLabel(targetName)}</strong>
+          <small>${field ? field.desc : 'Required system field'}</small>
         </div>
-        ${mapSampleCell(selectedSource ? selectedSource.sample : '—')}
+        ${mappingControlHTML(selectHTML, status.kind, status.label, showError?`<div class="field-error">${I.alert}<span>Select a file column or None of above.</span></div>`:'')}
+        ${mapSampleCell(selectedSource ? selectedSource.sample : '')}
       </div>`;
     }).join('')}
   </div>`;
@@ -5935,23 +5959,18 @@ function erp3TargetMappingTable(w) {
       const isMissing = row.status === 'missing';
       const noneSelected = row.status === 'none';
       const showError = !!(w.mappingAttempted && row.status === 'unrecognized');
+      const status = mappingStatusFromState(row.status, selectedSource);
+      const selectHTML = `<select class="${showError?'invalid':''}" aria-label="Choose an uploaded file column for ${row.field.name}" ${isMissing?'disabled':''} onchange="updateERP2TargetMapping('${row.field.name}',this.value)">
+              <option value="">${isMissing?'Not found in your file':'Select a column from your file'}</option>
+              ${availableSources.map(source => `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''}>${formatFieldLabel(source.colName)}</option>`).join('')}
+              ${isMissing?'':erpNoneOfAboveOption(noneSelected)}
+            </select>`;
       return `<div class="map-row ${row.status}${showError?' needs-selection':''}">
         <div class="system-required">
           <strong>${formatFieldLabel(row.field.name)}</strong>
           <small>${row.field.desc}</small>
         </div>
-        <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
-        <div class="uploaded-choice">
-          <div class="erp-file-select-row">
-            <select class="${showError?'invalid':''}" aria-label="Choose an uploaded file column for ${row.field.name}" ${isMissing?'disabled':''} onchange="updateERP2TargetMapping('${row.field.name}',this.value)">
-              <option value="">${isMissing?'Not found in your file':'Select a column from your file'}</option>
-              ${availableSources.map(source => `<option value="${source.id}" ${selectedSource&&selectedSource.id===source.id?'selected':''}>${formatFieldLabel(source.colName)}</option>`).join('')}
-              ${isMissing?'':erpNoneOfAboveOption(noneSelected)}
-            </select>
-          </div>
-          <span class="erp3-status-hint ${row.status}">${erp3StatusHint(row.status, w.mappingAttempted)}</span>
-          ${showError?`<div class="field-error">${I.alert}<span>Select a file column or None of above.</span></div>`:''}
-        </div>
+        ${mappingControlHTML(selectHTML, status.kind, status.label, showError?`<div class="field-error">${I.alert}<span>Select a file column or None of above.</span></div>`:'')}
         ${mapSampleCell(selectedSource ? selectedSource.sample : '')}
       </div>`;
     }).join('')}
@@ -6314,23 +6333,23 @@ function mapRow(s, w, stats, manualStage, updater) {
     : [];
   const targetKind = val ? 'Required target' : 'Select a target field';
   const field = ERP_REQUIRED_FIELDS.find(item => item.name === val);
-  return `<div class="map-row ${conflict?'conflict':manualStage&&val?'manually-matched':val?'':'unmapped'}">
-    <div class="system-required">
-      <strong>${val ? formatFieldLabel(val) : formatFieldLabel(s.colName)}</strong>
-      <small>${field ? field.desc : targetKind}</small>
-    </div>
-    <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
-    <div class="map-target">
-      <select aria-label="Map ${s.colName} to a system field" onchange="${updater || 'updateERPMapping'}('${s.id}',this.value)">
+  const rowState = conflict?'conflict':manualStage&&val?'manually-matched':val?'':'unmapped';
+  const status = mappingStatusFromState(rowState, val);
+  const selectHTML = `<select aria-label="Map ${s.colName} to a system field" onchange="${updater || 'updateERPMapping'}('${s.id}',this.value)">
         ${ERP_TARGET_OPTIONS.map(option => {
           const optionLabel = option.value ? formatFieldLabel(option.value) : option.label;
           return `<option value="${option.value}" ${val===option.value?'selected':''}>${optionLabel}</option>`;
         }).join('')}
-      </select>
-      ${conflict
-        ? `<div class="map-row-error">${I.alert}<span>${formatFieldLabel(val)} is also mapped from ${conflictingSources.map(source=>`<span class="mono">${source.colName}</span>`).join(', ')}.</span></div>`
-        : mappingStatusHintHTML(manualStage&&val?'manually-matched':'', val, false)}
+      </select>`;
+  const extra = conflict
+    ? `<div class="map-row-error">${I.alert}<span>${formatFieldLabel(val)} is also mapped from ${conflictingSources.map(source=>`<span class="mono">${source.colName}</span>`).join(', ')}.</span></div>`
+    : '';
+  return `<div class="map-row ${rowState}">
+    <div class="system-required">
+      <strong>${val ? formatFieldLabel(val) : formatFieldLabel(s.colName)}</strong>
+      <small>${field ? field.desc : targetKind}</small>
     </div>
+    ${mappingControlHTML(selectHTML, status.kind, status.label, extra)}
     ${mapSampleCell(s.sample)}
   </div>`;
 }
@@ -7898,7 +7917,7 @@ function uploadV2Body(w) {
         <div class="business-type-select-wrap">
           <select class="business-type-select ${w.category?'':'placeholder'}" onchange="setUploadV2Category(this.value)">
             <option value="">Select a category</option>
-            ${TEMPLATE_TYPES.map(type=>`<option value="${type.key}" ${w.category===type.key?'selected':''}>${type.label}</option>`).join('')}
+            ${wizardCategoryOptions(w).map(type=>`<option value="${type.key}" ${w.category===type.key?'selected':''}>${type.label}</option>`).join('')}
           </select>
           <span class="business-type-chevron" aria-hidden="true">${I.chevron}</span>
         </div>
@@ -8082,6 +8101,8 @@ function viewUploadHistory() {
 }
 
 function render() {
+  if (!SHOW_CONCEPT_1 && state.concept === 1) state.concept = 3;
+  if (!SHOW_CONCEPT_2 && state.concept === 2) state.concept = 3;
   const root = document.getElementById('app');
   const previousRenderKey = root.dataset.renderKey || '';
   const previousScroller = root.querySelector('.focused-body');
