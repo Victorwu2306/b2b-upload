@@ -3551,7 +3551,7 @@ function homeCardsConcept2() {
                 <p class="support-lead">You can upload:</p>
                 <ul class="support-list">
                   <li>Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents</li>
-                  <li>Transaction records in CSV — exported from your ERP, marketplace, or other business systems, or prepared using our template</li>
+                  <li>Transaction records in CSV — exported from your ERP, marketplace, or other business systems, or prepared using our template (<button type="button" class="inline-link" style="text-decoration:none" onclick="state.templatePanel=true;render()">download template</button>)</li>
                 </ul>
                 <p class="support-note">Your transactions and document details also need to be eligible for CNY settlement. <button type="button" class="inline-link" style="text-decoration:none" onclick="state.supportedTxLevel='categories';state.supportedTx=true;render()">Check more details</button></p>
               </div>
@@ -3761,9 +3761,9 @@ function templateDownloadPanel() {
         <h3>Find and download template</h3>
         <button type="button" onclick="state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()">${I.x}</button>
       </div>
-      <div class="drawer-b" style="padding:24px">
+      <div class="drawer-b" style="padding:24px;display:flex;flex-direction:column;gap:16px">
         <div class="template-picker">
-          <label class="template-picker-label">Select your business type</label>
+          <label class="template-picker-label">What was your transaction for?</label>
           <button type="button" class="template-picker-control ${state.templateMenuOpen?'open':''}" aria-expanded="${state.templateMenuOpen?'true':'false'}" onclick="state.templateMenuOpen=!state.templateMenuOpen;render()">
             <span>${selected.label}</span>
             <span class="chev">${I.chevron}</span>
@@ -3778,18 +3778,16 @@ function templateDownloadPanel() {
           </div>` : ''}
           <p class="template-picker-hint">${selected.desc}</p>
         </div>
-        <div class="alert-info" style="margin-top:22px">
-          ${I.info}
-          <p style="font-size:12px;line-height:1.5">The templates we provide are <strong>CSV files</strong>. Upload the completed CSV using the same column headers.</p>
-        </div>
-        <button type="button" class="btn btn-secondary" style="width:100%;margin-top:16px;justify-content:flex-start;text-align:left" onclick="state.templateMenuOpen=false;state.templateGuide=true;render()">
+        <button type="button" class="btn btn-gradient" style="width:100%" onclick="toast('Downloading ${selected.label} template…');state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()">${I.download} Download template</button>
+        <button type="button" class="btn btn-secondary" style="width:100%;justify-content:flex-start;text-align:left" onclick="state.templateMenuOpen=false;state.templateGuide=true;render()">
           ${I.file}
           <span style="font-weight:600">How to fill in the transaction record file</span>
           <span style="margin-left:auto">${I.chevronR}</span>
         </button>
-      </div>
-      <div class="drawer-f">
-        <button type="button" class="btn btn-gradient" style="width:100%" onclick="toast('Downloading ${selected.label} template…');state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()">${I.download} Download</button>
+        <section style="margin-top:4px;padding-top:18px;border-top:1px solid var(--border)">
+          <p style="font-size:14px;font-weight:600;margin-bottom:6px">Next step</p>
+          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">After you complete the template, select <strong>Upload documents</strong> from the Quota management home page to upload it.</p>
+        </section>
       </div>
     </div>
   </div>${templateFillGuidePanel()}`;

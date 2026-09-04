@@ -3576,7 +3576,7 @@ function homeCardsConcept2() {
                 <p class="support-lead">You can upload:</p>
                 <ul class="support-list">
                   <li>Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents</li>
-                  <li>Transaction records in CSV — exported from your ERP, marketplace, or other business systems, or prepared using our template</li>
+                  <li>Transaction records in CSV — exported from your ERP, marketplace, or other business systems, or prepared using our template (<button type="button" class="inline-link" style="text-decoration:none" onclick="state.templatePanel=true;render()">download template</button>)</li>
                 </ul>
                 <p class="support-note">Your transactions and document details also need to be eligible for CNY settlement. <button type="button" class="inline-link" style="text-decoration:none" onclick="state.supportedTxLevel='categories';state.supportedTx=true;render()">Check more details</button></p>
               </div>
@@ -3786,9 +3786,9 @@ function templateDownloadPanel() {
         <h3>Find and download template</h3>
         <button type="button" onclick="state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()">${I.x}</button>
       </div>
-      <div class="drawer-b" style="padding:24px">
+      <div class="drawer-b" style="padding:24px;display:flex;flex-direction:column;gap:16px">
         <div class="template-picker">
-          <label class="template-picker-label">Select your business type</label>
+          <label class="template-picker-label">What was your transaction for?</label>
           <button type="button" class="template-picker-control ${state.templateMenuOpen?'open':''}" aria-expanded="${state.templateMenuOpen?'true':'false'}" onclick="state.templateMenuOpen=!state.templateMenuOpen;render()">
             <span>${selected.label}</span>
             <span class="chev">${I.chevron}</span>
@@ -3803,18 +3803,16 @@ function templateDownloadPanel() {
           </div>` : ''}
           <p class="template-picker-hint">${selected.desc}</p>
         </div>
-        <div class="alert-info" style="margin-top:22px">
-          ${I.info}
-          <p style="font-size:12px;line-height:1.5">The templates we provide are <strong>CSV files</strong>. Upload the completed CSV using the same column headers.</p>
-        </div>
-        <button type="button" class="btn btn-secondary" style="width:100%;margin-top:16px;justify-content:flex-start;text-align:left" onclick="state.templateMenuOpen=false;state.templateGuide=true;render()">
+        <button type="button" class="btn btn-gradient" style="width:100%" onclick="toast('Downloading ${selected.label} template…');state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()">${I.download} Download template</button>
+        <button type="button" class="btn btn-secondary" style="width:100%;justify-content:flex-start;text-align:left" onclick="state.templateMenuOpen=false;state.templateGuide=true;render()">
           ${I.file}
           <span style="font-weight:600">How to fill in the transaction record file</span>
           <span style="margin-left:auto">${I.chevronR}</span>
         </button>
-      </div>
-      <div class="drawer-f">
-        <button type="button" class="btn btn-gradient" style="width:100%" onclick="toast('Downloading ${selected.label} template…');state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()">${I.download} Download</button>
+        <section style="margin-top:4px;padding-top:18px;border-top:1px solid var(--border)">
+          <p style="font-size:14px;font-weight:600;margin-bottom:6px">Next step</p>
+          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">After you complete the template, select <strong>Upload documents</strong> from the Quota management home page to upload it.</p>
+        </section>
       </div>
     </div>
   </div>${templateFillGuidePanel()}`;
@@ -8127,6 +8125,10 @@ const CN_UI_REPLACEMENTS = [
   [/Upload your transaction documents/g, '上传交易材料'], [/Goods or service trading/g, '货物或服务贸易'], [/We’ll increase your quota based on the transaction amounts\./g, '额度将按交易金额提高。'],
   [/Upload trade documents or CSV transaction records\. We increase your quota based on the transaction amount\./g, '上传贸易单据或 CSV 交易记录。额度将按交易金额提高。'],
   [/You can upload:/g, '可上传：'],
+  [/What was your transaction for\?/g, '这笔交易用于什么？'],
+  [/Next step/g, '下一步'],
+  [/下一步 step/g, '下一步'],
+  [/After you complete the template, select <strong>Upload documents<\/strong> from the Quota management home page to upload it\./g, '完成模板填写后，在额度管理首页选择 <strong>上传材料</strong> 进行上传。'],
   [/Requirements on your documents/g, '单据要求'],
   [/Eligible transaction types/g, '支持的交易类型'],
   [/The following transaction types may be used to increase your quota:/g, '以下交易类型可用于提升额度：'],
