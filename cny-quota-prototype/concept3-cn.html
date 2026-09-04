@@ -3566,9 +3566,9 @@ function homeCardsConcept2() {
                 <p class="support-lead">You can upload:</p>
                 <ul class="support-list">
                   <li>Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents</li>
-                  <li>To be eligible for CNY settlement, your transactions and your document details both need to qualify. <button type="button" class="inline-link" onclick="state.supportedTxLevel='categories';state.supportedTx=true;render()">Learn requirements</button></li>
+                  <li>Transaction records in CSV — exported from your ERP, marketplace, or other business systems, or prepared using our template</li>
                 </ul>
-                <p class="support-note">Check the <button type="button" class="inline-link" onclick="state.supportedTxLevel='categories';state.supportedTx=true;render()">supported transactions</button> before proceeding.</p>
+                <p class="support-note">Your transactions and document details also need to be eligible for CNY settlement. <button type="button" class="inline-link" onclick="state.supportedTxLevel='categories';state.supportedTx=true;render()">Check more details</button></p>
               </div>
               <div class="card-footer">
                 <div class="cta-cluster">
@@ -8088,7 +8088,11 @@ const CN_UI_REPLACEMENTS = [
   [/Choose your e-commerce platform/g, '选择电商平台'], [/Creative Marketplace/g, '创意商品平台'], [/Social Commerce/g, '社交电商'],
   [/Upload your transaction documents/g, '上传交易材料'], [/Goods or service trading/g, '货物或服务贸易'], [/We’ll increase your quota based on the transaction amounts\./g, '额度将按交易金额提高。'],
   [/Upload trade documents or CSV transaction records\. We increase your quota based on the transaction amount\./g, '上传贸易单据或 CSV 交易记录。额度将按交易金额提高。'],
-  [/You can upload:/g, '可上传：'], [/To be eligible for CNY settlement, your transactions and your document details both need to qualify\./g, '交易和单据信息均符合要求，才能进行人民币结汇。'], [/Learn requirements/g, '查看要求'],
+  [/You can upload:/g, '可上传：'],
+  [/Transaction records in CSV — exported from your ERP, marketplace, or other business systems, or prepared using our template/g, 'CSV 格式交易记录 — 从 ERP、电商平台或其他业务系统导出，或使用标准模板填写'],
+  [/Your transactions and document details also need to be eligible for CNY settlement\./g, '交易和单据信息也需符合人民币结汇要求。'],
+  [/Check more details/g, '查看详情'],
+  [/To be eligible for CNY settlement, your transactions and your document details both need to qualify\./g, '交易和单据信息均符合要求，才能进行人民币结汇。'], [/Learn requirements/g, '查看要求'],
   [/We support:/g, '支持以下材料：'],
   [/Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents/g, '贸易单据：商业发票或形式发票、采购订单、合同、运输及报关单据'],
   [/CSV transaction records – exported from your business platform like ERP, or prepared using our template/g, 'CSV 交易记录：从 ERP 等业务平台导出，或使用标准模板填写'],
