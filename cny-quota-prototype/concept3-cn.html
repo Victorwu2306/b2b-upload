@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -327,10 +327,6 @@ a { color: inherit; }
   text-transform:uppercase; letter-spacing:.04em;
   flex-shrink:0;
 }
-.upload-helper .helper-sentence {
-  font-size:12px; font-weight:600; color:var(--primary);
-  line-height:1.45; flex:1 1 220px; min-width:0;
-}
 .upload-helper .helper-sub {
   font-size:13px; color:var(--muted-foreground); line-height:1.45;
   flex:1 1 220px; min-width:0;
@@ -478,24 +474,6 @@ tr.draft-row td { background: rgba(91,59,232,.03); }
 .marketplace-template-actions .btn { min-width:0; height:36px; padding:0 14px; font-size:12px; }
 .marketplace-template-actions .btn-link { font-size:12px; }
 .homepage2-doc-links { display:flex; align-items:center; flex-wrap:wrap; gap:14px; margin-top:12px; }
-.store-summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
-.store-summary-item {
-  display:flex; align-items:center; gap:8px; min-width:0; padding:10px;
-  border:1px solid var(--border); border-radius:8px; background:#fff;
-}
-.store-summary-item .platform-logo { width:28px; height:28px; flex:0 0 28px; }
-.store-summary-item strong { display:block; overflow:hidden; text-overflow:ellipsis; font-size:12px; white-space:nowrap; }
-.store-summary-item small { display:block; margin-top:2px; color:var(--muted-foreground); font-size:10px; line-height:14px; }
-.marketplace-upload-row {
-  margin-top:14px; padding:14px; border:1px solid rgba(91,59,232,.22);
-  border-radius:8px; background:#F8F6FF;
-}
-.marketplace-upload-copy { display:flex; align-items:flex-start; gap:10px; }
-.marketplace-upload-copy h4 { font-size:13px; line-height:18px; font-weight:600; }
-.marketplace-upload-copy p { margin-top:2px; color:var(--muted-foreground); font-size:11px; line-height:16px; }
-.marketplace-upload-actions { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; }
-.marketplace-upload-actions .btn-link { font-size:11px; text-align:left; }
-.marketplace-upload-actions .btn { min-width:0; height:34px; padding:0 12px; font-size:11px; }
 .marketplace-logo-list {
   display:flex; align-items:center; flex-wrap:wrap; gap:18px;
   margin-top:auto; padding-top:16px;
@@ -512,8 +490,12 @@ tr.draft-row td { background: rgba(91,59,232,.03); }
   display:flex; flex-direction:column; min-width:0; padding:14px;
   border:1px solid var(--border); border-radius:8px; background:var(--muted);
 }
-.marketplace-choice.upload { border-color:rgba(91,59,232,.22); background:#F8F6FF; }
 .marketplace-choice-head { display:block; }
+.marketplace-choice-number {
+  width:24px; height:24px; flex:0 0 24px; display:grid; place-items:center;
+  border-radius:50%; background:var(--secondary); color:var(--primary);
+  font-size:12px; font-weight:700;
+}
 .marketplace-choice-copy h4 { font-size:13px; line-height:18px; font-weight:600; }
 .marketplace-choice-copy p { margin-top:2px; color:var(--muted-foreground); font-size:11px; line-height:16px; }
 .marketplace-choice-links {
@@ -1050,7 +1032,9 @@ table.data tr:hover td { background: var(--muted); }
 }
 .validation-table-toolbar strong { display:block; font-size:13px; line-height:19px; }
 .validation-table-toolbar p { margin-top:2px; color:var(--muted-foreground); font-size:11px; line-height:16px; }
-.validation-table-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:0 0 8px 8px; }
+.validation-table-wrap {
+  overflow-x:auto; border:1px solid var(--border); border-radius:0 0 8px 8px;
+}
 .validation-table-wrap table.data { border:0; }
 .validation-edit-cell { padding:6px 8px !important; }
 .validation-input {
@@ -1061,7 +1045,9 @@ table.data tr:hover td { background: var(--muted); }
 .validation-input.mono { font-family:var(--font-mono); }
 .validation-input:focus { border-color:var(--primary); box-shadow:0 0 0 2px rgba(91,59,232,.14); }
 .validation-input.invalid { border-color:#F04438; background:#FFF8F7; color:#B42318; }
-.validation-row-valid { display:flex; align-items:center; gap:6px; color:var(--success); font-size:12px; line-height:17px; }
+.validation-row-valid {
+  display:flex; align-items:center; gap:6px; color:var(--success); font-size:12px; line-height:17px;
+}
 .validation-row-valid svg { width:13px; height:13px; flex:0 0 13px; }
 .template-invalid-cell { color:#B42318; font-weight:600; background:#FFF8F7; }
 .template-issue-detail {
@@ -1521,7 +1507,7 @@ table.data tr:hover td { background: var(--muted); }
   display:flex; flex-direction:column; gap:2px;
 }
 .mapping-c2-missing-list li {
-  color:#7A271A; font-size:13px; line-height:20px;
+  color:#7A271A; font-size:13px; line-height:20px; font-family:var(--font-mono);
 }
 .mapping-c2-resolution {
   border:1px solid var(--border); border-radius:10px; background:#fff; overflow:hidden;
@@ -2170,6 +2156,21 @@ function formatFieldLabel(name) {
   words[0] = words[0] === 'ID' ? 'ID' : (words[0].charAt(0).toUpperCase() + words[0].slice(1));
   return words.join(' ');
 }
+function erpRequiredLabel(name) {
+  const field = ERP_REQUIRED_FIELDS.find(item => item.name === name);
+  const cn = field && field.labelCN;
+  return cn || formatFieldLabel(name);
+}
+function formatChineseList(items) {
+  const list = (items || []).filter(Boolean);
+  if (!list.length) return '';
+  if (list.length === 1) return list[0];
+  if (list.length === 2) return list[0] + '和' + list[1];
+  return list.slice(0, -1).join('、') + '和' + list[list.length - 1];
+}
+function formatMissingFieldsListCN(names) {
+  return formatChineseList((names || []).map(erpRequiredLabel));
+}
 function formatSentenceFieldLabel(name) {
   const label = formatFieldLabel(name);
   if (!label) return '';
@@ -2183,22 +2184,6 @@ function formatEnglishList(items) {
   return list.slice(0, -1).join(', ') + ', and ' + list[list.length - 1];
 }
 function formatMissingFieldsList(names) {
-  return formatEnglishList((names || []).map(formatSentenceFieldLabel));
-}
-function erpRequiredLabel(name) {
-  const field = ERP_REQUIRED_FIELDS.find(item => item.name === name);
-  const cn = field && field.labelCN;
-  const en = formatFieldLabel(name);
-  return cn ? `${en}（${cn}）` : en;
-}
-function formatChineseList(items) {
-  const list = (items || []).filter(Boolean);
-  if (!list.length) return '';
-  if (list.length === 1) return list[0];
-  if (list.length === 2) return list[0] + '和' + list[1];
-  return list.slice(0, -1).join('、') + '和' + list[list.length - 1];
-}
-function formatMissingFieldsListCN(names) {
   return formatChineseList((names || []).map(erpRequiredLabel));
 }
 const ERP_MAP_SOURCES = [
@@ -2310,7 +2295,7 @@ const UNSHIPPED_LIMIT = 1000000;
 const UPLOAD_METHODS = [
   { key:'trade', label:'Trade document', desc:'Upload goods or service trade documents (contracts, PI, CI) to release quota per transaction.', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
   { key:'template', label:'Transaction record from our template (CSV file)', desc:'Fill in a standard transaction template and upload CSV to release quota in bulk.', ico:'upload', formats:'CSV · Max 50 MB' },
-  { key:'erp', label:'Transaction record exported from ERP', desc:'Export transaction records from your ERP and upload them for automated field mapping and quota release.', ico:'db', formats:'CSV · Max 50 MB' },
+  { key:'erp', label:'Transaction record exported from ERP (CSV file)', desc:'Export CSV from your ERP and upload for automated field mapping and quota release.', ico:'db', formats:'CSV · Max 50 MB' },
 ];
 
 const UPLOAD_HISTORY = [
@@ -2461,7 +2446,7 @@ const I = {
 const state = {
   view: 'home',
   concept: 3, // 1 = separate cards; 2 = unified upload; 3 = X-NOB redesign
-  homepageVersion: 1,
+  homepageVersion: 2,
   recordId: null,
   detailReturn: null,
   linked: [],
@@ -2663,40 +2648,61 @@ function continueUnifiedUpload() {
 }
 const UPLOAD_V2_DOCUMENT_EXTENSIONS = ['pdf','jpg','jpeg','png','tiff','tif','doc','docx'];
 function setUploadFlowVersion(version) {
-  const current=state.wiz||{}, allowed=current.allowedTypes;
+  const current = state.wiz || {}, allowed = current.allowedTypes;
   const draftId=current.draftId;
-  state.wiz=version===2?createUploadV2State(null,allowed):Object.assign({kind:'upload',uploadVersion:1,uploadType:null},allowed?{allowedTypes:allowed.slice()}:{});
+  state.wiz = version === 2
+    ? createUploadV2State(null,allowed)
+    : Object.assign({kind:'upload',uploadVersion:1,uploadType:null},allowed?{allowedTypes:allowed.slice()}:{});
   if(draftId)state.wiz.draftId=draftId;
-  state.view='wizard-upload'; render();
+  state.view = 'wizard-upload'; render();
 }
 function setUploadV2Category(value) {
-  const w=state.wiz; if (!w||w.uploadVersion!==2) return;
+  const w = state.wiz; if (!w || w.uploadVersion !== 2) return;
   const category=TEMPLATE_TYPES.some(type=>type.key===value)?value:'';
-  if (w.category!==category) { w.v2RequestId=(w.v2RequestId||0)+1; Object.assign(w,{category,v2FileState:'empty',fileName:null,fileExtension:'',fileSize:0,csvHeaders:[],detectedRoute:'',detectedLabel:'',routeError:'',uploadType:null,marketplace:'',sellerId:'',v2PickerOpen:false,erpScenario:'',v2UseCase:'',v2UseCaseTitle:''}); }
+  if (w.category !== category) {
+    w.v2RequestId=(w.v2RequestId||0)+1;
+    Object.assign(w,{category,v2FileState:'empty',fileName:null,fileExtension:'',fileSize:0,csvHeaders:[],detectedRoute:'',detectedLabel:'',routeError:'',uploadType:null,marketplace:'',sellerId:'',v2PickerOpen:false,erpScenario:'',v2UseCase:'',v2UseCaseTitle:''});
+  }
   render();
 }
 function resetUploadV2File() {
-  const w=state.wiz; if (!w||w.uploadVersion!==2) return;
+  const w = state.wiz; if (!w || w.uploadVersion !== 2) return;
   w.v2RequestId=(w.v2RequestId||0)+1;
-  Object.assign(w,{v2FileState:'empty',fileName:null,fileExtension:'',fileSize:0,csvHeaders:[],detectedRoute:'',detectedLabel:'',routeError:'',uploadType:null,v2PickerOpen:false,erpScenario:'',v2UseCase:'',v2UseCaseTitle:''}); render();
+  Object.assign(w,{v2FileState:'empty',fileName:null,fileExtension:'',fileSize:0,csvHeaders:[],detectedRoute:'',detectedLabel:'',routeError:'',uploadType:null,v2PickerOpen:false,erpScenario:'',v2UseCase:'',v2UseCaseTitle:''});
+  render();
 }
 function uploadV2NeedsSellerId(w){return !!(w&&w.category==='marketplace'&&(w.marketplace==='Amazon'||w.marketplace==='Walmart'));}
 function uploadV2PrerequisitesComplete(w){return !!(w&&w.category&&(w.category!=='marketplace'||(w.marketplace&&(!uploadV2NeedsSellerId(w)||String(w.sellerId||'').trim()))));}
-function setUploadV2Marketplace(value){const w=state.wiz;if(!w||w.uploadVersion!==2)return;const marketplace=MARKETPLACE_UPLOAD_OPTIONS.includes(value)?value:'';if(w.marketplace!==marketplace){w.marketplace=marketplace;w.sellerId='';resetUploadV2File();return;}render();}
-function syncUploadV2PrerequisiteUI(){const w=state.wiz;if(!w||w.uploadVersion!==2)return;const enabled=uploadV2PrerequisitesComplete(w),zone=document.querySelector('[data-upload-v2-zone]'),button=document.querySelector('[data-upload-v2-button]');if(zone){zone.style.cursor=enabled?'pointer':'not-allowed';zone.style.opacity=enabled?'1':'.55';}if(button)button.disabled=!enabled;}
+function setUploadV2Marketplace(value){
+  const w=state.wiz;if(!w||w.uploadVersion!==2)return;
+  const marketplace=MARKETPLACE_UPLOAD_OPTIONS.includes(value)?value:'';
+  if(w.marketplace!==marketplace){w.marketplace=marketplace;w.sellerId='';resetUploadV2File();return;}render();
+}
+function syncUploadV2PrerequisiteUI(){
+  const w=state.wiz;if(!w||w.uploadVersion!==2)return;
+  const enabled=uploadV2PrerequisitesComplete(w),zone=document.querySelector('[data-upload-v2-zone]'),button=document.querySelector('[data-upload-v2-button]');
+  if(zone){zone.style.cursor=enabled?'pointer':'not-allowed';zone.style.opacity=enabled?'1':'.55';}if(button)button.disabled=!enabled;
+}
 function setUploadV2SellerId(value){const w=state.wiz;if(!w||w.uploadVersion!==2)return;w.sellerId=String(value||'').slice(0,100);syncUploadV2PrerequisiteUI();}
 function isUploadV2TemplateCSV(category,headers) {
   const set=new Set(headers||[]);
   const hasStore=set.has('store_name')||set.has('store_url');
-  const hasTemplateShape=set.has('order_id')&&(set.has('item_name')||set.has('product_service'))&&(set.has('price')||set.has('unit_price'));
+  const hasTemplateShape=set.has('order_id')&&(set.has('item_name')||set.has('product_service'))&&
+    (set.has('price')||set.has('unit_price'));
   const erpMarkerCount=['supplier_name','buyer_name','total_amount','transaction_date','trade_type'].filter(name=>set.has(name)).length;
   if(erpMarkerCount>=2)return false;
   return category==='marketplace'?hasStore&&hasTemplateShape:hasTemplateShape;
 }
 function detectUploadV2Route(category,extension,headers) {
   if(!TEMPLATE_TYPES.some(type=>type.key===category))return {route:'',error:'Select a valid category.'};
-  if(UPLOAD_V2_DOCUMENT_EXTENSIONS.includes(extension)) return category==='marketplace'?{route:'',error:'Marketplace supports standard template CSV files only.'}:{route:'trade',label:'Trade document'};
-  if(extension==='csv'){const template=isUploadV2TemplateCSV(category,headers);if(category==='marketplace')return template?{route:'template',label:'Template CSV'}:{route:'erp',label:'ERP CSV'};return template?{route:'template',label:'Template CSV'}:{route:'erp',label:'ERP CSV'};}
+  if (UPLOAD_V2_DOCUMENT_EXTENSIONS.includes(extension)) {
+    return category==='marketplace' ? {route:'',error:'Marketplace supports standard template CSV files only.'} : {route:'trade',label:'Trade document'};
+  }
+  if (extension==='csv') {
+    const template=isUploadV2TemplateCSV(category,headers);
+    if (category==='marketplace') return template ? {route:'template',label:'Template CSV'} : {route:'erp',label:'ERP CSV'};
+    return template ? {route:'template',label:'Template CSV'} : {route:'erp',label:'ERP CSV'};
+  }
   return {route:'',error:'This file format is not supported.'};
 }
 function uploadV2StepsForRoute(route,w) {
@@ -2929,14 +2935,35 @@ function uploadV2SamplePicker(w) {
 }
 function uploadV2Back(){go('home');}
 function routeUploadV2() {
-  const current=state.wiz;if(!current||current.uploadVersion!==2||current.v2FileState!=='ready'||!current.detectedRoute)return;
-  const context=uploadV2ContextFrom(current),draftId=current.draftId;let next;
-  if(current.detectedRoute==='template'){next=resetWiz('template');attachUnifiedOrigin(next,2,context);Object.assign(next,{uploadType:'template',entryCategory:current.category,category:current.category,marketplace:current.marketplace||'',sellerId:current.sellerId||'',fileName:current.fileName,csvState:'processing'});if(draftId)next.draftId=draftId;state.wiz=next;state.view='wizard-template';render();setTimeout(()=>{if(state.wiz!==next||next.csvState!=='processing')return;next.csvState='mapped';next.templateStage=2;render();},1800);return;}
-  if(current.detectedRoute==='trade'){next=resetWiz('trade');attachUnifiedOrigin(next,2,context);Object.assign(next,{uploadType:'trade',entryCategory:current.category,source:current.category,fileName:current.fileName,uploadState:'uploaded'});if(draftId)next.draftId=draftId;state.wiz=next;state.view='wizard-trade';render();return;}
+  const current=state.wiz;
+  if (!current || current.uploadVersion!==2 || current.v2FileState!=='ready' || !current.detectedRoute) return;
+  const context=uploadV2ContextFrom(current), draftId=current.draftId;
+  let next;
+  if (current.detectedRoute==='template') {
+    next=resetWiz('template'); attachUnifiedOrigin(next,2,context);
+    Object.assign(next,{uploadType:'template',entryCategory:current.category,category:current.category,marketplace:current.marketplace||'',sellerId:current.sellerId||'',fileName:current.fileName,csvState:'processing'});
+    if (draftId) next.draftId=draftId;
+    state.wiz=next; state.view='wizard-template'; render();
+    setTimeout(()=>{if(state.wiz!==next||next.csvState!=='processing')return;next.csvState='mapped';next.templateStage=2;render();},1800);
+    return;
+  }
+  if (current.detectedRoute==='trade') {
+    next=resetWiz('trade'); attachUnifiedOrigin(next,2,context);
+    Object.assign(next,{uploadType:'trade',entryCategory:current.category,source:current.category,fileName:current.fileName,uploadState:'uploaded'});
+    if (draftId) next.draftId=draftId;
+    state.wiz=next; state.view='wizard-trade'; render(); return;
+  }
   if(current.detectedRoute!=='erp'){current.v2FileState='error';current.routeError='We couldn’t determine the correct processing flow.';current.uploadType=null;render();return;}
-  next=resetWiz('erp');attachUnifiedOrigin(next,2,context);Object.assign(next,{uploadType:'erp',entryCategory:current.category,marketplace:current.marketplace||'',sellerId:current.sellerId||'',fileName:current.fileName,erpScenario:current.erpScenario||'all-matched',v2UseCase:current.v2UseCase||'',v2UseCaseTitle:current.v2UseCaseTitle||''});if(draftId)next.draftId=draftId;state.wiz=next;state.view='wizard-erp';simulateErp(current.fileName);
+  next=resetWiz('erp'); attachUnifiedOrigin(next,2,context);
+  Object.assign(next,{uploadType:'erp',entryCategory:current.category,marketplace:current.marketplace||'',sellerId:current.sellerId||'',fileName:current.fileName,erpScenario:current.erpScenario||'all-matched',v2UseCase:current.v2UseCase||'',v2UseCaseTitle:current.v2UseCaseTitle||''});
+  if (draftId) next.draftId=draftId;
+  state.wiz=next; state.view='wizard-erp'; simulateErp(current.fileName);
 }
-function uploadV2Next(){const w=state.wiz;if(!w||w.uploadVersion!==2)return;if(!w.category){toast('Select a category before continuing.');return;}routeUploadV2();}
+function uploadV2Next() {
+  const w=state.wiz; if (!w || w.uploadVersion!==2) return;
+  if (!w.category) { toast('Select a category before continuing.'); return; }
+  routeUploadV2();
+}
 const SHOW_CONCEPT_2 = false;
 function setConcept(n) {
   if (n === 2 && !SHOW_CONCEPT_2) n = 3;
@@ -3016,7 +3043,7 @@ function go(view, recordId) {
 }
 function toast(msg) {
   const el = document.getElementById('toast');
-  el.textContent = translateVisibleText(msg);
+  el.textContent = msg;
   el.classList.add('open');
   setTimeout(() => el.classList.remove('open'), 2400);
 }
@@ -3362,9 +3389,9 @@ function conceptBar() {
   return `<div class="concept-bar">
     <span class="lbl">Prototype concept</span>
     <div class="seg">
-      <button type="button" class="${state.concept===1?'on':''}" onclick="setConcept(1)">Concept 1 — Separate cards</button>
-      ${SHOW_CONCEPT_2?`<button type="button" class="${state.concept===2?'on':''}" onclick="setConcept(2)">Concept 2 — Unified upload</button>`:''}
-      <button type="button" class="${state.concept===3?'on':''}" onclick="setConcept(3)">Concept 3 — X-NOB redesign</button>
+      <button type="button" class="${state.concept===1?'on':''}" onclick="setConcept(1)">方案 1 — 独立卡片</button>
+      ${SHOW_CONCEPT_2?`<button type="button" class="${state.concept===2?'on':''}" onclick="setConcept(2)">方案 2 — 统一上传</button>`:''}
+      <button type="button" class="${state.concept===3?'on':''}" onclick="setConcept(3)">方案 3 — X-NOB 改版</button>
     </div>
     ${state.concept!==1?`<span class="concept-divider" aria-hidden="true"></span>
       <span class="lbl">Homepage version</span>
@@ -3529,9 +3556,9 @@ function homeCardsConcept2() {
                 <p class="support-lead">We support:</p>
                 <ul class="support-list">
                   <li>Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents</li>
-                  <li>CSV 交易记录：从 ERP 等业务平台导出，或使用标准模板填写（<button type="button" class="inline-link" onclick="state.templatePanel=true;render()">下载模板</button>）</li>
+                  <li>CSV transaction records – exported from your business platform like ERP, or prepared using our template (<button type="button" class="inline-link" onclick="state.templatePanel=true;render()">download template</button>)</li>
                 </ul>
-                <p class="support-note">请先查看<button type="button" class="inline-link" onclick="state.supportedTxLevel='categories';state.supportedTx=true;render()">支持的交易类型</button>，再继续。</p>
+                <p class="support-note">Check the <button type="button" class="inline-link" onclick="state.supportedTxLevel='categories';state.supportedTx=true;render()">supported transactions</button> before proceeding.</p>
               </div>
               <div class="card-footer">
                 <div class="cta-cluster">
@@ -3620,6 +3647,7 @@ function viewHome() {
     ${sidebar()}
     <div class="main">
       ${topbar(['Manage','CNY quota management'])}
+      ${conceptBar()}
       <div class="page-head">
         <h1>CNY quota management</h1>
       </div>
@@ -3634,7 +3662,7 @@ function viewHome() {
           <div class="home-section-head">
             ${state.concept!==1 && state.homepageVersion===2
               ? `<div class="home-section-sub-row">
-                  <h2 class="section-title home-quota-title">Choose a way to increase your quota</h2>
+                  <h2 class="section-title home-quota-title">Increase your quota based on your transactions</h2>
                   <button type="button" class="home-section-history" onclick="go('upload-history')">View upload history</button>
                 </div>`
               : `<h2 class="section-title home-quota-title">Choose a way to increase your quota</h2>`}
@@ -3735,12 +3763,12 @@ function templateDownloadPanel() {
   return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()}">
     <div class="drawer wide">
       <div class="drawer-h">
-        <h3>查找并下载模板</h3>
+        <h3>Find and download template</h3>
         <button type="button" onclick="state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()">${I.x}</button>
       </div>
       <div class="drawer-b" style="padding:24px">
         <div class="template-picker">
-          <label class="template-picker-label">选择业务类型</label>
+          <label class="template-picker-label">Select your business type</label>
           <button type="button" class="template-picker-control ${state.templateMenuOpen?'open':''}" aria-expanded="${state.templateMenuOpen?'true':'false'}" onclick="state.templateMenuOpen=!state.templateMenuOpen;render()">
             <span>${selected.label}</span>
             <span class="chev">${I.chevron}</span>
@@ -3757,16 +3785,16 @@ function templateDownloadPanel() {
         </div>
         <div class="alert-info" style="margin-top:22px">
           ${I.info}
-          <p style="font-size:12px;line-height:1.5">提供的模板为 <strong>CSV 文件</strong>。填写后请保留原列标题并上传 CSV。</p>
+          <p style="font-size:12px;line-height:1.5">The templates we provide are <strong>CSV files</strong>. Upload the completed CSV using the same column headers.</p>
         </div>
         <button type="button" class="btn btn-secondary" style="width:100%;margin-top:16px;justify-content:flex-start;text-align:left" onclick="state.templateMenuOpen=false;state.templateGuide=true;render()">
           ${I.file}
-          <span style="font-weight:600">如何填写交易记录文件</span>
+          <span style="font-weight:600">How to fill in the transaction record file</span>
           <span style="margin-left:auto">${I.chevronR}</span>
         </button>
       </div>
       <div class="drawer-f">
-        <button type="button" class="btn btn-gradient" style="width:100%" onclick="toast('正在下载${selected.label}模板…');state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()">${I.download} 下载</button>
+        <button type="button" class="btn btn-gradient" style="width:100%" onclick="toast('Downloading ${selected.label} template…');state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()">${I.download} Download</button>
       </div>
     </div>
   </div>${templateFillGuidePanel()}`;
@@ -3793,7 +3821,7 @@ function templateFillGuidePanel() {
     <div class="drawer wide">
       <div class="drawer-h">
         <div style="display:flex;align-items:flex-start;gap:10px;min-width:0">
-          <button type="button" aria-label="返回模板下载" onclick="state.templateGuide=false;render()">${I.chevronL}</button>
+          <button type="button" aria-label="Back to template download" onclick="state.templateGuide=false;render()">${I.chevronL}</button>
           <div>
             <h3>How to fill in the transaction record file</h3>
             <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;font-weight:400">Prepare your template correctly before uploading</p>
@@ -3982,6 +4010,7 @@ function homepage2MarketplaceSupportPanel() {
             ${connectMarketplaces.map(([name,logo]) => `<div style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid rgba(91,59,232,.18);border-radius:8px;background:#fff">${logo}<strong style="font-size:12px">${name}</strong></div>`).join('')}
           </div>
         </section>
+
         <section style="padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
           <p style="font-size:14px;font-weight:600">Automatic quota increase</p>
           <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin:4px 0 12px">Eligible payments from these marketplaces can update your quota automatically.</p>
@@ -3989,6 +4018,7 @@ function homepage2MarketplaceSupportPanel() {
             ${automaticMarketplaces.map(name => `<div style="display:flex;align-items:center;gap:7px;font-size:12px"><span style="color:var(--success)">${I.check}</span>${name}</div>`).join('')}
           </div>
         </section>
+
         <section style="padding:16px;border:1px solid var(--border);border-radius:8px;background:#fff">
           <p style="font-size:14px;font-weight:600">Upload using the marketplace template</p>
           <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin:4px 0 14px">Use the marketplace CSV template for transaction records from these marketplaces.</p>
@@ -4016,17 +4046,17 @@ function supportedTxPanel() {
   ];
   const categoryContent = `
     <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-      <p style="font-size:14px;font-weight:600;margin-bottom:6px">电商平台交易</p>
+      <p style="font-size:14px;font-weight:600;margin-bottom:6px">Marketplace transactions</p>
       <button type="button" class="btn-link" style="font-size:13px" onclick="state.supportedTxLevel='marketplaces';render()">
-        查看支持的电商平台 ${I.chevronR}
+        View supported marketplaces ${I.chevronR}
       </button>
     </div>
     <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-      <p style="font-size:14px;font-weight:600;margin-bottom:4px">货物贸易</p>
-      <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">支持使用贸易单据证明的 B2B 实体商品采购或销售。</p>
+      <p style="font-size:14px;font-weight:600;margin-bottom:4px">Goods trading</p>
+      <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">B2B purchases or sales of physical goods supported by trade documents.</p>
     </div>
     <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-      <p style="font-size:14px;font-weight:600;margin-bottom:10px">服务</p>
+      <p style="font-size:14px;font-weight:600;margin-bottom:10px">Services</p>
       <ul style="margin:0;padding-left:20px;display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;font-size:13px;color:var(--muted-foreground);line-height:1.45">
         <li>Accommodation</li>
         <li>Advertisement</li>
@@ -4038,29 +4068,29 @@ function supportedTxPanel() {
     </div>`;
   const marketplaceContent = `
     <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
-      支持以下电商平台的交易记录，可用于提高额度。
+      We support transactions from these marketplaces to increase your quota.
     </p>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px;border:1px solid rgba(91,59,232,.22);border-radius:8px;background:var(--accent)">
       <div>
-        <p style="font-size:14px;font-weight:600">电商平台 CSV 模板</p>
-        <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin-top:3px">准备电商平台交易记录前，请先下载标准模板。</p>
+        <p style="font-size:14px;font-weight:600">Marketplace CSV template</p>
+        <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin-top:3px">Download the standard template before preparing marketplace transaction records.</p>
       </div>
       <button type="button" class="btn btn-sm btn-secondary" style="flex-shrink:0" onclick="state.supportedTx=false;state.templateType='marketplace';state.templatePanel=true;render()">${I.download} Download template</button>
     </div>
     <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-      <p style="font-size:14px;font-weight:600;margin-bottom:4px">自动提高额度</p>
+      <p style="font-size:14px;font-weight:600;margin-bottom:4px">Automatic quota increase</p>
       <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:14px">
-        这些店铺收到款项后，额度会自动提高，无需上传材料或重复绑定店铺。
+        Your quota increases automatically when you receive payments to these stores. You don’t need to upload documents or connect stores.
       </p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px 20px">
         ${automaticMarketplaces.map(name => `<div style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--foreground)"><span style="color:var(--success)">${I.check}</span>${name}</div>`).join('')}
       </div>
     </div>
     <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:#fff">
-      <p style="font-size:14px;font-weight:600;margin-bottom:6px">需要上传材料</p>
+      <p style="font-size:14px;font-weight:600;margin-bottom:6px">Upload documents required</p>
       <div class="alert-info" style="margin-bottom:16px">
         ${I.info}
-        <p style="font-size:12px;line-height:1.45"><strong>Amazon、Walmart 和 Shopify：</strong>支持手动上传材料。绑定店铺后，新收款可自动提高额度。</p>
+        <p style="font-size:12px;line-height:1.45"><strong>Amazon, Walmart, and Shopify:</strong> You can manually upload documents for these stores, but connecting them lets us automatically increase quota with your new payments.</p>
       </div>
       <div style="display:flex;flex-direction:column;gap:12px">
         ${Object.entries(MARKETPLACE_UPLOAD_GROUPS).map(([letter,names]) => `
@@ -5055,7 +5085,7 @@ function stepTemplateResult() {
 function stepTemplateV2Review() {
   const w=state.wiz,category=(TEMPLATE_TYPES.find(type=>type.key===w.category)||{}).label||'—';
   const details=[['File Name',w.fileName||'template_transactions.csv'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[]),['File Type','Template CSV']];
-  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the uploaded CSV information, then submit.</p></div><div class="review-card"><div class="review-card-h">${I.file} Uploaded file summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p class="${label==='File Name'?'mono':''}">${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} Uploaded file summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p class="${label==='File Name'?'mono':''}">${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
 }
 
 function viewWizardTemplate() {
@@ -5192,7 +5222,7 @@ function stepERPInfoConcept2(w, stats) {
           <div><strong>Upload a complete corrected file</strong><p>Add the missing headers to the original document. Existing automatic and manual mappings will be reused.</p></div>
         </div>
         <div class="mapping-c2-choice-actions">
-          <p>Missing headers: ${resolutionNames.map(name=>erpRequiredLabel(name)).join('、')}</p>
+          <p>Missing headers: ${resolutionNames.map(name=>`<span>${erpRequiredLabel(name)}</span>`).join(', ')}</p>
           <button type="button" class="btn btn-secondary" onclick="openERPReplaceDialog()">${I.rotate} Update and re-upload file</button>
         </div>
       </div>
@@ -5205,7 +5235,7 @@ function stepERPInfoConcept2(w, stats) {
           : `The file is missing ${stats.missing.length} required column${stats.missing.length===1?'':'s'} and has no unmapped columns available for manual matching.`}</p>
       </div>
       <div class="mapping-c2-reupload">
-        <p>将 ${formatChineseList(missingNames.map(name=>erpRequiredLabel(name)))} 添加到文件后，再上传修正后的版本。</p>
+        <p>请将 ${formatMissingFieldsListCN(missingNames)} 添加到文件后，再上传修正版。</p>
         <button type="button" class="btn btn-primary" onclick="openERPReplaceDialog()">${I.rotate} Update and re-upload file</button>
       </div>
     </div>` : '';
@@ -5547,7 +5577,7 @@ function stepERP2Missing(w) {
     </div>
     <div class="erp2-missing-card">
       <div class="erp2-missing-card-h">
-        <h3>Details about the ${formatMissingFieldsListCN(missingNames)} are missing</h3>
+        <h3>Details about the ${formatMissingFieldsList(missingNames)} are missing</h3>
         <p>Add the missing headers to your file, complete the new columns, and submit your updated file again.</p>
         <div class="erp2-required-headers">${missingNames.map(name=>`<span>${erpRequiredLabel(name)}</span>`).join('')}</div>
       </div>
@@ -5558,7 +5588,7 @@ function stepERP2Missing(w) {
           <div class="upload-zone" style="cursor:pointer" onclick="simulateERP2CorrectedUpload()">
             <div style="color:var(--muted-foreground);margin-bottom:10px">${I.upload}</div>
             <p style="font-size:15px;font-weight:600">Upload transaction document</p>
-            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include all original columns plus the ${formatMissingFieldsListCN(missingNames)} columns.</p>
+            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include all original columns plus the ${formatMissingFieldsList(missingNames)} columns.</p>
             <button type="button" class="btn btn-primary" onclick="event.stopPropagation();simulateERP2CorrectedUpload()">Choose file</button>
           </div>`}
       </div>
@@ -5701,7 +5731,7 @@ function erp3TargetMappingTable(w) {
       const showError = !!(w.mappingAttempted && row.status === 'unrecognized');
       return `<div class="map-row ${row.status}${showError?' needs-selection':''}">
         <div class="system-required">
-          <strong>${formatFieldLabel(row.field.name)}</strong>
+          <strong>${erpRequiredLabel(row.field.name)}</strong>
           <small>${row.field.desc}</small>
         </div>
         <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
@@ -5818,9 +5848,9 @@ function stepERP3Missing(w) {
     </div>
     <div class="erp3-corrected-card">
       <div class="erp3-corrected-card-h">
-        <h3>Details about the ${formatMissingFieldsListCN(missingNames)} are missing</h3>
+        <h3>Details about the ${formatMissingFieldsList(missingNames)} are missing</h3>
         <p>All original headers have been renamed to the fields we need, and the missing headers have already been added. You only need to fill in the corresponding data.</p>
-        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
+        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${erpRequiredLabel(name)}</span>`).join('')}</div>
       </div>
       <div class="erp3-corrected-body">
         <div class="erp2-draft-note">${I.info}<p>Download the system-corrected document first if you want a file that already uses the required headers. Then complete the empty columns and upload the full file.</p></div>
@@ -5830,7 +5860,7 @@ function stepERP3Missing(w) {
           <div class="upload-zone" style="cursor:pointer" onclick="simulateERP3CorrectedUpload()">
             <div style="color:var(--muted-foreground);margin-bottom:10px">${I.upload}</div>
             <p style="font-size:15px;font-weight:600">Upload the complete corrected file</p>
-            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include every required header and the missing ${formatMissingFieldsListCN(missingNames)} data.</p>
+            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include every required header and the missing ${formatMissingFieldsList(missingNames)} data.</p>
             <button type="button" class="btn btn-primary" onclick="event.stopPropagation();simulateERP3CorrectedUpload()">Choose file</button>
           </div>`}
       </div>
@@ -6112,7 +6142,7 @@ function stepERPLink() {
     </div>
     <label style="display:flex;align-items:center;gap:10px;cursor:pointer;width:fit-content" onclick="state.wiz.skipLink=!state.wiz.skipLink;render()">
       <div class="check ${w.skipLink?'on':''}">${w.skipLink?I.check:''}</div>
-      <span style="font-size:14px">Link payment later — create order now and link receivables after</span>
+      <span style="font-size:14px">稍后绑定收款 — 先创建订单，再绑定应收款</span>
     </label>
     ${w.skipLink?'':`
     <div class="action-panel">
@@ -6354,7 +6384,7 @@ function stepTradeUpload() {
         <div style="width:64px;height:64px;border-radius:50%;background:var(--muted);display:grid;place-items:center;margin:0 auto 16px;color:var(--muted-foreground)">${I.upload}</div>
         <p style="font-size:16px;font-weight:600">Upload trade documents</p>
         <p style="font-size:14px;color:var(--muted-foreground);margin:8px auto 12px;max-width:420px">${uploadDescription}</p>
-        <p style="font-size:12px;color:var(--muted-foreground);margin-bottom:16px">PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB</p>
+        <p style="font-size:12px;color:var(--muted-foreground);margin-bottom:16px">Sales Contract · Service Agreement · PI · CI · PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB</p>
         <button type="button" class="btn btn-primary" ${w.source?'onclick="event.stopPropagation();simulateTradeUpload()"':'disabled'}>Upload File</button>
         ${w.source?'':`<p style="font-size:12px;color:var(--destructive);margin-top:12px">Select your business type before uploading.</p>`}
       </div>`}
@@ -6397,7 +6427,7 @@ function tradeGoodsTable() {
       }).join('')}</tbody>
     </table></div>
     <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-start;align-items:center;gap:12px">
-      <button type="button" class="btn-link" onclick="toast('已添加商品（原型）。')">${I.plus} 添加商品</button>
+      <button type="button" class="btn-link" onclick="toast('Add item (prototype)')">${I.plus} Add Item</button>
     </div>`;
 
   const cardsBody = `<div style="padding:16px;display:flex;flex-direction:column;gap:12px">
@@ -6422,7 +6452,7 @@ function tradeGoodsTable() {
           </div>
         </div>`;
       }).join('')}
-      <button type="button" class="goods-add" onclick="toast('已添加商品（原型）。')">${I.plus} 添加商品</button>
+      <button type="button" class="goods-add" onclick="toast('Add item (prototype)')">${I.plus} Add Item</button>
     </div>`;
 
   return `<div class="review-card">
@@ -6591,12 +6621,12 @@ function tradeDocPreview(inModal) {
       <div style="margin-bottom:10px">
         <p style="font-size:6px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Seller</p>
         <p style="font-weight:600;font-size:8px">Shanghai Export Trading Co., Ltd.</p>
-        <p>No. 88 Pudong Avenue, Shanghai 200120, China</p>
+        <p>中国上海市浦东新区浦东大道 88 号，邮编 200120</p>
       </div>
       <div style="margin-bottom:10px;border:1px solid #ddd;border-radius:3px;padding:6px">
         <p style="font-size:6px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Buyer</p>
-        <p style="font-weight:600;font-size:8px">Shenzhen Global Trade Co., Ltd.</p>
-        <p>Unit 12B, Futian District, Shenzhen 518000, China</p>
+        <p style="font-weight:600;font-size:8px">深圳市环球贸易有限公司</p>
+        <p>中国深圳市福田区 12B 单元，邮编 518000</p>
       </div>
       <div style="border:1px solid #ddd;border-radius:3px;padding:6px;margin-bottom:10px;text-align:right">
         <p style="font-size:6px;font-weight:700;text-transform:uppercase">Total Contract Amount: <span style="font-size:9px">USD 48,500.00</span></p>
@@ -6715,7 +6745,7 @@ function stepTradeInfo(hideHeading) {
               <div class="field"><label>Receiving Country / Region</label><select disabled><option>China (CN)</option></select></div>
               <div class="field"><label>Buyer Type</label><select disabled><option>Corporate</option></select></div>
               <div class="field"><label>Company URL</label><input placeholder="https://example.com" /></div>
-              <div class="field full"><label>Buyer Name</label><input value="Shenzhen Global Trade Co., Ltd." readonly /></div>
+              <div class="field full"><label>买方名称</label><input value="深圳市环球贸易有限公司" readonly /></div>
             </div>
           </div>
         </div>
@@ -6742,7 +6772,7 @@ function stepTradeLink() {
     </div>
     <label style="display:flex;align-items:center;gap:10px;cursor:pointer;width:fit-content" onclick="state.wiz.skipLink=!state.wiz.skipLink;render()">
       <div class="check ${w.skipLink?'on':''}">${w.skipLink?I.check:''}</div>
-      <span style="font-size:14px">Link payment later — submit now and link receivables after</span>
+      <span style="font-size:14px">稍后绑定收款 — 先提交，再绑定应收款</span>
     </label>
     ${w.skipLink?'':`
     <div class="action-panel">
@@ -7617,23 +7647,40 @@ function uploadV2Body(w) {
   const selected=TEMPLATE_TYPES.find(type=>type.key===w.category);
   const canUpload=uploadV2PrerequisitesComplete(w);
   let fileContent='';
-  if(w.v2FileState==='analyzing')fileContent=`<div class="upload-zone" style="border-color:var(--primary);background:var(--accent)"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing file type and structure…</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:4px">Selecting the appropriate processing flow</p></div>`;
-  else if(w.v2FileState==='ready')fileContent=`<div class="file-ok">${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}<div style="flex:1;min-width:0"><p class="mono" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(w.fileName)}</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Ready to continue · ${w.detectedLabel} detected${w.v2UseCaseTitle?` · ${w.v2UseCaseTitle}`:''}</p></div><button type="button" class="btn btn-xs btn-secondary" onclick="openUploadV2SamplePicker()">${I.rotate} Replace</button></div>`;
-  else if(w.v2FileState==='error')fileContent=`<div style="display:flex;flex-direction:column;gap:12px"><div class="file-problem">${I.alert}<div style="flex:1"><p class="mono" style="font-weight:600">${escapeHTML(w.fileName||'File not accepted')}</p><p style="font-size:12px;margin-top:3px">${w.routeError}</p></div></div><button type="button" class="btn btn-secondary" style="align-self:flex-start" onclick="openUploadV2SamplePicker()">Choose another file</button></div>`;
+  if (w.v2FileState==='analyzing') fileContent=`<div class="upload-zone" style="border-color:var(--primary);background:var(--accent)"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing file type and structure…</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:4px">Selecting the appropriate processing flow</p></div>`;
+  else if (w.v2FileState==='ready') fileContent=`<div class="file-ok">${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}<div style="flex:1;min-width:0"><p class="mono" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(w.fileName)}</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Ready to continue · ${w.detectedLabel} detected${w.v2UseCaseTitle?` · ${w.v2UseCaseTitle}`:''}</p></div><button type="button" class="btn btn-xs btn-secondary" onclick="openUploadV2SamplePicker()">${I.rotate} Replace</button></div>`;
+  else if (w.v2FileState==='error') fileContent=`<div style="display:flex;flex-direction:column;gap:12px"><div class="file-problem">${I.alert}<div style="flex:1"><p class="mono" style="font-weight:600">${escapeHTML(w.fileName||'File not accepted')}</p><p style="font-size:12px;margin-top:3px">${w.routeError}</p></div></div><button type="button" class="btn btn-secondary" style="align-self:flex-start" onclick="openUploadV2SamplePicker()">Choose another file</button></div>`;
   else fileContent=`<div class="upload-zone" data-upload-v2-zone style="cursor:${canUpload?'pointer':'not-allowed'};padding:52px 32px;opacity:${canUpload?'1':'.55'}" onclick="openUploadV2SamplePicker()"><div style="color:var(--muted-foreground);margin-bottom:12px">${I.upload}</div><p style="font-size:15px;font-weight:600">Upload transaction document</p><p style="font-size:13px;color:var(--muted-foreground);margin:6px 0 14px">PDF, JPG, PNG, TIFF, DOC, DOCX, CSV · Max 50 MB</p><button type="button" class="btn btn-primary" data-upload-v2-button onclick="event.stopPropagation();openUploadV2SamplePicker()" ${canUpload?'':'disabled'}>Choose file</button>${canUpload?'':'<p style="font-size:12px;color:var(--muted-foreground);margin-top:12px">Complete the category details to enable upload.</p>'}</div>`;
-  return `<div style="display:flex;flex-direction:column;gap:20px">${uploadFlowVersionSelector(w)}<div><h2 style="font-size:20px;font-weight:700">Select a category and upload</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Choose a transaction category, then upload a related file on this page.</p></div><div class="template-upload-fields"><div class="field"><label>What was this transaction for? <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.category?'':'placeholder'}" onchange="setUploadV2Category(this.value)"><option value="">Select a category</option>${TEMPLATE_TYPES.map(type=>`<option value="${type.key}" ${w.category===type.key?'selected':''}>${type.label}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">${selected?selected.desc:'The selected category determines which processing and validation flow is used.'}</p></div>${w.category==='marketplace'?`<div class="field"><label>Select the marketplace <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.marketplace?'':'placeholder'}" onchange="setUploadV2Marketplace(this.value)"><option value="">Select a marketplace</option>${MARKETPLACE_UPLOAD_OPTIONS.map(name=>`<option value="${name}" ${w.marketplace===name?'selected':''}>${name}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Choose the marketplace associated with these transaction records.</p></div>`:''}${uploadV2NeedsSellerId(w)?`<div class="field"><label>Seller ID <span style="color:var(--destructive)">*</span></label><input maxlength="100" value="${escapeHTML(w.sellerId)}" placeholder="Enter your ${w.marketplace} Seller ID" oninput="setUploadV2SellerId(this.value)" /><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Required to associate this upload with the correct store.</p></div>`:''}</div><div class="card" style="overflow:hidden"><div style="padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} Upload file</div><div style="padding:20px">${fileContent}</div></div></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:20px">
+    ${uploadFlowVersionSelector(w)}
+    <div><h2 style="font-size:20px;font-weight:700">Upload your document</h2></div>
+    <div class="template-upload-fields"><div class="field"><label>What was this transaction for? <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.category?'':'placeholder'}" onchange="setUploadV2Category(this.value)"><option value="">Select a category</option>${TEMPLATE_TYPES.map(type=>`<option value="${type.key}" ${w.category===type.key?'selected':''}>${type.label}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div>${selected?`<p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">${selected.desc}</p>`:''}</div>
+    ${w.category==='marketplace'?`<div class="field"><label>Select the marketplace <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.marketplace?'':'placeholder'}" onchange="setUploadV2Marketplace(this.value)"><option value="">Select a marketplace</option>${MARKETPLACE_UPLOAD_OPTIONS.map(name=>`<option value="${name}" ${w.marketplace===name?'selected':''}>${name}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Choose the marketplace associated with these transaction records.</p></div>`:''}
+    ${uploadV2NeedsSellerId(w)?`<div class="field"><label>Seller ID <span style="color:var(--destructive)">*</span></label><input maxlength="100" value="${escapeHTML(w.sellerId)}" placeholder="Enter your ${w.marketplace} Seller ID" oninput="setUploadV2SellerId(this.value)" /><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Required to associate this upload with the correct store.</p></div>`:''}</div>
+    <div class="card" style="overflow:hidden"><div style="padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} Upload file</div><div style="padding:20px">${fileContent}</div></div>
+  </div>`;
 }
 function viewWizardUpload() {
   const w=state.wiz||createUploadV2State();
   if (!state.wiz) state.wiz = w;
-  if(w.uploadVersion===2){const canNext=uploadV2PrerequisitesComplete(w)&&w.v2FileState==='ready'&&!!w.detectedRoute;return wizShell({title:'Upload transaction records',sub:'Select a category, upload a file, and continue with the matching processing flow.',steps:uploadV2StepsForRoute(w.detectedRoute||(w.category==='marketplace'?'template':''),w),step:1,onBack:"go('home')",body:uploadV2Body(w),footer:wizNavFooter("go('home')",'Cancel','uploadV2Next()','Continue',canNext)})+uploadV2SamplePicker(w);}
+  if (w.uploadVersion===2) {
+    const canNext=uploadV2PrerequisitesComplete(w)&&w.v2FileState==='ready'&&!!w.detectedRoute;
+    return wizShell({
+      title:'Upload transaction records',
+      sub:'Select a category, upload a file, and continue with the matching processing flow.',
+      steps:uploadV2StepsForRoute(w.detectedRoute||(w.category==='marketplace'?'template':''),w),step:1,onBack:"go('home')",
+      body:uploadV2Body(w),
+      footer:wizNavFooter("go('home')",'Cancel','uploadV2Next()','Continue',canNext),
+    })+uploadV2SamplePicker(w);
+  }
   const methods = w.allowedTypes && w.allowedTypes.length
     ? UPLOAD_METHODS.filter(method => w.allowedTypes.includes(method.key))
     : UPLOAD_METHODS;
   let helper = '';
   if (w.uploadType === 'erp') {
     helper = `<div class="upload-helper">
-      <span class="helper-sentence">上传前请先查看必填列，确保文件可以上传成功</span>
+      <span class="helper-label">Before uploading</span>
+      <span class="helper-sub">Review required columns for a successful ERP mapping.</span>
       <div class="helper-actions">
         <button type="button" class="btn-link" onclick="state.erpGuide=true;render()">${I.info} ERP CSV requirements</button>
       </div>
@@ -7765,8 +7812,144 @@ function viewUploadHistory() {
   </div>`;
 }
 
+function render() {
+  const root = document.getElementById('app');
+  const previousRenderKey = root.dataset.renderKey || '';
+  const previousScroller = root.querySelector('.focused-body');
+  const previousScrollTop = previousScroller ? previousScroller.scrollTop : 0;
+  document.body.classList.toggle('concept-3', state.concept !== 2);
+  const map = {
+    'home': viewHome,
+    'trade-orders': viewTradeOrders,
+    'templates': viewTemplates,
+    'erp': viewERP,
+    'erp-details': viewERPDetails,
+    'upload-history': viewUploadHistory,
+    'upload-details': viewUploadDetails,
+    'wizard-upload': viewWizardUpload,
+    'wizard-trade': viewWizardTrade,
+    'wizard-template': viewWizardTemplate,
+    'wizard-erp': viewWizardERP,
+    'link-payment': LINK_PAYMENT_VISIBLE ? viewLinkPayment : viewDetails,
+    'supplement': viewSupplement,
+    'details': viewDetails,
+  };
+  const html = (map[state.view] || viewHome)();
+  const nextRenderKey = [
+    state.view,
+    state.wiz ? state.wiz.kind : '',
+    state.wiz ? state.wiz.step : '',
+    state.wiz && state.wiz.done ? 'done' : 'active',
+  ].join(':');
+  root.innerHTML = html;
+  root.dataset.renderKey = nextRenderKey;
+  if (previousRenderKey === nextRenderKey) {
+    const nextScroller = root.querySelector('.focused-body');
+    if (nextScroller) nextScroller.scrollTop = previousScrollTop;
+  }
+}
 const CN_UI_REPLACEMENTS = [
-  [/Back to CNY quota management/g, '返回人民币结汇额度管理'], [/Return to CNY quota management/g, '返回人民币结汇额度管理'], [/CNY quota management/g, '人民币结汇额度管理'], [/Choose a way to increase your quota/g, '选择提升额度的方式'],
+  [/^"Unshipped"$/g, '“未发货”'],
+  [/ in Upload History and click /g, '，再点击'],
+  [/You can manually upload documents for these stores, but connecting them lets us automatically increase quota with your new payments\./g, '可手动上传这些店铺的材料。绑定店铺后，新收款可自动提高额度。'],
+  [/^Amazon, Walmart, and Shopify:$/g, 'Amazon、Walmart、Shopify：'],
+  [/Download the standard template before preparing marketplace transaction records\./g, '准备电商平台交易记录前，请先下载标准模板。'],
+  [/Upload File/g, '上传文件'],
+  [/^Price$/g, '价格'],
+  [/International Trade Agreement/g, '国际贸易协议'],
+  [/ETA Aug 20, 2026/g, '预计 2026-08-20 到港'],
+  [/Update and re-upload your file/g, '更新并重新上传文件'],
+  [/Upload a corrected ERP file/g, '上传修正后的 ERP 文件'],
+  [/Add all missing required columns, then upload the updated file\./g, '请补充所有缺失的必填列，然后上传更新后的文件。'],
+  [/Existing mapping decisions will be retained for columns with the same names\./g, '同名列的已有对应关系将保留。'],
+  [/The file must be replaced to add the missing column\. Other mapping selections remain editable\./g, '必须替换文件才能补充缺失列。其他对应关系仍可修改。'],
+  [/This file does not contain the required currency column\. Click Replace and upload a corrected file\./g, '此文件缺少必填的币种列。请点击“替换”并上传修正后的文件。'],
+  [/Replace file required/g, '需替换文件'],
+  [/Replace the file to add the missing column/g, '请替换文件以补充缺失列'],
+  [/Corrected file uploaded\./g, '修正文件已上传。'],
+  [/Corrected online/g, '已在线修正'],
+  [/Mapping decisions for /g, '已保留 '],
+  [/ unchanged columns were retained, and all missing required columns were detected and mapped\. /g, ' 个同名列的对应关系，并识别、对应了所有缺失的必填列。 '],
+  [/ non-required columns remain unmapped; this does not block you from continuing\./g, ' 个非必填列未对应，不影响继续。'],
+  [/All required columns matched/g, '所有必填列均已匹配'],
+  [/All required targets are covered/g, '已覆盖全部必填目标字段'],
+  [/Unmapped columns only/g, '仅未匹配的列'],
+  [/2 missing · 3 unmapped \(manual or replace\)/g, '缺 2 列 · 3 列未匹配（可手动对应或重新上传）'],
+  [/2 missing · 1 unmapped \(replace required\)/g, '缺 2 列 · 1 列未匹配（需重新上传）'],
+  [/Missing columns only \(replace required\)/g, '仅缺列（需重新上传）'],
+  [/Map a file column to each target below/g, '请为下方每个目标字段选择文件列'],
+  [/Map every required system field and resolve duplicate mappings highlighted below, then click Next again\./g, '请对应每个系统必填字段，并处理下方标出的重复对应，然后再次点击“下一步”。'],
+  [/Review required columns for a successful ERP mapping\./g, '请核对必填列，确保 ERP 字段对应成功。'],
+  [/Required system field/g, '系统必填字段'],
+  [/Your file is uploaded but has not been analyzed yet\. Click /g, '文件已上传，尚未分析。点击'],
+  [/ to extract and review its transaction information\./g, '，提取并核对交易信息。'],
+  [/Analyzed successfully/g, '分析完成'],
+  [/Uploaded successfully · Ready for analysis/g, '上传成功 · 待分析'],
+  [/Column names are case-insensitive and may use spaces or underscores\. Our AI field mapper will auto-detect common ERP export formats\./g, '列名不区分大小写，可含空格或下划线。系统可自动识别常见 ERP 导出格式。'],
+  [/The file is missing (\d+) required columns? but has only (\d+) unmapped columns?\. There aren’t enough candidates to resolve every missing field manually\./g, '文件缺少 $1 个必填列，但仅有 $2 个未匹配列。可选项不足，无法手动对应所有缺失字段。'],
+  [/The file is missing (\d+) required columns? and has no unmapped columns available for manual matching\./g, '文件缺少 $1 个必填列，且没有可用于手动对应的未匹配列。'],
+  [/Add New Payment Links/g, '添加付款绑定'],
+  [/All Payments/g, '全部付款'],
+  [/Browse all payments →/g, '查看全部付款 →'],
+  [/Recommended Payment Matches/g, '推荐匹配的付款'],
+  [/Select payments to link to this order/g, '选择要绑定到此订单的付款'],
+  [/Select payments to link to this trade document/g, '选择要绑定到此贸易单据的付款'],
+  [/Select payments to link\. Matched automatically by buyer and amount\./g, '选择要绑定的付款。系统已按买方和金额自动匹配。'],
+  [/Select one or more payments to link/g, '选择一笔或多笔付款进行绑定'],
+  [/No payments linked yet/g, '尚未绑定付款'],
+  [/No payments linked\. You can link payments after submission\./g, '尚未绑定付款。可在提交后再绑定。'],
+  [/No payments selected yet/g, '尚未选择付款'],
+  [/Payments linked successfully/g, '付款绑定成功'],
+  [/Already linked/g, '已绑定'],
+  [/Linked Payments/g, '已绑定付款'],
+  [/Linked Amount/g, '绑定金额'],
+  [/Link received payments to this trade document to release CNY quota\./g, '将已收到的付款绑定到此贸易单据，以释放人民币额度。'],
+  [/Link payment/g, '绑定付款'],
+  [/Search by Payment ID or payer\.\.\./g, '按付款 ID 或付款方搜索…'],
+  [/Payment ID/g, '付款 ID'],
+  [/Payment Amount/g, '付款金额'],
+  [/Payer/g, '付款方'],
+  [/Received Date/g, '收款日期'],
+  [/Received Time/g, '收款时间'],
+  [/Received/g, '收款时间'],
+  [/Available Receivable/g, '可用应收款'],
+  [/Available to link/g, '可绑定'],
+  [/Remaining to link payment/g, '待绑定付款'],
+  [/^Match$/g, '匹配度'],
+  [/^Remove$/g, '移除'],
+  [/In Transit/g, '运输中'],
+  [/Not Yet Shipped/g, '尚未发货'],
+  [/Order Summary/g, '订单摘要'],
+  [/Document Summary/g, '单据摘要'],
+  [/Contract \/ Order No\./g, '合同/订单号'],
+  [/Contract Date/g, '合同日期'],
+  [/^Seller$/g, '卖方'],
+  [/^Buyer$/g, '买方'],
+  [/Shipping Method/g, '物流方式'],
+  [/Total Contract Amount:/g, '合同总金额：'],
+  [/Sales Contract · Service Agreement · PI · CI · PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB/g, '销售合同 · 服务协议 · PI · CI · PDF、JPG、PNG、TIFF、DOC、DOCX · 最大 50MB'],
+  [/Shipping receipt · Tracking document · Logistics invoice · PDF, JPG, PNG/g, '发货凭证 · 物流跟踪文件 · 物流发票 · PDF、JPG、PNG'],
+  [/Save the file in /g, '将文件保存为 '],
+  [/ format using English letters and digits\./g, ' 格式，文件名使用英文字母和数字。'],
+  [/Save the file as /g, '将文件另存为 '],
+  [/Upload contracts, invoices, PI, or CI\. AI will extract the transaction information after you continue\./g, '上传合同、发票、PI 或 CI。继续后系统将自动提取交易信息。'],
+  [/Upload sales contracts, PI, or CI\. The file will be analyzed after you click Next\./g, '上传销售合同、PI 或 CI。点击“下一步”后将分析文件。'],
+  [/Upload service agreements, invoices, or contracts\. The file will be analyzed after you click Next\./g, '上传服务协议、发票或合同。点击“下一步”后将分析文件。'],
+  [/Select a marketplace before continuing\./g, '请先选择电商平台再继续。'],
+  [/Select your business type before uploading\./g, '请先选择业务类型再上传。'],
+  [/transaction records/g, '交易记录'],
+  [/CSV files/g, 'CSV 文件'],
+  [/Prototype concept/g, '原型方案'],
+  [/Prototype scenario/g, '原型场景'],
+  [/Homepage version/g, '首页版本'],
+  [/Homepage 1/g, '首页 1'],
+  [/Homepage 2/g, '首页 2'],
+  [/ERP CSV flow version/g, 'ERP 文件流程版本'],
+  [/Upload history views/g, '上传历史视图'],
+  [/Back to template download/g, '返回模板下载'],
+  [/Simulates different ERP header-matching results\./g, '模拟不同的 ERP 表头识别结果。'],
+  [/We'll\ increase\ your\ quota\ based\ on\ the\ transaction\ amounts\./g, '额度将按交易金额提高。'],
+  [/Back to CNY quota management/g, '返回人民币结汇额度管理'], [/Return to CNY quota management/g, '返回人民币结汇额度管理'], [/CNY quota management/g, '人民币结汇额度管理'], [/Increase your quota based on your transactions/g, '根据交易提升额度'], [/Choose a way to increase your quota/g, '选择提升额度的方式'],
   [/Review and submit/g, '检查'],
   [/SHEIN\.COM, TikTok Shop, Wayfair, and other marketplaces/g, 'SHEIN.COM、TikTok Shop、Wayfair 等电商平台'],
   [/Physical products, including retail, wholesale, and drop shipping/g, '实体商品，包括零售、批发和代发货'],
@@ -7778,7 +7961,7 @@ const CN_UI_REPLACEMENTS = [
   [/Hotel stays and lodging expenses for business travel/g, '商务旅行的酒店及住宿费用'],
   [/Tour packages, destination services, and related travel fees/g, '旅游套餐、目的地服务及相关旅行费用'],
   [/Choose an upload flow/g, '选择上传流程'], [/Upload V2 starts with a category and routes the file automatically\./g, 'Upload V2 先选择交易类别，再自动识别并分流文件。'], [/Upload flow version/g, '上传流程版本'],
-  [/Select a category and upload/g, '上传您的单据'], [/Choose a transaction category, then upload a related file on this page\./g, ''],
+  [/Select a category and upload/g, '上传单据'], [/Choose a transaction category, then upload a related file on this page\./g, ''],
   [/^Upload document$/g, '上传单据'], [/^Confirm info$/g, '确认信息'], [/^Match remaining fields$/g, '匹配剩余字段'], [/^Identify other details$/g, '确认其他信息'], [/^Update and re-upload$/g, '更新并重新上传'], [/^Resubmit$/g, '重新提交'], [/^Review$/g, '检查'],
   [/Process & review/g, '确认信息'], [/Choose a sample file/g, '选择模拟文件'], [/This prototype simulates file selection and processing\./g, '此原型将模拟文件选择和处理。'],
   [/All columns are recognized and mapped automatically/g, '系统可识别并精准匹配所有列'],
@@ -7790,50 +7973,51 @@ const CN_UI_REPLACEMENTS = [
   [/Review the file, then match any columns you recognize in the next step\./g, '请先查看文件，然后在下一步匹配可识别的列。'],
   [/Full match/g, '完全匹配'], [/Partial match/g, '部分匹配'], [/No match/g, '无匹配'],
   [/PDF document/g, 'PDF 单据'], [/standard template/g, '标准模板'], [/ERP transaction export/g, 'ERP 交易导出文件'], [/Select a category to enable upload\./g, '选择类别后即可上传。'], [/Select a category before uploading\./g, '请先选择类别再上传。'],
-  [/Select the marketplace/g, '选择电商平台'], [/Choose the marketplace associated with these transaction records\./g, '请选择与这些交易记录关联的电商平台。'], [/Complete the category details to enable upload\./g, '请先补充类别相关信息，再上传文件。'],
-  [/Select a marketplace before uploading\./g, '请先选择电商平台再上传。'], [/Enter the Seller ID for (.+) before uploading\./g, '请先填写 $1 的卖家 ID 再上传。'], [/Required to associate this upload with the correct store\./g, '用于将本次上传关联到正确店铺。'],
-  [/Select the transaction category/g, '选择业务类型'], [/Select the business type/g, '选择业务类型'], [/What was this transaction for\?/g, '这笔交易是用于什么的？'], [/Choose the category that best describes the records or document you will upload\./g, '请选择最符合待上传记录或单据的交易类别。'], [/The selected category determines which processing and validation flow is used\./g, ''],
+  [/Select the marketplace/g, '选择电商平台'], [/Choose the marketplace associated with these transaction records\./g, '请选择这些交易记录所属的电商平台。'], [/Complete the category details to enable upload\./g, '请先补充类别相关信息，再上传文件。'],
+  [/Select a marketplace before uploading\./g, '请先选择电商平台再上传。'], [/Enter the Seller ID for (.+) before uploading\./g, '请先填写 $1 的卖家 ID 再上传。'], [/Required to associate this upload with the correct store\./g, '用于将本次上传绑定到正确店铺。'],
+  [/Select the transaction category/g, '选择业务类型'], [/Select the business type/g, '选择业务类型'], [/What was this transaction for\?/g, '这笔交易用于什么？'], [/Choose the category that best describes the records or document you will upload\./g, '请选择最符合待上传记录或单据的类别。'], [/The selected category determines which processing and validation flow is used\./g, ''],
   [/Select category/g, '选择类别'], [/Select a category, upload a file, and continue with the matching processing flow\./g, '选择类别并上传文件后，进入对应的处理流程。'],
   [/Transaction category/g, '交易类别'], [/Selected in Upload V2\. Return to Upload V2 to change the category\./g, '已在 Upload V2 中选择。如需更改类别，请返回 Upload V2。'], [/Selected in Upload V2\./g, '已在 Upload V2 中选择。'],
   [/Back to Upload V2/g, '返回 Upload V2'], [/Back to upload options/g, '返回上传选项'],
   [/Complete upload details/g, '补充上传信息'], [/Review the selected category and complete any required marketplace information\./g, '请确认所选类别，并补充所需的电商平台信息。'],
-  [/Review Upload V2 details/g, '查看 Upload V2 信息'], [/The category and marketplace association were completed before upload\./g, '交易类别及电商平台关联信息已在上传前完成。'],
-  [/Confirm the uploaded CSV information, then submit\./g, '提交前确认单据信息。'], [/Confirm the details of your document before submitting\./g, '提交前确认单据详情。'],
-  [/Upload your document/g, '上传您的单据'], [/Upload transaction document/g, '上传交易单据'],
+  [/Review Upload V2 details/g, '查看 Upload V2 信息'], [/The category and marketplace association were completed before upload\./g, '交易类别及电商平台信息已在上传前完成。'],
+  [/Confirm the uploaded CSV information, then submit\./g, '提交前，请确认单据信息。'], [/Confirm the details of your document before submitting\./g, '提交前，请确认单据信息。'],
+  [/Upload your document/g, '上传单据'], [/Upload transaction document/g, '上传交易单据'],
   [/Complete trade info/g, '完善贸易信息'], [/Complete the trade info below/g, '完善下方贸易信息'], [/Confirm the following details we prefilled based on your document\./g, '确认以下根据单据预填的信息。'],
-  [/Check the columns we matched/g, '核对我们匹配的列'], [/Confirm the processing results/g, '确认处理结果'],
-  [/We matched (\d+) of the (\d+) fields we need\. Change any mapping that isn't right\./g, '我们已匹配所需 $2 个字段中的 $1 个。如有不正确，请修改对应关系。'],
-  [/We identified (\d+) columns as what we require\. Modify the result if needed\./g, '我们已识别出 $1 个所需字段，如有需要可修改结果。'],
-  [/Unmapped column(?!s)/g, '未匹配列'], [/Fields we need/g, '我们需要的字段'], [/Field we need/g, '我们需要的字段'], [/Column in your file/g, '您文件中的列'], [/<strong>Sample<\/strong>/g, '<strong>示例</strong>'], [/<th>Sample<\/th>/g, '<th>示例</th>'], [/Still required — (\d+) left/g, '仍需补充 — 还剩 $1 个'],
-  [/Info we ask for/g, '我们需要的信息'], [/What we find in your document/g, '我们在单据中识别的信息'],
-  [/Match the columns in your file to the fields we need\./g, '将文件中的列与我们需要的字段进行匹配。'],
+  [/Check the columns we matched/g, '核对已匹配的列'], [/Confirm the processing results/g, '确认处理结果'],
+  [/We matched (\d+) of the (\d+) fields we need\. Change any mapping that isn't right\./g, '已匹配所需 $2 个字段中的 $1 个。如有误，请修改对应关系。'],
+  [/We identified (\d+) columns as what we require\. Modify the result if needed\./g, '已识别 $1 个所需字段，可按需修改。'],
+  [/Unmapped column(?!s)/g, '未匹配列'], [/^Sample$/g, '示例'],
+  [/Fields we need/g, '所需字段'], [/Field we need/g, '所需字段'], [/Column in your file/g, '文件中的列'], [/Still required — (\d+) left/g, '仍需补充 — 还剩 $1 个'],
+  [/Info we ask for/g, '所需信息'], [/What we find in your document/g, '单据中已识别的信息'],
+  [/Match the columns in your file to the fields we need\./g, '请将文件中的列与所需字段对应。'],
   [/Confirm processing results, manually verify available columns, and complete any remaining required fields\./g, '确认处理结果，手动核对可用字段，并补充剩余必填信息。'],
   [/After the file is routed to Template CSV, you’ll select the marketplace and provide a Seller ID when required\./g, '文件进入模板 CSV 流程后，需要选择电商平台，并在适用时填写卖家 ID。'], [/Select a category before continuing\./g, '请先选择类别再继续。'],
-  [/Upload your file/g, '上传文件'], [/We’ll identify the file structure and route it to the correct processing flow\./g, '系统将识别文件结构并进入对应的处理流程。'], [/Selected category/g, '已选类别'], [/Change/g, '更改'],
+  [/Upload your file/g, '上传文件'], [/We’ll identify the file structure and route it to the correct processing flow\./g, '系统会识别文件结构，并进入对应处理流程。'], [/Selected category/g, '已选类别'], [/Change/g, '更改'],
   [/Analyzing file type and structure…/g, '正在分析文件类型和结构…'], [/Selecting the appropriate processing flow/g, '正在选择对应的处理流程'],
   [/Ready to continue · Template CSV detected/g, '可以继续 · 已识别为模板 CSV'], [/Ready to continue · ERP CSV detected/g, '可以继续 · 已识别为 ERP 文件'], [/Ready to continue · Trade document detected/g, '可以继续 · 已识别为贸易单据'],
   [/File not accepted/g, '文件未通过校验'], [/Choose another file/g, '选择其他文件'],
   [/Marketplace supports standard template CSV files only\./g, '电商平台类别仅支持标准模板 CSV。'], [/This marketplace CSV does not use the standard template headers\./g, '此电商平台 CSV 未使用标准模板表头。'],
-  [/Select a valid category\./g, '请选择有效的交易类别。'], [/We couldn’t determine the correct processing flow\./g, '无法确定对应的处理流程。'],
+  [/Select a valid category\./g, '请选择有效的交易类别。'], [/We couldn’t determine the correct processing flow\./g, '暂时无法确定对应的处理流程。请选择其他文件，或稍后重试。'],
   [/This file format is not supported\./g, '不支持此文件格式。'], [/The file exceeds the 50 MB size limit\./g, '文件超过 50 MB 大小限制。'], [/Supported formats: PDF, JPG, PNG, TIFF, DOC, DOCX, and CSV\./g, '支持 PDF、JPG、PNG、TIFF、DOC、DOCX 和 CSV。'],
   [/We couldn’t read the CSV header row\. Choose another file\./g, '无法读取 CSV 表头，请选择其他文件。'], [/The CSV header row is empty\./g, 'CSV 表头为空。'],
-  [/AI is extracting contract and goods information\.?/g, 'AI 正在提取合同和货物信息。'], [/AI is extracting contract, goods, and logistics information\.?/g, 'AI 正在提取合同、货物和物流信息。'], [/AI is extracting transaction and service information\.?/g, 'AI 正在提取交易和服务信息。'],
+  [/AI is extracting contract and goods information\.?/g, '正在提取合同和货物信息。'], [/AI is extracting contract, goods, and logistics information\.?/g, '正在提取合同、货物和物流信息。'], [/AI is extracting transaction and service information\.?/g, '正在提取交易和服务信息。'],
   [/Accepted file format/g, '支持的文件格式'],
-  [/Check the result file for the exchange rate used in quota calculation\./g, '请在结果文件中查看额度计算使用的汇率。'],
+  [/Check the result file for the exchange rate used in quota calculation\./g, '请在结果文件中查看额度计算所用汇率。'],
   [/Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents/g, '贸易单据：商业发票或形式发票、采购订单、合同、运输及报关单据'],
   [/Commercial or proforma invoice, purchase order, contract, or shipping and customs documents\./g, '商业发票或形式发票、采购订单、合同、运输及报关单据。'],
-  [/Transaction records exported from your ERP for automated field mapping\./g, '从 ERP 导出的交易记录，用于自动字段识别。'],
-  [/You can use our template, or export them from your business platforms like ERP\./g, '您可以使用我们的模板，或从 ERP 等业务平台导出。'],
+  [/Transaction records exported from your ERP for automated field mapping\./g, '从 ERP 导出的交易记录，用于自动识别字段。'],
+  [/You can use our template, or export them from your business platforms like ERP\./g, '可使用标准模板，也可从 ERP 等业务系统导出。'],
   [/ERP CSV files/g, 'ERP 文件'],
   [/CSV transaction records/g, 'CSV 交易记录'],
   [/Select a business type to enable document upload\./g, '选择业务类型后才能上传单据。'],
-  [/Business-to-business trade documents — Goods and Service\. Upload documents to release CNY quota per transaction\./g, '企业间货物或服务贸易单据。上传单据后，可按交易释放人民币额度。'],
+  [/Business-to-business trade documents — Goods and Service\. Upload documents to release CNY quota per transaction\./g, '企业间货物或服务贸易单据。上传后可按交易释放人民币额度。'],
   [/Track quota from uploaded trade documents and take action when needed\./g, '查看贸易单据带来的额度，并在需要时处理。'], [/Document List/g, '单据列表'], [/Quota from this channel/g, '此渠道带来的额度'], [/Unshipped Settlement Quota/g, '未发货结算额度'], [/Releasable quota/g, '可释放额度'],
   [/Upload goods or service trade documents \(contracts, PI, CI\) to release quota per transaction\./g, '上传货物或服务贸易单据（合同、PI、CI），按交易释放额度。'], [/Trade document/g, '贸易单据'],
-  [/The templates we provide are/g, '提供的模板为'], [/Upload the completed CSV using the same column headers\./g, '请保留原列标题并上传填写好的 CSV。'],
+  [/The templates we provide are/g, '模板为'], [/Upload the completed CSV using the same column headers\./g, '请保留原表头，并上传填写好的 CSV。'],
   [/B2B purchases or sales of physical goods supported by trade documents\./g, '通过贸易单据证明的 B2B 实体商品采购或销售。'], [/Supported transactions/g, '支持的交易类型'], [/supported transactions/g, '支持的交易类型'], [/View supported marketplaces/g, '查看支持的电商平台'],
   [/Marketplace template & supported marketplaces/g, '电商平台模板与支持列表'], [/Check the result file for the exchange rate/g, '请在结果文件中查看汇率'], [/Check the/g, '请先查看'], [/before proceeding\./g, '，再继续。'],
-  [/Select a business type/g, '选择业务类型'], [/Choose the category that best describes the transaction in your document\./g, '请选择最符合单据中交易的业务类别。'],
+  [/Select a business type/g, '选择业务类型'], [/Choose the category that best describes the transaction in your document\./g, '请选择最符合单据中交易的类别。'],
   [/Do you have the required info in your uploaded file\?/g, '上传的文件中是否包含必填信息？'], [/Tell us which column in your file matches the required info\. If no column matches, add the required columns and upload it again\./g, '请选择文件中对应必填信息的列。如没有对应列，请补充必填列后重新上传。'],
   [/Matched with/g, '已对应'], [/— Not mapped —/g, '— 未选择 —'], [/Current mapped target/g, '当前对应字段'], [/Match columns manually/g, '手动选择对应列'], [/Use this option when an uploaded column corresponds to each missing required field\./g, '上传文件中有与各缺失必填字段对应的列时，请选择此方式。'],
   [/Use this option when none of the uploaded columns match the missing required fields\./g, '上传文件中没有与缺失必填字段对应的列时，请选择此方式。'], [/Select an uploaded column/g, '选择上传文件中的列'], [/Select the uploaded column that matches/g, '请选择对应的上传列'],
@@ -7866,32 +8050,32 @@ const CN_UI_REPLACEMENTS = [
   [/Return to 人民币结汇额度管理/g, '返回人民币结汇额度管理'],
   [/人民币额度管理/g, '人民币结汇额度管理'],
   [/Increase the Quota for Your Account/g, '提升账户额度'],
-  [/Your CNY quota is the amount limit to withdraw or pay in CNY to bank accounts in mainland China\./g, '人民币额度是向中国大陆银行账户以人民币提现或付款的金额上限。'],
+  [/Your CNY quota is the amount limit to withdraw or pay in CNY to bank accounts in mainland China\./g, '人民币额度，是向中国大陆银行账户以人民币提现或付款的金额上限。'],
   [/Your quota is based on your connected stores and uploaded records\./g, '额度根据已绑定店铺和已上传记录计算。'],
-  [/Increase your quota by connecting a store or uploading transaction records\./g, '绑定店铺或上传交易记录可提高额度。'],
-  [/Increase your available CNY settlement quota by connecting your stores or uploading supporting files\./g, '绑定店铺或上传支持材料可提高人民币结算额度。'],
-  [/Manage your CNY settlement quota and upload supporting documents to increase your available quota\./g, '管理人民币结算额度。上传支持材料可提高可用额度。'],
+  [/Increase your quota by connecting a store or uploading transaction records\./g, '绑定店铺或上传交易记录，可提高额度。'],
+  [/Increase your available CNY settlement quota by connecting your stores or uploading supporting files\./g, '绑定店铺或上传材料，可提高人民币结汇额度。'],
+  [/Manage your CNY settlement quota and upload supporting documents to increase your available quota\./g, '管理人民币结汇额度。上传材料可提高可用额度。'],
   [/Total CNY quota breakdown \(USD equivalent\)/g, '人民币总额度明细（折算成美元）'],
   [/Total CNY quota \(USD equivalent\)/g, '人民币总额度（折算成美元）'],
   [/Total funds in all balances \(USD equivalent\)/g, '所有余额中的资金总额（折算成美元）'],
-  [/Based on last 12 months’ transactions from your connected stores and uploaded records/g, '根据已绑定店铺和已上传记录中过去 12 个月的交易计算'],
-  [/Unshipped orders temporarily occupy quota\. To release it, filter "Unshipped" in Upload History and click Supplement Logistics\./g, '未发货订单会暂时占用额度。如需释放，请在上传历史中筛选“未发货”，然后点击“补充物流信息”。'],
+  [/Based on last 12 months’ transactions from your connected stores and uploaded records/g, '按已绑定店铺和已上传记录中近 12 个月交易计算'],
+  [/Unshipped orders temporarily occupy quota\. To release it, filter "Unshipped" in Upload History and click Supplement Logistics\./g, '未发货订单会暂时占用额度。如需释放，请在上传历史筛选“未发货”，再点“补充物流信息”。'],
   [/Unshipped quota usage/g, '未发货额度使用情况'],
   [/Pool quota/g, '额度明细'], [/All balances/g, '全部余额'],
   [/Connect a marketplace once, and eligible payments can increase your quota automatically\./g, '绑定电商平台后，符合条件的收款可自动提高额度。'],
-  [/When you get a new payment to your store, we increase your quota automatically\./g, '店铺收到新款项后，额度将自动提高。'],
+  [/When you get a new payment to your store, we increase your quota automatically\./g, '店铺收到新收款后，额度会自动提高。'],
   [/Connect stores you’re selling on/g, '绑定正在使用的店铺'], [/Connect Stores/g, '绑定店铺'], [/Connect stores/g, '绑定店铺'], [/Connect a Store/g, '绑定店铺'],
   [/(\d+) stores connected/g, '已绑定 $1 家店铺'], [/(\d+) connected/g, '已绑定 $1 家'], [/Not connected/g, '未绑定'], [/(\d+) to connect/g, '可绑定 $1 家'], [/No stores connected yet/g, '尚未绑定店铺'],
   [/Choose your e-commerce platform/g, '选择电商平台'], [/Creative Marketplace/g, '创意商品平台'], [/Social Commerce/g, '社交电商'],
-  [/Upload your transaction documents/g, '上传交易材料'], [/Goods or service trading/g, '货物或服务贸易'], [/We’ll increase your quota based on the transaction amounts\./g, '将根据交易金额提高额度。'],
-  [/Upload trade documents or CSV transaction records\. We increase your quota based on the transaction amount\./g, '上传贸易单据或 CSV 交易记录。我们将根据交易金额提高额度。'],
+  [/Upload your transaction documents/g, '上传交易材料'], [/Goods or service trading/g, '货物或服务贸易'], [/We’ll increase your quota based on the transaction amounts\./g, '额度将按交易金额提高。'],
+  [/Upload trade documents or CSV transaction records\. We increase your quota based on the transaction amount\./g, '上传贸易单据或 CSV 交易记录。额度将按交易金额提高。'],
   [/We support:/g, '支持以下材料：'],
   [/Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents/g, '贸易单据：商业发票或形式发票、采购订单、合同、运输及报关单据'],
   [/CSV transaction records – exported from your business platform like ERP, or prepared using our template/g, 'CSV 交易记录：从 ERP 等业务平台导出，或使用标准模板填写'],
   [/Check the supported transactions before proceeding\./g, '请先查看支持的交易类型，再继续。'],
   [/Upload invoices, purchase orders, contracts, shipping, or customs documents\./g, '上传发票、采购订单、合同、运输或报关单据。'],
   [/Use a standard template to upload marketplace or business transaction records\./g, '使用标准模板上传电商平台或业务交易记录。'],
-  [/Upload transaction records exported from your ERP for automated field mapping\./g, '上传从 ERP 导出的交易记录，系统将自动识别字段。'],
+  [/Upload transaction records exported from your ERP for automated field mapping\./g, '上传从 ERP 导出的交易记录，系统会自动识别字段。'],
   [/Upload trade documents/g, '上传贸易单据'], [/Upload CSV from templates/g, '上传模板 CSV'], [/Upload ERP CSV/g, '上传 ERP 文件'],
   [/Trade Documents/g, '贸易单据'], [/Trade documents/g, '贸易单据'], [/Transaction Records/g, '交易记录'],
   [/View upload history/g, '查看上传历史'], [/View history/g, '查看历史'], [/Supported marketplaces/g, '支持的电商平台'], [/Download template/g, '下载模板'], [/View requirements/g, '查看要求'],
@@ -7907,16 +8091,16 @@ const CN_UI_REPLACEMENTS = [
   [/Home/g, '首页'], [/Checkout/g, '结账'], [/Get paid/g, '收款'], [/Payoneer cards/g, 'Payoneer 卡'], [/Withdraw and convert/g, '提现与换汇'], [/Capital advance/g, '资金周转'], [/Manage/g, '管理'],
   [/Privacy · Terms · Fees/g, '隐私 · 条款 · 费用'],
   [/Find and download template/g, '查找并下载模板'], [/Select your business type/g, '选择业务类型'],
-  [/The templates we provide are CSV files\. Upload the completed CSV using the same column headers\./g, '提供的模板为 CSV 文件。填写后请保留原列标题并上传 CSV。'],
-  [/Marketplace/g, '电商平台'], [/Goods/g, '货物贸易'], [/Software/g, '软件服务'], [/International logistics/gi, '国际物流'], [/Advertisement/g, '广告服务'], [/Communication/g, '通信服务'], [/Air ticket/g, '机票'], [/Accommodation/g, '住宿'], [/Tourism/g, '旅游服务'],
+  [/The templates we provide are CSV files\. Upload the completed CSV using the same column headers\./g, '模板为 CSV 文件。填写后请保留原表头并上传。'],
+  [/Marketplace/g, '电商平台'], [/Goods/g, '货物贸易'], [/Software/g, '软件服务'], [/International Logistics/g, '国际物流'], [/International logistics/g, '国际物流'], [/Advertisement/g, '广告服务'], [/Communication/g, '通信服务'], [/Air ticket/g, '机票'], [/Accommodation/g, '住宿'], [/Tourism/g, '旅游服务'],
   [/SHEIN\.COM, TikTok Shop, Wayfair, and other marketplaces/g, 'SHEIN.COM、TikTok Shop、Wayfair 等电商平台'],
   [/Physical products, including retail, wholesale, and drop shipping/g, '实体商品，包括零售、批发和代发货'],
   [/Software licenses, SaaS subscriptions, and digital product fees/g, '软件许可、SaaS 订阅和数字产品费用'], [/Cross-border freight, logistics, and shipping service fees/g, '跨境货运、物流和运输服务费'],
   [/Online and offline advertising, media buying, and campaign fees/g, '线上及线下广告、媒体投放和活动费用'], [/Telecom, messaging, and other communication service charges/g, '电信、消息及其他通信服务费用'],
   [/Business travel airfare and related airline booking fees/g, '商务旅行机票及相关预订费用'], [/Hotel stays and lodging expenses for business travel/g, '商务旅行的酒店及住宿费用'], [/Tour packages, destination services, and related travel fees/g, '旅游套餐、目的地服务及相关费用'],
   [/How to fill in the transaction record file/g, '如何填写交易记录文件'], [/Prepare your template correctly before uploading/g, '上传前请按要求准备模板'], [/Tips before you begin/g, '开始前须知'],
-  [/Check that your marketplace is in the list of supported marketplaces\./g, '确认所用电商平台在支持列表中。'], [/Download and save a copy of the template with a name that describes your store, for example/g, '下载并保存模板副本。文件名应能说明店铺，例如'],
-  [/Save the file in \.csv format using English letters and digits\./g, '将文件保存为 .csv 格式，文件名使用英文字母和数字。'], [/Do not change or delete the column headers\./g, '请勿修改或删除列标题。'],
+  [/Check that your marketplace is in the list of supported marketplaces\./g, '请确认所用电商平台在支持列表中。'], [/Download and save a copy of the template with a name that describes your store, for example/g, '下载并保存模板副本，文件名应能说明店铺，例如'],
+  [/Save the file in \.csv format using English letters and digits\./g, '将文件保存为 .csv 格式，文件名使用英文字母和数字。'], [/Do not change or delete the column headers\./g, '请勿修改或删除表头。'],
   [/Filling in the file with your transaction info/g, '填写交易信息'], [/Complete one row for each item in an order\. If the same item is sold at different prices, combine it into one row and use the average unit price\./g, '订单中的每件商品填写一行。同一商品如有不同售价，请合并为一行并填写平均单价。'],
   [/Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12\.50\./g, '示例：商品 1 分别以 USD 10 和 USD 15 售出一次，请填写一行，数量为 2，单价为 USD 12.50。'],
   [/Template fields/g, '模板字段'], [/Store name/g, '店铺名称'], [/The name of your store on the ecommerce marketplace\./g, '店铺在电商平台上的名称。'], [/Store URL/g, '店铺网址'], [/The URL of your store on the marketplace\./g, '店铺在电商平台上的网址。'],
@@ -7926,27 +8110,27 @@ const CN_UI_REPLACEMENTS = [
   [/The unit price\. The total price of all units must be less than the equivalent of USD 50,000\. Use digits only\./g, '商品单价。所有商品总价必须低于 USD 50,000 等值金额。仅使用数字。'], [/Currency/g, '币种'], [/Use the 3-letter currency code, for example USD, EUR, or GBP\./g, '使用 3 位货币代码，例如 USD、EUR 或 GBP。'],
   [/Logistics company \(optional\)/g, '物流公司（选填）'], [/The name of the logistics company that delivered the order\./g, '承运此订单的物流公司名称。'], [/Logistics number \(optional\)/g, '物流单号（选填）'], [/The tracking number from the logistics provider\./g, '物流服务商提供的运单号。'],
   [/File sample/g, '文件示例'], [/Finishing up/g, '完成填写'], [/Review and save the data file:/g, '检查并保存数据文件：'], [/Keep the file size under 10 MB\./g, '文件大小不得超过 10 MB。'], [/Have questions\? Read our FAQ\./g, '有疑问？查看常见问题。'],
-  [/After submission, we’ll validate the file and notify you when processing is complete\. You can then download the submission results\./g, '提交后将校验文件。处理完成后会通知您，届时可下载提交结果。'],
-  [/ERP CSV Requirements/g, 'ERP 文件要求'], [/What your ERP CSV file must contain to process successfully/g, '文件需要包含以下内容，才能顺利处理'], [/Accepted file format/g, '支持的文件格式'], [/Required Columns/g, '必填列'],
+  [/After submission, we’ll validate the file and notify you when processing is complete\. You can then download the submission results\./g, '提交后将校验文件。处理完成后会通知，届时可下载结果。'],
+  [/ERP CSV Requirements/g, 'ERP 文件要求'], [/What your ERP CSV file must contain to process successfully/g, '文件需包含以下内容，才能顺利处理'], [/Accepted file format/g, '支持的文件格式'], [/Required Columns/g, '必填列'],
   [/Column name/g, '列名'], [/Description/g, '说明'], [/Example/g, '示例'], [/Unique order identifier from your ERP/g, 'ERP 中的唯一订单标识'], [/Name of the supplier \/ seller entity/g, '供应商或卖方主体名称'], [/Recipient or buyer entity name/g, '收货方或买方主体名称'],
   [/Product SKU or item code/g, '产品 SKU 或商品代码'], [/Number of units \(numeric\)/g, '数量（数字）'], [/Unit price — no currency symbol/g, '单价，不含货币符号'], [/3-letter ISO currency code/g, '3 位 ISO 货币代码'], [/quantity × unit_price/g, '数量 × 单价'], [/Order or transaction date \(YYYY-MM-DD\)/g, '订单或交易日期（YYYY-MM-DD）'],
-  [/Column names are case-insensitive and can contain spaces or underscores\. Our AI field mapper will automatically detect and align most standard ERP export formats\./g, '列名不区分大小写，可包含空格或下划线。AI 可自动识别多数标准 ERP 导出格式。'],
+  [/Column names are case-insensitive and can contain spaces or underscores\. Our AI field mapper will automatically detect and align most standard ERP export formats\./g, '列名不区分大小写，可含空格或下划线。多数标准 ERP 导出格式可自动识别。'],
   [/Marketplace template & supported marketplaces/g, '电商平台模板与支持列表'], [/Upload marketplace records or check how each marketplace is supported\./g, '上传电商平台交易记录，或查看各平台的支持方式。'], [/Upload marketplace CSV/g, '上传电商平台 CSV'],
-  [/Download the standard marketplace template, add your transaction records, then upload the completed file\./g, '下载标准电商平台模板，添加交易记录后上传。'], [/Choose the relevant path based on how your marketplace is supported\./g, '请根据电商平台的支持方式选择相应路径。'],
-  [/Choose one of two ways to add marketplace transaction records and increase your quota\./g, '选择以下任一方式添加电商平台交易记录并提高额度。'],
-  [/We offer 2 ways for you to provide transactions to us\./g, '我们提供 2 种方式供您提交交易记录。'],
-  [/This allows us to automatically receive your store data\./g, '这样我们就能自动获取您的店铺数据。'], [/Connect these marketplaces to increase quota automatically from eligible payments\./g, '绑定这些电商平台后，符合条件的收款可自动提高额度。'],
-  [/ERP CSV files – transaction records exported from your ERP for automated field mapping\./g, 'ERP 文件：从 ERP 导出的交易记录，用于自动字段识别。'],
-  [/Use this option if you can’t connect your marketplace\. /g, '无法绑定电商平台时，可'], [/Use this option for your stores not on Amazon, Shopify, or Walmart\. /g, '适用于不在 Amazon、Shopify 或 Walmart 上的店铺，可'], [/Download our template/g, '下载模板'], [/ and upload records manually\./g, '并手动上传交易记录。'],
+  [/Download the standard marketplace template, add your transaction records, then upload the completed file\./g, '下载标准电商平台模板，添加交易记录后上传。'], [/Choose the relevant path based on how your marketplace is supported\./g, '请按电商平台的支持方式选择对应路径。'],
+  [/Choose one of two ways to add marketplace transaction records and increase your quota\./g, '任选一种方式添加电商平台交易记录并提高额度。'],
+  [/We offer 2 ways for you to provide transactions to us\./g, '可通过以下 2 种方式提交交易记录。'],
+  [/This allows us to automatically receive your store data\./g, '绑定后即可自动获取店铺数据。'], [/Connect these marketplaces to increase quota automatically from eligible payments\./g, '绑定这些电商平台后，符合条件的收款可自动提高额度。'],
+  [/ERP CSV files – transaction records exported from your ERP for automated field mapping\./g, 'ERP 文件：从 ERP 导出的交易记录，用于自动识别字段。'],
+  [/Use this option if you can’t connect your marketplace\. /g, '无法绑定电商平台时，可'], [/Use this option for your stores not on Amazon, Shopify, or Walmart\. /g, '适用于非 Amazon、Shopify、Walmart 店铺，可'], [/Download our template/g, '下载模板'], [/ and upload records manually\./g, '并手动上传交易记录。'],
   [/Connect a store/g, '绑定店铺'],
   [/Upload transaction records/g, '上传交易记录'], [/Connect a marketplace/g, '绑定电商平台'],
-  [/Automatic quota increase/g, '自动提高额度'], [/Eligible payments from these marketplaces can update your quota automatically\./g, '来自这些电商平台的符合条件收款可自动更新额度。'], [/Upload using the marketplace template/g, '使用电商平台模板上传'],
+  [/Automatic quota increase/g, '自动提高额度'], [/Eligible payments from these marketplaces can update your quota automatically\./g, '这些电商平台的符合条件收款，可自动更新额度。'], [/Upload using the marketplace template/g, '使用电商平台模板上传'],
   [/Use the marketplace CSV template for transaction records from these marketplaces\./g, '这些电商平台的交易记录请使用电商平台 CSV 模板。'], [/Marketplace sales/g, '电商平台销售'], [/Marketplace transactions/g, '电商平台交易'], [/Goods trading/g, '货物贸易'], [/Services/g, '服务'],
   [/Transaction types that can increase your CNY quota/g, '可提高人民币额度的交易类型'], [/Marketplace transactions that can increase your CNY quota/g, '可提高人民币额度的电商平台交易'],
-  [/Uploaded successfully/g, '上传成功'], [/Your trade documents have been submitted and the corresponding CNY quota has been released\./g, '贸易单据已提交，相应人民币额度已释放。'], [/Your file has been submitted and the corresponding CNY quota has been released\./g, '文件已提交，相应人民币额度已释放。'],
+  [/Uploaded successfully/g, '上传成功'], [/Your trade documents have been submitted and the corresponding CNY quota has been released\./g, '贸易单据已提交，对应人民币额度已释放。'], [/Your file has been submitted and the corresponding CNY quota has been released\./g, '文件已提交，对应人民币额度已释放。'],
   [/View upload history/g, '查看上传历史'], [/Upload another file/g, '再上传一个文件'], [/Select a transaction category before choosing a file\./g, '请先选择交易类别，再选择文件。'], [/Select a category and upload your file, then review the details before submitting\./g, '选择类别并上传文件，然后在提交前核对详情。'], [/Select the transaction category/g, '选择交易类别'], [/Select a category/g, '选择类别'],
   [/Choose the same category used when downloading and completing the template\./g, '请选择下载和填写模板时使用的同一类别。'], [/Select a transaction category\./g, '请选择交易类别。'], [/Which marketplace are you uploading data from\?/g, '上传的是哪个电商平台的数据？'], [/Select a marketplace/g, '选择电商平台'],
-  [/Select the marketplace represented by the transaction rows in this file\./g, '请选择文件中交易记录所属的电商平台。'], [/Seller ID/g, '卖家 ID'], [/Required to associate this .* file with the correct store\./g, '用于将文件关联到正确店铺。'],
+  [/Select the marketplace represented by the transaction rows in this file\./g, '请选择文件中交易记录所属的电商平台。'], [/Seller ID/g, '卖家 ID'], [/Required to associate this .* file with the correct store\./g, '用于将文件绑定到正确店铺。'],
   [/Upload transaction CSV/g, '上传交易 CSV'], [/Choose the transaction category, then upload the completed CSV template\./g, '选择交易类别，然后上传填写好的 CSV 模板。'], [/Template CSV/g, '模板 CSV'],
   [/Complete the required category information to enable file upload\./g, '请先填写必填的类别信息，再上传文件。'], [/Complete the required category information before continuing\./g, '请先填写必填的类别信息，再继续。'], [/Upload a CSV file before continuing\./g, '请先上传 CSV 文件，再继续。'],
   [/Parsing CSV file…/g, '正在解析 CSV 文件…'], [/Validating rows and transaction data/g, '正在校验交易记录和数据'],
@@ -7954,13 +8138,13 @@ const CN_UI_REPLACEMENTS = [
   [/Total rows/g, '总行数'], [/Excluded/g, '未提交'],
   [/Review upload results/g, '查看上传结果'], [/Review accepted and excluded rows before submitting\./g, '提交前，请核对已通过和未提交的记录。'], [/Validation results/g, '校验结果'],
   [/Review validation results/g, '查看校验结果'], [/Review accepted and issue rows before submitting the ERP CSV\./g, '提交 ERP 文件前，请核对已接受记录和问题记录。'],
-  [/Select Edit table to update any cell\. Invalid formats are highlighted immediately\. Unresolved rows will be skipped if you submit now\./g, '点击“编辑表格”后可修改任意单元格。格式错误会立即高亮。如现在提交，未解决的记录将被跳过。'],
+  [/Select Edit table to update any cell\. Invalid formats are highlighted immediately\. Unresolved rows will be skipped if you submit now\./g, '点“编辑表格”可修改单元格。格式错误会立即标出。如现在提交，未解决的记录将被跳过。'],
   [/Transaction records/g, '交易记录'], [/Edit any value below\. Invalid formats are highlighted immediately\./g, '可修改下方任意内容，格式错误会立即高亮。'], [/Review the records below or edit the full table\./g, '请核对下方记录，或编辑整张表格。'],
   [/Done editing/g, '完成编辑'], [/Edit table/g, '编辑表格'], [/No issues/g, '无问题'], [/Ignore and submit/g, '忽略并提交'],
   [/Review upload/g, '检查上传内容'], [/Validate & submit/g, '校验并提交'],
   [/Use a valid YYYY-MM-DD date/g, '请使用有效的 YYYY-MM-DD 日期'], [/Unit price must be greater than 0/g, '单价必须大于 0'], [/Amount must be numeric/g, '金额必须为数字'],
-  [/You can still submit\. (\d+) rows will be skipped and won’t add quota\. Download the issue rows, fix them, and replace the uploaded file if you want to include them\./g, '仍可提交。$1 行将被跳过且不会计入额度。如需计入，请下载问题记录，修正后替换已上传文件。'],
-  [/Fix the (\d+) issue rows online below, or replace the uploaded file\. Unresolved rows will be skipped if you submit now\./g, '可在下方在线修改 $1 条问题记录，或替换已上传文件。如现在提交，未解决的记录将被跳过。'],
+  [/You can still submit\. (\d+) rows will be skipped and won’t add quota\. Download the issue rows, fix them, and replace the uploaded file if you want to include them\./g, '仍可提交。$1 行将被跳过，不计入额度。如需计入，请下载问题记录，修正后替换已上传文件。'],
+  [/Fix the (\d+) issue rows online below, or replace the uploaded file\. Unresolved rows will be skipped if you submit now\./g, '可在下方修改 $1 条问题记录，或替换已上传文件。如现在提交，未解决的记录将被跳过。'],
   [/All issue rows have been fixed/g, '所有问题记录均已修正'], [/All (\d+) rows are ready to submit\./g, '全部 $1 条记录均可提交。'],
   [/Fix CSV row (\d+)/g, '修改 CSV 第 $1 行'], [/Fix row/g, '修改'], [/Save change/g, '保存修改'],
   [/Enter a unique transaction ID\./g, '请输入唯一的交易 ID。'], [/Enter a transaction ID\./g, '请输入交易 ID。'], [/Enter a different, unique transaction ID\./g, '请输入另一个唯一的交易 ID。'],
@@ -7972,7 +8156,7 @@ const CN_UI_REPLACEMENTS = [
   [/Use YYYY-MM-DD\. Date must be within the past 365 days and not in the future\./g, '请使用 YYYY-MM-DD 格式。日期须在过去 365 天内且不能晚于今天。'],
   [/Row (\d+) fixed and moved to accepted rows\./g, '第 $1 行已修正并移至已接受记录。'],
   [/Download issue rows/g, '下载问题记录'], [/Issue rows downloaded\./g, '问题记录已下载。'], [/Replace file/g, '替换文件'],
-  [/You can still submit\. (\d+) rows will be skipped and won’t add quota\. Fix them in the CSV and upload again if you want to include them\./g, '仍可提交。$1 行将被跳过且不会计入额度。如需计入，请在 CSV 中修正后重新上传。'],
+  [/You can still submit\. (\d+) rows will be skipped and won’t add quota\. Fix them in the CSV and upload again if you want to include them\./g, '仍可提交。$1 行将被跳过，不计入额度。如需计入，请在 CSV 中修正后重新上传。'],
   [/CSV row/g, 'CSV 行号'], [/Transaction ID/g, '交易 ID'], [/Product \/ service/g, '产品/服务'], [/Issue/g, '问题'],
   [/Select & upload/g, '选择并上传'], [/Review results/g, '查看结果'],
   [/Upload & Submit/g, '上传并提交'], [/Select the category, upload your completed CSV, and submit accepted records\./g, '选择类别，上传填写好的 CSV，然后提交已通过的记录。'], [/Submit records/g, '提交记录'],
@@ -7989,157 +8173,157 @@ const CN_UI_REPLACEMENTS = [
   [/Resolve the duplicate mapping/g, '请处理重复对应'],
   [/Not found in your file/g, '文件中未找到'],
   [/(\d+) of the (\d+) required fields are mapped\./g, '已匹配 $2 个必填字段中的 $1 个。'],
-  [/Select a file column or None of above for every field\. The selection cannot be empty\./g, '请为每个字段选择文件列或“以上均不匹配”，不能留空。'],
+  [/Select a file column or None of above for every field\. The selection cannot be empty\./g, '请为每个字段选择文件列或“以上均不匹配”，不可留空。'],
   [/Select a file column or None of above\./g, '请选择文件列或“以上均不匹配”。'],
   [/Select a file column or None of above/g, '请选择文件列或“以上均不匹配”'],
-  [/Each required field can only be mapped once\. Resolve duplicate mappings before continuing\./g, '每个必填字段只能对应一列。请先处理重复对应后再继续。'],
+  [/Each required field can only be mapped once\. Resolve duplicate mappings before continuing\./g, '每个必填字段只能对应一列。请先处理重复对应，再继续。'],
   [/Add the missing fields, then upload a complete corrected file\./g, '请补充缺失字段，然后上传完整修正版。'],
   [/Upload a complete corrected file that includes every missing required field\./g, '请上传包含全部缺失必填字段的完整修正版。'],
   [/Add the missing fields and re-upload/g, '补充缺失字段并重新上传'],
-  [/These required fields are still missing\. Download the system-corrected file, fill in the new columns, and upload the complete file\./g, '这些必填字段仍然缺失。请下载系统修正后的文件，填写新增列，然后上传完整文件。'],
-  [/All original headers have been renamed to the fields we need, and the missing headers have already been added\. You only need to fill in the corresponding data\./g, '原文件表头已全部修正为系统所需表头，缺失表头也已补充。您只需填入对应数据。'],
-  [/Download the system-corrected document first if you want a file that already uses the required headers\. Then complete the empty columns and upload the full file\./g, '如需已使用系统表头的文件，请先下载系统修正版。填写空白列后，再上传完整文件。'],
+  [/These required fields are still missing\. Download the system-corrected file, fill in the new columns, and upload the complete file\./g, '这些必填字段仍缺失。请下载系统修正文件，填写新增列后上传完整文件。'],
+  [/All original headers have been renamed to the fields we need, and the missing headers have already been added\. You only need to fill in the corresponding data\./g, '原文件表头已全部修正为所需表头，缺失表头也已补充。只需填入对应数据。'],
+  [/Download the system-corrected document first if you want a file that already uses the required headers\. Then complete the empty columns and upload the full file\./g, '如需已含系统表头的文件，请先下载系统修正版。填写空白列后，再上传完整文件。'],
   [/Download system-corrected file/g, '下载系统修正文件'],
   [/System-corrected file downloaded\. Fill in the missing columns and upload the complete file\./g, '系统修正文件已下载。请填写缺失列后上传完整文件。'],
   [/Upload the complete corrected file/g, '上传完整修正文件'],
   [/Include every required header and the missing (.+) data\./g, '请包含全部必填表头，并填写缺失的 $1 数据。'],
   [/The missing fields have been added to the corrected file\./g, '缺失字段已添加到修正文件中。'],
-  [/The system-corrected file replaced the previous upload\. Existing mappings were reused, and missing headers were added\./g, '系统修正文件已覆盖上次上传。已复用现有对应关系，并补充了缺失表头。'],
+  [/The system-corrected file replaced the previous upload\. Existing mappings were reused, and missing headers were added\./g, '系统修正文件已覆盖上次上传。已保留现有对应关系，并补充缺失表头。'],
   [/new header added/g, '个新增表头已添加'], [/new headers added/g, '个新增表头已添加'],
   [/^Mapped$/g, '已匹配'],
   [/Review identified fields, match available uploaded columns, and complete any remaining required fields\./g, '核对已识别字段，使用可用上传列补充对应关系，并补充剩余必填字段。'],
-  [/Review identified fields/g, '核对已识别字段'], [/Review identified/g, '核对已识别字段'], [/For each required system field, verify the selected uploaded file column or choose a different one\./g, '请逐一核对每个系统必填字段对应的上传文件列，也可以重新选择。'],
+  [/Review identified fields/g, '核对已识别字段'], [/Review identified/g, '核对已识别字段'], [/For each required system field, verify the selected uploaded file column or choose a different one\./g, '请逐一核对每个必填字段对应的上传列，也可重新选择。'],
   [/Identified system fields/g, '已识别的系统字段'], [/System required field/g, '系统必填字段'], [/Field required for processing/g, '处理文件所需的字段'],
   [/Your uploaded file column/g, '上传文件中的列'], [/Choose a file header and review its sample value/g, '选择文件表头并核对示例值'],
   [/Choose an uploaded file column for/g, '为以下字段选择上传文件列：'], [/— Select an uploaded file column —/g, '— 选择上传文件中的列 —'], [/None of above/g, '以上均不匹配'],
   [/File column selected/g, '已选择文件列'], [/No file column selected/g, '未选择文件列'], [/Used for/g, '已用于'],
-  [/Do you have these columns in your file\?/g, '您的文件中是否包含这些列？'],
-  [/We couldn't match these fields automatically\. Point us to the right column, or skip the ones your file doesn't include\./g, '这些字段未能自动匹配。请指出对应的列，或跳过文件中没有的字段。'],
-  [/For the other details we ask for, tell us whether you have those in your document\./g, '对于我们要求的其他信息，请告诉我们这些信息是否在您的文件中。'],
+  [/Do you have these columns in your file\?/g, '文件中是否包含这些列？'],
+  [/We couldn't match these fields automatically\. Point us to the right column, or skip the ones your file doesn't include\./g, '这些字段未能自动匹配。请指出对应列，或跳过文件中没有的字段。'],
+  [/For the other details we ask for, tell us whether you have those in your document\./g, '其余所需信息，请说明文件中是否已包含。'],
   [/For each missing required system field, choose a corresponding column from your uploaded file\./g, '请为每个缺少的系统必填字段选择对应的上传文件列。'],
   [/Review how required system fields correspond to uploaded file headers\./g, '查看系统必填字段与上传文件表头的对应关系。'],
   [/Review identified fields, handle unrecognized headers, and complete missing columns\./g, '核对已识别字段，处理未识别表头，并补充缺少字段。'],
-  [/Upload CSV/g, '上传 CSV'], [/Confirm identified(?! columns)/g, '核对已识别字段'], [/Tell us where these details are in your file/g, '告诉我们这些信息在文件中的位置'], [/Match available columns/g, '选择可用列对应'], [/Match available/g, '选择可用列'], [/Match unrecognized(?! columns)/g, '处理未识别字段'], [/Complete missing(?! columns)/g, '补充缺少字段'],
-  [/Upload your ERP export\. We’ll identify the file headers before you review them step by step\./g, '上传 ERP 导出文件。系统识别表头后，请按步骤核对。'],
-  [/We’ll identify the file headers before you review them step by step\./g, '系统识别表头后，请按步骤核对。'],
-  [/Keep the original header row\./g, '请保留原表头。'], [/AI is analyzing your file and identifying fields…/g, 'AI 正在分析文件并识别字段…'],
+  [/Upload CSV/g, '上传 CSV'], [/Confirm identified(?! columns)/g, '核对已识别字段'], [/Tell us where these details are in your file/g, '请指出这些信息在文件中的位置'], [/Match available columns/g, '选择可用列对应'], [/Match available/g, '选择可用列'], [/Match unrecognized(?! columns)/g, '处理未识别字段'], [/Complete missing(?! columns)/g, '补充缺少字段'],
+  [/Upload your ERP export\. We’ll identify the file headers before you review them step by step\./g, '上传 ERP 导出文件。识别表头后，请按步骤核对。'],
+  [/We’ll identify the file headers before you review them step by step\./g, '识别表头后，请按步骤核对。'],
+  [/Keep the original header row\./g, '请保留原表头。'], [/AI is analyzing your file and identifying fields…/g, '正在分析文件并识别字段…'],
   [/Confirm identified columns/g, '核对已识别字段'], [/Review the file headers that the system identified and confirm their corresponding system fields\./g, '请核对系统已识别的文件表头及其对应的系统字段。'],
   [/Identified columns/g, '已识别字段'], [/Identified by system/g, '系统已识别'], [/System-detected field/g, '系统识别字段'], [/File headers and sample values/g, '文件表头和示例值'],
-  [/Match unrecognized columns/g, '处理未识别字段'], [/Choose a system field for useful file headers\. Leave a column as “Not mapped” if it is not needed\./g, '为需要的文件表头选择对应系统字段；不需要的列可保留为“未选择”。'],
-  [/For each missing required field, select a corresponding column from your uploaded file\./g, '请为每个缺少的必填字段选择对应的上传列。'],
-  [/If your file doesn't include these, continue\. You'll need to add them to your file and upload it again\./g, '如果文件中没有这些列，请继续。之后需要把它们加到文件中并重新上传。'],
+  [/Match unrecognized columns/g, '处理未识别字段'], [/Choose a system field for useful file headers\. Leave a column as “Not mapped” if it is not needed\./g, '为需要的表头选择对应系统字段；不需要的列可保留为“未选择”。'],
+  [/For each missing required field, select a corresponding column from your uploaded file\./g, '请为每个缺少的必填字段选择对应上传列。'],
+  [/If your file doesn't include these, continue\. You'll need to add them to your file and upload it again\./g, '如果文件中没有这些列，请继续。之后需补充到文件中并重新上传。'],
   [/Move on to next if you don't have any of those in your document\./g, '如果文件中没有这些信息，请继续下一步。'],
-  [/If no uploaded column matches a field, leave it unselected and continue to the next step\./g, '如果没有对应的上传列，请保持未选择并继续下一步。'],
-  [/If no uploaded column matches a field, select None of above and upload a complete corrected file below\./g, '如果没有对应的上传列，请选择“以上均不匹配”，并在下方上传完整修正版。'],
+  [/If no uploaded column matches a field, leave it unselected and continue to the next step\./g, '如无对应上传列，请保持未选择并继续。'],
+  [/If no uploaded column matches a field, select None of above and upload a complete corrected file below\./g, '如无对应上传列，请选择“以上均不匹配”，并在下方上传完整修正版。'],
   [/If no uploaded column matches a field, select /g, '如果没有对应的上传列，请选择'], [/ and upload a complete corrected file below\./g, '，并在下方上传完整修正版。'], [/^or$/g, '或'], [/^OR$/g, '或'],
-  [/Upload a complete corrected file/g, '上传完整修正版'], [/Add the missing headers to the original document\. Existing automatic and manual mappings will be reused\./g, '请在原文件中补充缺少的表头。已有自动及手动字段对应关系将被复用。'], [/Missing headers:/g, '缺少的表头：'],
-  [/No manual matching is needed\. Continue to check whether anything else is missing\./g, '无需手动选择对应列。请继续检查是否还有缺少的内容。'],
-  [/Unrecognized extra columns will be ignored\. Continue to review whether anything else is missing\./g, '未识别的多余列将被忽略。请继续检查是否还有缺少的内容。'],
-  [/file columns? (?:was|were) not identified automatically\./g, '个文件列未被自动识别。'], [/Your choices are saved in this draft\./g, '你的选择会保存在当前草稿中。'],
+  [/Upload a complete corrected file/g, '上传完整修正版'], [/Add the missing headers to the original document\. Existing automatic and manual mappings will be reused\./g, '请在原文件中补充缺少的表头。已有对应关系将保留。'], [/Missing headers:/g, '缺少的表头：'],
+  [/No manual matching is needed\. Continue to check whether anything else is missing\./g, '无需手动对应。请继续检查是否还有缺少内容。'],
+  [/Unrecognized extra columns will be ignored\. Continue to review whether anything else is missing\./g, '未识别的多余列将被忽略。请继续检查是否还有缺少内容。'],
+  [/file columns? (?:was|were) not identified automatically\./g, '个文件列未被自动识别。'], [/Your choices are saved in this draft\./g, '当前选择会保存在草稿中。'],
   [/(\d+) manually matched\./g, '已手动对应 $1 个。'], [/Manually matched/g, '已手动对应'],
   [/Each system field can only be selected once\. Resolve duplicate selections before confirming\./g, '每个系统字段只能选择一次。请处理重复选择后再确认。'],
-  [/Each system field can only be selected once\. Resolve duplicate selections before continuing\./g, '每个系统字段只能选择一次。请处理重复选择后继续。'],
-  [/All unrecognized columns have been reviewed/g, '所有未识别字段均已处理'], [/Continue to check whether any required system fields are still missing\./g, '继续检查是否仍有缺少的必填字段。'],
-  [/^Update and re-upload$/g, '更新并重新上传'], [/Resubmit your document/g, '重新提交您的单据'], [/Complete missing columns/g, '补充缺少字段'], [/Check whether the file still needs any required system fields\./g, '检查文件是否仍缺少必填字段。'],
-  [/Add the remaining required fields now, or save this upload as a draft and continue later\./g, '现在补充剩余必填字段，或保存草稿后再继续。'],
-  [/Details about the (.+) are missing/g, '缺少关于 $1 的信息'],
+  [/Each system field can only be selected once\. Resolve duplicate selections before continuing\./g, '每个系统字段只能选择一次。请处理重复选择后再继续。'],
+  [/All unrecognized columns have been reviewed/g, '所有未识别字段均已处理'], [/Continue to check whether any required system fields are still missing\./g, '继续检查是否仍缺少必填字段。'],
+  [/^Update and re-upload$/g, '更新并重新上传'], [/Resubmit your document/g, '重新提交单据'], [/Complete missing columns/g, '补充缺少字段'], [/Check whether the file still needs any required system fields\./g, '检查文件是否仍缺少必填字段。'],
+  [/Add the remaining required fields now, or save this upload as a draft and continue later\./g, '可先补充剩余必填字段，或保存草稿后再继续。'],
+  [/Details about the (.+) are missing/g, '缺少$1相关信息'],
   [/required column is still missing/g, '个必填字段仍缺少'], [/required columns are still missing/g, '个必填字段仍缺少'],
-  [/Upload a supplementary CSV containing order_id and the missing columns below\. The file will be merged with this saved upload\./g, '上传包含 order_id 和下列缺少字段的补充 CSV。文件会合并到当前草稿。'],
-  [/You can select Save draft and return later from Upload history\. You only need to upload order_id plus the missing columns—not the full original file\./g, '你可以选择“保存草稿”，稍后从上传历史继续。只需上传 order_id 和缺少字段，无需重新上传完整原文件。'],
+  [/Upload a supplementary CSV containing order_id and the missing columns below\. The file will be merged with this saved upload\./g, '上传包含 order_id 和下列缺少字段的补充 CSV，将合并到当前草稿。'],
+  [/You can select Save draft and return later from Upload history\. You only need to upload order_id plus the missing columns—not the full original file\./g, '可先保存草稿，稍后从上传历史继续。只需上传 order_id 和缺少的字段，无需重新上传完整原文件。'],
   [/Upload a supplementary CSV containing /g, '上传包含 '], [/ and the missing columns below\. The file will be merged with this saved upload\./g, ' 和下列缺少字段的补充 CSV。文件会合并到当前草稿。'],
-  [/You can select /g, '你可以选择'], [/ and return later from Upload history\. You only need to upload /g, '，稍后从上传历史继续。只需上传 '], [/ plus the missing columns—not the full original file\./g, ' 和缺少字段，无需重新上传完整原文件。'],
+  [/You can select /g, '可选择'], [/ and return later from Upload history\. You only need to upload /g, '，稍后从上传历史继续。只需上传 '], [/ plus the missing columns—not the full original file\./g, ' 和缺少字段，无需重新上传完整原文件。'],
   [/Upload supplementary CSV/g, '上传补充 CSV'], [/Checking supplementary CSV…/g, '正在检查补充 CSV…'], [/Choose file/g, '选择文件'], [/Required:/g, '需要包含：'],
-  [/The supplementary CSV must include order_id so each row can be linked to this draft\./g, '补充 CSV 必须包含 order_id，系统才能将每一行关联到当前草稿。'],
-  [/The supplementary CSV must include /g, '补充 CSV 必须包含 '], [/ so each row can be linked to this draft\./g, '，系统才能将每一行关联到当前草稿。'],
+  [/The supplementary CSV must include order_id so each row can be linked to this draft\./g, '补充 CSV 须含 order_id，才能将每行绑定到当前草稿。'],
+  [/The supplementary CSV must include /g, '补充 CSV 必须包含 '], [/ so each row can be linked to this draft\./g, '，才能将每行绑定到当前草稿。'],
   [/Identifying headers in the supplementary CSV…/g, '正在识别补充 CSV 的表头…'],
-  [/Add the missing headers to your file, complete the new columns, and submit your updated file again\./g, '请在文件中补充缺少的表头，填写新列内容，然后再次提交更新后的文件。'],
-  [/Add the missing headers to the original document, then upload the complete corrected file\. It will replace the current upload\./g, '请在原文件中补充缺少的表头，然后上传完整修正版。修正版将覆盖当前文件。'],
-  [/If you’ll complete the file later, save your progress as a draft for now\./g, '如果稍后补全文件，请先将进度保存为草稿。'],
+  [/Add the missing headers to your file, complete the new columns, and submit your updated file again\./g, '请在文件中补充缺少的表头，填写新列后再次提交。'],
+  [/Add the missing headers to the original document, then upload the complete corrected file\. It will replace the current upload\./g, '请在原文件中补充缺少的表头，再上传完整修正版。修正版将覆盖当前文件。'],
+  [/If you’ll complete the file later, save your progress as a draft for now\./g, '如稍后补全，请先保存为草稿。'],
   [/Analyzing the corrected file and reusing previous mappings…/g, '正在分析修正版并复用已有字段对应关系…'],
-  [/Include all original columns plus the (.+) columns\./g, '请包含全部原始列，并补充 $1 列。'],
+  [/Include all original columns plus the (.+) columns\./g, '请包含全部原始列，并补充$1列。'],
   [/Include all original columns plus:/g, '请包含全部原始列，并补充：'],
-  [/The corrected full file replaced the previous upload\. Existing automatic and manual mappings were reused\./g, '完整修正版已覆盖之前上传的文件，并复用了已有的自动及手动字段对应关系。'],
+  [/The corrected full file replaced the previous upload\. Existing automatic and manual mappings were reused\./g, '完整修正版已覆盖之前上传的文件，并保留已有对应关系。'],
   [/No corrected file is needed\./g, '无需上传修正版。'], [/All required columns are covered/g, '已覆盖全部必填字段'],
   [/Current file · (\d+) previous mappings reused · (\d+) new header matched/g, '当前文件 · 已复用 $1 个字段对应关系 · 已识别 $2 个新增表头'],
   [/Current file · (\d+) previous mappings reused · (\d+) new headers matched/g, '当前文件 · 已复用 $1 个字段对应关系 · 已识别 $2 个新增表头'],
-  [/Corrected ERP CSV/g, 'ERP 修正版 CSV'], [/When required headers are missing, upload a complete corrected file to replace the original\. Existing automatic and manual mappings are reused\./g, '缺少必填表头时，请上传完整修正版覆盖原文件。已有的自动及手动字段对应关系将被复用。'],
+  [/Corrected ERP CSV/g, 'ERP 修正版 CSV'], [/When required headers are missing, upload a complete corrected file to replace the original\. Existing automatic and manual mappings are reused\./g, '缺少必填表头时，请上传完整修正版覆盖原文件。已有对应关系将保留。'],
   [/Corrected full file required/g, '需要上传完整修正版'], [/Add the missing headers to the original document and upload the complete corrected CSV\./g, '请在原文件中补充缺少的表头，并上传完整修正版 CSV。'],
   [/Replaced original file · Existing field mappings reused/g, '已覆盖原文件 · 已复用已有字段对应关系'], [/Current file/g, '当前文件'],
   [/Supplementary header matching/g, '补充文件表头匹配'],
-  [/Review how headers in the supplementary CSV were matched to system fields\./g, '查看补充 CSV 中的表头与系统字段的对应结果。'],
-  [/The supplementary CSV was merged with this draft successfully\./g, '补充 CSV 已成功合并到当前草稿。'], [/No supplementary file is needed\./g, '无需上传补充文件。'],
+  [/Review how headers in the supplementary CSV were matched to system fields\./g, '查看补充 CSV 表头与系统字段的对应结果。'],
+  [/The supplementary CSV was merged with this draft successfully\./g, '补充 CSV 已合并到当前草稿。'], [/No supplementary file is needed\./g, '无需上传补充文件。'],
   [/Supplementary columns added to this draft/g, '补充字段已添加到当前草稿'], [/Supplementary File/g, '补充文件'], [/columns covered/g, '个字段已覆盖'],
-  [/Choose a corresponding system field/g, '选择对应的系统字段'], [/Your file has already been analyzed\. Continue to review the identified columns\./g, '文件已完成分析。请继续核对已识别字段。'],
+  [/Choose a corresponding system field/g, '选择对应的系统字段'], [/Your file has already been analyzed\. Continue to review the identified columns\./g, '文件已分析完成。请继续核对已识别字段。'],
   [/Example ERP CSV/g, 'ERP 文件示例'], [/Use this as a reference when preparing your file\. Required columns are highlighted\./g, '准备文件时可参考此示例。必填列已突出显示。'],
   [/How to prepare your ERP CSV file/g, '如何准备 ERP 文件'], [/Before you upload/g, '上传前'], [/Before uploading/g, '上传前'], [/Accepted formats/g, '支持的格式'], [/Required columns/g, '必填列'], [/View example ERP CSV/g, '查看 ERP 文件示例'],
-  [/Upload the corrected file\./g, '上传修正后的文件。'], [/Existing mappings are cached, and matching column names will keep their previous mapping\./g, '已有对应关系会保留。同名列将沿用之前的选择。'], [/Upload corrected ERP CSV/g, '上传修正后的 ERP 文件'],
-  [/AI is analyzing your file and matching fields…/g, 'AI 正在分析文件并识别字段…'], [/Uploaded on/g, '上传于'], [/file columns mapped/g, '个文件列已处理'], [/All required columns covered/g, '已覆盖全部必填列'],
-  [/Mapping result summary/g, '处理结果汇总'], [/Required target fields must be mapped once, with no duplicates\./g, '每个必填字段只能对应一列，不能重复。'], [/Ready to continue/g, '可以继续'], [/Action required/g, '需要处理'],
+  [/Upload the corrected file\./g, '上传修正后的文件。'], [/Existing mappings are cached, and matching column names will keep their previous mapping\./g, '已有对应关系会保留；同名列将沿用之前的选择。'], [/Upload corrected ERP CSV/g, '上传修正后的 ERP 文件'],
+  [/AI is analyzing your file and matching fields…/g, '正在分析文件并识别字段…'], [/Uploaded on/g, '上传于'], [/file columns mapped/g, '个文件列已处理'], [/All required columns covered/g, '已覆盖全部必填列'],
+  [/Mapping result summary/g, '处理结果汇总'], [/Required target fields must be mapped once, with no duplicates\./g, '每个必填字段只能对应一列，不可重复。'], [/Ready to continue/g, '可以继续'], [/Action required/g, '需要处理'],
   [/Review how file headers were matched to ERP CSV 2 system fields\./g, '查看文件表头与 ERP CSV 2 系统字段的对应结果。'], [/Mapping completed/g, '字段对应已完成'],
   [/System identified/g, '系统已识别'], [/Not mapped/g, '未选择'], [/File header(?!s)/g, '文件表头'], [/Match method/g, '对应方式'],
-  [/Supplementary CSV/g, '补充 CSV'], [/A supplementary file uses /g, '补充文件使用 '], [/ to add required fields to the original records\./g, ' 关联原始记录并补充必填字段。'],
+  [/Supplementary CSV/g, '补充 CSV'], [/A supplementary file uses /g, '补充文件使用 '], [/ to add required fields to the original records\./g, ' 绑定原始记录并补充必填字段。'],
   [/Supplementary file not uploaded/g, '尚未上传补充文件'],
-  [/Linked by /g, '通过 '], [/ · Added field: /g, ' 关联 · 已补充字段：'], [/Merged/g, '已合并'],
+  [/Linked by /g, '通过 '], [/ · Added field: /g, ' 绑定 · 已补充字段：'], [/Merged/g, '已合并'],
   [/Records detected/g, '识别到的记录'], [/Records processed/g, '已处理记录'], [/Records with errors/g, '错误记录'],
   [/Columns in your file/g, '文件中的列'], [/Mapped columns/g, '已处理列'], [/Unmapped columns/g, '待处理列'], [/Missing required columns/g, '缺失的必填列'], [/You can’t continue yet/g, '暂时无法继续'],
-  [/Field Mapping Results/g, '核对结果'], [/Resolve issues from top to bottom, then review all successful mappings\./g, '请从上到下处理问题，然后检查已处理完成的列。'], [/Changes are saved automatically/g, '更改会自动保存'],
+  [/Field Mapping Results/g, '核对结果'], [/Resolve issues from top to bottom, then review all successful mappings\./g, '请从上到下处理问题，再检查已完成的列。'], [/Changes are saved automatically/g, '更改会自动保存'],
   [/Your file columns/g, '文件列'], [/Source columns and sample values/g, '来源列和示例值'], [/System field \(target\)/g, '系统字段（目标）'], [/Choose where each column maps/g, '选择每列对应的系统字段'], [/Required target/g, '必填目标'],
-  [/Map useful columns or leave them unmapped/g, '可为需要的列选择对应字段，也可暂不处理'], [/No unmapped file columns\./g, '没有待处理的文件列。'], [/Review or change any mapping/g, '检查或更改对应关系'], [/Select a target field/g, '选择目标字段'], [/Matched by AI/g, '由 AI 识别'],
-  [/Review and submit/g, '检查'], [/Confirm the details of your document before submitting\./g, '提交前确认单据详情。'], [/Review the uploaded records and field mapping before submitting\./g, '提交前请检查上传的记录和字段对应情况。'],
+  [/Map useful columns or leave them unmapped/g, '可为需要的列选择对应字段，也可暂不处理'], [/No unmapped file columns\./g, '没有待处理的文件列。'], [/Review or change any mapping/g, '检查或更改对应关系'], [/Select a target field/g, '选择目标字段'], [/Matched by AI/g, '系统已识别'],
+  [/Review and submit/g, '检查'], [/Confirm the details of your document before submitting\./g, '提交前，请确认单据信息。'], [/Review the uploaded records and field mapping before submitting\./g, '提交前，请核对上传记录和字段对应情况。'],
   [/Review & Submit/g, '检查并提交'], [/Review & submit/g, '检查并提交'],
   [/Original file processing summary/g, '原文件处理结果汇总'], [/Supplementary file processing summary/g, '补充文件处理结果汇总'],
   [/Headers Detected/g, '识别到的表头'], [/Headers Matched/g, '已对应表头'], [/Processing Status/g, '处理状态'], [/All supplementary headers matched/g, '补充文件表头已全部对应'], [/Review required/g, '需要核对'], [/(\d+) columns/g, '$1 个表头'],
   [/Uploaded file summary/g, '上传文件汇总'], [/File Name/g, '文件名'], [/File Type/g, '文件类型'], [/Records Detected/g, '识别到的记录'], [/Mapping Status/g, '处理状态'], [/Processing summary/g, '处理结果汇总'], [/Your file field/g, '文件表头字段'], [/Sample values/g, '示例值'], [/Mapped field/g, '系统对应表头字段'],
-  [/Upload & map/g, '上传并处理'], [/Order Information/g, '订单信息'], [/Upload CSV from ERP/g, '上传 ERP 文件'], [/Upload your ERP CSV export for field mapping and quota release\./g, '上传从 ERP 导出的文件，核对字段并释放额度。'],
+  [/Upload & map/g, '上传并处理'], [/Order Information/g, '订单信息'], [/Upload CSV from ERP/g, '上传 ERP 文件'], [/Upload your ERP CSV export for field mapping and quota release\./g, '上传 ERP 导出文件，核对字段并释放额度。'],
   [/Select a business type to enable document upload\./g, '选择业务类型后才能上传单据。'], [/Upload a sales contract, purchase order, PI, CI, shipping, or customs document\./g, '上传销售合同、采购订单、PI、CI、运输或报关单据。'], [/Upload a service agreement, invoice, or contract\./g, '上传服务协议、发票或合同。'],
   [/Upload trade document/g, '上传贸易单据'], [/Uploaded · Analysis starts automatically/g, '已上传 · 将自动开始分析'], [/Preparing the document for automatic analysis…/g, '正在准备自动分析单据…'], [/Analyzing document…/g, '正在分析单据…'],
-  [/Choose the business type/g, '选择业务类型'], [/This helps us extract the correct transaction information\./g, '这有助于准确提取交易信息。'], [/Upload the document/g, '上传单据'], [/The file is analyzed automatically, and extracted fields appear below on this page\./g, '文件会自动分析，提取的字段将显示在本页下方。'],
-  [/Review the extracted information/g, '检查提取的信息'], [/Confirm or complete the details, then submit directly\./g, '确认或补充信息后直接提交。'], [/Confirm or complete the details, then continue to review\./g, '确认或补充信息后，继续进入提交前检查。'], [/Choose a business type, upload a document, review the extracted details, and submit\./g, '选择业务类型，上传单据，检查提取的信息后提交。'],
+  [/Choose the business type/g, '选择业务类型'], [/This helps us extract the correct transaction information\./g, '便于准确提取交易信息。'], [/Upload the document/g, '上传单据'], [/The file is analyzed automatically, and extracted fields appear below on this page\./g, '文件会自动分析，提取结果将显示在本页下方。'],
+  [/Review the extracted information/g, '检查提取的信息'], [/Confirm or complete the details, then submit directly\./g, '确认或补充信息后即可提交。'], [/Confirm or complete the details, then continue to review\./g, '确认或补充信息后，进入提交前检查。'], [/Choose a business type, upload a document, review the extracted details, and submit\./g, '选择业务类型、上传单据，核对提取信息后提交。'],
   [/Complete the document details, review the submission summary, and submit\./g, '补充单据信息，检查提交汇总后提交。'], [/^Review$/g, '检查'],
   [/Upload & complete/g, '上传并补充信息'], [/Review the submission information before submitting\./g, '提交前，请检查提交信息。'],
-  [/Confirm the business type, uploaded file, and quota increase before submitting\./g, '提交前，请确认业务类型、已上传文件及本文件增加的额度。'],
+  [/Confirm the business type, uploaded file, and quota increase before submitting\./g, '提交前，请确认业务类型、已上传文件，以及本文件可增加的额度。'],
   [/Submission summary/g, '提交汇总'], [/Business type/g, '业务类型'], [/Edit details/g, '修改信息'], [/Uploaded file/g, '已上传文件'], [/View document/g, '查看单据'],
-  [/Quota increase from this file/g, '本文件增加的额度'], [/Calculated from the eligible transaction amount in the uploaded file\. Subject to final verification\./g, '根据已上传文件中的合格交易金额计算，以最终校验结果为准。'],
-  [/Submitting will add the eligible quota and save this document to upload history\./g, '提交后将增加合格额度，并把此单据保存至上传历史。'],
+  [/Quota increase from this file/g, '本文件增加的额度'], [/Calculated from the eligible transaction amount in the uploaded file\. Subject to final verification\./g, '按已上传文件中的合格交易金额计算，以最终校验结果为准。'],
+  [/Submitting will add the eligible quota and save this document to upload history\./g, '提交后将增加合格额度，并将此单据保存至上传历史。'],
   [/Source document/g, '原始单据'], [/Preview the uploaded document\./g, '预览已上传单据。'], [/Review the uploaded document\./g, '请核对已上传单据。'], [/Document Preview & Extracted Information/g, '单据预览与提取信息'], [/Preview available/g, '可预览'], [/Enlarge preview/g, '放大预览'],
-  [/The following details were auto-filled from the document\. Review them and complete any missing fields\./g, '以下信息已从单据自动填写。请检查并补充缺失内容。'], [/Contract Information/g, '合同信息'], [/Order Date/g, '订单日期'], [/Order Amount/g, '订单金额'], [/Receiving Country \/ Region/g, '收货国家/地区'], [/Buyer Type/g, '买方类型'], [/Corporate/g, '企业'], [/Company URL/g, '公司网址'],
+  [/The following details were auto-filled from the document\. Review them and complete any missing fields\./g, '以下信息已从单据自动填写。请核对并补充缺失内容。'], [/Contract Information/g, '合同信息'], [/Order Date/g, '订单日期'], [/Order Amount/g, '订单金额'], [/Receiving Country \/ Region/g, '收货国家/地区'], [/Buyer Type/g, '买方类型'], [/Corporate/g, '企业'], [/Company URL/g, '公司网址'],
   [/Product \(CN\)/g, '产品（中文）'], [/Product \(EN\)/g, '产品（英文）'], [/Product Name \(CN\)/g, '产品名称（中文）'], [/Product Name \(EN\)/g, '产品名称（英文）'], [/Unit Price \(USD\)/g, '单价（USD）'], [/Unit Price/g, '单价'], [/Total amount/g, '总金额'], [/Total Amount/g, '总金额'], [/Goods Information/g, '货物信息'],
   [/Service Information/g, '服务信息'], [/Business Type/g, '业务类型'], [/Service Period/g, '服务期间'], [/Service Description/g, '服务说明'], [/Service Amount/g, '服务金额'],
   [/Logistics Information/g, '物流信息'], [/Has the order been shipped\?/g, '订单是否已发货？'], [/Select a shipment status to continue\./g, '请选择发货状态后继续。'], [/Expected shipment date/g, '预计发货日期'], [/Enter the expected shipment date before submitting\./g, '提交前请填写预计发货日期。'],
   [/Upload the logistics proof after shipment to complete verification\./g, '发货后请上传物流凭证，以完成核验。'], [/Upload logistics proof/g, '上传物流凭证'], [/Processing logistics proof…/g, '正在处理物流凭证…'], [/Uploaded and verified/g, '已上传并通过核验'], [/Tracking No\./g, '物流单号'], [/Ship Date/g, '发货日期'], [/Related Product/g, '相关产品'],
-  [/CSV from Templates/g, '模板 CSV'], [/CSV from ERP/g, 'ERP 文件'], [/Download Template/g, '下载模板'], [/CSV files uploaded from standard templates\. Download a template, fill in your data, and upload to release quota in bulk\./g, '通过标准模板上传 CSV。下载并填写模板后上传，可批量释放额度。'],
+  [/CSV from Templates/g, '模板 CSV'], [/CSV from ERP/g, 'ERP 文件'], [/Download Template/g, '下载模板'], [/CSV files uploaded from standard templates\. Download a template, fill in your data, and upload to release quota in bulk\./g, '通过标准模板上传 CSV。下载并填写后上传，可批量释放额度。'],
   [/Upload date/g, '上传日期'], [/Quota added/g, '新增额度'], [/ERP CSV Details/g, 'ERP 文件详情'], [/File name/g, '文件名'], [/View details/g, '查看详情'], [/Download file/g, '下载文件'], [/Re-upload/g, '重新上传'],
-  [/Upload failed/g, '上传失败'], [/This ERP CSV could not be processed\. Fix the file issues and re-upload to release quota\./g, '此 ERP 文件无法处理。请修正文件后重新上传，以释放额度。'], [/File Information/g, '文件信息'], [/ERP CSV export/g, 'ERP 导出文件'], [/Processing Summary/g, '处理结果汇总'],
+  [/Upload failed/g, '上传失败'], [/This ERP CSV could not be processed\. Fix the file issues and re-upload to release quota\./g, '此 ERP 文件无法处理。请修正后重新上传，以释放额度。'], [/File Information/g, '文件信息'], [/ERP CSV export/g, 'ERP 导出文件'], [/Processing Summary/g, '处理结果汇总'],
   [/Records/g, '记录数'], [/Mapped/g, '已处理'], [/Errors/g, '错误数'], [/Upload History/g, '上传历史'], [/All upload methods/g, '全部上传方式'],
   [/Quota added through uploads, with a breakdown by method and a full list of each upload\./g, '查看上传带来的额度、各方式明细及全部上传记录。'], [/Total quota from uploads/g, '上传带来的总额度'], [/Upload time/g, '上传时间'], [/File type/g, '文件类型'], [/Upload Details/g, '上传详情'],
   [/Download result/g, '下载结果'], [/Order details/g, '订单详情'], [/Template CSV Result/g, '模板 CSV 结果'], [/Marketplace \/ Source/g, '电商平台/来源'], [/Template type/g, '模板类型'], [/Rejected \/ skipped/g, '已拒绝/跳过'],
   [/Trade documents submitted successfully\./g, '贸易单据已成功提交。'], [/Quota has been released for this order\./g, '此订单的额度已释放。'], [/ERP CSV processed successfully\./g, 'ERP 文件处理完成。'],
-  [/All records were mapped\. Quota has been released based on accepted mapped rows\./g, '所有记录均已处理。额度已按通过的记录释放。'], [/All rows accepted/g, '所有行均已接受'], [/Check the result file for the exchange rate used in quota calculation\./g, '请在结果文件中查看额度计算使用的汇率。'],
-  [/This order is unshipped\. Supplement logistics documents to release reserved unshipped quota\./g, '此订单尚未发货。请补充物流材料，以释放已占用的未发货额度。'], [/ERP CSV processed with minor mapping gaps\./g, 'ERP 文件已处理，但仍有少量内容待处理。'],
+  [/All records were mapped\. Quota has been released based on accepted mapped rows\./g, '全部记录已处理。额度已按通过的记录释放。'], [/All rows accepted/g, '所有行均已接受'], [/Check the result file for the exchange rate used in quota calculation\./g, '请在结果文件中查看额度计算所用汇率。'],
+  [/This order is unshipped\. Supplement logistics documents to release reserved unshipped quota\./g, '此订单尚未发货。请补充物流材料，以释放已占用的未发货额度。'], [/ERP CSV processed with minor mapping gaps\./g, 'ERP 文件已处理，仍有少量内容待处理。'],
   [/rows could not be mapped\. Download the file, fix those rows, and re-upload if you need the remaining quota\./g, '行无法处理。如需释放剩余额度，请下载文件，修正后重新上传。'], [/rows accepted/g, '行已接受'], [/Fix the remaining rows and upload again to release quota for the skipped records\./g, '请修正剩余行并重新上传，以释放被跳过记录的额度。'],
-  [/Upload failed — no records could be mapped\./g, '上传失败，未能识别任何记录。'], [/This ERP CSV could not be processed\. Fix required columns and re-upload to release quota\./g, '此 ERP 文件无法处理。请修正必填列并重新上传，以释放额度。'],
-  [/Quota for this order is fully used\./g, '此订单额度已全部使用。'], [/Missing columns:/g, '缺少列：'], [/Fix the file using the standard template and upload again\./g, '请使用标准模板修正文件后重新上传。'],
-  [/File is being processed\./g, '文件正在处理。'], [/Processing usually completes within a few minutes\. Refresh this page later to see the result\./g, '处理通常会在几分钟内完成。请稍后刷新页面查看结果。'], [/Upload is under review\./g, '上传内容正在审核。'], [/Our team is reviewing this file\. Quota will be updated once the review is complete\./g, '文件正在审核。审核完成后将更新额度。'],
+  [/Upload failed — no records could be mapped\./g, '上传失败，未能识别任何记录。'], [/This ERP CSV could not be processed\. Fix required columns and re-upload to release quota\./g, '此 ERP 文件无法处理。请修正必填列后重新上传，以释放额度。'],
+  [/Quota for this order is fully used\./g, '此订单额度已全部使用。'], [/Missing columns:/g, '缺少列：'], [/Fix the file using the standard template and upload again\./g, '请按标准模板修正文件后重新上传。'],
+  [/File is being processed\./g, '文件正在处理。'], [/Processing usually completes within a few minutes\. Refresh this page later to see the result\./g, '处理通常在几分钟内完成。请稍后刷新页面查看结果。'], [/Upload is under review\./g, '上传内容正在审核。'], [/Our team is reviewing this file\. Quota will be updated once the review is complete\./g, '文件正在审核，用于核对交易信息。审核完成后会更新额度，期间无需操作。'],
   [/All accepted/g, '全部接受'], [/Partially accepted/g, '部分接受'], [/File issue/g, '文件有问题'], [/Under review/g, '审核中'], [/Processed/g, '已处理'], [/Processing/g, '处理中'], [/Failed/g, '失败'],
   [/Order Details/g, '订单详情'], [/Basic Order Information/g, '订单基本信息'], [/Transaction Source/g, '交易来源'], [/Receiving Country/g, '收货国家'], [/Quota Usage/g, '额度使用情况'],
   [/This order has not been shipped/g, '此订单尚未发货'], [/Please supplement logistics documents to release the unshipped quota/g, '请补充物流材料，以释放未发货额度'], [/Logistics documents required/g, '需要物流材料'], [/Supplement logistics to release reserved unshipped quota\./g, '补充物流材料后可释放已占用的未发货额度。'],
-  [/Product Name CN/g, '产品名称（中文）'], [/Product Name EN/g, '产品名称（英文）'], [/Supplement Logistics Documents/g, '补充物流材料'], [/Logistics documents submitted/g, '物流材料已提交'], [/You have successfully released/g, '已成功释放'],
-  [/of unshipped quota\. Your available CNY settlement limit has been updated\./g, '的未发货额度。人民币结算可用额度已更新。'], [/View Order Details/g, '查看订单详情'], [/Supplement logistics documents/g, '补充物流材料'],
+  [/Product Name CN/g, '产品名称（中文）'], [/Product Name EN/g, '产品名称（英文）'], [/Supplement Logistics Documents/g, '补充物流材料'], [/Logistics documents submitted/g, '物流材料已提交'], [/You have successfully released/g, '已释放'],
+  [/of unshipped quota\. Your available CNY settlement limit has been updated\./g, '的未发货额度。人民币结汇可用额度已更新。'], [/View Order Details/g, '查看订单详情'], [/Supplement logistics documents/g, '补充物流材料'],
   [/Upload logistics evidence to release unshipped quota for/g, '上传物流凭证，以释放以下订单的未发货额度：'], [/Remaining Unshipped Quota/g, '剩余未发货额度'], [/Upload logistics documents/g, '上传物流材料'],
   [/Supported: shipping receipt, logistics invoice, tracking document, other shipment evidence\./g, '支持发货凭证、物流发票、跟踪文件及其他运输证明。'], [/Upload logistics evidence/g, '上传物流凭证'], [/Analyzing logistics documents…/g, '正在分析物流材料…'], [/Extracting shipment and tracking information/g, '正在提取发货和物流跟踪信息'],
-  [/logistics records extracted by AI\. Review and edit if needed\./g, '条物流记录由 AI 提取。请检查并按需修改。'], [/Logistics Method/g, '物流方式'], [/Shipment Date/g, '发货日期'], [/Related Item/g, '相关商品'], [/Submit logistics documents/g, '提交物流材料'],
-  [/Draft saved\. You can continue it from the upload list\./g, '草稿已保存。可从上传列表继续填写。'], [/Untitled trade document/g, '未命名贸易单据'], [/Untitled template CSV/g, '未命名模板 CSV'], [/Untitled ERP CSV/g, '未命名 ERP 文件'], [/Untitled upload/g, '未命名上传'],
+  [/logistics records extracted by AI\. Review and edit if needed\./g, '条物流记录已自动提取。请核对并按需修改。'], [/Logistics Method/g, '物流方式'], [/Shipment Date/g, '发货日期'], [/Related Item/g, '相关商品'], [/Submit logistics documents/g, '提交物流材料'],
+  [/Draft saved\. You can continue it from the upload list\./g, '草稿已保存。可从上传列表继续。'], [/Untitled trade document/g, '未命名贸易单据'], [/Untitled template CSV/g, '未命名模板 CSV'], [/Untitled ERP CSV/g, '未命名 ERP 文件'], [/Untitled upload/g, '未命名上传'],
   [/What would you like to upload\?/g, '上传前请先查看支持的交易类型'], [/Choose a file type to continue\. Each path uses its own review and submission steps\./g, '选择文件类型后继续'],
   [/Download and prepare the standard CSV template before uploading\./g, '上传前请下载并填写标准 CSV 模板。'], [/ERP CSV requirements/g, 'ERP 文件要求'],
   [/Upload transaction records/g, '上传交易记录'], [/Select a trade document or an ERP export to begin\./g, '选择贸易单据或 ERP 导出文件后开始。'], [/Select trade documents, a template CSV, or an ERP export to begin\./g, '选择贸易单据、模板 CSV 或 ERP 导出文件后开始。'],
   [/Select file type/g, '选择文件类型'], [/Upload & review/g, '上传并检查'], [/Confirm Selection/g, '确认选择'], [/Confirm/g, '确认'], [/Previous/g, '上一步'], [/Next/g, '下一步'], [/Submit/g, '提交'], [/Cancel/g, '取消'], [/Replace/g, '替换'], [/Upload file/g, '上传文件'],
   [/Download/g, '下载'], [/View/g, '查看'], [/Search\.\.\./g, '搜索…'], [/Status/g, '状态'], [/Action/g, '操作'], [/Source/g, '来源'], [/Amount/g, '金额'], [/Result/g, '结果'], [/Total/g, '总额'], [/Used/g, '已用'], [/Remaining/g, '剩余'], [/Available/g, '可用'],
   [/Downloading original file…/g, '正在下载原文件…'], [/Downloading result file…/g, '正在下载结果文件…'], [/Downloading /g, '正在下载 '], [/Connecting /g, '正在绑定 '], [/Opening all balances…/g, '正在打开全部余额…'], [/Opening FAQ…/g, '正在打开常见问题…'],
-  [/Draft saved\. You can continue it from the upload list\./g, '草稿已保存。可从上传列表继续填写。'], [/Select a transaction category before choosing a file\./g, '请先选择交易类别，再选择文件。'], [/Select a transaction category before submitting\./g, '提交前请选择交易类别。'], [/Select the marketplace you are uploading data from\./g, '请选择数据所属的电商平台。'],
+  [/Draft saved\. You can continue it from the upload list\./g, '草稿已保存。可从上传列表继续。'], [/Select a transaction category before choosing a file\./g, '请先选择交易类别，再选择文件。'], [/Select a transaction category before submitting\./g, '提交前请选择交易类别。'], [/Select the marketplace you are uploading data from\./g, '请选择数据所属的电商平台。'],
   [/Update the file to include every missing required column, then upload it again\./g, '请补齐所有缺失的必填列，然后重新上传文件。'], [/Select the matching uploaded column, or replace the file with a corrected version\./g, '请选择对应的上传列，或替换为已修正的文件。'], [/Add item \(prototype\)/g, '添加商品（原型）'],
   [/All file types supported/g, '支持所有文件类型'], [/Max 50MB/g, '最大 50MB'], [/Max 50 MB/g, '最大 50 MB'],
-  [/Transaction record from our template \(CSV file\)/g, '使用模板填写的交易记录'], [/Fill in a standard transaction template and upload CSV to release quota in bulk\./g, '填写标准交易模板并上传 CSV，批量释放额度。'],
-  [/Transaction record exported from ERP/g, '从 ERP 导出的交易记录'], [/Export transaction records from your ERP and upload them for automated field mapping and quota release\./g, '从 ERP 导出交易记录并上传，系统将自动识别字段并释放额度。'],
+  [/Transaction record from our template \(CSV file\)/g, '使用模板填写的交易记录'], [/Fill in a standard transaction template and upload CSV to release quota in bulk\./g, '填写标准交易模板并上传 CSV，可批量释放额度。'],
+  [/Transaction record exported from ERP/g, '从 ERP 导出的交易记录'], [/Export transaction records from your ERP and upload them for automated field mapping and quota release\./g, '从 ERP 导出交易记录并上传，系统会自动识别字段并释放额度。'],
   [/(\d+) uploads/g, '$1 次上传'], [/(\d+) drafts?/g, '$1 个草稿'], [/(\d+) pending/g, '$1 个待处理'], [/Potential /g, '预计 '], [/Est\. /g, '预计 '], [/ of /g, ' / '],
   [/(\d+) selected/g, '已选择 $1 项'], [/High/g, '高'], [/Medium/g, '中'], [/Available/g, '可用'],
   [/^([\s]*)Yes([\s]*)$/g, '$1是$2'], [/^([\s]*)No([\s]*)$/g, '$1否$2'], [/^([\s]*)Table([\s]*)$/g, '$1表格$2'], [/^([\s]*)Cards([\s]*)$/g, '$1卡片$2'],
@@ -8152,7 +8336,7 @@ const CN_UI_REPLACEMENTS = [
   [/货物贸易 Information/g, '货物信息'], [/Service 说明/g, '服务信息'], [/\bQty\b/g, '数量'], [/\bUnit\b/g, '单位'],
   [/of (USD [\d,.]+) reserved/g, '其中 $1 已占用'], [/^All$/g, '全部'],
   [/贸易单据s/g, '贸易单据'], [/CSV from templates/g, '模板 CSV'],
-  [/Something unexpected happened/g, '系统暂时无法处理此文件。请稍后重试。'],
+  [/Something unexpected happened/g, '暂时无法处理此文件，可能是网络波动或文件异常。请稍后重试；如多次失败，请联系我们。'],
   [/^Method$/g, '方式'], [/^Company$/g, '公司'],
   [/上传 模板 CSV/g, '上传模板 CSV'], [/上传 CSV from templates/g, '上传模板 CSV'], [/已接受 formats/g, '支持的格式'], [/ERP CSV(?! 2)/g, 'ERP 文件'],
   [/Option 1/g, '方案 1'], [/Option 2/g, '方案 2'], [/OPTION 1/g, '方案 1'], [/OPTION 2/g, '方案 2'], [/Sample:/g, '示例：'], [/\bSample\b/g, '示例'],
@@ -8164,17 +8348,17 @@ const CN_UI_REPLACEMENTS = [
   [/Add Item/g, '添加商品'],
   [/贸易单据 submitted successfully\./g, '贸易单据已成功提交。'],
   [/请补充物流材料，以释放未发货额度 \(([^)]+)\)\./g, '请补充物流材料，以释放未发货额度（$1）。'],
-  [/列名s are case-insensitive and can contain spaces or underscores\. Our AI field mapper will automatically detect and align most standard ERP export formats\./g, '列名不区分大小写，可包含空格或下划线。AI 可自动识别多数标准 ERP 导出格式。'],
+  [/列名s are case-insensitive and can contain spaces or underscores\. Our AI field mapper will automatically detect and align most standard ERP export formats\./g, '列名不区分大小写，可含空格或下划线。多数标准 ERP 导出格式可自动识别。'],
   [/电商平台 transactions that can increase your CNY quota/g, '可提高人民币额度的电商平台交易'],
   [/电商平台 transactions/g, '电商平台交易'], [/货物贸易 trading/g, '货物贸易'],
-  [/We support transactions from these marketplaces to increase your quota\./g, '支持以下电商平台的交易记录，可用于提高额度。'],
+  [/We support transactions from these marketplaces to increase your quota\./g, '以下电商平台的交易记录可用于提高额度。'],
   [/电商平台 CSV template/g, '电商平台 CSV 模板'],
   [/下载 the standard template before preparing marketplace transaction records\./g, '准备电商平台交易记录前，请先下载标准模板。'],
-  [/Your quota increases automatically when you receive payments to these stores\. You don’t need to upload documents or connect stores\./g, '这些店铺收到款项后，额度会自动提高，无需上传材料或重复绑定店铺。'],
+  [/Your quota increases automatically when you receive payments to these stores\. You don’t need to upload documents or connect stores\./g, '这些店铺收到款项后，额度会自动提高，无需上传材料或重复绑定。'],
   [/上传材料 required/g, '需要上传材料'],
-  [/Amazon, Walmart, and Shopify: You can manually upload documents for these stores, but connecting them lets us automatically increase quota with your new payments\./g, 'Amazon、Walmart 和 Shopify 支持手动上传材料。绑定店铺后，新收款可自动提高额度。'],
+  [/Amazon, Walmart, and Shopify: You can manually upload documents for these stores, but connecting them lets us automatically increase quota with your new payments\./g, 'Amazon、Walmart、Shopify 可手动上传材料。绑定店铺后，新收款可自动提高额度。'],
   [/Find and 下载模板/g, '查找并下载模板'],
-  [/提供的模板为 CSV files\. 请保留原列标题并上传填写好的 CSV。/g, '提供的模板为 CSV 文件。请保留原列标题并上传填写好的 CSV。'],
+  [/模板为 CSV files\. 请保留原表头，上传填写好的 CSV。/g, '模板为 CSV 文件。请保留原表头，上传填写好的 CSV。'],
   [/Enlarge source document preview/g, '放大原始单据预览'],
   [/Max 20 MB/g, '最大 20 MB'], [/查看 订单详情/g, '查看订单详情'],
 ];
@@ -8183,8 +8367,13 @@ const CN_PRESERVED_NAMES = new Set(Object.values(MARKETPLACE_UPLOAD_GROUPS).flat
   'Seller Central','Shopify Payments','eBay Marketplace',
   'SAP','Oracle EBS','NetSuite','Maersk Line','Payoneer','Payoneer Checkout','PayPal',
 ]));
+// Longer (more specific) patterns must run before shorter generic ones; Chinese-source
+// fix-up rules always run last to clean up any over-matches from the main pass.
+const CN_UI_REPLACEMENTS_SORTED = CN_UI_REPLACEMENTS.slice().sort((a, b) => b[0].source.length - a[0].source.length);
+const CN_UI_FIXUPS = CN_UI_REPLACEMENTS.filter(item => /[\u4e00-\u9fff]/.test(item[0].source));
 function translateVisibleText(value) {
-  return CN_UI_REPLACEMENTS.reduce((text, item) => text.replace(item[0], item[1]), String(value));
+  const main = CN_UI_REPLACEMENTS_SORTED.reduce((text, item) => text.replace(item[0], item[1]), String(value));
+  return CN_UI_FIXUPS.reduce((text, item) => text.replace(item[0], item[1]), main);
 }
 function localizeVisibleUI(root) {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
