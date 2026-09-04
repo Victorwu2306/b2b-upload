@@ -584,6 +584,7 @@ tr.draft-row td { background: rgba(91,59,232,.03); }
 }
 .support-list li { padding-left: 2px; }
 .support-note { font-size: 14px; color: var(--foreground); line-height: 1.45; }
+.support-note .inline-link { text-decoration: none; }
 .inline-link {
   color: #155EEF; font-weight: 600; text-decoration: underline;
   text-underline-offset: 2px; background: none; border: none; padding: 0; cursor: pointer; font: inherit;
@@ -3568,7 +3569,7 @@ function homeCardsConcept2() {
                   <li>Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents</li>
                   <li>Transaction records in CSV — exported from your ERP, marketplace, or other business systems, or prepared using our template</li>
                 </ul>
-                <p class="support-note">Your transactions and document details also need to be eligible for CNY settlement. <button type="button" class="inline-link" onclick="state.supportedTxLevel='categories';state.supportedTx=true;render()">Check more details</button></p>
+                <p class="support-note">Your transactions and document details also need to be eligible for CNY settlement. <button type="button" class="inline-link" style="text-decoration:none" onclick="state.supportedTxLevel='categories';state.supportedTx=true;render()">Check more details</button></p>
               </div>
               <div class="card-footer">
                 <div class="cta-cluster">
@@ -4055,27 +4056,44 @@ function supportedTxPanel() {
     'LLC Internet Projects', 'Ruten', 'Shopee', 'Tophatter', 'Wish',
   ];
   const categoryContent = `
-    <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-      <p style="font-size:14px;font-weight:600;margin-bottom:6px">Marketplace transactions</p>
-      <button type="button" class="btn-link" style="font-size:13px" onclick="state.supportedTxLevel='marketplaces';render()">
-        View supported marketplaces ${I.chevronR}
-      </button>
-    </div>
-    <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-      <p style="font-size:14px;font-weight:600;margin-bottom:4px">Goods trading</p>
-      <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">B2B purchases or sales of physical goods supported by trade documents.</p>
-    </div>
-    <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-      <p style="font-size:14px;font-weight:600;margin-bottom:10px">Services</p>
-      <ul style="margin:0;padding-left:20px;display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;font-size:13px;color:var(--muted-foreground);line-height:1.45">
-        <li>Accommodation</li>
-        <li>Advertisement</li>
-        <li>Air tickets</li>
-        <li>International logistics</li>
-        <li>Software</li>
-        <li>Tourism</li>
-      </ul>
-    </div>`;
+    <section>
+      <p style="font-size:14px;font-weight:600;margin-bottom:2px">Eligible transaction types</p>
+      <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:12px">The following transaction types may be used to increase your quota:</p>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
+          <p style="font-size:14px;font-weight:600;margin-bottom:6px">Marketplace transactions</p>
+          <button type="button" class="btn-link" style="font-size:13px" onclick="state.supportedTxLevel='marketplaces';render()">
+            View supported marketplaces ${I.chevronR}
+          </button>
+        </div>
+        <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
+          <p style="font-size:14px;font-weight:600;margin-bottom:4px">Goods trading</p>
+          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">B2B purchases or sales of physical goods supported by trade documents.</p>
+        </div>
+        <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
+          <p style="font-size:14px;font-weight:600;margin-bottom:10px">Services</p>
+          <ul style="margin:0;padding-left:20px;display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;font-size:13px;color:var(--muted-foreground);line-height:1.45">
+            <li>Accommodation</li>
+            <li>Advertisement</li>
+            <li>Air tickets</li>
+            <li>International logistics</li>
+            <li>Software</li>
+            <li>Tourism</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section>
+      <p style="font-size:14px;font-weight:600;margin-bottom:12px">Required details in your documents</p>
+      <div class="table-card"><div style="overflow-x:auto"><table class="data" style="min-width:0;font-size:12px">
+        <thead><tr><th>Detail</th><th>Description</th><th>Example</th></tr></thead>
+        <tbody>${ERP_REQUIRED_FIELDS.map(f=>`<tr>
+          <td style="color:var(--primary);font-weight:600">${erpRequiredLabel(f.name)}</td>
+          <td style="color:var(--muted-foreground)">${f.desc}</td>
+          <td class="mono">${f.example}</td>
+        </tr>`).join('')}</tbody>
+      </table></div></div>
+    </section>`;
   const marketplaceContent = `
     <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
       We support transactions from these marketplaces to increase your quota.
@@ -4113,18 +4131,18 @@ function supportedTxPanel() {
       </div>
     </div>`;
   return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.supportedTx=false;state.supportedTxLevel='categories';render()}">
-    <div class="drawer">
+    <div class="drawer wide">
       <div class="drawer-h">
         <div style="display:flex;align-items:flex-start;gap:10px">
-          ${isMarketplaceList?`<button type="button" style="margin-top:1px" onclick="state.supportedTxLevel='categories';render()" aria-label="Back to supported transactions">${I.back}</button>`:''}
+          ${isMarketplaceList?`<button type="button" style="margin-top:1px" onclick="state.supportedTxLevel='categories';render()" aria-label="Back to requirements on your documents">${I.back}</button>`:''}
           <div>
-            <h3>${isMarketplaceList?'Supported marketplaces':'Supported transactions'}</h3>
-            <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;font-weight:400">${isMarketplaceList?'Marketplace transactions that can increase your CNY quota':'Transaction types that can increase your CNY quota'}</p>
+            <h3>${isMarketplaceList?'Supported marketplaces':'Requirements on your documents'}</h3>
+            ${isMarketplaceList?`<p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;font-weight:400">Marketplace transactions that can increase your CNY quota</p>`:''}
           </div>
         </div>
         <button type="button" onclick="state.supportedTx=false;state.supportedTxLevel='categories';render()">${I.x}</button>
       </div>
-      <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
+      <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:20px">
         ${isMarketplaceList ? marketplaceContent : categoryContent}
       </div>
     </div>
@@ -8089,6 +8107,13 @@ const CN_UI_REPLACEMENTS = [
   [/Upload your transaction documents/g, '上传交易材料'], [/Goods or service trading/g, '货物或服务贸易'], [/We’ll increase your quota based on the transaction amounts\./g, '额度将按交易金额提高。'],
   [/Upload trade documents or CSV transaction records\. We increase your quota based on the transaction amount\./g, '上传贸易单据或 CSV 交易记录。额度将按交易金额提高。'],
   [/You can upload:/g, '可上传：'],
+  [/Requirements on your documents/g, '单据要求'],
+  [/Eligible transaction types/g, '支持的交易类型'],
+  [/The following transaction types may be used to increase your quota:/g, '以下交易类型可用于提升额度：'],
+  [/Required details in your documents/g, '单据必填信息'],
+  [/<th>Detail<\/th>/g, '<th>字段</th>'],
+  [/^Detail$/g, '字段'],
+  [/Back to requirements on your documents/g, '返回单据要求'],
   [/Transaction records in CSV — exported from your ERP, marketplace, or other business systems, or prepared using our template/g, 'CSV 格式交易记录 — 从 ERP、电商平台或其他业务系统导出，或使用标准模板填写'],
   [/Your transactions and document details also need to be eligible for CNY settlement\./g, '交易和单据信息也需符合人民币结汇要求。'],
   [/Check more details/g, '查看详情'],
