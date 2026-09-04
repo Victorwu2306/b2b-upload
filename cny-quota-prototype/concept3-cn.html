@@ -1321,6 +1321,11 @@ table.data tr:hover td { background: var(--muted); }
 .template-picker-hint {
   margin-top:8px; font-size:12px; line-height:1.45; color:var(--muted-foreground);
 }
+.template-fill-guide-link {
+  align-self:flex-start; height:auto; padding:0; border:none; background:transparent;
+  font-size:14px; font-weight:600; gap:8px;
+}
+.template-fill-guide-link:hover { text-decoration:underline; }
 .map-summary-grid {
   display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px;
 }
@@ -1341,38 +1346,41 @@ table.data tr:hover td { background: var(--muted); }
 .map-head,
 .map-row {
   display:grid;
-  grid-template-columns:minmax(220px,1.05fr) minmax(360px,1.25fr) minmax(110px,.5fr);
+  grid-template-columns:minmax(220px,40%) minmax(370px,42%) minmax(120px,18%);
   min-width:740px;
   align-items:center;
 }
-.map-head { background:#f7f3ff; border-bottom:1px solid #ede8f5; color:#888; }
+.map-head { background:#f7f3ff; border-bottom:1px solid #ede8f5; color:#252526; }
 .map-head > div {
   padding:16px; display:flex; align-items:center;
-  background:transparent; border-top:none; color:#888;
+  background:transparent; border-top:none; color:#252526;
 }
-.map-head-copy { display:flex; flex-direction:column; gap:0; color:#888; }
+.map-head-copy { display:flex; flex-direction:column; gap:0; color:#252526; }
 .map-head-copy strong {
-  color:#888; font-size:13px; font-weight:500;
+  color:#252526; font-size:13px; font-weight:600;
   text-transform:none; letter-spacing:0;
 }
 .map-head-copy small { display:none; }
 .map-row { background:#fff; border-bottom:1px solid #f2f2f2; }
 .map-row:last-child { border-bottom:none; }
 .map-row > div { min-width:0; }
-.map-source {
+.map-source,
+.map-row .system-required {
   padding:14px 16px; display:flex; flex-direction:column; justify-content:center;
   gap:2px; background:transparent;
 }
+.map-row .system-required strong { font-size:14px; font-weight:600; color:#252526; line-height:1.4; }
+.map-row .system-required small { color:#aaa; font-size:12px; line-height:1.4; }
 .map-source-main { display:flex; flex-direction:column; gap:2px; min-width:0; }
 .row-mapping {
-  display:flex; align-items:center; gap:10px; min-width:0;
+  display:flex; align-items:center; gap:10px; min-width:0; flex-wrap:nowrap;
 }
 .mapping-direction {
-  position:static; transform:none; display:inline-flex; align-items:center;
-  color:#c0c0c0; font-size:13px; line-height:1; width:auto; height:13px;
+  position:static; transform:none; display:inline-flex; align-items:center; justify-content:center;
+  color:#2B1C3D; font-size:16px; line-height:1; width:14px; height:18px;
   pointer-events:none; flex-shrink:0;
 }
-.mapping-direction svg { width:0.875em; height:1em; display:block; fill:currentColor; }
+.mapping-direction svg { width:14px; height:12px; display:block; fill:none; stroke:currentColor; }
 .map-target,
 .erp2-target-map .uploaded-choice {
   padding:14px 16px; display:flex; flex-direction:column; justify-content:center;
@@ -1381,9 +1389,9 @@ table.data tr:hover td { background: var(--muted); }
 .map-row select,
 .erp2-static-target {
   width:280px; max-width:280px; height:40px; flex:0 0 280px;
-  border:1px solid #d9d9d9; border-radius:6px;
+  border:1px solid #8c8c8c; border-radius:6px;
   padding:0 32px 0 12px; background:#fff;
-  font-family:var(--font-sans); font-size:14px; color:#252526;
+  font-family:var(--font-sans); font-size:14px; font-weight:400; color:#252526;
 }
 .erp2-static-target { display:flex; align-items:center; padding-right:12px; }
 .map-row.unmapped select,
@@ -1392,7 +1400,7 @@ table.data tr:hover td { background: var(--muted); }
 .map-row.unmapped .uploaded-choice,
 .map-row.unmapped .map-target,
 .map-row.unrecognized .uploaded-choice,
-.erp3-map .map-row.missing .uploaded-choice { background:#FFF8EB; }
+.erp3-map .map-row.missing .uploaded-choice { background:#FEF4EB; }
 .map-status-icon {
   width:16px; height:16px; flex:0 0 16px;
   display:grid; place-items:center; line-height:0;
@@ -1668,9 +1676,9 @@ table.data tr:hover td { background: var(--muted); }
   cursor:pointer;
 }
 .map-row select {
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23bbbbbb' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23252526' d='M1.15.2h7.7L5 5.4z'/%3E%3C/svg%3E");
   background-position:right 12px center;
-  background-size:10px 10px;
+  background-size:10px 6px;
   padding-left:12px;
   padding-right:32px;
 }
@@ -1962,12 +1970,12 @@ body.concept-3 {
 .concept-3 .map-table {
   border:none; border-radius:0; box-shadow:none; background:transparent;
 }
+.concept-3 .map-head { background:#f7f3ff; border-bottom-color:#ede8f5; }
 .concept-3 .map-head,
 .concept-3 .map-head > div,
 .concept-3 .map-head-copy,
-.concept-3 .map-head-copy strong { color:#888; font-weight:500; }
-.concept-3 .map-head { background:#f7f3ff; border-bottom-color:#ede8f5; }
-.concept-3 .mapping-direction { color:#c0c0c0; }
+.concept-3 .map-head-copy strong { color:#252526; font-weight:600; }
+.concept-3 .mapping-direction { color:#2B1C3D; }
 .concept-3 .map-section-title.missing { background:#FFF1F0; }
 .concept-3 .missing-field { background:#FFF8F7; }
 .concept-3 .map-section-title.unmapped { background:#FFF5E3; }
@@ -2432,7 +2440,7 @@ const I = {
   zoomOut: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3M8 11h6"/></svg>`,
   chevronL: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>`,
   chevronR: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>`,
-  mapArrow: `<svg viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg>`,
+  mapArrow: `<svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 6h13M10.2 2.4 14.5 6l-4.3 3.6"/></svg>`,
   mapStatusSuccess: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.8 12.2 10.6 15l5.6-5.6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   mapStatusWarning: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 3 1.8 20.6c-.4.7.1 1.4.9 1.4h18.6c.8 0 1.3-.7.9-1.4L12 3z"/><path fill="#fff" d="M11 9h2v6h-2V9zm1 9a1.15 1.15 0 1 1 0-2.3 1.15 1.15 0 0 1 0 2.3z"/></svg>`,
   mapStatusPending: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 7v5.2L15.4 14.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -3823,10 +3831,10 @@ function templateDownloadPanel() {
           <p class="template-picker-hint">${selected.desc}</p>
         </div>
         <button type="button" class="btn btn-gradient" style="width:100%" onclick="toast('Downloading ${selected.label} template…');state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()">${I.download} Download template</button>
-        <button type="button" class="btn btn-secondary" style="width:100%;justify-content:flex-start;text-align:left" onclick="state.templateMenuOpen=false;state.templateGuide=true;render()">
+        <button type="button" class="btn-link template-fill-guide-link" onclick="state.templateMenuOpen=false;state.templateGuide=true;render()">
           ${I.file}
-          <span style="font-weight:600">How to fill in the transaction record file</span>
-          <span style="margin-left:auto">${I.chevronR}</span>
+          <span>How to fill in the transaction record file</span>
+          ${I.chevronR}
         </button>
         <section style="margin-top:4px;padding-top:18px;border-top:1px solid var(--border)">
           <p style="font-size:14px;font-weight:600;margin-bottom:6px">Next step</p>
