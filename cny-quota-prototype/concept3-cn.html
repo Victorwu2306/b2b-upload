@@ -1110,6 +1110,8 @@ table.data tr:hover td { background: var(--muted); }
 }
 .business-type-chevron svg { width:16px; height:16px; display:block; }
 .business-type-select-wrap:focus-within .business-type-chevron { color:var(--primary); }
+.supported-tx-type-field { max-width:420px; margin:0 0 14px; }
+.supported-tx-type-field label { font-weight:600; color:var(--foreground); }
 .ai-badge {
   display:inline-flex; align-items:center; gap:3px; height:18px; padding:0 6px;
   border-radius:999px; background:var(--secondary); border:1px solid rgba(91,59,232,.3);
@@ -2143,6 +2145,92 @@ const ERP_REQUIRED_FIELDS = [
   { name:'trade_type', labelCN:'贸易类型', desc:'Goods · Service · Drop Shipping', example:'Goods' },
 ];
 
+const DOCUMENT_REQUIRED_DETAILS = {
+  software: [
+    { name:'order_id', desc:'Unique invoice or contract identifier', example:'SW-2026-0142' },
+    { name:'buyer_name', desc:'Company purchasing the software', example:'Shenzhen Global Trade Co., Ltd.' },
+    { name:'service_description', desc:'Software product, license, or subscription being billed', example:'Adobe Creative Cloud annual license' },
+    { name:'quantity', desc:'Number of licenses or seats', example:'25' },
+    { name:'unit_price', desc:'Price per license — no currency symbol', example:'1940.00' },
+    { name:'currency', desc:'3-letter ISO currency code', example:'USD' },
+    { name:'total_amount', desc:'quantity × unit_price', example:'48500.00' },
+    { name:'service_period', desc:'Start and end of the subscription or license term', example:'2026-07-01 – 2027-06-30' },
+    { name:'transaction_date', desc:'Invoice or contract date (YYYY-MM-DD)', example:'2026-07-15' },
+  ],
+  'international-logistics': [
+    { name:'order_id', desc:'Unique booking or waybill identifier', example:'LG-2026-0881' },
+    { name:'buyer_name', desc:'Company paying the freight or logistics fee', example:'Shenzhen Global Trade Co., Ltd.' },
+    { name:'origin', desc:'Port, airport, or city where the shipment starts', example:'Shanghai, CN' },
+    { name:'destination', desc:'Port, airport, or city where the shipment ends', example:'Los Angeles, US' },
+    { name:'shipping_method', desc:'Mode of transport', example:'Sea freight' },
+    { name:'chargeable_weight', desc:'Billable weight or volume', example:'12,400 KG' },
+    { name:'currency', desc:'3-letter ISO currency code', example:'USD' },
+    { name:'total_amount', desc:'Freight or logistics service fee', example:'48500.00' },
+    { name:'transaction_date', desc:'Booking or invoice date (YYYY-MM-DD)', example:'2026-07-15' },
+  ],
+  advertisement: [
+    { name:'order_id', desc:'Unique campaign or insertion-order identifier', example:'AD-2026-3310' },
+    { name:'buyer_name', desc:'Advertiser or media-buying entity', example:'Shenzhen Global Trade Co., Ltd.' },
+    { name:'campaign_name', desc:'Name of the advertising campaign', example:'Q3 Brand Awareness — SEA' },
+    { name:'platform', desc:'Media channel or publisher', example:'Google Ads' },
+    { name:'service_period', desc:'Campaign flight dates', example:'2026-07-01 – 2026-09-30' },
+    { name:'currency', desc:'3-letter ISO currency code', example:'USD' },
+    { name:'total_amount', desc:'Media spend or service fee', example:'48500.00' },
+    { name:'transaction_date', desc:'Insertion order or invoice date (YYYY-MM-DD)', example:'2026-07-15' },
+  ],
+  communication: [
+    { name:'order_id', desc:'Unique invoice or service-order identifier', example:'CM-2026-2204' },
+    { name:'buyer_name', desc:'Company billed for the communication service', example:'Shenzhen Global Trade Co., Ltd.' },
+    { name:'service_description', desc:'Plan or service being billed', example:'Enterprise messaging and voice plan' },
+    { name:'service_period', desc:'Billing period for the service', example:'2026-07-01 – 2026-07-31' },
+    { name:'currency', desc:'3-letter ISO currency code', example:'USD' },
+    { name:'total_amount', desc:'Service fee for the period', example:'48500.00' },
+    { name:'transaction_date', desc:'Invoice date (YYYY-MM-DD)', example:'2026-07-15' },
+  ],
+  'air-ticket': [
+    { name:'order_id', desc:'Unique ticket or booking identifier', example:'TK-2026-7741' },
+    { name:'passenger_name', desc:'Name of the traveler as on the ticket', example:'Wei Zhang' },
+    { name:'buyer_name', desc:'Company paying for the airfare', example:'Shenzhen Global Trade Co., Ltd.' },
+    { name:'route', desc:'Origin and destination of the flight', example:'PVG – LAX' },
+    { name:'travel_date', desc:'Departure date (YYYY-MM-DD)', example:'2026-08-12' },
+    { name:'airline', desc:'Operating or issuing airline', example:'China Eastern' },
+    { name:'currency', desc:'3-letter ISO currency code', example:'USD' },
+    { name:'total_amount', desc:'Ticket fare including taxes', example:'2180.00' },
+    { name:'transaction_date', desc:'Ticket issue date (YYYY-MM-DD)', example:'2026-07-15' },
+  ],
+  accommodation: [
+    { name:'order_id', desc:'Unique booking or confirmation identifier', example:'HT-2026-5520' },
+    { name:'guest_name', desc:'Name of the guest on the reservation', example:'Wei Zhang' },
+    { name:'buyer_name', desc:'Company paying for the stay', example:'Shenzhen Global Trade Co., Ltd.' },
+    { name:'hotel_name', desc:'Name of the hotel or lodging property', example:'Park Hyatt Shenzhen' },
+    { name:'check_in_date', desc:'Check-in date (YYYY-MM-DD)', example:'2026-08-12' },
+    { name:'check_out_date', desc:'Check-out date (YYYY-MM-DD)', example:'2026-08-16' },
+    { name:'nights', desc:'Number of nights', example:'4' },
+    { name:'currency', desc:'3-letter ISO currency code', example:'USD' },
+    { name:'total_amount', desc:'Room and lodging charges', example:'1680.00' },
+  ],
+  tourism: [
+    { name:'order_id', desc:'Unique booking or package identifier', example:'TR-2026-0198' },
+    { name:'buyer_name', desc:'Company or traveler paying for the package', example:'Shenzhen Global Trade Co., Ltd.' },
+    { name:'package_name', desc:'Name of the tour or destination package', example:'7-day Japan business travel package' },
+    { name:'destination', desc:'Primary destination of the trip', example:'Tokyo, JP' },
+    { name:'travel_period', desc:'Start and end dates of the trip', example:'2026-09-01 – 2026-09-07' },
+    { name:'number_of_travelers', desc:'Number of travelers on the booking', example:'2' },
+    { name:'currency', desc:'3-letter ISO currency code', example:'USD' },
+    { name:'total_amount', desc:'Package or service fee', example:'6400.00' },
+    { name:'transaction_date', desc:'Booking or invoice date (YYYY-MM-DD)', example:'2026-07-15' },
+  ],
+};
+function documentRequiredDetails(typeKey) {
+  const key = TRADE_SOURCES.some(type => type.key === typeKey) ? typeKey : 'goods';
+  if (key === 'goods') return ERP_REQUIRED_FIELDS;
+  return DOCUMENT_REQUIRED_DETAILS[key] || ERP_REQUIRED_FIELDS;
+}
+function setSupportedTxType(value) {
+  state.supportedTxType = value;
+  render();
+}
+
 function formatFieldLabel(name) {
   const words = String(name || '').split('_').filter(Boolean).map(function(word) {
     return word.toLowerCase() === 'id' ? 'ID' : word.toLowerCase();
@@ -2471,6 +2559,7 @@ const state = {
   erpGuide: false,
   supportedTx: false,
   supportedTxLevel: 'categories',
+  supportedTxType: 'goods',
   marketplaceResources: false,
   homepage2MarketplaceSupport: false,
   templateType: 'marketplace',
@@ -4119,14 +4208,28 @@ function supportedTxPanel() {
     </section>
     <section>
       <p style="font-size:14px;font-weight:600;margin-bottom:12px">Required details in your documents</p>
-      <div class="table-card"><div style="overflow-x:auto"><table class="data" style="min-width:0;font-size:12px">
-        <thead><tr><th>Detail</th><th>Description</th><th>Example</th></tr></thead>
-        <tbody>${ERP_REQUIRED_FIELDS.map(f=>`<tr>
-          <td style="color:var(--primary);font-weight:600">${erpRequiredLabel(f.name)}</td>
-          <td style="color:var(--muted-foreground)">${f.desc}</td>
-          <td class="mono">${f.example}</td>
-        </tr>`).join('')}</tbody>
-      </table></div></div>
+      ${(() => {
+        const selectedType = TRADE_SOURCES.find(type => type.key === state.supportedTxType) || TRADE_SOURCES[0];
+        const requiredDetails = documentRequiredDetails(selectedType.key);
+        return `<div class="field supported-tx-type-field">
+          <label for="supported-tx-type">Business type</label>
+          <div class="business-type-select-wrap">
+            <select id="supported-tx-type" class="business-type-select" aria-label="Business type" onchange="setSupportedTxType(this.value)">
+              ${TRADE_SOURCES.map(type => `<option value="${type.key}" ${selectedType.key===type.key?'selected':''}>${type.label}</option>`).join('')}
+            </select>
+            <span class="business-type-chevron" aria-hidden="true">${I.chevron}</span>
+          </div>
+          <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">${selectedType.desc}</p>
+        </div>
+        <div class="table-card"><div style="overflow-x:auto"><table class="data" style="min-width:0;font-size:12px">
+          <thead><tr><th>Detail</th><th>Description</th><th>Example</th></tr></thead>
+          <tbody>${requiredDetails.map(f=>`<tr>
+            <td style="color:var(--primary);font-weight:600">${erpRequiredLabel(f.name)}</td>
+            <td style="color:var(--muted-foreground)">${f.desc}</td>
+            <td class="mono">${f.example}</td>
+          </tr>`).join('')}</tbody>
+        </table></div></div>`;
+      })()}
     </section>`;
   const marketplaceContent = `
     <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
@@ -8171,6 +8274,40 @@ const CN_UI_REPLACEMENTS = [
   [/Eligible transaction types/g, '支持的交易类型'],
   [/The following transaction types may be used to increase your quota:/g, '以下交易类型可用于提升额度：'],
   [/Required details in your documents/g, '单据必填信息'],
+  [/Unique invoice or contract identifier/g, '发票或合同的唯一标识'], [/Company purchasing the software/g, '采购软件的公司'],
+  [/Software product, license, or subscription being billed/g, '计费的软件产品、许可或订阅'], [/Number of licenses or seats/g, '许可或席位数量'],
+  [/Price per license — no currency symbol/g, '每个许可的价格，不含货币符号'], [/Start and end of the subscription or license term/g, '订阅或许可期限的起止日期'],
+  [/Invoice or contract date \(YYYY-MM-DD\)/g, '发票或合同日期（YYYY-MM-DD）'],
+  [/Unique booking or waybill identifier/g, '订舱或运单的唯一标识'], [/Company paying the freight or logistics fee/g, '支付运费或物流费用的公司'],
+  [/Port, airport, or city where the shipment starts/g, '启运港口、机场或城市'], [/Port, airport, or city where the shipment ends/g, '目的港口、机场或城市'],
+  [/Mode of transport/g, '运输方式'], [/Billable weight or volume/g, '计费重量或体积'], [/Freight or logistics service fee/g, '运费或物流服务费'],
+  [/Booking or invoice date \(YYYY-MM-DD\)/g, '订舱或发票日期（YYYY-MM-DD）'], [/Sea freight/g, '海运'],
+  [/Unique campaign or insertion-order identifier/g, '广告活动或排期单的唯一标识'], [/Advertiser or media-buying entity/g, '广告主或媒介采购主体'],
+  [/Name of the advertising campaign/g, '广告活动名称'], [/Media channel or publisher/g, '媒体渠道或发布平台'],
+  [/Campaign flight dates/g, '投放档期'], [/Media spend or service fee/g, '媒介花费或服务费'],
+  [/Insertion order or invoice date \(YYYY-MM-DD\)/g, '排期单或发票日期（YYYY-MM-DD）'],
+  [/Unique invoice or service-order identifier/g, '发票或服务订单的唯一标识'], [/Company billed for the communication service/g, '通信服务的付费公司'],
+  [/Plan or service being billed/g, '计费的套餐或服务'], [/Billing period for the service/g, '服务计费周期'],
+  [/Service fee for the period/g, '该周期的服务费'], [/Invoice date \(YYYY-MM-DD\)/g, '发票日期（YYYY-MM-DD）'],
+  [/Unique ticket or booking identifier/g, '客票或预订的唯一标识'], [/Name of the traveler as on the ticket/g, '客票上的旅客姓名'],
+  [/Company paying for the airfare/g, '支付机票费用的公司'], [/Origin and destination of the flight/g, '航班出发地和目的地'],
+  [/Departure date \(YYYY-MM-DD\)/g, '出发日期（YYYY-MM-DD）'], [/Operating or issuing airline/g, '承运或出票航司'],
+  [/Ticket fare including taxes/g, '含税票价'], [/Ticket issue date \(YYYY-MM-DD\)/g, '出票日期（YYYY-MM-DD）'],
+  [/Unique booking or confirmation identifier/g, '预订或确认号的唯一标识'], [/Name of the guest on the reservation/g, '预订客人姓名'],
+  [/Company paying for the stay/g, '支付住宿费用的公司'], [/Name of the hotel or lodging property/g, '酒店或住宿名称'],
+  [/Check-in date \(YYYY-MM-DD\)/g, '入住日期（YYYY-MM-DD）'], [/Check-out date \(YYYY-MM-DD\)/g, '退房日期（YYYY-MM-DD）'],
+  [/Number of nights/g, '入住晚数'], [/Room and lodging charges/g, '房费及住宿费用'],
+  [/Unique booking or package identifier/g, '预订或套餐的唯一标识'], [/Company or traveler paying for the package/g, '支付套餐费用的公司或旅客'],
+  [/Name of the tour or destination package/g, '旅游或目的地套餐名称'], [/Primary destination of the trip/g, '行程主要目的地'],
+  [/Start and end dates of the trip/g, '行程起止日期'], [/Number of travelers on the booking/g, '预订旅客人数'],
+  [/Package or service fee/g, '套餐或服务费用'],
+  [/Service description/g, '服务说明'], [/Service period/g, '服务期限'], [/Campaign name/g, '活动名称'],
+  [/Platform/g, '投放平台'], [/Passenger name/g, '旅客姓名'], [/Route/g, '航线'], [/Travel date/g, '出行日期'],
+  [/Airline/g, '航司'], [/Guest name/g, '入住人'], [/Hotel name/g, '酒店名称'], [/Check in date/g, '入住日期'],
+  [/Check out date/g, '退房日期'], [/Nights/g, '晚数'], [/Package name/g, '套餐名称'], [/Destination/g, '目的地'],
+  [/Travel period/g, '行程日期'], [/Number of travelers/g, '旅客人数'], [/Origin/g, '始发地'],
+  [/Shipping method/g, '运输方式'], [/Chargeable weight/g, '计费重量'],
+
   [/<th>Detail<\/th>/g, '<th>字段</th>'],
   [/^Detail$/g, '字段'],
   [/Back to requirements on your documents/g, '返回单据要求'],
