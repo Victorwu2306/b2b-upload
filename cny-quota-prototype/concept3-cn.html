@@ -2229,15 +2229,24 @@ const DOCUMENT_REQUIRED_DETAILS = {
     { name:'total_amount', desc:'Room and lodging charges', example:'1680.00' },
   ],
   tourism: [
-    { name:'order_id', desc:'Unique booking or package identifier', example:'TR-2026-0198' },
-    { name:'buyer_name', desc:'Company or traveler paying for the package', example:'Shenzhen Global Trade Co., Ltd.' },
-    { name:'package_name', desc:'Name of the tour or destination package', example:'7-day Japan business travel package' },
-    { name:'destination', desc:'Primary destination of the trip', example:'Tokyo, JP' },
-    { name:'travel_period', desc:'Start and end dates of the trip', example:'2026-09-01 – 2026-09-07' },
-    { name:'number_of_travelers', desc:'Number of travelers on the booking', example:'2' },
-    { name:'currency', desc:'3-letter ISO currency code', example:'USD' },
-    { name:'total_amount', desc:'Package or service fee', example:'6400.00' },
-    { name:'transaction_date', desc:'Booking or invoice date (YYYY-MM-DD)', example:'2026-07-15' },
+    { name:'business_category', label:'Business Category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
+    { name:'business_subcategory', label:'Business Subcategory/Transaction Mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
+    { name:'trade_type', label:'Trade Type', labelCN:'贸易类型', desc:'', descCN:'', example:'Tourism' },
+    { name:'order_date', label:'Order Date', labelCN:'下单日期时间', desc:'Date and time when the order was placed.', descCN:'下单日期和时间。', example:'2026-07-15 10:30' },
+    { name:'merchant_order_no', label:'Merchant Order No.', labelCN:'商户订单号', desc:'', descCN:'', example:'TR-2026-0198' },
+    { name:'order_currency', label:'Order Currency', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217. Currency of the platform order.', descCN:'语言要求：英文三字码（ISO 4217）。平台订单币种。', example:'USD' },
+    { name:'unit_price', label:'Unit Price', labelCN:'单价', desc:'The price of the unit product.', descCN:'单位产品价格。', example:'3,200.00' },
+    { name:'product_quantity', label:'Product Quantity', labelCN:'数量', desc:'Number of units purchased for this product.', descCN:'该产品的购买数量。', example:'2' },
+    { name:'order_amount', label:'Order Amount', labelCN:'订单金额', desc:'', descCN:'', example:'6,400.00' },
+    { name:'payer_name', label:'Payer Name', labelCN:'付款人姓名', desc:'', descCN:'', example:'Chen Wei' },
+    { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'', descCN:'', example:'https://www.booking.com' },
+    { name:'tourism_city', label:'Tourism city', labelCN:'旅游城市', desc:'', descCN:'', example:'Tokyo' },
+    { name:'booker_full_name', label:'Booker\'s Full Name', labelCN:'预订人全名', desc:'Full name of the person making the booking.', descCN:'预订人的全名。', example:'Chen Wei' },
+    { name:'number_of_guests', label:'Number of Guests', labelCN:'游客人数', desc:'Total number of travellers covered by this booking.', descCN:'此订单覆盖的游客总人数。', example:'2' },
+    { name:'platform_name', label:'Platform Name', labelCN:'平台名称', desc:'Language: original language. The official name of the overseas OTA platform.', descCN:'语言要求：原文。境外 OTA 平台官方名称。', example:'Booking.com' },
+    { name:'service_name', label:'Service Name', labelCN:'服务名称', desc:'Clear description of the tourism service.', descCN:'旅游服务的明确描述。', example:'7-day Japan business travel package' },
+    { name:'service_end_date', label:'Service End Date', labelCN:'服务结束日期', desc:'Scheduled end date of the service.', descCN:'服务的计划结束日期。', example:'2026-09-07' },
+    { name:'service_start_date', label:'Service Start Date', labelCN:'服务开始日期', desc:'Scheduled start date of the service.', descCN:'服务的计划开始日期。', example:'2026-09-01' },
   ],
 };
 function documentRequiredDetails(typeKey) {
@@ -2249,6 +2258,12 @@ function requiredDetailLabel(field) {
 }
 function requiredDetailDescription(field) {
   return (field && (field.descCN || field.desc)) || '';
+}
+function tradeFieldLabel(en, cn) {
+  return cn || en;
+}
+function tradeFieldNote(en, cn) {
+  return cn || en;
 }
 function setSupportedTxType(value) {
   state.supportedTxType = value;
@@ -6781,6 +6796,119 @@ function tradeAdvertisementBlock() {
     </div>`;
 }
 
+function tradeTourismBlock() {
+  const req = '<span style="color:var(--destructive)">*</span>';
+  const note = function(en, cn) {
+    const text = tradeFieldNote(en, cn);
+    return text ? `<p class="field-note">${text}</p>` : '';
+  };
+  return `<div class="review-card">
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic Info', '基本信息')}</span></div>
+      <div class="review-card-b">
+        <div class="field-grid">
+          <div class="field">
+            <label>${tradeFieldLabel('Business Category', '贸易类型大类')} ${req}</label>
+            <select disabled><option>Goods</option><option selected>Service</option></select>
+            ${note('Goods/Service.', '货物/服务。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Business Subcategory/Transaction Mode', '贸易类型子类')} ${req}</label>
+            <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
+            ${note('B2C/D2C/B2B.', 'B2C/D2C/B2B。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Trade Type', '贸易类型')} ${req}</label>
+            <input value="Tourism" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Order Date', '下单日期时间')} ${req}</label>
+            <input type="datetime-local" value="2026-07-15T10:30" readonly />
+            ${note('Date and time when the order was placed.', '下单日期和时间。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Merchant Order No.', '商户订单号')} ${req}</label>
+            <input class="mono" value="TR-2026-0198" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Order Currency', '订单币种')} ${req}</label>
+            <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
+            ${note('Language: ENG. Three-letter code per ISO 4217. Currency of the platform order.', '语言要求：英文三字码（ISO 4217）。平台订单币种。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Order Amount', '订单金额')} ${req}</label>
+            <input value="6,400.00" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Payer Name', '付款人姓名')} ${req}</label>
+            <input value="Chen Wei" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Business URL', '业务网址')} ${req}</label>
+            <input type="url" value="https://www.booking.com" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Number of Guests', '游客人数')} ${req}</label>
+            <input class="mono" value="2" readonly />
+            ${note('Total number of travellers covered by this booking.', '此订单覆盖的游客总人数。')}
+          </div>
+          <div class="field full">
+            <label>${tradeFieldLabel('Platform Name', '平台名称')} ${req}</label>
+            <input value="Booking.com" readonly />
+            ${note('Language: original language. The official name of the overseas OTA platform.', '语言要求：原文。境外 OTA 平台官方名称。')}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.clipboard} ${tradeFieldLabel('Service Info', '服务信息')}</span></div>
+      <div class="review-card-b">
+        <div class="field-grid">
+          <div class="field">
+            <label>${tradeFieldLabel('Unit Price', '单价')} ${req}</label>
+            <input value="3,200.00" readonly />
+            ${note('The price of the unit product.', '单位产品价格。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Product Quantity', '数量')} ${req}</label>
+            <input class="mono" value="2" readonly />
+            ${note('Number of units purchased for this product.', '该产品的购买数量。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Tourism city', '旅游城市')} ${req}</label>
+            <input value="Tokyo" readonly />
+          </div>
+          <div class="field full">
+            <label>${tradeFieldLabel('Service Name', '服务名称')} ${req}</label>
+            <input value="7-day Japan business travel package" readonly />
+            ${note('Clear description of the tourism service.', '旅游服务的明确描述。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Service Start Date', '服务开始日期')} ${req}</label>
+            <input type="date" value="2026-09-01" readonly />
+            ${note('Scheduled start date of the service.', '服务的计划开始日期。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Service End Date', '服务结束日期')} ${req}</label>
+            <input type="date" value="2026-09-07" readonly />
+            ${note('Scheduled end date of the service.', '服务的计划结束日期。')}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.card} ${tradeFieldLabel('Booker Info', '预订人信息')}</span></div>
+      <div class="review-card-b">
+        <div class="field-grid">
+          <div class="field full">
+            <label>${tradeFieldLabel("Booker's Full Name", '预订人全名')} ${req}</label>
+            <input value="Chen Wei" readonly />
+            ${note('Full name of the person making the booking.', '预订人的全名。')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
 function renderTradeLogisticsAnchored() {
   const scroller = document.querySelector('.focused-body');
   const anchor = document.querySelector('.trade-logistics-anchor');
@@ -7025,7 +7153,7 @@ function stepTradeInfo(hideHeading) {
       <div class="upload-zone" style="border-color:var(--primary);background:var(--accent);padding:56px 32px">
         <div class="spin" style="margin:0 auto 16px"></div>
         <p style="font-size:16px;font-weight:600;color:var(--primary)">Analyzing document…</p>
-        <p style="font-size:13px;color:var(--muted-foreground);margin-top:6px">AI is extracting ${isGoods?'contract and goods':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':'transaction and service'} information</p>
+        <p style="font-size:13px;color:var(--muted-foreground);margin-top:6px">AI is extracting ${isGoods?'contract and goods':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':w.source==='tourism'?'transaction and tourism':'transaction and service'} information</p>
       </div>
     </div>`;
   }
@@ -7051,7 +7179,7 @@ function stepTradeInfo(hideHeading) {
     </div>
     <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">Confirm the following details we prefilled based on your document.</p>
     <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
-        ${w.source === 'advertisement' ? '' : `<div class="review-card">
+        ${(w.source === 'advertisement' || w.source === 'tourism') ? '' : `<div class="review-card">
           <div class="review-card-h" style="justify-content:space-between">
             <span style="display:flex;align-items:center;gap:8px">${I.file} Contract Information</span>
           </div>
@@ -7069,7 +7197,7 @@ function stepTradeInfo(hideHeading) {
             </div>
           </div>
         </div>`}
-        ${isGoods ? tradeGoodsTable() : (w.source === 'international-logistics' ? '' : w.source === 'advertisement' ? tradeAdvertisementBlock() : tradeServiceDetailsBlock())}
+        ${isGoods ? tradeGoodsTable() : (w.source === 'international-logistics' ? '' : w.source === 'advertisement' ? tradeAdvertisementBlock() : w.source === 'tourism' ? tradeTourismBlock() : tradeServiceDetailsBlock())}
         ${needsTradeLogistics(w) ? tradeLogisticsBlock() : ''}
     </div>
     ${tradeDocumentPreviewModal()}
@@ -7179,7 +7307,7 @@ function stepTradeDynamic() {
       <div class="upload-zone" style="margin:20px;border-color:var(--primary);background:var(--accent);padding:38px 24px">
         <div class="spin" style="margin:0 auto 14px"></div>
         <p style="font-size:15px;font-weight:600;color:var(--primary)">Analyzing document…</p>
-        <p style="font-size:12px;color:var(--muted-foreground);margin-top:5px">AI is extracting ${isGoods?'contract, goods, and logistics':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':'transaction and service'} information.</p>
+        <p style="font-size:12px;color:var(--muted-foreground);margin-top:5px">AI is extracting ${isGoods?'contract, goods, and logistics':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':w.source==='tourism'?'transaction and tourism':'transaction and service'} information.</p>
       </div>
     </div>`;
   } else {
@@ -8680,6 +8808,7 @@ const CN_UI_REPLACEMENTS = [
   [/App Download URL \/ Website URL\./g, '应用下载链接 / 网站链接。'],
   [/Language: Chinese\. Chinese name of the domestic cardholder payee\./g, '语言要求：中文。境内持卡收款人中文名。'],
   [/AI is extracting transaction and advertisement information\.?/g, '正在提取交易和广告信息。'],
+  [/AI is extracting transaction and tourism information\.?/g, '正在提取交易和旅游信息。'],
   [/Logistics Information/g, '物流信息'], [/Shipped or not/g, '是否已发货?'], [/Has the order been shipped\?/g, '订单是否已发货？'], [/Select whether the order has been shipped to continue\./g, '请选择订单是否已发货后继续。'], [/Select a shipment status to continue\./g, '请选择发货状态后继续。'], [/Estimated shipping date/g, '人民币订单的预计发货时间'], [/Expected shipment date/g, '预计发货日期'], [/Enter the estimated shipping date before submitting\./g, '提交前请填写预计发货时间。'], [/Enter the expected shipment date before submitting\./g, '提交前请填写预计发货日期。'],
   [/^\s*Yes\s*$/g, '是'], [/^\s*No\s*$/g, '否'],
   [/Logistics company name/g, '物流公司名称'], [/Logistics tracking number/g, '物流追踪号'],
