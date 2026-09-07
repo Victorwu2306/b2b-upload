@@ -1332,11 +1332,6 @@ table.data tr:hover td { background: var(--muted); }
 .template-picker-hint {
   margin-top:8px; font-size:12px; line-height:1.45; color:var(--muted-foreground);
 }
-.template-fill-guide-link {
-  align-self:flex-start; height:auto; padding:0; border:none; background:transparent;
-  font-size:14px; font-weight:600; gap:8px;
-}
-.template-fill-guide-link:hover { text-decoration:underline; }
 .map-summary-grid {
   display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px;
 }
@@ -4014,14 +4009,12 @@ function templateDownloadPanel() {
           <p class="template-picker-hint">${selected.desc}</p>
         </div>
         <button type="button" class="btn btn-gradient" style="width:100%" onclick="toast('Downloading ${selected.label} template…');state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()">${I.download} Download template</button>
-        <button type="button" class="btn-link template-fill-guide-link" onclick="state.templateMenuOpen=false;state.templateGuide=true;render()">
-          ${I.file}
-          <span>How to fill in the transaction record file</span>
-          ${I.chevronR}
-        </button>
         <section style="margin-top:4px;padding-top:18px;border-top:1px solid var(--border)">
           <p style="font-size:14px;font-weight:600;margin-bottom:6px">Next step</p>
-          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">After you complete the template, select <strong>Upload documents</strong> from the Quota management home page to upload it.</p>
+          <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px;font-size:13px;color:var(--muted-foreground);line-height:1.5">
+            <li>Check <button type="button" class="inline-link" onclick="state.templateMenuOpen=false;state.templateGuide=true;render()">How to fill in the transaction record template</button> and complete this file.</li>
+            <li>Click <strong>Upload document</strong> to upload your file.</li>
+          </ol>
         </section>
       </div>
     </div>
@@ -8979,7 +8972,10 @@ const CN_UI_REPLACEMENTS = [
   [/What was your transaction for\?/g, '这笔交易用于什么？'],
   [/Next step/g, '下一步'],
   [/下一步 step/g, '下一步'],
-  [/After you complete the template, select <strong>Upload documents<\/strong> from the Quota management home page to upload it\./g, '完成模板填写后，在额度管理首页选择 <strong>上传材料</strong> 进行上传。'],
+  [/^Check $/g, '查看'],
+  [/ and complete this file\./g, '并完成该文件。'],
+  [/^Click $/g, '点击'],
+  [/ to upload your file\./g, '，以上传文件。'],
   [/Requirements on your documents/g, '单据要求'],
   [/Eligible transaction types/g, '支持的交易类型'],
   [/The following transaction types may be used to increase your quota:/g, '以下交易类型可用于提升额度：'],
@@ -9054,7 +9050,7 @@ const CN_UI_REPLACEMENTS = [
   [/Software licenses, SaaS subscriptions, and digital product fees/g, '软件许可、SaaS 订阅和数字产品费用'], [/Cross-border freight, logistics, and shipping service fees/g, '跨境货运、物流和运输服务费'],
   [/Online and offline advertising, media buying, and campaign fees/g, '线上及线下广告、媒体投放和活动费用'], [/Telecom, messaging, and other communication service charges/g, '电信、消息及其他通信服务费用'],
   [/Business travel airfare and related airline booking fees/g, '商务旅行机票及相关预订费用'], [/Hotel stays and lodging expenses for business travel/g, '商务旅行的酒店及住宿费用'], [/Tour packages, destination services, and related travel fees/g, '旅游套餐、目的地服务及相关费用'],
-  [/How to fill in the transaction record file/g, '如何填写交易记录文件'], [/Prepare your template correctly before uploading/g, '上传前请按要求准备模板'], [/Tips before you begin/g, '开始前须知'],
+  [/How to fill in the transaction record template/g, '如何填写交易记录模板'], [/How to fill in the transaction record file/g, '如何填写交易记录文件'], [/Prepare your template correctly before uploading/g, '上传前请按要求准备模板'], [/Tips before you begin/g, '开始前须知'],
   [/Check that your marketplace is in the list of supported marketplaces\./g, '请确认所用电商平台在支持列表中。'], [/Download and save a copy of the template with a name that describes your store, for example/g, '下载并保存模板副本，文件名应能说明店铺，例如'],
   [/Save the file in \.csv format using English letters and digits\./g, '将文件保存为 .csv 格式，文件名使用英文字母和数字。'], [/Do not change or delete the column headers\./g, '请勿修改或删除表头。'],
   [/Filling in the file with your transaction info/g, '填写交易信息'], [/Complete one row for each item in an order\. If the same item is sold at different prices, combine it into one row and use the average unit price\./g, '订单中的每件商品填写一行。同一商品如有不同售价，请合并为一行并填写平均单价。'],

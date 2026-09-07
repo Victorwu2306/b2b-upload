@@ -1332,11 +1332,6 @@ table.data tr:hover td { background: var(--muted); }
 .template-picker-hint {
   margin-top:8px; font-size:12px; line-height:1.45; color:var(--muted-foreground);
 }
-.template-fill-guide-link {
-  align-self:flex-start; height:auto; padding:0; border:none; background:transparent;
-  font-size:14px; font-weight:600; gap:8px;
-}
-.template-fill-guide-link:hover { text-decoration:underline; }
 .map-summary-grid {
   display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px;
 }
@@ -3990,14 +3985,12 @@ function templateDownloadPanel() {
           <p class="template-picker-hint">${selected.desc}</p>
         </div>
         <button type="button" class="btn btn-gradient" style="width:100%" onclick="toast('Downloading ${selected.label} template…');state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()">${I.download} Download template</button>
-        <button type="button" class="btn-link template-fill-guide-link" onclick="state.templateMenuOpen=false;state.templateGuide=true;render()">
-          ${I.file}
-          <span>How to fill in the transaction record file</span>
-          ${I.chevronR}
-        </button>
         <section style="margin-top:4px;padding-top:18px;border-top:1px solid var(--border)">
           <p style="font-size:14px;font-weight:600;margin-bottom:6px">Next step</p>
-          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">After you complete the template, select <strong>Upload documents</strong> from the Quota management home page to upload it.</p>
+          <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px;font-size:13px;color:var(--muted-foreground);line-height:1.5">
+            <li>Check <button type="button" class="inline-link" onclick="state.templateMenuOpen=false;state.templateGuide=true;render()">How to fill in the transaction record template</button> and complete this file.</li>
+            <li>Click <strong>Upload document</strong> to upload your file.</li>
+          </ol>
         </section>
       </div>
     </div>
