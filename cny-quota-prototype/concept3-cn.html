@@ -1129,6 +1129,8 @@ table.data tr:hover td { background: var(--muted); }
 .supported-tx-type-field label { font-weight:600; color:var(--foreground); }
 .req-type-list { display:flex; flex-direction:column; gap:12px; }
 .req-type-accordion .mapping-c2-accordion-body { padding:0 16px 16px; }
+.req-type-download { display:flex; align-items:center; justify-content:flex-end; margin:0 0 12px; }
+.req-type-download .btn-link { font-size:13px; }
 .req-h-table-wrap { border:1px solid var(--border); border-radius:8px; overflow:hidden; background:#fff; max-width:100%; }
 .req-h-table-scroll { overflow-x:auto; max-width:100%; }
 table.data.req-h-table {
@@ -2188,6 +2190,9 @@ const TRADE_SOURCES = [
   { key:'accommodation', label:'Accommodation', desc:'Hotel stays and lodging expenses for business travel' },
   { key:'tourism', label:'Tourism', desc:'Tour packages, destination services, and related travel fees' },
 ];
+const DOCUMENT_REQUIREMENT_TYPES = [
+  { key:'marketplace', label:'Marketplace', desc:'SHEIN.COM, TikTok Shop, Wayfair, and other marketplaces' },
+].concat(TRADE_SOURCES);
 const TRADE_GOODS = [
   { id:'g1', nameCN:'电子元件', nameEN:'Electronic Components', qty:'500', unit:'PCS', unitPrice:'48.50' },
   { id:'g2', nameCN:'包装材料', nameEN:'Packaging Materials', qty:'1000', unit:'SET', unitPrice:'12.25' },
@@ -2213,6 +2218,21 @@ const ERP_REQUIRED_FIELDS = [
 ];
 
 const DOCUMENT_REQUIRED_DETAILS = {
+  marketplace: [
+    { name:'store_name', label:'Store name', labelCN:'店铺名称', desc:'The name of your store on the ecommerce marketplace.', descCN:'店铺在电商平台上的名称。', example:'MyStore' },
+    { name:'store_url', label:'Store URL', labelCN:'店铺网址', desc:'The URL of your store on the marketplace.', descCN:'店铺在电商平台上的网址。', example:'https://www.amazon.com/shops/mystore' },
+    { name:'order_id', label:'Order ID', labelCN:'订单编号', desc:'The order number in the marketplace.', descCN:'电商平台中的订单号。', example:'ORD-10245' },
+    { name:'order_date', label:'Order date', labelCN:'订单日期', desc:'Use YYYYMMDD or YYYY-MM-DD, including leading zeros. The date must be within the past 365 days.', descCN:'使用 YYYYMMDD 或 YYYY-MM-DD 格式，保留开头的 0。日期必须在过去 365 天内。', example:'2026-07-15' },
+    { name:'item_id', label:'Item ID', labelCN:'商品编号', desc:'The goods item number in the marketplace.', descCN:'电商平台中的商品编号。', example:'B0C8K2H1XQ' },
+    { name:'item_name', label:'Item name', labelCN:'商品名称', desc:'The goods item name in the marketplace.', descCN:'电商平台中的商品名称。', example:'Wireless Adapter' },
+    { name:'sku', label:'SKU', labelCN:'SKU', desc:'The stock keeping unit identifier.', descCN:'库存单位标识。', example:'WA-4829-BLK' },
+    { name:'category', label:'Category', labelCN:'类别', desc:'The category of the goods.', descCN:'商品类别。', example:'Electronics' },
+    { name:'quantity', label:'Quantity', labelCN:'数量', desc:'The number of units in the order. Use digits only, for example 1500, not 1,500.', descCN:'订单中的商品数量。仅使用数字，例如 1500，不要填写 1,500。', example:'2' },
+    { name:'price', label:'Price', labelCN:'价格', desc:'The unit price. The total price of all units must be less than the equivalent of USD 50,000. Use digits only.', descCN:'商品单价。所有商品总价必须低于 USD 50,000 等值金额。仅使用数字。', example:'12.50' },
+    { name:'currency', label:'Currency', labelCN:'币种', desc:'Use the 3-letter currency code, for example USD, EUR, or GBP.', descCN:'使用 3 位货币代码，例如 USD、EUR 或 GBP。', example:'USD' },
+    { name:'logistics_company', label:'Logistics company (optional)', labelCN:'物流公司（选填）', desc:'The name of the logistics company that delivered the order.', descCN:'承运此订单的物流公司名称。', example:'Maersk Line' },
+    { name:'logistics_number', label:'Logistics number (optional)', labelCN:'物流单号（选填）', desc:'The tracking number from the logistics provider.', descCN:'物流服务商提供的运单号。', example:'MSKU7834521' },
+  ],
   goods: [
     { name:'business_subcategory', label:'Business Subcategory/Transaction Mode', labelCN:'贸易方式/交易编码', desc:'Language: UI language. User selects their category from DL.', descCN:'语言要求：界面语言。用户从下拉列表中选择类别。', example:'B2B' },
     { name:'trade_type', label:'Trade Type', labelCN:'贸易类型', desc:'Language: UI language. User selects their category from DL.', descCN:'语言要求：界面语言。用户从下拉列表中选择类别。', example:'Goods' },
@@ -2357,8 +2377,7 @@ const DOCUMENT_REQUIRED_DETAILS = {
   ],
 };
 function documentRequiredDetails(typeKey) {
-  const key = TRADE_SOURCES.some(type => type.key === typeKey) ? typeKey : 'goods';
-  return DOCUMENT_REQUIRED_DETAILS[key] || DOCUMENT_REQUIRED_DETAILS.goods || ERP_REQUIRED_FIELDS;
+  return DOCUMENT_REQUIRED_DETAILS[typeKey] || DOCUMENT_REQUIRED_DETAILS.goods || ERP_REQUIRED_FIELDS;
 }
 function requiredDetailLabel(field) {
   return (field && (field.labelCN || field.label || formatFieldLabel(field.name))) || '';
@@ -2453,7 +2472,7 @@ function setSupportedTxType(value) {
   render();
 }
 function openDocumentRequirements() {
-  if (!state.supportedTxOpen) state.supportedTxOpen = { goods: true };
+  if (!state.supportedTxOpen) state.supportedTxOpen = { marketplace: true };
   state.supportedMarketplacesPanel = false;
   state.supportedTx = false;
   state.view = 'document-requirements';
@@ -2480,17 +2499,44 @@ function requiredDetailsHorizontalTable(fields) {
   </table></div></div>`;
 }
 function requiredDetailsAccordions() {
-  const open = state.supportedTxOpen || { goods: true };
-  return `<div class="req-type-list">${TRADE_SOURCES.map(type => {
+  const open = state.supportedTxOpen || { marketplace: true };
+  return `<div class="req-type-list">${DOCUMENT_REQUIREMENT_TYPES.map(type => {
     const isOpen = !!open[type.key];
     return `<div class="mapping-c2-accordion req-type-accordion ${isOpen?'open':''}">
       <button type="button" class="mapping-c2-accordion-toggle" aria-expanded="${isOpen?'true':'false'}" onclick="toggleSupportedTxType('${type.key}')">
         <span><strong>${type.label}</strong><small>${type.desc}</small></span>
         ${I.chevron}
       </button>
-      ${isOpen ? `<div class="mapping-c2-accordion-body">${requiredDetailsHorizontalTable(documentRequiredDetails(type.key))}</div>` : ''}
+      ${isOpen ? `<div class="mapping-c2-accordion-body">
+        <div class="req-type-download">
+          <button type="button" class="btn-link" onclick="downloadRequirementTemplate('${type.key}')">${I.download} Download template</button>
+        </div>
+        ${requiredDetailsHorizontalTable(documentRequiredDetails(type.key))}
+      </div>` : ''}
     </div>`;
   }).join('')}</div>`;
+}
+function downloadRequirementTemplate(typeKey) {
+  const type = DOCUMENT_REQUIREMENT_TYPES.find(item => item.key === typeKey)
+    || TEMPLATE_TYPES.find(item => item.key === typeKey)
+    || { key: typeKey, label: typeKey };
+  const fields = documentRequiredDetails(typeKey);
+  const filename = ((TEMPLATE_TYPES.find(item => item.key === typeKey) || {}).filename)
+    || (typeKey + '_transaction_template.csv');
+  const csvCell = value => `"${String(value == null ? '' : value).replace(/"/g, '""')}"`;
+  const headers = fields.map(field => field.label || formatFieldLabel(field.name));
+  const examples = fields.map(field => field.example || '');
+  const csv = [headers, examples].map(row => row.map(csvCell).join(',')).join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  toast('Downloading ' + type.label + ' template…');
 }
 
 function formatFieldLabel(name) {
@@ -2822,7 +2868,7 @@ const state = {
   supportedTx: false,
   supportedTxLevel: 'categories',
   supportedTxType: 'goods',
-  supportedTxOpen: { goods: true },
+  supportedTxOpen: { marketplace: true },
   supportedMarketplacesPanel: false,
   marketplaceResources: false,
   homepage2MarketplaceSupport: false,
@@ -4489,7 +4535,7 @@ function supportedMarketplacesPanel() {
 }
 
 function viewDocumentRequirements() {
-  if (!state.supportedTxOpen) state.supportedTxOpen = { goods: true };
+  if (!state.supportedTxOpen) state.supportedTxOpen = { marketplace: true };
   return `<div class="view active">
     ${sidebar()}
     <div class="main">
