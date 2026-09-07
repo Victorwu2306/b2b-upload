@@ -175,7 +175,7 @@ a { color: inherit; }
 .details-table-wrap table.data td {
   padding: 14px 16px; white-space: nowrap;
 }
-.details-table-wrap table.data th { background:#f7f3ff; color:#888; font-size:13px; font-weight:600; border-bottom:1px solid #ede8f5; }
+.details-table-wrap table.data th { background:#f7f3ff; color:#252526; font-size:13px; font-weight:600; border-bottom:1px solid #ede8f5; }
 .history-tabs {
   display:flex; align-items:center; gap:24px;
   border-bottom:1px solid var(--border);
@@ -641,7 +641,7 @@ tr.draft-row td { background: rgba(91,59,232,.03); }
 table.data { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 960px; }
 table.data th {
   text-align: left; padding: 16px; background: #f7f3ff;
-  font-weight: 600; font-size: 13px; color: #888; white-space: nowrap; border-bottom: 1px solid #ede8f5;
+  font-weight: 600; font-size: 13px; color: #252526; white-space: nowrap; border-bottom: 1px solid #ede8f5;
 }
 table.data td { padding: 14px 16px; border-bottom: 1px solid #f2f2f2; vertical-align: middle; }
 table.data tr:last-child td { border-bottom: none; }
@@ -1367,14 +1367,14 @@ table.data tr:hover td { background: var(--muted); }
   min-width:740px;
   align-items:center;
 }
-.map-head { background:#f7f3ff; border-bottom:1px solid #ede8f5; color:#888; }
+.map-head { background:#f7f3ff; border-bottom:1px solid #ede8f5; color:#252526; }
 .map-head > div {
   padding:16px; display:flex; align-items:center;
-  background:transparent; border-top:none; color:#888;
+  background:transparent; border-top:none; color:#252526;
 }
-.map-head-copy { display:flex; flex-direction:column; gap:0; color:#888; }
+.map-head-copy { display:flex; flex-direction:column; gap:0; color:#252526; }
 .map-head-copy strong {
-  color:#888; font-size:13px; font-weight:600;
+  color:#252526; font-size:13px; font-weight:600;
   text-transform:none; letter-spacing:0;
 }
 .map-head-copy small { display:none; }
@@ -1390,7 +1390,12 @@ table.data tr:hover td { background: var(--muted); }
 .map-row .system-required small { color:#aaa; font-size:12px; line-height:1.4; }
 .map-source-main { display:flex; flex-direction:column; gap:2px; min-width:0; }
 .row-mapping {
-  display:flex; align-items:center; gap:10px; min-width:0; flex-wrap:nowrap;
+  display:flex; align-items:center; gap:20px; min-width:0; flex-wrap:nowrap;
+}
+.uploaded-choice-control {
+  display:flex; align-items:center; gap:10px; min-width:0;
+  padding:8px 10px; margin:-8px 0; border-radius:8px;
+  background:transparent;
 }
 .mapping-direction {
   position:static; transform:none; display:inline-flex; align-items:center; justify-content:center;
@@ -1417,7 +1422,10 @@ table.data tr:hover td { background: var(--muted); }
 .map-row.unmapped .uploaded-choice,
 .map-row.unmapped .map-target,
 .map-row.unrecognized .uploaded-choice,
-.erp3-map .map-row.missing .uploaded-choice { background:#FEF4EB; }
+.erp3-map .map-row.missing .uploaded-choice { background:transparent; }
+.map-row.unmapped .uploaded-choice-control,
+.map-row.unrecognized .uploaded-choice-control,
+.erp3-map .map-row.missing .uploaded-choice-control { background:#FEF4EB; }
 .map-status-icon {
   width:16px; height:16px; flex:0 0 16px;
   display:grid; place-items:center; line-height:0;
@@ -1836,10 +1844,10 @@ body.concept-3 {
 }
 .concept-3 table.data thead { background:#f7f3ff; }
 .concept-3 table.data th {
-  padding:16px; color:#888; font-size:13px; font-weight:600; border-bottom:1px solid #ede8f5;
+  padding:16px; color:#252526; font-size:13px; font-weight:600; border-bottom:1px solid #ede8f5;
 }
 .concept-3 .details-table-wrap table.data th {
-  background:#f7f3ff; color:#888; font-size:13px; font-weight:600; border-bottom:1px solid #ede8f5;
+  background:#f7f3ff; color:#252526; font-size:13px; font-weight:600; border-bottom:1px solid #ede8f5;
 }
 .concept-3 table.data td { padding:14px 16px; border-bottom-color:#f2f2f2; }
 .concept-3 .table-footer { padding:16px; background:#fff; }
@@ -2001,7 +2009,7 @@ body.concept-3 {
 .concept-3 .map-head,
 .concept-3 .map-head > div,
 .concept-3 .map-head-copy,
-.concept-3 .map-head-copy strong { color:#888; font-weight:600; }
+.concept-3 .map-head-copy strong { color:#252526; font-weight:600; }
 .concept-3 .mapping-direction { color:#2B1C3D; }
 .concept-3 .map-section-title.missing { background:#FFF1F0; }
 .concept-3 .missing-field { background:#FFF8F7; }
@@ -5828,8 +5836,10 @@ function mappingControlHTML(controlHTML, iconKind, iconLabel, extraHTML) {
   return `<div class="uploaded-choice">
     <div class="row-mapping">
       <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
-      ${controlHTML}
-      ${mappingStatusIconHTML(iconKind, iconLabel)}
+      <div class="uploaded-choice-control">
+        ${controlHTML}
+        ${mappingStatusIconHTML(iconKind, iconLabel)}
+      </div>
     </div>
     ${extraHTML || ''}
   </div>`;
