@@ -1442,14 +1442,18 @@ table.data.req-h-table tr:hover td { background:transparent; }
 .map-head,
 .map-row {
   display:grid;
-  grid-template-columns:minmax(220px,40%) minmax(370px,42%) minmax(120px,18%);
+  grid-template-columns:minmax(200px,38%) 36px minmax(320px,44%) minmax(120px,18%);
   min-width:740px;
-  align-items:center;
+  align-items:stretch;
 }
 .map-head { background:#f7f3ff; border-bottom:1px solid #ede8f5; color:#252526; }
 .map-head > div {
   padding:16px; display:flex; align-items:center;
   background:transparent; border-top:none; color:#252526;
+}
+.map-head > div.map-col-arrow,
+.map-row > div.map-col-arrow {
+  padding:0; display:flex; align-items:center; justify-content:center;
 }
 .map-head-copy { display:flex; flex-direction:column; gap:0; color:#252526; }
 .map-head-copy strong {
@@ -1469,11 +1473,16 @@ table.data.req-h-table tr:hover td { background:transparent; }
 .map-row .system-required small { color:#aaa; font-size:12px; line-height:1.4; }
 .map-source-main { display:flex; flex-direction:column; gap:2px; min-width:0; }
 .row-mapping {
-  display:flex; align-items:center; gap:20px; min-width:0; flex-wrap:nowrap;
+  display:flex; align-items:center; gap:10px; min-width:0; flex-wrap:nowrap;
+}
+.uploaded-choice {
+  min-width:0; align-self:stretch;
+  padding:14px 16px; display:flex; flex-direction:column; justify-content:center;
+  gap:6px; box-sizing:border-box;
 }
 .uploaded-choice-control {
   display:flex; align-items:center; gap:10px; min-width:0;
-  padding:8px 10px; margin:-8px 0; border-radius:8px;
+  padding:0; margin:0; border-radius:0;
   background:transparent;
 }
 .mapping-direction {
@@ -1501,10 +1510,10 @@ table.data.req-h-table tr:hover td { background:transparent; }
 .map-row.unmapped .uploaded-choice,
 .map-row.unmapped .map-target,
 .map-row.unrecognized .uploaded-choice,
-.erp3-map .map-row.missing .uploaded-choice { background:transparent; }
+.erp3-map .map-row.missing .uploaded-choice { background:#FEF4EB; }
 .map-row.unmapped .uploaded-choice-control,
 .map-row.unrecognized .uploaded-choice-control,
-.erp3-map .map-row.missing .uploaded-choice-control { background:#FEF4EB; }
+.erp3-map .map-row.missing .uploaded-choice-control { background:transparent; }
 .map-status-icon {
   width:16px; height:16px; flex:0 0 16px;
   display:grid; place-items:center; line-height:0;
@@ -5774,6 +5783,7 @@ function erp2FileSummary(w, stats) {
 function mapTableHead() {
   return `<div class="map-head">
     <div class="map-col-field"><div class="map-head-copy"><strong>Field we need</strong></div></div>
+    <div class="map-col-arrow" aria-hidden="true"></div>
     <div class="map-col-file"><div class="map-head-copy"><strong>Column in your file</strong></div></div>
     <div class="map-col-sample"><div class="map-head-copy"><strong>Sample</strong></div></div>
   </div>`;
@@ -5802,16 +5812,14 @@ function mappingStatusFromState(rowState, selectedSource) {
   return { kind:'', label:'' };
 }
 function mappingControlHTML(controlHTML, iconKind, iconLabel, extraHTML) {
-  return `<div class="uploaded-choice">
-    <div class="row-mapping">
-      <span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span>
+  return `<div class="map-col-arrow"><span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span></div>
+    <div class="uploaded-choice">
       <div class="uploaded-choice-control">
         ${controlHTML}
         ${mappingStatusIconHTML(iconKind, iconLabel)}
       </div>
-    </div>
-    ${extraHTML || ''}
-  </div>`;
+      ${extraHTML || ''}
+    </div>`;
 }
 function erp2StaticMapRow(source, w) {
   const target = (w.mappings && w.mappings[source.id]) || '';
