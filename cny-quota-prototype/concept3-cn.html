@@ -6158,11 +6158,11 @@ function erpMatchedColumnsIntro(matchedCount, totalCount) {
   return `<div class="erp-match-intro">
     <section>
       <h3>What we did</h3>
-      <p>To declare your transactions for CNY settlement, we need specific details from your file. Column names vary between systems, so we matched yours to the required details — ${matchedCount} of your ${totalCount} columns so far.</p>
+      <p>To declare your transactions for CNY settlement, we need specific details from your file. Column names vary between business systems, so we matched yours to the required details — ${matchedCount} of the ${totalCount} are matched.</p>
     </section>
     <section>
       <h3>What you need to do</h3>
-      <p>Review the matches below and change any that aren't right.</p>
+      <p>Review the matches below. If a detail is matched to the wrong column, select the correct column from your file.</p>
     </section>
   </div>`;
 }
@@ -9249,8 +9249,8 @@ const CN_UI_REPLACEMENTS = [
   [/Complete trade info/g, '完善贸易信息'], [/Complete the trade info below/g, '完善下方贸易信息'], [/Confirm the following details we prefilled based on your document\./g, '确认以下根据单据预填的信息。'],
   [/Check the columns we matched/g, '核对已匹配的列'], [/Confirm the processing results/g, '确认处理结果'],
   [/What we did/g, '我们已完成'], [/What you need to do/g, '您需要做的'],
-  [/To declare your transactions for CNY settlement, we need specific details from your file\. Column names vary between systems, so we matched yours to the required details — (\d+) of your (\d+) columns so far\./g, '为进行人民币结汇申报，我们需要从文件中获取指定信息。各系统的列名可能不同，因此我们已将您的列与所需信息匹配 — 目前已匹配您 $2 列中的 $1 列。'],
-  [/Review the matches below and change any that aren't right\./g, '请核对下方匹配结果，并修改不正确的对应关系。'],
+  [/To declare your transactions for CNY settlement, we need specific details from your file\. Column names vary between business systems, so we matched yours to the required details — (\d+) of the (\d+) are matched\./g, '为进行人民币结汇申报，我们需要从文件中获取指定信息。各业务系统的列名可能不同，因此我们已将您的列与所需信息匹配 — 目前 $2 项中已匹配 $1 项。'],
+  [/Review the matches below\. If a detail is matched to the wrong column, select the correct column from your file\./g, '请核对下方匹配结果。如某项信息对应到了错误的列，请从文件中选择正确的列。'],
   [/We identified (\d+) columns as what we require\. Modify the result if needed\./g, '已识别 $1 个所需字段，可按需修改。'],
   [/Unmapped column(?!s)/g, '未匹配列'], [/^Sample$/g, '示例'],
   [/Fields we need/g, '所需字段'], [/Field we need/g, '所需字段'], [/Column required/g, '所需列'], [/Column in your file/g, '文件中的列'], [/Sample value in your file/g, '文件中的示例值'], [/Still required — (\d+) left/g, '仍需补充 — 还剩 $1 个'],
