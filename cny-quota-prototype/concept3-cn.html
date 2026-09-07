@@ -1127,6 +1127,25 @@ table.data tr:hover td { background: var(--muted); }
 .business-type-select-wrap:focus-within .business-type-chevron { color:var(--primary); }
 .supported-tx-type-field { max-width:420px; margin:0 0 14px; }
 .supported-tx-type-field label { font-weight:600; color:var(--foreground); }
+.req-type-list { display:flex; flex-direction:column; gap:12px; }
+.req-type-accordion .mapping-c2-accordion-body { padding:0 16px 16px; }
+.req-h-table-wrap { border:1px solid var(--border); border-radius:8px; overflow:hidden; background:#fff; }
+.req-h-table-scroll { overflow-x:auto; }
+.req-h-table { min-width:100%; border-collapse:collapse; font-size:12px; }
+.req-h-table th, .req-h-table td {
+  padding:12px 14px; vertical-align:top; text-align:left;
+  border-bottom:1px solid #f2f2f2; white-space:normal;
+  min-width:180px; max-width:260px;
+}
+.req-h-table thead th { background:#f7f3ff; color:#252526; font-weight:600; }
+.req-h-table .req-h-stub {
+  position:sticky; left:0; z-index:2;
+  min-width:120px; max-width:140px; width:120px;
+  background:#f7f3ff; color:#252526; font-weight:600;
+  box-shadow:4px 0 8px rgba(28,28,46,.06);
+}
+.req-h-table tbody tr:last-child th,
+.req-h-table tbody tr:last-child td { border-bottom:none; }
 .ai-badge {
   display:inline-flex; align-items:center; gap:3px; height:18px; padding:0 6px;
   border-radius:999px; background:var(--secondary); border:1px solid rgba(91,59,232,.3);
@@ -2405,6 +2424,45 @@ function setSupportedTxType(value) {
   state.supportedTxType = value;
   render();
 }
+function openDocumentRequirements() {
+  if (!state.supportedTxOpen) state.supportedTxOpen = { goods: true };
+  state.supportedMarketplacesPanel = false;
+  state.supportedTx = false;
+  state.view = 'document-requirements';
+  render();
+}
+function toggleSupportedTxType(key) {
+  if (!state.supportedTxOpen) state.supportedTxOpen = {};
+  state.supportedTxOpen[key] = !state.supportedTxOpen[key];
+  render();
+}
+function requiredDetailsHorizontalTable(fields) {
+  const items = fields || [];
+  if (!items.length) return '';
+  const labelCells = items.map(f => `<th>${requiredDetailLabelHtml(f)}</th>`).join('');
+  const descCells = items.map(f => `<td style="color:var(--muted-foreground)">${requiredDetailDescriptionHtml(f)}</td>`).join('');
+  const exampleCells = items.map(f => `<td class="mono">${f.example || ''}</td>`).join('');
+  return `<div class="req-h-table-wrap"><div class="req-h-table-scroll"><table class="data req-h-table">
+    <thead><tr><th class="req-h-stub">${tradeFieldLabel('Detail', '字段')}</th>${labelCells}</tr></thead>
+    <tbody>
+      <tr><th class="req-h-stub">${tradeFieldLabel('Description', '说明')}</th>${descCells}</tr>
+      <tr><th class="req-h-stub">${tradeFieldLabel('Example', '示例')}</th>${exampleCells}</tr>
+    </tbody>
+  </table></div></div>`;
+}
+function requiredDetailsAccordions() {
+  const open = state.supportedTxOpen || { goods: true };
+  return `<div class="req-type-list">${TRADE_SOURCES.map(type => {
+    const isOpen = !!open[type.key];
+    return `<div class="mapping-c2-accordion req-type-accordion ${isOpen?'open':''}">
+      <button type="button" class="mapping-c2-accordion-toggle" aria-expanded="${isOpen?'true':'false'}" onclick="toggleSupportedTxType('${type.key}')">
+        <span><strong>${type.label}</strong><small>${type.desc}</small></span>
+        ${I.chevron}
+      </button>
+      ${isOpen ? `<div class="mapping-c2-accordion-body">${requiredDetailsHorizontalTable(documentRequiredDetails(type.key))}</div>` : ''}
+    </div>`;
+  }).join('')}</div>`;
+}
 
 function formatFieldLabel(name) {
   const words = String(name || '').split('_').filter(Boolean).map(function(word) {
@@ -2735,6 +2793,8 @@ const state = {
   supportedTx: false,
   supportedTxLevel: 'categories',
   supportedTxType: 'goods',
+  supportedTxOpen: { goods: true },
+  supportedMarketplacesPanel: false,
   marketplaceResources: false,
   homepage2MarketplaceSupport: false,
   templateType: 'marketplace',
@@ -3290,6 +3350,7 @@ function setConcept(n) {
   state.templateMenuOpen = false;
   state.erpGuide = false;
   state.supportedTx = false;
+  state.supportedMarketplacesPanel = false;
   state.marketplaceResources = false;
   state.homepage2MarketplaceSupport = false;
   render();
@@ -3300,6 +3361,7 @@ function setHomepageVersion(n) {
   state.wiz = null;
   state.templatePanel = false;
   state.supportedTx = false;
+  state.supportedMarketplacesPanel = false;
   state.marketplaceResources = false;
   state.homepage2MarketplaceSupport = false;
   render();
@@ -3344,6 +3406,7 @@ function go(view, recordId) {
     state.templateGuide = false;
     state.erpGuide = false;
     state.supportedTx = false;
+    state.supportedMarketplacesPanel = false;
     state.marketplaceResources = false;
     state.homepage2MarketplaceSupport = false;
   }
@@ -3873,7 +3936,7 @@ function homeCardsConcept2() {
                   <li>Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents</li>
                   <li>Transaction records in CSV — exported from your ERP, marketplace, or other business systems, or prepared using our template (<button type="button" class="inline-link" style="text-decoration:none" onclick="state.templatePanel=true;render()">download template</button>)</li>
                 </ul>
-                <p class="support-note">Your transactions also need to be eligible for CNY settlement, and your documents need to include certain details. <button type="button" class="inline-link" style="text-decoration:none" onclick="state.supportedTxLevel='categories';state.supportedTx=true;render()">Check before you upload</button></p>
+                <p class="support-note">Your transactions also need to be eligible for CNY settlement, and your documents need to include certain details. <button type="button" class="inline-link" style="text-decoration:none" onclick="openDocumentRequirements()">Check before you upload</button></p>
               </div>
               <div class="card-footer">
                 <div class="cta-cluster">
@@ -3944,7 +4007,7 @@ function homeCardsHomepage2() {
           </div>
           <div>
             <strong>CSV transaction records</strong>
-            <p>You can use our template, or export them from your business platforms like ERP. <button type="button" class="inline-link" onclick="state.erpGuide=true;render()">View requirements</button></p>
+            <p>You can use our template, or export them from your business platforms like ERP. <button type="button" class="inline-link" onclick="openDocumentRequirements()">View requirements</button></p>
           </div>
         </div>
         <div class="card-footer">
@@ -3995,7 +4058,6 @@ function viewHome() {
     ${erpGuidePanel()}
     ${marketplaceResourcesPanel()}
     ${homepage2MarketplaceSupportPanel()}
-    ${supportedTxPanel()}
   </div>`;
 }
 
@@ -4348,118 +4410,100 @@ function homepage2MarketplaceSupportPanel() {
   </div>`;
 }
 
-function supportedTxPanel() {
-  if (!state.supportedTx) return '';
-  const isMarketplaceList = state.supportedTxLevel === 'marketplaces';
+function supportedMarketplacesPanel() {
+  if (!state.supportedMarketplacesPanel) return '';
   const automaticMarketplaces = [
     'eBay', 'Etsy', 'JM Technologies', 'Joom SIA', 'Joom USA', 'Lazada',
     'LLC Internet Projects', 'Ruten', 'Shopee', 'Tophatter', 'Wish',
   ];
-  const categoryContent = `
-    <section>
-      <p style="font-size:14px;font-weight:600;margin-bottom:2px">Eligible transaction types</p>
-      <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:12px">The following transaction types may be used to increase your quota:</p>
-      <div style="display:flex;flex-direction:column;gap:12px">
-        <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-          <p style="font-size:14px;font-weight:600;margin-bottom:6px">Marketplace transactions</p>
-          <button type="button" class="btn-link" style="font-size:13px" onclick="state.supportedTxLevel='marketplaces';render()">
-            View supported marketplaces ${I.chevronR}
-          </button>
-        </div>
-        <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-          <p style="font-size:14px;font-weight:600;margin-bottom:4px">Goods trading</p>
-          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">B2B purchases or sales of physical goods supported by trade documents.</p>
-        </div>
-        <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-          <p style="font-size:14px;font-weight:600;margin-bottom:10px">Services</p>
-          <ul style="margin:0;padding-left:20px;display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;font-size:13px;color:var(--muted-foreground);line-height:1.45">
-            <li>Accommodation</li>
-            <li>Advertisement</li>
-            <li>Air tickets</li>
-            <li>International logistics</li>
-            <li>Software</li>
-            <li>Tourism</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-    <section>
-      <p style="font-size:14px;font-weight:600;margin-bottom:12px">Required details in your documents</p>
-      ${(() => {
-        const selectedType = TRADE_SOURCES.find(type => type.key === state.supportedTxType) || TRADE_SOURCES[0];
-        const requiredDetails = documentRequiredDetails(selectedType.key);
-        return `<div class="field supported-tx-type-field">
-          <label for="supported-tx-type">Business type</label>
-          <div class="business-type-select-wrap">
-            <select id="supported-tx-type" class="business-type-select" aria-label="Business type" onchange="setSupportedTxType(this.value)">
-              ${TRADE_SOURCES.map(type => `<option value="${type.key}" ${selectedType.key===type.key?'selected':''}>${type.label}</option>`).join('')}
-            </select>
-            <span class="business-type-chevron" aria-hidden="true">${I.chevron}</span>
-          </div>
-          <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">${selectedType.desc}</p>
-        </div>
-        <div class="table-card"><div style="overflow-x:auto"><table class="data" style="min-width:0;font-size:12px">
-          <thead><tr><th>Detail</th><th>Description</th><th>Example</th></tr></thead>
-          <tbody>${requiredDetails.map(f=>`<tr>
-            <td>${requiredDetailLabelHtml(f)}</td>
-            <td style="color:var(--muted-foreground)">${requiredDetailDescriptionHtml(f)}</td>
-            <td class="mono">${f.example}</td>
-          </tr>`).join('')}</tbody>
-        </table></div></div>`;
-      })()}
-    </section>`;
-  const marketplaceContent = `
-    <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
-      We support transactions from these marketplaces to increase your quota.
-    </p>
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px;border:1px solid rgba(91,59,232,.22);border-radius:8px;background:var(--accent)">
-      <div>
-        <p style="font-size:14px;font-weight:600">Marketplace CSV template</p>
-        <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin-top:3px">Download the standard template before preparing marketplace transaction records.</p>
-      </div>
-      <button type="button" class="btn btn-sm btn-secondary" style="flex-shrink:0" onclick="state.supportedTx=false;state.templateType='marketplace';state.templatePanel=true;render()">${I.download} Download template</button>
-    </div>
-    <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-      <p style="font-size:14px;font-weight:600;margin-bottom:4px">Automatic quota increase</p>
-      <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:14px">
-        Your quota increases automatically when you receive payments to these stores. You don’t need to upload documents or connect stores.
-      </p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px 20px">
-        ${automaticMarketplaces.map(name => `<div style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--foreground)"><span style="color:var(--success)">${I.check}</span>${name}</div>`).join('')}
-      </div>
-    </div>
-    <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:#fff">
-      <p style="font-size:14px;font-weight:600;margin-bottom:6px">Upload documents required</p>
-      <div class="alert-info" style="margin-bottom:16px">
-        ${I.info}
-        <p style="font-size:12px;line-height:1.45"><strong>Amazon, Walmart, and Shopify:</strong> You can manually upload documents for these stores, but connecting them lets us automatically increase quota with your new payments.</p>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:12px">
-        ${Object.entries(MARKETPLACE_UPLOAD_GROUPS).map(([letter,names]) => `
-          <div style="display:grid;grid-template-columns:24px 1fr;gap:10px">
-            <strong style="font-size:13px;color:var(--primary)">${letter}</strong>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;font-size:13px;color:var(--foreground)">
-              ${names.map(name => `<span>${name}</span>`).join('')}
-            </div>
-          </div>`).join('')}
-      </div>
-    </div>`;
-  return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.supportedTx=false;state.supportedTxLevel='categories';render()}">
+  return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.supportedMarketplacesPanel=false;render()}">
     <div class="drawer wide">
       <div class="drawer-h">
-        <div style="display:flex;align-items:flex-start;gap:10px">
-          ${isMarketplaceList?`<button type="button" style="margin-top:1px" onclick="state.supportedTxLevel='categories';render()" aria-label="Back to requirements on your documents">${I.back}</button>`:''}
-          <div>
-            <h3>${isMarketplaceList?'Supported marketplaces':'Requirements on your documents'}</h3>
-            ${isMarketplaceList?`<p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;font-weight:400">Marketplace transactions that can increase your CNY quota</p>`:''}
-          </div>
+        <div>
+          <h3>Supported marketplaces</h3>
+          <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;font-weight:400">Marketplace transactions that can increase your CNY quota</p>
         </div>
-        <button type="button" onclick="state.supportedTx=false;state.supportedTxLevel='categories';render()">${I.x}</button>
+        <button type="button" onclick="state.supportedMarketplacesPanel=false;render()">${I.x}</button>
       </div>
       <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:20px">
-        ${isMarketplaceList ? marketplaceContent : categoryContent}
+        <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
+          We support transactions from these marketplaces to increase your quota.
+        </p>
+        <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
+          <p style="font-size:14px;font-weight:600;margin-bottom:4px">Automatic quota increase</p>
+          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:14px">
+            Your quota increases automatically when you receive payments to these stores. You don’t need to upload documents or connect stores.
+          </p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px 20px">
+            ${automaticMarketplaces.map(name => `<div style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--foreground)"><span style="color:var(--success)">${I.check}</span>${name}</div>`).join('')}
+          </div>
+        </div>
+        <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:#fff">
+          <p style="font-size:14px;font-weight:600;margin-bottom:6px">Upload documents required</p>
+          <div class="alert-info" style="margin-bottom:16px">
+            ${I.info}
+            <p style="font-size:12px;line-height:1.45"><strong>Amazon, Walmart, and Shopify:</strong> You can manually upload documents for these stores, but connecting them lets us automatically increase quota with your new payments.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            ${Object.entries(MARKETPLACE_UPLOAD_GROUPS).map(([letter,names]) => `
+              <div style="display:grid;grid-template-columns:24px 1fr;gap:10px">
+                <strong style="font-size:13px;color:var(--primary)">${letter}</strong>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;font-size:13px;color:var(--foreground)">
+                  ${names.map(name => `<span>${name}</span>`).join('')}
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>
       </div>
     </div>
+  </div>`;
+}
+
+function viewDocumentRequirements() {
+  if (!state.supportedTxOpen) state.supportedTxOpen = { goods: true };
+  return `<div class="view active">
+    ${sidebar()}
+    <div class="main">
+      ${topbar(['Manage','CNY quota management','Requirements on your documents'])}
+      <div class="page-head">
+        <button class="back-ico" onclick="go('home')" aria-label="Back to CNY quota management">${I.back}</button>
+        <h1>Requirements on your documents</h1>
+      </div>
+      <div class="content">
+        <section>
+          <p style="font-size:14px;font-weight:600;margin-bottom:2px">Eligible transaction types</p>
+          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:12px">The following transaction types may be used to increase your quota:</p>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:#fff">
+              <p style="font-size:14px;font-weight:600;margin-bottom:6px">Marketplace transactions</p>
+              <button type="button" class="btn-link" style="font-size:13px" onclick="state.supportedMarketplacesPanel=true;render()">
+                View supported marketplaces ${I.chevronR}
+              </button>
+            </div>
+            <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:#fff">
+              <p style="font-size:14px;font-weight:600;margin-bottom:4px">Goods trading</p>
+              <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">B2B purchases or sales of physical goods supported by trade documents.</p>
+            </div>
+            <div style="padding:14px;border:1px solid var(--border);border-radius:8px;background:#fff">
+              <p style="font-size:14px;font-weight:600;margin-bottom:10px">Services</p>
+              <ul style="margin:0;padding-left:20px;display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;font-size:13px;color:var(--muted-foreground);line-height:1.45">
+                <li>Accommodation</li>
+                <li>Advertisement</li>
+                <li>Air tickets</li>
+                <li>International logistics</li>
+                <li>Software</li>
+                <li>Tourism</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+        <section>
+          <p style="font-size:14px;font-weight:600;margin-bottom:12px">Required details in your documents</p>
+          ${requiredDetailsAccordions()}
+        </section>
+      </div>
+    </div>
+    ${supportedMarketplacesPanel()}
   </div>`;
 }
 
@@ -8798,11 +8842,12 @@ function render() {
   if (!SHOW_CONCEPT_2 && state.concept === 2) state.concept = 3;
   const root = document.getElementById('app');
   const previousRenderKey = root.dataset.renderKey || '';
-  const previousScroller = root.querySelector('.focused-body');
+  const previousScroller = root.querySelector('.focused-body') || root.querySelector('.main .content');
   const previousScrollTop = previousScroller ? previousScroller.scrollTop : 0;
   document.body.classList.toggle('concept-3', state.concept !== 2);
   const map = {
     'home': viewHome,
+    'document-requirements': viewDocumentRequirements,
     'trade-orders': viewTradeOrders,
     'templates': viewTemplates,
     'erp': viewERP,
@@ -8827,7 +8872,7 @@ function render() {
   root.innerHTML = html;
   root.dataset.renderKey = nextRenderKey;
   if (previousRenderKey === nextRenderKey) {
-    const nextScroller = root.querySelector('.focused-body');
+    const nextScroller = root.querySelector('.focused-body') || root.querySelector('.main .content');
     if (nextScroller) nextScroller.scrollTop = previousScrollTop;
   }
 }
@@ -9485,11 +9530,12 @@ function render() {
   if (!SHOW_CONCEPT_2 && state.concept === 2) state.concept = 3;
   const root = document.getElementById('app');
   const previousRenderKey = root.dataset.renderKey || '';
-  const previousScroller = root.querySelector('.focused-body');
+  const previousScroller = root.querySelector('.focused-body') || root.querySelector('.main .content');
   const previousScrollTop = previousScroller ? previousScroller.scrollTop : 0;
   document.body.classList.toggle('concept-3', state.concept !== 2);
   const map = {
     'home': viewHome,
+    'document-requirements': viewDocumentRequirements,
     'trade-orders': viewTradeOrders,
     'templates': viewTemplates,
     'erp': viewERP,
@@ -9515,7 +9561,7 @@ function render() {
   localizeVisibleUI(root);
   root.dataset.renderKey = nextRenderKey;
   if (previousRenderKey === nextRenderKey) {
-    const nextScroller = root.querySelector('.focused-body');
+    const nextScroller = root.querySelector('.focused-body') || root.querySelector('.main .content');
     if (nextScroller) nextScroller.scrollTop = previousScrollTop;
   }
 }
