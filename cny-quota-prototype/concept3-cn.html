@@ -951,6 +951,12 @@ table.data tr:hover td { background: var(--muted); }
   border-color:var(--destructive); box-shadow:0 0 0 2px rgba(211,47,47,.08);
 }
 .field-note { font-size:12px; color:var(--muted-foreground); line-height:1.45; }
+.field-note-conditional { color:#B54708; }
+.detail-with-chip { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.req-line { line-height:1.45; }
+.req-k { font-weight:600; color:var(--foreground); margin-right:4px; }
+.req-conditional { color:#B54708; }
+.req-conditional .req-k, .field-note-conditional .req-k { color:#B54708; }
 .radio-row { display:flex; gap:20px; flex-wrap:wrap; align-items:center; }
 .radio-option {
   display:flex; align-items:center; gap:8px;
@@ -2310,6 +2316,83 @@ function tradeFieldLabel(en, cn) {
 }
 function tradeFieldNote(en, cn) {
   return cn || en;
+}
+function usesChineseCopy() {
+  return tradeFieldNote('EN', 'CN') === 'CN';
+}
+function splitDetailCopy(text, isCN) {
+  let rest = String(text || '').trim();
+  let lang = '';
+  let desc = '';
+  let when = '';
+  if (!rest) return { lang: lang, desc: desc, when: when };
+  if (isCN) {
+    const langMatch = rest.match(/^语言要求：([^。]+)。(.*)$/);
+    if (langMatch) {
+      lang = langMatch[1].trim();
+      rest = (langMatch[2] || '').trim();
+    } else if (/^语言要求：/.test(rest)) {
+      lang = rest.replace(/^语言要求：/, '').replace(/。$/, '').trim();
+      rest = '';
+    }
+    const afterTicket = rest.match(/^(.*)（出票后必填）。?$/);
+    if (afterTicket) {
+      desc = afterTicket[1].replace(/[。\s]+$/, '').trim();
+      when = '出票后必填';
+    } else if (rest === '已发货时必填。' || rest === '已发货时必填') {
+      when = '已发货时必填';
+    } else if (rest === '未发货时必填。' || rest === '未发货时必填') {
+      when = '未发货时必填';
+    } else if (/^已发货时必填/.test(rest)) {
+      when = rest.replace(/。$/, '');
+    } else {
+      desc = rest;
+    }
+  } else {
+    const langMatch = rest.match(/^Language:\s*([^.]+)\.\s*([\s\S]*)$/);
+    if (langMatch) {
+      lang = langMatch[1].trim();
+      rest = (langMatch[2] || '').trim();
+    }
+    const afterTicket = rest.match(/^(.*?)\s*\(required after ticketing\)\.?$/i);
+    if (afterTicket) {
+      desc = afterTicket[1].trim().replace(/\.$/, '');
+      when = 'Required after ticketing';
+    } else if (/^Required when shipped\.?$/i.test(rest) || /^Required when not shipped\.?$/i.test(rest) || /^Require 1\/max 6, when shipped\.?$/i.test(rest) || /^Required when shipped\.\s*(Provide|Enter) 1 tracking number, up to 6\.?$/i.test(rest)) {
+      when = rest.replace(/\.$/, '');
+    } else {
+      desc = rest;
+    }
+  }
+  return { lang: lang, desc: desc, when: when };
+}
+function requiredDetailParts(field) {
+  const isCN = usesChineseCopy();
+  const raw = isCN ? ((field && (field.descCN || field.desc)) || '') : ((field && field.desc) || '');
+  return splitDetailCopy(raw, isCN);
+}
+function requiredDetailLabelHtml(field) {
+  const parts = requiredDetailParts(field);
+  const chip = parts.when ? `<span class="chip chip-amber">${tradeFieldLabel('Conditional', '条件必填')}</span>` : '';
+  return `<div class="detail-with-chip"><span style="color:var(--primary);font-weight:600">${requiredDetailLabel(field)}</span>${chip}</div>`;
+}
+function requiredDetailDescriptionHtml(field) {
+  const parts = requiredDetailParts(field);
+  const bits = [];
+  if (parts.lang) bits.push(`<div class="req-line"><span class="req-k">${tradeFieldLabel('Language:', '语言要求：')}</span> ${parts.lang}</div>`);
+  if (parts.desc) bits.push(`<div class="req-line">${parts.desc}</div>`);
+  if (parts.when) bits.push(`<div class="req-line req-conditional"><span class="req-k">${tradeFieldLabel('Conditional:', '条件：')}</span> ${parts.when}</div>`);
+  return bits.join('');
+}
+function tradeFieldNoteHtml(en, cn) {
+  const text = tradeFieldNote(en, cn);
+  if (!text) return '';
+  const parts = splitDetailCopy(text, usesChineseCopy());
+  const bits = [];
+  if (parts.lang) bits.push(`<p class="field-note"><span class="req-k">${tradeFieldLabel('Language:', '语言要求：')}</span> ${parts.lang}</p>`);
+  if (parts.desc) bits.push(`<p class="field-note">${parts.desc}</p>`);
+  if (parts.when) bits.push(`<p class="field-note field-note-conditional"><span class="req-k">${tradeFieldLabel('Conditional:', '条件：')}</span> ${parts.when}</p>`);
+  return bits.join('');
 }
 function setSupportedTxType(value) {
   state.supportedTxType = value;
@@ -4311,8 +4394,8 @@ function supportedTxPanel() {
         <div class="table-card"><div style="overflow-x:auto"><table class="data" style="min-width:0;font-size:12px">
           <thead><tr><th>Detail</th><th>Description</th><th>Example</th></tr></thead>
           <tbody>${requiredDetails.map(f=>`<tr>
-            <td style="color:var(--primary);font-weight:600">${requiredDetailLabel(f)}</td>
-            <td style="color:var(--muted-foreground)">${requiredDetailDescription(f)}</td>
+            <td>${requiredDetailLabelHtml(f)}</td>
+            <td style="color:var(--muted-foreground)">${requiredDetailDescriptionHtml(f)}</td>
             <td class="mono">${f.example}</td>
           </tr>`).join('')}</tbody>
         </table></div></div>`;
@@ -6688,8 +6771,7 @@ function tradeGoodsTable() {
   const w = state.wiz;
   const req = '<span style="color:var(--destructive)">*</span>';
   const note = function(en, cn) {
-    const text = tradeFieldNote(en, cn);
-    return text ? `<p class="field-note">${text}</p>` : '';
+    return tradeFieldNoteHtml(en, cn);
   };
   const items = (w.goods && w.goods.length ? w.goods : TRADE_GOODS);
   const productName = items.map(function(r) { return r.nameCN; }).join('|');
@@ -6844,7 +6926,7 @@ function tradeAdvertisementBlock() {
           <div class="field">
             <label>Order Currency ${req}</label>
             <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
-            <p class="field-note">Language: ENG. Three-letter code per ISO 4217. Currency of the revenue.</p>
+            ${tradeFieldNoteHtml('Language: ENG. Three-letter code per ISO 4217. Currency of the revenue.', '语言要求：英文三字码（ISO 4217）。收款币种。')}
           </div>
         </div>
       </div>
@@ -6907,7 +6989,7 @@ function tradeAdvertisementBlock() {
           <div class="field full">
             <label>Payee Name ${req}</label>
             <input value="张伟" readonly />
-            <p class="field-note">Language: Chinese. Chinese name of the domestic cardholder payee.</p>
+            ${tradeFieldNoteHtml('Language: Chinese. Chinese name of the domestic cardholder payee.', '语言要求：中文。境内持卡收款人中文名。')}
           </div>
         </div>
       </div>
@@ -6917,8 +6999,7 @@ function tradeAdvertisementBlock() {
 function tradeTourismBlock() {
   const req = '<span style="color:var(--destructive)">*</span>';
   const note = function(en, cn) {
-    const text = tradeFieldNote(en, cn);
-    return text ? `<p class="field-note">${text}</p>` : '';
+    return tradeFieldNoteHtml(en, cn);
   };
   return `<div class="review-card">
       <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic Info', '基本信息')}</span></div>
@@ -7030,8 +7111,7 @@ function tradeTourismBlock() {
 function tradeSoftwareBlock() {
   const req = '<span style="color:var(--destructive)">*</span>';
   const note = function(en, cn) {
-    const text = tradeFieldNote(en, cn);
-    return text ? `<p class="field-note">${text}</p>` : '';
+    return tradeFieldNoteHtml(en, cn);
   };
   return `<div class="review-card">
       <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic Info', '基本信息')}</span></div>
@@ -7131,8 +7211,7 @@ function tradeSoftwareBlock() {
 function tradeAirTicketBlock() {
   const req = '<span style="color:var(--destructive)">*</span>';
   const note = function(en, cn) {
-    const text = tradeFieldNote(en, cn);
-    return text ? `<p class="field-note">${text}</p>` : '';
+    return tradeFieldNoteHtml(en, cn);
   };
   return `<div class="review-card">
       <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic Info', '基本信息')}</span></div>
@@ -7252,8 +7331,7 @@ function tradeAirTicketBlock() {
 function tradeAccommodationBlock() {
   const req = '<span style="color:var(--destructive)">*</span>';
   const note = function(en, cn) {
-    const text = tradeFieldNote(en, cn);
-    return text ? `<p class="field-note">${text}</p>` : '';
+    return tradeFieldNoteHtml(en, cn);
   };
   return `<div class="review-card">
       <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic Info', '基本信息')}</span></div>
@@ -7463,8 +7541,7 @@ function tradeLogisticsBlock() {
   const w = state.wiz;
   const req = '<span style="color:var(--destructive)">*</span>';
   const note = function(en, cn) {
-    const text = tradeFieldNote(en, cn);
-    return text ? `<p class="field-note">${text}</p>` : '';
+    return tradeFieldNoteHtml(en, cn);
   };
   const companyInvalid = !!(w.logisticsCompanyAttempted && !String(w.logisticsCompany || '').trim());
   const trackingCount = tradeTrackingNumbers(w.logisticsTrackingNumber).length;
@@ -9271,6 +9348,7 @@ const CN_UI_REPLACEMENTS = [
   [/Order Currency\/feeType/g, '订单币种'], [/Order Amount\/totalFee/g, '订单金额'], [/Order Time\/orderDate/g, '订单签约时间/发票时间'],
   [/Payer’s name: individual name when custType is INDIVIDUAL, company name when custType is COMPANY\./g, '付款人姓名：客户类型为个人时填写个人姓名，为公司时填写公司名称。'],
   [/Signing date \/ invoice date\./g, '签约日期/发票日期。'],
+  [/Conditional:/g, '条件：'], [/^Conditional$/g, '条件必填'],
   [/Buyer'?s English Name\/Payer Name/g, '买家名称'],
   [/e-Commerce Platform Name\/Business Website Name/g, '店铺网站名称'],
   [/PI\/CI upload/g, '发票合同上传'],
