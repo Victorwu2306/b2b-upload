@@ -1515,7 +1515,7 @@ table.data.req-h-table tr:hover td { background:transparent; }
 .map-row.unmapped .uploaded-choice,
 .map-row.unmapped .map-target,
 .map-row.unrecognized .uploaded-choice,
-.erp3-map .map-row.missing .uploaded-choice { background:#FEF4EB; }
+.erp3-map .map-row.missing .uploaded-choice { background:transparent; }
 .map-row.unmapped .uploaded-choice-control,
 .map-row.unrecognized .uploaded-choice-control,
 .erp3-map .map-row.missing .uploaded-choice-control { background:transparent; }
@@ -1560,6 +1560,8 @@ table.data.req-h-table tr:hover td { background:transparent; }
 .map-sample {
   padding:14px 16px; color:#aaa;
   font-size:14px; line-height:20px;
+  display:flex; align-items:center; justify-content:flex-start;
+  text-align:left;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .erp-sample-value {
