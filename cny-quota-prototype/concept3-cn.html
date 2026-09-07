@@ -1442,8 +1442,8 @@ table.data.req-h-table tr:hover td { background:transparent; }
 .map-head,
 .map-row {
   display:grid;
-  grid-template-columns:minmax(200px,38%) 36px minmax(320px,44%) minmax(120px,18%);
-  min-width:740px;
+  grid-template-columns:minmax(200px,34%) 36px minmax(300px,40%) minmax(180px,26%);
+  min-width:780px;
   align-items:stretch;
 }
 .map-head { background:#f7f3ff; border-bottom:1px solid #ede8f5; color:#252526; }
@@ -1716,6 +1716,9 @@ table.data.req-h-table tr:hover td { background:transparent; }
 .erp2-stage { display:flex; flex-direction:column; gap:20px; }
 .erp2-stage-head h2 { font-size:20px; line-height:28px; font-weight:700; }
 .erp2-stage-head p { margin-top:4px; color:var(--muted-foreground); font-size:14px; line-height:21px; }
+.erp-match-intro { display:flex; flex-direction:column; gap:16px; margin-bottom:16px; }
+.erp-match-intro h3 { font-size:14px; line-height:20px; font-weight:700; margin-bottom:6px; }
+.erp-match-intro p { font-size:14px; color:var(--muted-foreground); line-height:1.5; }
 .erp2-static-target {
   min-height:34px; display:flex; align-items:center; padding:0 10px;
   border:1px solid #D8D1FF; border-radius:6px; background:#fff;
@@ -5804,10 +5807,10 @@ function erp2FileSummary(w, stats) {
 }
 function mapTableHead() {
   return `<div class="map-head">
-    <div class="map-col-field"><div class="map-head-copy"><strong>Field we need</strong></div></div>
+    <div class="map-col-field"><div class="map-head-copy"><strong>Column required</strong></div></div>
     <div class="map-col-arrow" aria-hidden="true"></div>
     <div class="map-col-file"><div class="map-head-copy"><strong>Column in your file</strong></div></div>
-    <div class="map-col-sample"><div class="map-head-copy"><strong>Sample</strong></div></div>
+    <div class="map-col-sample"><div class="map-head-copy"><strong>Sample value in your file</strong></div></div>
   </div>`;
 }
 function mapSampleCell(value) {
@@ -6008,6 +6011,18 @@ function stepERP2Upload(w) {
       </div>`}
   </div>`;
 }
+function erpMatchedColumnsIntro(matchedCount, totalCount) {
+  return `<div class="erp-match-intro">
+    <section>
+      <h3>What we did</h3>
+      <p>To declare your transactions for CNY settlement, we need specific details from your file. Column names vary between systems, so we matched yours to the required details — ${matchedCount} of your ${totalCount} columns so far.</p>
+    </section>
+    <section>
+      <h3>What you need to do</h3>
+      <p>Review the matches below and change any that aren't right.</p>
+    </section>
+  </div>`;
+}
 function stepERP2Confirm(w) {
   const stats = getERPMappingStats(w);
   const identifiedTargetNames = (w.erp2IdentifiedTargetNames || []).length
@@ -6022,9 +6037,7 @@ function stepERP2Confirm(w) {
     </div>
     ${erp2FileSummary(w, stats)}
     <div>
-      <div style="margin-bottom:12px">
-        <p style="font-size:15px;font-weight:600">We matched ${identifiedTargetNames.length} of the ${ERP_REQUIRED_FIELDS.length} fields we need. Change any mapping that isn't right.</p>
-      </div>
+      ${erpMatchedColumnsIntro(identifiedTargetNames.length, ERP_REQUIRED_FIELDS.length)}
       ${identifiedTargetNames.length
         ? erp2TargetMappingTable(identifiedTargetNames, stats.sources, w.mappings, 'updateERP2TargetMapping', false)
         : `<div class="alert-info">${I.info}<p>${emptyHint}</p></div>`}
@@ -6365,9 +6378,9 @@ function stepERP3Confirm(w) {
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
       <h2>Check the columns we matched</h2>
-      <p>We matched ${mappedCount} of the ${ERP_REQUIRED_FIELDS.length} fields we need. Change any mapping that isn't right.</p>
     </div>
     ${erp2FileSummary(w, stats)}
+    ${erpMatchedColumnsIntro(mappedCount, ERP_REQUIRED_FIELDS.length)}
     ${erp3TargetMappingTable(w)}
   </div>`;
 }
@@ -8702,7 +8715,7 @@ function viewUploadDetails() {
         </div>
         <div class="details-table-wrap" style="margin-top:16px">
           <table class="data">
-            <thead><tr>${['Field we need','Column in your file','Sample'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+            <thead><tr>${['Column required','Column in your file','Sample value in your file'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
             <tbody>${erpFieldMappings.map(([source,target,method,sample])=>`<tr>
               <td>
                 <div style="font-weight:700">${erpRequiredLabel(target)}</div>
@@ -9137,10 +9150,12 @@ const CN_UI_REPLACEMENTS = [
   [/Upload your document/g, '上传单据'], [/Upload transaction document/g, '上传交易单据'],
   [/Complete trade info/g, '完善贸易信息'], [/Complete the trade info below/g, '完善下方贸易信息'], [/Confirm the following details we prefilled based on your document\./g, '确认以下根据单据预填的信息。'],
   [/Check the columns we matched/g, '核对已匹配的列'], [/Confirm the processing results/g, '确认处理结果'],
-  [/We matched (\d+) of the (\d+) fields we need\. Change any mapping that isn't right\./g, '已匹配所需 $2 个字段中的 $1 个。如有误，请修改对应关系。'],
+  [/What we did/g, '我们已完成'], [/What you need to do/g, '您需要做的'],
+  [/To declare your transactions for CNY settlement, we need specific details from your file\. Column names vary between systems, so we matched yours to the required details — (\d+) of your (\d+) columns so far\./g, '为进行人民币结汇申报，我们需要从文件中获取指定信息。各系统的列名可能不同，因此我们已将您的列与所需信息匹配 — 目前已匹配您 $2 列中的 $1 列。'],
+  [/Review the matches below and change any that aren't right\./g, '请核对下方匹配结果，并修改不正确的对应关系。'],
   [/We identified (\d+) columns as what we require\. Modify the result if needed\./g, '已识别 $1 个所需字段，可按需修改。'],
   [/Unmapped column(?!s)/g, '未匹配列'], [/^Sample$/g, '示例'],
-  [/Fields we need/g, '所需字段'], [/Field we need/g, '所需字段'], [/Column in your file/g, '文件中的列'], [/Still required — (\d+) left/g, '仍需补充 — 还剩 $1 个'],
+  [/Fields we need/g, '所需字段'], [/Field we need/g, '所需字段'], [/Column required/g, '所需列'], [/Column in your file/g, '文件中的列'], [/Sample value in your file/g, '文件中的示例值'], [/Still required — (\d+) left/g, '仍需补充 — 还剩 $1 个'],
   [/Info we ask for/g, '所需信息'], [/What we find in your document/g, '单据中已识别的信息'],
   [/Match the columns in your file to the fields we need\./g, '请将文件中的列与所需字段对应。'],
   [/Confirm processing results, manually verify available columns, and complete any remaining required fields\./g, '确认处理结果，手动核对可用字段，并补充剩余必填信息。'],

@@ -1447,8 +1447,8 @@ table.data.req-h-table tr:hover td { background:transparent; }
 .map-head,
 .map-row {
   display:grid;
-  grid-template-columns:minmax(200px,38%) 36px minmax(320px,44%) minmax(120px,18%);
-  min-width:740px;
+  grid-template-columns:minmax(200px,34%) 36px minmax(300px,40%) minmax(180px,26%);
+  min-width:780px;
   align-items:stretch;
 }
 .map-head { background:#f7f3ff; border-bottom:1px solid #ede8f5; color:#252526; }
@@ -1721,6 +1721,9 @@ table.data.req-h-table tr:hover td { background:transparent; }
 .erp2-stage { display:flex; flex-direction:column; gap:20px; }
 .erp2-stage-head h2 { font-size:20px; line-height:28px; font-weight:700; }
 .erp2-stage-head p { margin-top:4px; color:var(--muted-foreground); font-size:14px; line-height:21px; }
+.erp-match-intro { display:flex; flex-direction:column; gap:16px; margin-bottom:16px; }
+.erp-match-intro h3 { font-size:14px; line-height:20px; font-weight:700; margin-bottom:6px; }
+.erp-match-intro p { font-size:14px; color:var(--muted-foreground); line-height:1.5; }
 .erp2-static-target {
   min-height:34px; display:flex; align-items:center; padding:0 10px;
   border:1px solid #D8D1FF; border-radius:6px; background:#fff;
@@ -5975,10 +5978,10 @@ function erp2FileSummary(w, stats) {
 }
 function mapTableHead() {
   return `<div class="map-head">
-    <div class="map-col-field"><div class="map-head-copy"><strong>Field we need</strong></div></div>
+    <div class="map-col-field"><div class="map-head-copy"><strong>Column required</strong></div></div>
     <div class="map-col-arrow" aria-hidden="true"></div>
     <div class="map-col-file"><div class="map-head-copy"><strong>Column in your file</strong></div></div>
-    <div class="map-col-sample"><div class="map-head-copy"><strong>Sample</strong></div></div>
+    <div class="map-col-sample"><div class="map-head-copy"><strong>Sample value in your file</strong></div></div>
   </div>`;
 }
 function mapSampleCell(value) {
@@ -6179,6 +6182,18 @@ function stepERP2Upload(w) {
       </div>`}
   </div>`;
 }
+function erpMatchedColumnsIntro(matchedCount, totalCount) {
+  return `<div class="erp-match-intro">
+    <section>
+      <h3>What we did</h3>
+      <p>To declare your transactions for CNY settlement, we need specific details from your file. Column names vary between systems, so we matched yours to the required details — ${matchedCount} of your ${totalCount} columns so far.</p>
+    </section>
+    <section>
+      <h3>What you need to do</h3>
+      <p>Review the matches below and change any that aren't right.</p>
+    </section>
+  </div>`;
+}
 function stepERP2Confirm(w) {
   const stats = getERPMappingStats(w);
   const identifiedTargetNames = (w.erp2IdentifiedTargetNames || []).length
@@ -6193,9 +6208,7 @@ function stepERP2Confirm(w) {
     </div>
     ${erp2FileSummary(w, stats)}
     <div>
-      <div style="margin-bottom:12px">
-        <p style="font-size:15px;font-weight:600">We matched ${identifiedTargetNames.length} of the ${ERP_REQUIRED_FIELDS.length} fields we need. Change any mapping that isn't right.</p>
-      </div>
+      ${erpMatchedColumnsIntro(identifiedTargetNames.length, ERP_REQUIRED_FIELDS.length)}
       ${identifiedTargetNames.length
         ? erp2TargetMappingTable(identifiedTargetNames, stats.sources, w.mappings, 'updateERP2TargetMapping', false)
         : `<div class="alert-info">${I.info}<p>${emptyHint}</p></div>`}
@@ -6541,9 +6554,9 @@ function stepERP3Confirm(w) {
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
       <h2>Check the columns we matched</h2>
-      <p>We matched ${mappedCount} of the ${ERP_REQUIRED_FIELDS.length} fields we need. Change any mapping that isn't right.</p>
     </div>
     ${erp2FileSummary(w, stats)}
+    ${erpMatchedColumnsIntro(mappedCount, ERP_REQUIRED_FIELDS.length)}
     ${erp3TargetMappingTable(w)}
   </div>`;
 }
@@ -8882,7 +8895,7 @@ function viewUploadDetails() {
         </div>
         <div class="details-table-wrap" style="margin-top:16px">
           <table class="data">
-            <thead><tr>${['Field we need','Column in your file','Sample'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+            <thead><tr>${['Column required','Column in your file','Sample value in your file'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
             <tbody>${erpFieldMappings.map(([source,target,method,sample])=>`<tr>
               <td>
                 <div style="font-weight:700">${formatFieldLabel(target)}</div>
