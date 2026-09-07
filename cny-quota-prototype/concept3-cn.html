@@ -1131,8 +1131,25 @@ table.data tr:hover td { background: var(--muted); }
 .req-type-accordion .mapping-c2-accordion-body {
   display:flex; flex-direction:column; gap:16px; padding:16px;
 }
-.req-type-download { display:flex; align-items:center; justify-content:flex-end; margin:0; }
-.req-type-download .btn-link { font-size:13px; }
+.req-type-head {
+  display:flex; align-items:flex-end; gap:16px;
+  padding:16px 20px; background:#fff;
+}
+.req-type-head:hover { background:var(--muted); }
+.req-type-head-main {
+  flex:1; min-width:0; padding:0; text-align:left; background:transparent;
+  display:flex; flex-direction:column; align-items:flex-start; gap:2px;
+}
+.req-type-head-main strong { font-size:14px; font-weight:600; }
+.req-type-head-main small { color:var(--muted-foreground); font-size:12px; line-height:18px; }
+.req-type-head-actions { display:flex; align-items:center; flex-shrink:0; gap:24px; }
+.req-type-download { margin:0; font-size:13px; white-space:nowrap; }
+.req-type-chevron {
+  width:32px; height:32px; display:grid; place-items:center;
+  flex-shrink:0; color:var(--foreground);
+}
+.req-type-chevron svg { width:16px; height:16px; transition:transform .15s; }
+.req-type-accordion.open .req-type-chevron svg { transform:rotate(180deg); }
 .req-h-table-wrap { border:1px solid var(--border); border-radius:8px; overflow:hidden; background:#fff; max-width:100%; }
 .req-h-table-scroll { overflow-x:auto; max-width:100%; }
 table.data.req-h-table {
@@ -2505,16 +2522,17 @@ function requiredDetailsAccordions() {
   return `<div class="req-type-list">${DOCUMENT_REQUIREMENT_TYPES.map(type => {
     const isOpen = !!open[type.key];
     return `<div class="mapping-c2-accordion req-type-accordion ${isOpen?'open':''}">
-      <button type="button" class="mapping-c2-accordion-toggle" aria-expanded="${isOpen?'true':'false'}" onclick="toggleSupportedTxType('${type.key}')">
-        <span><strong>${type.label}</strong><small>${type.desc}</small></span>
-        ${I.chevron}
-      </button>
-      ${isOpen ? `<div class="mapping-c2-accordion-body">
-        <div class="req-type-download">
-          <button type="button" class="btn-link" onclick="downloadRequirementTemplate('${type.key}')">${I.download} Download template</button>
+      <div class="req-type-head">
+        <button type="button" class="req-type-head-main" aria-expanded="${isOpen?'true':'false'}" onclick="toggleSupportedTxType('${type.key}')">
+          <strong>${type.label}</strong>
+          <small>${type.desc}</small>
+        </button>
+        <div class="req-type-head-actions">
+          <button type="button" class="btn-link req-type-download" onclick="downloadRequirementTemplate('${type.key}')">${I.download} Download template</button>
+          <button type="button" class="req-type-chevron" aria-expanded="${isOpen?'true':'false'}" aria-label="${isOpen?'Collapse':'Expand'} ${type.label}" onclick="toggleSupportedTxType('${type.key}')">${I.chevron}</button>
         </div>
-        ${requiredDetailsHorizontalTable(documentRequiredDetails(type.key))}
-      </div>` : ''}
+      </div>
+      ${isOpen ? `<div class="mapping-c2-accordion-body">${requiredDetailsHorizontalTable(documentRequiredDetails(type.key))}</div>` : ''}
     </div>`;
   }).join('')}</div>`;
 }
