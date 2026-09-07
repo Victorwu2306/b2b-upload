@@ -5925,16 +5925,27 @@ function stepERPInfoConcept2(w, stats) {
   </div>`;
 }
 
+function erpDisplayedFileName(w) {
+  if (!w) return '';
+  return w.fileName || '';
+}
+function erpWizardTitle(w) {
+  const fileName = erpDisplayedFileName(w);
+  if (fileName) return 'Upload CSV from ERP — ' + fileName;
+  if (w && w.erpFlowVersion === 'v3') return 'Upload CSV from ERP — ERP CSV 3';
+  if (w && w.erpFlowVersion === 'v2') return 'Upload CSV from ERP — ERP CSV 2';
+  return 'Upload CSV from ERP';
+}
 function erp2FileSummary(w, stats) {
   const entryCategory = w.entryCategory ? (TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label : '';
   const entryMarketplace = w.entryCategory==='marketplace'&&w.marketplace?w.marketplace:'';
   return `<div class="card erp-file-card" style="overflow:hidden">
-    <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} ${w.erpFlowVersion==='v3'?'ERP CSV 3':'ERP CSV 2'}</div>
+    <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} Uploaded file</div>
     <div style="padding:20px">
       <div class="file-ok">
         ${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
         <div style="flex:1;min-width:0">
-          <p style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${w.fileName || 'erp_missing_columns.csv'}</p>
+          <p style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${erpDisplayedFileName(w) || 'erp_missing_columns.csv'}</p>
           <p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Uploaded successfully · ${stats.sources.length} columns detected${entryCategory?` · Category: ${entryCategory}`:''}${entryMarketplace?` · Marketplace: ${entryMarketplace}`:''}${w.v2UseCaseTitle?` · ${w.v2UseCaseTitle}`:''}</p>
         </div>
       </div>
@@ -6207,6 +6218,7 @@ function stepERP2Unrecognized(w) {
         <h2>Do you have these columns in your file?</h2>
         <p>No manual matching is needed. Continue to check whether anything else is missing.</p>
       </div>
+      ${erp2FileSummary(w, stats)}
       <div class="mapping-c2-success">${I.check}<div><strong>All required columns are covered</strong><p>Unrecognized extra columns will be ignored. Continue to review whether anything else is missing.</p></div></div>
     </div>`;
   }
@@ -6215,6 +6227,7 @@ function stepERP2Unrecognized(w) {
       <h2>Do you have these columns in your file?</h2>
       <p>We couldn't match these fields automatically. Point us to the right column, or skip the ones your file doesn't include.</p>
     </div>
+    ${erp2FileSummary(w, stats)}
     <div class="alert-info">${I.info}<p>If your file doesn't include these, continue. You'll need to add them to your file and upload it again.</p></div>
     ${erp2TargetMappingTable(resolutionNames, unrecognizedSources, w.mappings, 'updateERP2TargetMapping', true)}
   </div>`;
@@ -6246,6 +6259,7 @@ function stepERP2Missing(w) {
   if (!missingNames.length) {
     return `<div class="erp2-stage">
       <div class="erp2-stage-head"><h2>Update and re-upload</h2><p>Check whether the file still needs any required system fields.</p></div>
+      ${erp2FileSummary(w, stats)}
       <div class="mapping-c2-success">${I.check}<div><strong>All required columns are covered</strong><p>${w.erp2ReplacementState==='done'?'The corrected full file replaced the previous upload. Existing automatic and manual mappings were reused.':'No corrected file is needed.'}</p></div></div>
       ${w.erp2ReplacementState==='done' ? `<div class="file-ok">${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
         <div style="flex:1"><p style="font-weight:600">${w.erp2ReplacementFileName}</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Current file · ${w.erp2ReusedMappings} previous mappings reused · ${w.erp2NewHeaders.length} new header${w.erp2NewHeaders.length===1?'':'s'} matched</p></div>
@@ -6256,6 +6270,7 @@ function stepERP2Missing(w) {
     <div class="erp2-stage-head">
       <h2>Update and re-upload</h2>
     </div>
+    ${erp2FileSummary(w, stats)}
     <div class="erp2-missing-card">
       <div class="erp2-missing-card-h">
         <h3>Details about the ${formatMissingFieldsList(missingNames)} are missing</h3>
@@ -6361,7 +6376,7 @@ function viewWizardERP2(w) {
   const displayStep = w.uploadOriginVersion===2 ? uploadV2ERPDisplayStep(w) : stage;
   const navigation = wizNavFooter('erp2Back()',stage===1?'Cancel':'Previous','erp2Next()',stage===5?'Submit':'Next',canNext);
   return wizShell({
-    title:'Upload CSV from ERP — ERP CSV 2',
+    title:erpWizardTitle(w),
     sub:'Match the columns in your file to the fields we need.',
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body:`<div style="display:flex;flex-direction:column;gap:20px">${versionControl}${body}</div>`,
@@ -6499,6 +6514,7 @@ function stepERP3Missing(w) {
       <h2>Add the missing fields and re-upload</h2>
       <p>These required fields are still missing. Download the system-corrected file, fill in the new columns, and upload the complete file.</p>
     </div>
+    ${erp2FileSummary(w, stats)}
     <div class="erp3-corrected-card">
       <div class="erp3-corrected-card-h">
         <h3>Details about the ${formatMissingFieldsList(missingNames)} are missing</h3>
@@ -6609,7 +6625,7 @@ function viewWizardERP3(w) {
   const displayStep = w.uploadOriginVersion===2 ? uploadV2ERPDisplayStep(w) : (stage <= 2 ? stage : (w.erp3NeedsReplacement ? stage : 3));
   const navigation = wizNavFooter('erp3Back()', stage===1?'Cancel':'Previous', 'erp3Next()', stage===4?'Submit':'Next', canNext);
   return wizShell({
-    title:'Upload CSV from ERP — ERP CSV 3',
+    title:erpWizardTitle(w),
     sub:'Review every required field in one list, then complete anything that is still missing.',
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body:`<div style="display:flex;flex-direction:column;gap:20px">${versionControl}${body}</div>`,
@@ -6908,7 +6924,7 @@ function viewWizardERP() {
   const displayStep = w.uploadOriginVersion===2 ? (w.step===4?3:2) : w.step;
   const navigation = wizNavFooter(back, w.step===2?'Cancel':'Previous', next, nextLabel, canNext);
   return wizShell({
-    title:'Upload CSV from ERP',
+    title:erpWizardTitle(w),
     sub:'Upload your ERP CSV export for field mapping and quota release.',
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body,
@@ -9483,6 +9499,7 @@ const CN_UI_REPLACEMENTS = [
   [/Upload & Submit/g, '上传并提交'], [/Select the category, upload your completed CSV, and submit accepted records\./g, '选择类别，上传填写好的 CSV，然后提交已通过的记录。'], [/Submit records/g, '提交记录'],
   [/Upload CSV from ERP — ERP CSV 3/g, '上传 ERP 文件 — ERP CSV 3'],
   [/Upload CSV from ERP — ERP CSV 2/g, '上传 ERP 文件 — ERP CSV 2'],
+  [/Upload CSV from ERP — /g, '上传 ERP 文件 — '],
   [/Choose an ERP CSV flow/g, '选择 ERP 文件流程'],
   [/ERP CSV 3 shows every required field in one list, including mapped, unrecognized, and missing columns\./g, 'ERP CSV 3 将所有必填字段集中在一张列表中展示，包括已匹配、无法识别和缺失的列。'],
   [/ERP CSV keeps mapping, unrecognized columns, and missing fields on a single review page\./g, 'ERP CSV 在同一页核对已匹配、无法识别和缺失字段。'],
