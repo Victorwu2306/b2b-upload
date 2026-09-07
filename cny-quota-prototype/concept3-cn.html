@@ -2387,7 +2387,6 @@ function requiredDetailLabelHtml(field) {
 function requiredDetailDescriptionHtml(field) {
   const parts = requiredDetailParts(field);
   const bits = [];
-  if (parts.lang) bits.push(`<div class="req-line"><span class="req-k">${tradeFieldLabel('Language:', '语言要求：')}</span> ${parts.lang}</div>`);
   if (parts.desc) bits.push(`<div class="req-line">${parts.desc}</div>`);
   if (parts.when) bits.push(`<div class="req-line req-conditional"><span class="req-k">${tradeFieldLabel('Conditional:', '条件：')}</span> ${parts.when}</div>`);
   return bits.join('');
