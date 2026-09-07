@@ -1134,22 +1134,37 @@ table.data tr:hover td { background: var(--muted); }
 .supported-tx-type-field label { font-weight:600; color:var(--foreground); }
 .req-type-list { display:flex; flex-direction:column; gap:12px; }
 .req-type-accordion .mapping-c2-accordion-body { padding:0 16px 16px; }
-.req-h-table-wrap { border:1px solid var(--border); border-radius:8px; overflow:hidden; background:#fff; }
-.req-h-table-scroll { overflow-x:auto; }
+.req-h-table-wrap { border:1px solid var(--border); border-radius:8px; overflow:hidden; background:#fff; max-width:100%; }
+.req-h-table-scroll { overflow-x:auto; max-width:100%; }
 table.data.req-h-table {
-  width:100%; min-width:0; table-layout:fixed; border-collapse:collapse; font-size:12px;
+  --req-stub: 92px;
+  --req-col-min: 128px;
+  --req-col-max: 180px;
+  --req-cols: 8;
+  width:100%;
+  min-width:calc(var(--req-stub) + var(--req-cols) * var(--req-col-min));
+  max-width:calc(var(--req-stub) + var(--req-cols) * var(--req-col-max));
+  table-layout:fixed; border-collapse:collapse; font-size:12px;
 }
 table.data.req-h-table th,
 table.data.req-h-table td {
   padding:8px 10px; vertical-align:top; text-align:left;
   border-bottom:1px solid #f2f2f2; white-space:normal;
   overflow-wrap:anywhere; word-break:break-word; line-height:1.4;
-  min-width:0; max-width:none;
 }
 table.data.req-h-table thead th { background:#f7f3ff; color:#252526; font-size:12px; font-weight:600; }
-table.data.req-h-table .req-h-stub-col { width:88px; }
+table.data.req-h-table .req-h-stub-col { width:var(--req-stub); }
+table.data.req-h-table .req-h-field-col {
+  width:calc((100% - var(--req-stub)) / var(--req-cols));
+  min-width:var(--req-col-min); max-width:var(--req-col-max);
+}
+table.data.req-h-table th:not(.req-h-stub),
+table.data.req-h-table td {
+  min-width:var(--req-col-min); max-width:var(--req-col-max);
+}
 table.data.req-h-table .req-h-stub {
-  position:sticky; left:0; z-index:2; width:88px;
+  position:sticky; left:0; z-index:2;
+  width:var(--req-stub); min-width:var(--req-stub); max-width:var(--req-stub);
   background:#f7f3ff; color:#252526; font-weight:600;
   box-shadow:4px 0 8px rgba(28,28,46,.06);
 }
@@ -2467,8 +2482,8 @@ function requiredDetailsHorizontalTable(fields) {
   const labelCells = items.map(f => `<th>${requiredDetailLabelHtml(f)}</th>`).join('');
   const descCells = items.map(f => `<td style="color:var(--muted-foreground)">${requiredDetailDescriptionHtml(f)}</td>`).join('');
   const exampleCells = items.map(f => `<td class="mono">${f.example || ''}</td>`).join('');
-  return `<div class="req-h-table-wrap"><div class="req-h-table-scroll"><table class="data req-h-table">
-    <colgroup><col class="req-h-stub-col">${items.map(() => '<col>').join('')}</colgroup>
+  return `<div class="req-h-table-wrap"><div class="req-h-table-scroll"><table class="data req-h-table" style="--req-cols:${items.length}">
+    <colgroup><col class="req-h-stub-col">${items.map(() => '<col class="req-h-field-col">').join('')}</colgroup>
     <thead><tr><th class="req-h-stub">${tradeFieldLabel('Detail', '字段')}</th>${labelCells}</tr></thead>
     <tbody>
       <tr><th class="req-h-stub">${tradeFieldLabel('Description', '说明')}</th>${descCells}</tr>
