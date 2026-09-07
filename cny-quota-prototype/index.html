@@ -2706,7 +2706,7 @@ const UNSHIPPED_LIMIT = 1000000;
 /* Concept 2 — unified upload history & quota breakdown (derived from UPLOAD_HISTORY) */
 const UPLOAD_METHODS = [
   { key:'trade', label:'Trade document', desc:'Such as an invoice, contract, purchase order, or customs document', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
-  { key:'template', label:'Transaction records using our template', desc:'A CSV you completed', ico:'upload', formats:'CSV · Max 50 MB' },
+  { key:'template', label:'Transaction record using our template', desc:'A CSV you completed', ico:'upload', formats:'CSV · Max 50 MB' },
   { key:'erp', label:'Transaction record exported from your business system', desc:'A CSV exported from your ERP, marketplace, accounting, or other business system', ico:'db', formats:'CSV · Max 50 MB' },
 ];
 
@@ -4129,7 +4129,7 @@ function homeCardsConcept2() {
               </div>
               <div class="card-footer">
                 <div class="cta-cluster">
-                  <button type="button" class="btn btn-gradient" onclick="state.connectOpen=true;render()">Connect stores</button>
+                  <button type="button" class="btn btn-gradient" onclick="state.connectOpen=true;render()">Connect store</button>
                 </div>
               </div>
             </article>
@@ -4140,7 +4140,7 @@ function homeCardsConcept2() {
               <div class="action-body">
                 <p class="support-lead">You can upload:</p>
                 <ul class="support-list">
-                  <li>Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents</li>
+                  <li>Trade documents – commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents</li>
                   <li>Transaction records in CSV — exported from your ERP, marketplace, or other business systems, or prepared using our template (<button type="button" class="inline-link" style="text-decoration:none" onclick="state.templatePanel=true;render()">download template</button>)</li>
                 </ul>
                 <p class="support-note">Your transactions also need to be eligible for CNY settlement, and your documents need to include certain details. <button type="button" class="inline-link" style="text-decoration:none" onclick="openDocumentRequirements()">Check before you upload</button></p>
@@ -4148,7 +4148,7 @@ function homeCardsConcept2() {
               <div class="card-footer">
                 <div class="cta-cluster">
                   <button type="button" class="history-link" onclick="go('upload-history')">View upload history</button>
-                  <button type="button" class="btn btn-gradient" onclick="startUploadWizard()">Upload documents</button>
+                  <button type="button" class="btn btn-gradient" onclick="startUploadWizard()">Upload document</button>
                 </div>
               </div>
             </article>
@@ -4164,7 +4164,7 @@ function homeCardsHomepage2() {
       </div>
       <div class="homepage2-split">
         <section class="homepage2-pane connect">
-          <h4>Connect a store</h4>
+          <h4>Connect stores</h4>
           <p>When you get a new payment to your store, we increase your quota automatically.</p>
           <div class="store-plain-list">
             <div class="store-plain-row">
@@ -4185,7 +4185,7 @@ function homeCardsHomepage2() {
           </div>
           <div class="card-footer">
             <div class="cta-cluster">
-              <button type="button" class="btn btn-gradient" onclick="state.connectOpen=true;render()">Connect stores</button>
+              <button type="button" class="btn btn-gradient" onclick="state.connectOpen=true;render()">Connect store</button>
             </div>
           </div>
         </section>
@@ -4194,7 +4194,7 @@ function homeCardsHomepage2() {
           <p>Use this option for your stores not on Amazon, Shopify, or Walmart. <button type="button" class="inline-link" onclick="state.templateType='marketplace';state.templatePanel=true;render()">Download our template</button> and upload records manually.</p>
           <div class="card-footer">
             <div class="cta-cluster">
-              <button type="button" class="btn btn-gradient" onclick="startMarketplaceTemplateWizard()">Upload records</button>
+              <button type="button" class="btn btn-gradient" onclick="startMarketplaceTemplateWizard()">Upload record</button>
             </div>
           </div>
         </section>
@@ -4204,13 +4204,13 @@ function homeCardsHomepage2() {
     <article class="action-card home-pair-card homepage2-card">
       <div class="homepage2-card-head">
         <h3>Goods or service trading</h3>
-        <p class="desc">Upload trade documents or CSV transaction records. We increase your quota based on the transaction amount.</p>
+        <p class="desc">Upload trade documents or CSV transaction records. We increase your quota based on the transaction amounts.</p>
       </div>
       <div class="homepage2-docs">
         <div class="homepage2-doc-items">
           <div>
             <strong>Trade documents</strong>
-            <p>Commercial or proforma invoice, purchase order, contract, or shipping and customs documents.</p>
+            <p>Commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents.</p>
           </div>
           <div>
             <strong>CSV transaction records</strong>
@@ -4219,7 +4219,7 @@ function homeCardsHomepage2() {
         </div>
         <div class="card-footer">
           <div class="cta-cluster">
-            <button type="button" class="btn btn-gradient" onclick="startDocumentUploadWizard()">Upload documents</button>
+            <button type="button" class="btn btn-gradient" onclick="startDocumentUploadWizard()">Upload document</button>
           </div>
         </div>
       </div>

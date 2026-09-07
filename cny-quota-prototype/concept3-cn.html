@@ -2715,7 +2715,7 @@ const UNSHIPPED_LIMIT = 1000000;
 /* Concept 2 — unified upload history & quota breakdown (derived from UPLOAD_HISTORY) */
 const UPLOAD_METHODS = [
   { key:'trade', label:'Trade document', desc:'Such as an invoice, contract, purchase order, or customs document', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
-  { key:'template', label:'Transaction records using our template', desc:'A CSV you completed', ico:'upload', formats:'CSV · Max 50 MB' },
+  { key:'template', label:'Transaction record using our template', desc:'A CSV you completed', ico:'upload', formats:'CSV · Max 50 MB' },
   { key:'erp', label:'Transaction record exported from your business system', desc:'A CSV exported from your ERP, marketplace, accounting, or other business system', ico:'db', formats:'CSV · Max 50 MB' },
 ];
 
@@ -4017,7 +4017,7 @@ function homeCardsConcept2() {
               </div>
               <div class="card-footer">
                 <div class="cta-cluster">
-                  <button type="button" class="btn btn-gradient" onclick="state.connectOpen=true;render()">Connect stores</button>
+                  <button type="button" class="btn btn-gradient" onclick="state.connectOpen=true;render()">Connect store</button>
                 </div>
               </div>
             </article>
@@ -4028,7 +4028,7 @@ function homeCardsConcept2() {
               <div class="action-body">
                 <p class="support-lead">You can upload:</p>
                 <ul class="support-list">
-                  <li>Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents</li>
+                  <li>Trade documents – commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents</li>
                   <li>Transaction records in CSV — exported from your ERP, marketplace, or other business systems, or prepared using our template (<button type="button" class="inline-link" style="text-decoration:none" onclick="state.templatePanel=true;render()">download template</button>)</li>
                 </ul>
                 <p class="support-note">Your transactions also need to be eligible for CNY settlement, and your documents need to include certain details. <button type="button" class="inline-link" style="text-decoration:none" onclick="openDocumentRequirements()">Check before you upload</button></p>
@@ -4036,7 +4036,7 @@ function homeCardsConcept2() {
               <div class="card-footer">
                 <div class="cta-cluster">
                   <button type="button" class="history-link" onclick="go('upload-history')">View upload history</button>
-                  <button type="button" class="btn btn-gradient" onclick="startUploadWizard()">Upload documents</button>
+                  <button type="button" class="btn btn-gradient" onclick="startUploadWizard()">Upload document</button>
                 </div>
               </div>
             </article>
@@ -4052,7 +4052,7 @@ function homeCardsHomepage2() {
       </div>
       <div class="homepage2-split">
         <section class="homepage2-pane connect">
-          <h4>Connect a store</h4>
+          <h4>Connect stores</h4>
           <p>When you get a new payment to your store, we increase your quota automatically.</p>
           <div class="store-plain-list">
             <div class="store-plain-row">
@@ -4073,7 +4073,7 @@ function homeCardsHomepage2() {
           </div>
           <div class="card-footer">
             <div class="cta-cluster">
-              <button type="button" class="btn btn-gradient" onclick="state.connectOpen=true;render()">Connect stores</button>
+              <button type="button" class="btn btn-gradient" onclick="state.connectOpen=true;render()">Connect store</button>
             </div>
           </div>
         </section>
@@ -4082,7 +4082,7 @@ function homeCardsHomepage2() {
           <p>Use this option for your stores not on Amazon, Shopify, or Walmart. <button type="button" class="inline-link" onclick="state.templateType='marketplace';state.templatePanel=true;render()">Download our template</button> and upload records manually.</p>
           <div class="card-footer">
             <div class="cta-cluster">
-              <button type="button" class="btn btn-gradient" onclick="startMarketplaceTemplateWizard()">Upload records</button>
+              <button type="button" class="btn btn-gradient" onclick="startMarketplaceTemplateWizard()">Upload record</button>
             </div>
           </div>
         </section>
@@ -4092,13 +4092,13 @@ function homeCardsHomepage2() {
     <article class="action-card home-pair-card homepage2-card">
       <div class="homepage2-card-head">
         <h3>Goods or service trading</h3>
-        <p class="desc">Upload trade documents or CSV transaction records. We increase your quota based on the transaction amount.</p>
+        <p class="desc">Upload trade documents or CSV transaction records. We increase your quota based on the transaction amounts.</p>
       </div>
       <div class="homepage2-docs">
         <div class="homepage2-doc-items">
           <div>
             <strong>Trade documents</strong>
-            <p>Commercial or proforma invoice, purchase order, contract, or shipping and customs documents.</p>
+            <p>Commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents.</p>
           </div>
           <div>
             <strong>CSV transaction records</strong>
@@ -4107,7 +4107,7 @@ function homeCardsHomepage2() {
         </div>
         <div class="card-footer">
           <div class="cta-cluster">
-            <button type="button" class="btn btn-gradient" onclick="startDocumentUploadWizard()">Upload documents</button>
+            <button type="button" class="btn btn-gradient" onclick="startDocumentUploadWizard()">Upload document</button>
           </div>
         </div>
       </div>
@@ -9126,8 +9126,8 @@ const CN_UI_REPLACEMENTS = [
   [/AI is extracting contract and goods information\.?/g, '正在提取合同和货物信息。'], [/AI is extracting contract, goods, and logistics information\.?/g, '正在提取合同、货物和物流信息。'], [/AI is extracting transaction and logistics information\.?/g, '正在提取交易和物流信息。'], [/AI is extracting transaction and service information\.?/g, '正在提取交易和服务信息。'],
   [/Accepted file format/g, '支持的文件格式'],
   [/Check the result file for the exchange rate used in quota calculation\./g, '请在结果文件中查看额度计算所用汇率。'],
-  [/Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents/g, '贸易单据：商业发票或形式发票、采购订单、合同、运输及报关单据'],
-  [/Commercial or proforma invoice, purchase order, contract, or shipping and customs documents\./g, '商业发票或形式发票、采购订单、合同、运输及报关单据。'],
+  [/Trade documents – commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents/g, '贸易单据：商业发票或形式发票、采购订单、合同、运输及报关单据'],
+  [/Commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents\./g, '商业发票或形式发票、采购订单、合同、运输及报关单据。'],
   [/Transaction records exported from your ERP for automated field mapping\./g, '从 ERP 导出的交易记录，用于自动识别字段。'],
   [/You can use our template, or export them from your business platforms like ERP\./g, '可使用标准模板，也可从 ERP 等业务系统导出。'],
   [/ERP CSV files/g, 'ERP 文件'],
@@ -9166,7 +9166,7 @@ const CN_UI_REPLACEMENTS = [
   [/Order Status/g, '订单状态'], [/Remaining Unshipped Quota/g, '剩余未发货额度'], [/Available quota/g, '可用额度'], [/Total documents/g, '单据总数'], [/Quota added through uploads, with a breakdown by method and a full list of each upload\./g, '查看上传带来的额度、各方式明细及全部上传记录。'],
   [/Unshipped orders temporarily occupy quota\. To release it, filter/g, '未发货订单会暂时占用额度。如需释放，请筛选'], [/Supplement Logistics Documents/g, '补充物流材料'],
   [/Goods · Service · Drop Shipping/g, '货物 · 服务 · 代发货'], [/Goods · Service/g, '货物 · 服务'], [/download template/g, '下载模板'],
-  [/^([\s]*)Upload([\s]*)$/g, '$1上传$2'], [/Upload records/g, '上传记录'], [/Upload CSV/g, '上传 CSV'],
+  [/^([\s]*)Upload([\s]*)$/g, '$1上传$2'], [/Upload records/g, '上传记录'], [/Upload record/g, '上传记录'], [/Upload CSV/g, '上传 CSV'],
   [/CNY Quota Management/g, '人民币结汇额度管理'],
   [/Back to 人民币结汇额度管理/g, '返回人民币结汇额度管理'],
   [/Return to 人民币结汇额度管理/g, '返回人民币结汇额度管理'],
@@ -9186,11 +9186,11 @@ const CN_UI_REPLACEMENTS = [
   [/Pool quota/g, '额度明细'], [/All balances/g, '全部余额'],
   [/Connect a marketplace once, and eligible payments can increase your quota automatically\./g, '绑定电商平台后，符合条件的收款可自动提高额度。'],
   [/When you get a new payment to your store, we increase your quota automatically\./g, '店铺收到新收款后，额度会自动提高。'],
-  [/Connect stores you’re selling on/g, '绑定正在使用的店铺'], [/Connect Stores/g, '绑定店铺'], [/Connect stores/g, '绑定店铺'], [/Connect a Store/g, '绑定店铺'],
+  [/Connect stores you’re selling on/g, '绑定正在使用的店铺'], [/Connect Stores/g, '绑定店铺'], [/Connect stores/g, '绑定店铺'], [/Connect store/g, '绑定店铺'], [/Connect a Store/g, '绑定店铺'],
   [/(\d+) stores connected/g, '已绑定 $1 家店铺'], [/(\d+) connected/g, '已绑定 $1 家'], [/Not connected/g, '未绑定'], [/(\d+) to connect/g, '可绑定 $1 家'], [/No stores connected yet/g, '尚未绑定店铺'],
   [/Choose your e-commerce platform/g, '选择电商平台'], [/Creative Marketplace/g, '创意商品平台'], [/Social Commerce/g, '社交电商'],
   [/Upload your transaction documents/g, '上传交易材料'], [/Goods or service trading/g, '货物或服务贸易'], [/We’ll increase your quota based on the transaction amounts\./g, '额度将按交易金额提高。'],
-  [/Upload trade documents or CSV transaction records\. We increase your quota based on the transaction amount\./g, '上传贸易单据或 CSV 交易记录。额度将按交易金额提高。'],
+  [/Upload trade documents or CSV transaction records\. We increase your quota based on the transaction amounts\./g, '上传贸易单据或 CSV 交易记录。额度将按交易金额提高。'],
   [/You can upload:/g, '可上传：'],
   [/What was your transaction for\?/g, '这笔交易用于什么？'],
   [/Next step/g, '下一步'],
@@ -9245,7 +9245,7 @@ const CN_UI_REPLACEMENTS = [
   [/Check before you upload/g, '上传前请核对'],
   [/To be eligible for CNY settlement, your transactions and your document details both need to qualify\./g, '交易和单据信息均符合要求，才能进行人民币结汇。'], [/Learn requirements/g, '查看要求'],
   [/We support:/g, '支持以下材料：'],
-  [/Trade documents – commercial or proforma invoice, purchase order, contract, or shipping and customs documents/g, '贸易单据：商业发票或形式发票、采购订单、合同、运输及报关单据'],
+  [/Trade documents – commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents/g, '贸易单据：商业发票或形式发票、采购订单、合同、运输及报关单据'],
   [/CSV transaction records – exported from your business platform like ERP, or prepared using our template/g, 'CSV 交易记录：从 ERP 等业务平台导出，或使用标准模板填写'],
   [/Check the supported transactions before proceeding\./g, '请先查看支持的交易类型，再继续。'],
   [/Upload invoices, purchase orders, contracts, shipping, or customs documents\./g, '上传发票、采购订单、合同、运输或报关单据。'],
@@ -9551,7 +9551,7 @@ const CN_UI_REPLACEMENTS = [
   [/Draft saved\. You can continue it from the upload list\./g, '草稿已保存。可从上传列表继续。'], [/Select a transaction category before choosing a file\./g, '请先选择交易类别，再选择文件。'], [/Select a transaction category before submitting\./g, '提交前请选择交易类别。'], [/Select the marketplace you are uploading data from\./g, '请选择数据所属的电商平台。'],
   [/Update the file to include every missing required column, then upload it again\./g, '请补齐所有缺失的必填列，然后重新上传文件。'], [/Select the matching uploaded column, or replace the file with a corrected version\./g, '请选择对应的上传列，或替换为已修正的文件。'], [/Add item \(prototype\)/g, '添加商品（原型）'],
   [/All file types supported/g, '支持所有文件类型'], [/Max 50MB/g, '最大 50MB'], [/Max 50 MB/g, '最大 50 MB'],
-  [/Transaction records using our template/g, '使用模板填写的交易记录'], [/A CSV you completed/g, '已填写完成的 CSV'],
+  [/Transaction record using our template/g, '使用模板填写的交易记录'], [/A CSV you completed/g, '已填写完成的 CSV'],
   [/Transaction record exported from your business system/g, '从业务系统导出的交易记录'], [/A CSV exported from your ERP, marketplace, accounting, or other business system/g, '从 ERP、电商平台、财务或其他业务系统导出的 CSV'],
   [/(\d+) uploads/g, '$1 次上传'], [/(\d+) drafts?/g, '$1 个草稿'], [/(\d+) pending/g, '$1 个待处理'], [/Potential /g, '预计 '], [/Est\. /g, '预计 '], [/ of /g, ' / '],
   [/(\d+) selected/g, '已选择 $1 项'], [/High/g, '高'], [/Medium/g, '中'], [/Available/g, '可用'],
