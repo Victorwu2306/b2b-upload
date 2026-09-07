@@ -2646,9 +2646,9 @@ const UNSHIPPED_LIMIT = 1000000;
 
 /* Concept 2 — unified upload history & quota breakdown (derived from UPLOAD_HISTORY) */
 const UPLOAD_METHODS = [
-  { key:'trade', label:'Trade document', desc:'Upload goods or service trade documents (contracts, PI, CI) to release quota per transaction.', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
-  { key:'template', label:'Transaction record from our template (CSV file)', desc:'Fill in a standard transaction template and upload CSV to release quota in bulk.', ico:'upload', formats:'CSV · Max 50 MB' },
-  { key:'erp', label:'Transaction record exported from ERP (CSV file)', desc:'Export CSV from your ERP and upload for automated field mapping and quota release.', ico:'db', formats:'CSV · Max 50 MB' },
+  { key:'trade', label:'Trade document', desc:'Such as an invoice, contract, purchase order, or customs document', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
+  { key:'template', label:'Transaction records using our template', desc:'A CSV you completed', ico:'upload', formats:'CSV · Max 50 MB' },
+  { key:'erp', label:'Transaction record exported from your business system', desc:'A CSV exported from your ERP, marketplace, accounting, or other business system', ico:'db', formats:'CSV · Max 50 MB' },
 ];
 
 const UPLOAD_HISTORY = [
@@ -8742,7 +8742,6 @@ function viewWizardUpload() {
     ${uploadFlowVersionSelector(w)}
     <div>
       <h2 style="font-size:20px;font-weight:700">What would you like to upload?</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Choose a file type to continue. Each path uses its own review and submission steps.</p>
     </div>
     <div class="upload-type-grid" style="grid-template-columns:repeat(${methods.length},minmax(0,1fr))">
       ${methods.map(m => `
@@ -9068,7 +9067,7 @@ const CN_UI_REPLACEMENTS = [
   [/Select a business type to enable document upload\./g, '选择业务类型后才能上传单据。'],
   [/Business-to-business trade documents — Goods and Service\. Upload documents to release CNY quota per transaction\./g, '企业间货物或服务贸易单据。上传后可按交易释放人民币额度。'],
   [/Track quota from uploaded trade documents and take action when needed\./g, '查看贸易单据带来的额度，并在需要时处理。'], [/Document List/g, '单据列表'], [/Quota from this channel/g, '此渠道带来的额度'], [/Unshipped Settlement Quota/g, '未发货结算额度'], [/Releasable quota/g, '可释放额度'],
-  [/Upload goods or service trade documents \(contracts, PI, CI\) to release quota per transaction\./g, '上传货物或服务贸易单据（合同、PI、CI），按交易释放额度。'], [/Trade document/g, '贸易单据'],
+  [/Such as an invoice, contract, purchase order, or customs document/g, '例如发票、合同、采购订单或报关单据'], [/Trade document/g, '贸易单据'],
   [/The templates we provide are/g, '模板为'], [/Upload the completed CSV using the same column headers\./g, '请保留原表头，并上传填写好的 CSV。'],
   [/B2B purchases or sales of physical goods supported by trade documents\./g, '通过贸易单据证明的 B2B 实体商品采购或销售。'], [/Supported transactions/g, '支持的交易类型'], [/supported transactions/g, '支持的交易类型'], [/View supported marketplaces/g, '查看支持的电商平台'],
   [/Marketplace template & supported marketplaces/g, '电商平台模板与支持列表'], [/Check the result file for the exchange rate/g, '请在结果文件中查看汇率'], [/Check the/g, '请先查看'], [/before proceeding\./g, '，再继续。'],
@@ -9475,7 +9474,7 @@ const CN_UI_REPLACEMENTS = [
   [/Supported: shipping receipt, logistics invoice, tracking document, other shipment evidence\./g, '支持发货凭证、物流发票、跟踪文件及其他运输证明。'], [/Upload logistics evidence/g, '上传物流凭证'], [/Analyzing logistics documents…/g, '正在分析物流材料…'], [/Extracting shipment and tracking information/g, '正在提取发货和物流跟踪信息'],
   [/logistics records extracted by AI\. Review and edit if needed\./g, '条物流记录已自动提取。请核对并按需修改。'], [/Logistics Method/g, '物流方式'], [/Shipment Date/g, '发货日期'], [/Related Item/g, '相关商品'], [/Submit logistics documents/g, '提交物流材料'],
   [/Draft saved\. You can continue it from the upload list\./g, '草稿已保存。可从上传列表继续。'], [/Untitled trade document/g, '未命名贸易单据'], [/Untitled template CSV/g, '未命名模板 CSV'], [/Untitled ERP CSV/g, '未命名 ERP 文件'], [/Untitled upload/g, '未命名上传'],
-  [/What would you like to upload\?/g, '上传前请先查看支持的交易类型'], [/Choose a file type to continue\. Each path uses its own review and submission steps\./g, '选择文件类型后继续'],
+  [/What would you like to upload\?/g, '上传前请先查看支持的交易类型'],
   [/Download and prepare the standard CSV template before uploading\./g, '上传前请下载并填写标准 CSV 模板。'], [/ERP CSV requirements/g, 'ERP 文件要求'],
   [/Upload transaction records/g, '上传交易记录'], [/Select a trade document or an ERP export to begin\./g, '选择贸易单据或 ERP 导出文件后开始。'], [/Select trade documents, a template CSV, or an ERP export to begin\./g, '选择贸易单据、模板 CSV 或 ERP 导出文件后开始。'],
   [/Select file type/g, '选择文件类型'], [/Upload & review/g, '上传并检查'], [/Confirm Selection/g, '确认选择'], [/Confirm/g, '确认'], [/Previous/g, '上一步'], [/Next/g, '下一步'], [/Submit/g, '提交'], [/Cancel/g, '取消'], [/Replace/g, '替换'], [/Upload file/g, '上传文件'],
@@ -9484,8 +9483,8 @@ const CN_UI_REPLACEMENTS = [
   [/Draft saved\. You can continue it from the upload list\./g, '草稿已保存。可从上传列表继续。'], [/Select a transaction category before choosing a file\./g, '请先选择交易类别，再选择文件。'], [/Select a transaction category before submitting\./g, '提交前请选择交易类别。'], [/Select the marketplace you are uploading data from\./g, '请选择数据所属的电商平台。'],
   [/Update the file to include every missing required column, then upload it again\./g, '请补齐所有缺失的必填列，然后重新上传文件。'], [/Select the matching uploaded column, or replace the file with a corrected version\./g, '请选择对应的上传列，或替换为已修正的文件。'], [/Add item \(prototype\)/g, '添加商品（原型）'],
   [/All file types supported/g, '支持所有文件类型'], [/Max 50MB/g, '最大 50MB'], [/Max 50 MB/g, '最大 50 MB'],
-  [/Transaction record from our template \(CSV file\)/g, '使用模板填写的交易记录'], [/Fill in a standard transaction template and upload CSV to release quota in bulk\./g, '填写标准交易模板并上传 CSV，可批量释放额度。'],
-  [/Transaction record exported from ERP/g, '从 ERP 导出的交易记录'], [/Export transaction records from your ERP and upload them for automated field mapping and quota release\./g, '从 ERP 导出交易记录并上传，系统会自动识别字段并释放额度。'],
+  [/Transaction records using our template/g, '使用模板填写的交易记录'], [/A CSV you completed/g, '已填写完成的 CSV'],
+  [/Transaction record exported from your business system/g, '从业务系统导出的交易记录'], [/A CSV exported from your ERP, marketplace, accounting, or other business system/g, '从 ERP、电商平台、财务或其他业务系统导出的 CSV'],
   [/(\d+) uploads/g, '$1 次上传'], [/(\d+) drafts?/g, '$1 个草稿'], [/(\d+) pending/g, '$1 个待处理'], [/Potential /g, '预计 '], [/Est\. /g, '预计 '], [/ of /g, ' / '],
   [/(\d+) selected/g, '已选择 $1 项'], [/High/g, '高'], [/Medium/g, '中'], [/Available/g, '可用'],
   [/^([\s]*)Yes([\s]*)$/g, '$1是$2'], [/^([\s]*)No([\s]*)$/g, '$1否$2'], [/^([\s]*)Table([\s]*)$/g, '$1表格$2'], [/^([\s]*)Cards([\s]*)$/g, '$1卡片$2'],

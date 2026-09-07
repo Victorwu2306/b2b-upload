@@ -2622,9 +2622,9 @@ const UNSHIPPED_LIMIT = 1000000;
 
 /* Concept 2 — unified upload history & quota breakdown (derived from UPLOAD_HISTORY) */
 const UPLOAD_METHODS = [
-  { key:'trade', label:'Trade document', desc:'Upload goods or service trade documents (contracts, PI, CI) to release quota per transaction.', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
-  { key:'template', label:'Transaction record from our template (CSV file)', desc:'Fill in a standard transaction template and upload CSV to release quota in bulk.', ico:'upload', formats:'CSV · Max 50 MB' },
-  { key:'erp', label:'Transaction record exported from ERP (CSV file)', desc:'Export CSV from your ERP and upload for automated field mapping and quota release.', ico:'db', formats:'CSV · Max 50 MB' },
+  { key:'trade', label:'Trade document', desc:'Such as an invoice, contract, purchase order, or customs document', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
+  { key:'template', label:'Transaction records using our template', desc:'A CSV you completed', ico:'upload', formats:'CSV · Max 50 MB' },
+  { key:'erp', label:'Transaction record exported from your business system', desc:'A CSV exported from your ERP, marketplace, accounting, or other business system', ico:'db', formats:'CSV · Max 50 MB' },
 ];
 
 const UPLOAD_HISTORY = [
@@ -8718,7 +8718,6 @@ function viewWizardUpload() {
     ${uploadFlowVersionSelector(w)}
     <div>
       <h2 style="font-size:20px;font-weight:700">What would you like to upload?</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Choose a file type to continue. Each path uses its own review and submission steps.</p>
     </div>
     <div class="upload-type-grid" style="grid-template-columns:repeat(${methods.length},minmax(0,1fr))">
       ${methods.map(m => `
