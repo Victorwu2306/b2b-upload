@@ -1131,21 +1131,28 @@ table.data tr:hover td { background: var(--muted); }
 .req-type-accordion .mapping-c2-accordion-body { padding:0 16px 16px; }
 .req-h-table-wrap { border:1px solid var(--border); border-radius:8px; overflow:hidden; background:#fff; }
 .req-h-table-scroll { overflow-x:auto; }
-.req-h-table { min-width:100%; border-collapse:collapse; font-size:12px; }
-.req-h-table th, .req-h-table td {
-  padding:12px 14px; vertical-align:top; text-align:left;
-  border-bottom:1px solid #f2f2f2; white-space:normal;
-  min-width:180px; max-width:260px;
+table.data.req-h-table {
+  width:100%; min-width:0; table-layout:fixed; border-collapse:collapse; font-size:12px;
 }
-.req-h-table thead th { background:#f7f3ff; color:#252526; font-weight:600; }
-.req-h-table .req-h-stub {
-  position:sticky; left:0; z-index:2;
-  min-width:120px; max-width:140px; width:120px;
+table.data.req-h-table th,
+table.data.req-h-table td {
+  padding:8px 10px; vertical-align:top; text-align:left;
+  border-bottom:1px solid #f2f2f2; white-space:normal;
+  overflow-wrap:anywhere; word-break:break-word; line-height:1.4;
+  min-width:0; max-width:none;
+}
+table.data.req-h-table thead th { background:#f7f3ff; color:#252526; font-size:12px; font-weight:600; }
+table.data.req-h-table .req-h-stub-col { width:88px; }
+table.data.req-h-table .req-h-stub {
+  position:sticky; left:0; z-index:2; width:88px;
   background:#f7f3ff; color:#252526; font-weight:600;
   box-shadow:4px 0 8px rgba(28,28,46,.06);
 }
-.req-h-table tbody tr:last-child th,
-.req-h-table tbody tr:last-child td { border-bottom:none; }
+table.data.req-h-table .mono { white-space:normal; overflow-wrap:anywhere; word-break:break-word; }
+table.data.req-h-table .detail-with-chip { align-items:flex-start; }
+table.data.req-h-table tbody tr:last-child th,
+table.data.req-h-table tbody tr:last-child td { border-bottom:none; }
+table.data.req-h-table tr:hover td { background:transparent; }
 .ai-badge {
   display:inline-flex; align-items:center; gap:3px; height:18px; padding:0 6px;
   border-radius:999px; background:var(--secondary); border:1px solid rgba(91,59,232,.3);
@@ -1864,6 +1871,10 @@ body.concept-3 {
   background:#f7f3ff; color:#252526; font-size:13px; font-weight:600; border-bottom:1px solid #ede8f5;
 }
 .concept-3 table.data td { padding:14px 16px; border-bottom-color:#f2f2f2; }
+.concept-3 table.data.req-h-table th,
+.concept-3 table.data.req-h-table td {
+  padding:8px 10px; vertical-align:top; white-space:normal; overflow-wrap:anywhere; word-break:break-word; font-size:12px;
+}
 .concept-3 .table-footer { padding:16px; background:#fff; }
 .concept-3 .filters { gap:16px; }
 .concept-3 .filter-field { gap:8px; }
@@ -2443,6 +2454,7 @@ function requiredDetailsHorizontalTable(fields) {
   const descCells = items.map(f => `<td style="color:var(--muted-foreground)">${requiredDetailDescriptionHtml(f)}</td>`).join('');
   const exampleCells = items.map(f => `<td class="mono">${f.example || ''}</td>`).join('');
   return `<div class="req-h-table-wrap"><div class="req-h-table-scroll"><table class="data req-h-table">
+    <colgroup><col class="req-h-stub-col">${items.map(() => '<col>').join('')}</colgroup>
     <thead><tr><th class="req-h-stub">${tradeFieldLabel('Detail', '字段')}</th>${labelCells}</tr></thead>
     <tbody>
       <tr><th class="req-h-stub">${tradeFieldLabel('Description', '说明')}</th>${descCells}</tr>
