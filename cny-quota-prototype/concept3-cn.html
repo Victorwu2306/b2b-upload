@@ -2973,6 +2973,7 @@ function resetWiz(kind) {
     erp2UnrecognizedSourceIds:[], erp2SupplementSources:[], erp2SupplementTargetNames:[], erp2SupplementMaps:{},
     erp2ReplacementState:'empty', erp2ReplacementFileName:null,
     erp2PreviousFileName:null, erp2ReusedMappings:0, erp2NewHeaders:[], erp2NoneSelections:{},
+    erpReplacementSources:null, erp2ReplacementOutcome:'', erpCorrectedPickerOpen:false,
     erp3Stage:1, erp3NeedsReplacement:false, erp3ReplacementState:'empty',
     erpResultRows:null, erpTableEditing:false,
     mappings: Object.assign({}, ERP_INCOMPLETE_MAP),
@@ -5294,8 +5295,144 @@ function erpScenarioControl() {
   </div>`;
 }
 function getERPSources(w) {
+  if (w && Array.isArray(w.erpReplacementSources) && w.erpReplacementSources.length) return w.erpReplacementSources;
   return getERPScenarioSources((w && w.erpScenario) || 'recoverable-missing');
 }
+function erpUnrecognizedExtraForField(name, index) {
+  const field = ERP_REQUIRED_FIELDS.find(item => item.name === name) || {};
+  const aliases = {
+    order_id: { colName:'ref_code', sample:'ERP-2026-001' },
+    supplier_name: { colName:'vendor_label', sample:'Shenzhen Tech Co.' },
+    buyer_name: { colName:'party_label', sample:'Global Trade LLC' },
+    sku: { colName:'item_ref', sample:'PROD-4829' },
+    quantity: { colName:'units_raw', sample:'500' },
+    unit_price: { colName:'amt_raw', sample:'38.50' },
+    currency: { colName:'fx_unit', sample:'USD' },
+    total_amount: { colName:'sum_val', sample:'19250.00' },
+    transaction_date: { colName:'dt_raw', sample:'2026-07-15' },
+    trade_type: { colName:'cat_raw', sample:'Goods' },
+  };
+  const extra = aliases[name] || { colName:(name || 'col') + '_raw', sample:field.example || '—' };
+  return { id:'n' + (index + 1), index:index + 1, colName:extra.colName, sample:extra.sample, ai:false };
+}
+function applyERPCorrectedUpload(w, outcome) {
+  const missingFields = (w.erp2NewHeaders && w.erp2NewHeaders.length)
+    ? w.erp2NewHeaders.slice()
+    : getERPMappingStats(w).missing.map(field => field.name);
+  const previousFileName = w.fileName || 'erp_missing_columns.csv';
+  const previousSources = getERPSources(w).map(source => Object.assign({}, source));
+  const cachedByColumn = {};
+  previousSources.forEach(source => {
+    cachedByColumn[source.colName] = (w.mappings && w.mappings[source.id]) || '';
+  });
+  const nextMappings = {};
+  previousSources.forEach(source => {
+    nextMappings[source.id] = cachedByColumn[source.colName] || '';
+  });
+  let nextSources;
+  if (outcome === 'unrecognized') {
+    const extras = missingFields.map((name, index) => erpUnrecognizedExtraForField(name, previousSources.length + index));
+    nextSources = reindexERPSources(previousSources.concat(extras));
+    extras.forEach(extra => { nextMappings[extra.id] = ''; });
+  } else {
+    const added = missingFields.map(name => {
+      const source = ERP_MAP_SOURCES.find(item => ERP_DEFAULT_MAP[item.id] === name);
+      return source ? Object.assign({}, source) : { id:'add-' + name, colName:name, sample:(ERP_REQUIRED_FIELDS.find(field => field.name === name) || {}).example || '', ai:true };
+    }).filter(source => !previousSources.some(existing => existing.id === source.id));
+    nextSources = reindexERPSources(previousSources.concat(added));
+    added.forEach(source => {
+      nextMappings[source.id] = ERP_DEFAULT_MAP[source.id] || String(source.id).replace(/^add-/, '');
+    });
+  }
+  w.erpReplacementSources = nextSources;
+  w.mappings = nextMappings;
+  w.fileName = outcome === 'unrecognized' ? 'erp_missing_columns_unrecognized.csv' : 'erp_missing_columns_corrected.csv';
+  w.erp2PreviousFileName = previousFileName;
+  w.erp2ReplacementFileName = w.fileName;
+  w.erp2ReusedMappings = Object.values(cachedByColumn).filter(Boolean).length;
+  w.erp2NewHeaders = missingFields.slice();
+  w.erp2ReplacementOutcome = outcome;
+  if (!w.erp2NoneSelections) w.erp2NoneSelections = {};
+  if (!w.manualSelections) w.manualSelections = {};
+  missingFields.forEach(name => {
+    delete w.erp2NoneSelections[name];
+    delete w.manualSelections[name];
+  });
+  w.mappingAttempted = false;
+}
+function openERPCorrectedFilePicker() {
+  const w = state.wiz; if (!w) return;
+  if (!(w.erp2NewHeaders && w.erp2NewHeaders.length)) {
+    w.erp2NewHeaders = getERPMappingStats(w).missing.map(field => field.name);
+  }
+  w.erpCorrectedPickerOpen = true;
+  render();
+}
+function closeERPCorrectedFilePicker() {
+  const w = state.wiz; if (!w) return;
+  w.erpCorrectedPickerOpen = false;
+  render();
+}
+function chooseERPCorrectedFile(outcome) {
+  const w = state.wiz; if (!w) return;
+  w.erpCorrectedPickerOpen = false;
+  if (w.erpFlowVersion === 'v3') simulateERP3CorrectedUpload(outcome);
+  else if (w.erpFlowVersion === 'v1') simulateErp(null, outcome);
+  else simulateERP2CorrectedUpload(outcome);
+}
+function erpCorrectedFilePicker(w) {
+  if (!w || !w.erpCorrectedPickerOpen) return '';
+  const names = formatMissingFieldsList(w.erp2NewHeaders || []);
+  return `<div class="modal-backdrop open" style="align-items:center" onclick="if(event.target===this)closeERPCorrectedFilePicker()">
+    <div class="modal" style="width:560px;max-width:92vw">
+      <div class="modal-h"><div><h3>Choose a sample file</h3><p>Simulate a corrected CSV after adding the missing columns.</p></div><button type="button" onclick="closeERPCorrectedFilePicker()">${I.x}</button></div>
+      <div class="modal-b" style="display:flex;flex-direction:column;gap:10px">
+        <button type="button" class="source-card" style="text-align:left;width:100%;flex-direction:row;align-items:flex-start;padding:14px" onclick="chooseERPCorrectedFile('mapped')">
+          <div class="ico" style="margin-bottom:0;flex:0 0 40px">${I.check}</div>
+          <div style="min-width:0"><strong class="mono">erp_missing_columns_corrected.csv</strong><p style="font-size:12px;color:var(--muted-foreground);margin-top:3px">New columns mapped${names?` · ${names} recognized automatically`:''}</p></div>
+        </button>
+        <button type="button" class="source-card" style="text-align:left;width:100%;flex-direction:row;align-items:flex-start;padding:14px" onclick="chooseERPCorrectedFile('unrecognized')">
+          <div class="ico" style="margin-bottom:0;flex:0 0 40px">${I.alert}</div>
+          <div style="min-width:0"><strong class="mono">erp_missing_columns_unrecognized.csv</strong><p style="font-size:12px;color:var(--muted-foreground);margin-top:3px">Unable to recognize new columns${names?` · ${names} still need matching`:''}</p></div>
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+function erpReplacementNewColumnsSection(w) {
+  const stats = getERPMappingStats(w);
+  const newHeaders = (w.erp2NewHeaders || []).filter(Boolean);
+  if (!newHeaders.length || !w.erp2ReplacementOutcome) return '';
+  const unanswered = getERPUnansweredManualFields(w, newHeaders);
+  const unrecognized = w.erp2ReplacementOutcome === 'unrecognized' && unanswered.length > 0;
+  const table = erp2TargetMappingTable(newHeaders, stats.sources, w.mappings, 'updateERP2TargetMapping', unrecognized);
+  if (unrecognized) {
+    return `<div class="erp2-missing-card">
+        <div class="erp2-missing-card-h">
+          <h3>Unable to recognize the new columns</h3>
+          <p>The updated file includes the added columns, but we could not match them automatically. Select the correct column for each field.</p>
+          <div class="erp2-required-headers">${newHeaders.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
+        </div>
+      </div>
+      ${table}`;
+  }
+  return `<div class="mapping-c2-success">${I.check}<div><strong>New columns mapped</strong><p>The corrected file replaced the previous upload. Existing mappings were reused, and the new columns were mapped.</p></div></div>
+      ${table}`;
+}
+function erpReplacementResultHTML(w) {
+  const stats = getERPMappingStats(w);
+  const unanswered = getERPUnansweredManualFields(w, w.erp2NewHeaders || []);
+  const unrecognized = w.erp2ReplacementOutcome === 'unrecognized' && unanswered.length > 0;
+  return `<div class="erp2-stage">
+    <div class="erp2-stage-head">
+      <h2>Update and re-upload</h2>
+      <p>${unrecognized ? 'We reviewed the new columns in your file.' : 'The missing fields have been added and matched.'}</p>
+    </div>
+    ${erp2FileSummary(w, stats)}
+    ${erpReplacementNewColumnsSection(w)}
+  </div>`;
+}
+
 function getERPMappingStats(w) {
   const sources = getERPSources(w);
   const mappableSources = sources.filter(source => !source.unmappable);
@@ -5356,13 +5493,17 @@ function replaceERPFile() {
   w.erp2ReplacementFileName = null;
   w.erp2PreviousFileName = null;
   w.erp2ReusedMappings = 0;
-  w.erp2NewHeaders = [];
+  w.erp2NewHeaders = getERPMappingStats(w).missing.map(field => field.name);
   w.erp2NoneSelections = {};
+  w.erpReplacementSources = null;
+  w.erp2ReplacementOutcome = '';
+  w.erpCorrectedPickerOpen = false;
   if (w.erpFlowVersion === 'v2') w.erp2Stage = 1;
   else if (w.erpFlowVersion === 'v3') { w.erp3Stage = 1; w.erp3NeedsReplacement = false; w.erp3ReplacementState = 'empty'; }
   else w.step = 2;
   render();
 }
+
 function openERPReplaceDialog() {
   const w = state.wiz; if (!w) return;
   w.erpReplaceOpen = true;
@@ -5405,44 +5546,36 @@ function toggleERPMappedColumns() {
   w.mappingExpanded = !w.mappingExpanded;
   render();
 }
-function simulateErp(incomingFileName) {
+function simulateErp(incomingFileName, outcome) {
   const w = state.wiz; if (!w) return;
+  if (w.isReplacement && outcome !== 'mapped' && outcome !== 'unrecognized') {
+    if (!(w.erp2NewHeaders && w.erp2NewHeaders.length)) {
+      w.erp2NewHeaders = getERPMappingStats(w).missing.map(field => field.name);
+    }
+    openERPCorrectedFilePicker();
+    return;
+  }
   w.erpResultRows = null;
   w.erpTableEditing = false;
-  const scenarioFileName = getERPScenarioFileName(w.erpScenario);
-  w.fileName = typeof incomingFileName === 'string' && incomingFileName
-    ? incomingFileName
-    : w.isReplacement
-      ? (w.erpFlowVersion !== 'v1' ? 'drop_shipping_orders_Q3_corrected.csv' : 'drop_shipping_orders_Q3_corrected.xlsx')
+  if (!w.isReplacement) {
+    const scenarioFileName = getERPScenarioFileName(w.erpScenario);
+    w.fileName = typeof incomingFileName === 'string' && incomingFileName
+      ? incomingFileName
       : (w.erpFlowVersion !== 'v1' ? scenarioFileName.replace(/\.xlsx$/i,'.csv') : scenarioFileName);
+  }
   w.dsState = 'processing'; render();
   setTimeout(() => {
     if (state.wiz!==w) return;
     if (w.isReplacement) {
-      const restored = {};
-      let cachedMatches = 0;
-      ERP_MAP_SOURCES.forEach(source => {
-        if (w.mappingCache && Object.prototype.hasOwnProperty.call(w.mappingCache, source.colName)) {
-          restored[source.id] = w.mappingCache[source.colName];
-          cachedMatches += 1;
-        } else {
-          restored[source.id] = ERP_DEFAULT_MAP[source.id] || '';
-        }
-      });
-      Object.entries(ERP_DEFAULT_MAP).forEach(([id, target]) => { restored[id] = target; });
-      const requiredTargets = Object.values(ERP_DEFAULT_MAP);
-      Object.keys(restored).forEach(id => {
-        if (!id.startsWith('s') && requiredTargets.includes(restored[id])) restored[id] = '';
-      });
-      w.mappings = restored;
-      w.cachedMatches = cachedMatches;
-      w.restoredMappings = Object.values(restored).filter(Boolean).length;
+      applyERPCorrectedUpload(w, outcome);
+      w.cachedMatches = w.erp2ReusedMappings || 0;
+      w.restoredMappings = Object.values(w.mappings || {}).filter(Boolean).length;
       w.erpFileVersion = 'corrected';
-      w.erpScenario = 'unmapped-only';
-      w.manualSelections = {};
-      w.manualResolutionFields = [];
       w.missingResolvedManually = false;
     } else {
+      w.erpReplacementSources = null;
+      w.erp2ReplacementOutcome = '';
+      w.erp2NewHeaders = [];
       w.mappings = getERPScenarioMappings(w.erpScenario);
       w.cachedMatches = 0;
       w.restoredMappings = 0;
@@ -5483,6 +5616,7 @@ function simulateErp(incomingFileName) {
     render();
   }, 2000);
 }
+
 function attemptERPNext() {
   const w = state.wiz; if (!w) return;
   const stats = getERPMappingStats(w);
@@ -5885,8 +6019,13 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
       const field = ERP_REQUIRED_FIELDS.find(item => item.name === targetName);
       const selectedSource = erp2TargetSource(targetName, availableSources, mappings);
       const noneSelected = !!(manualStage && state.wiz && state.wiz.erp2NoneSelections && state.wiz.erp2NoneSelections[targetName]);
+      const replacementReview = !!(state.wiz && (state.wiz.erp2ReplacementState === 'done' || state.wiz.erp3ReplacementState === 'done') && state.wiz.erp2ReplacementOutcome === 'unrecognized');
       const showError = !!(manualStage && state.wiz && state.wiz.mappingAttempted && !selectedSource && !noneSelected);
-      const rowState = selectedSource ? (manualStage ? 'manually-matched' : '') : noneSelected ? 'none' : 'unmapped';
+      const rowState = selectedSource
+        ? (manualStage && state.wiz && state.wiz.manualSelections && state.wiz.manualSelections[targetName] ? 'manually-matched' : '')
+        : noneSelected ? 'none'
+        : replacementReview ? 'unrecognized'
+        : 'unmapped';
       const status = mappingStatusFromState(rowState, selectedSource);
       const selectHTML = `<select class="${showError?'invalid':''}" aria-label="Choose an uploaded file column for ${targetName}" onchange="${updater}('${targetName}',this.value)">
               <option value="">Select a column from your file</option>
@@ -5902,7 +6041,7 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
           <strong>${erpRequiredLabel(targetName)}</strong>
           <small>${field ? field.desc : 'Required system field'}</small>
         </div>
-        ${mappingControlHTML(selectHTML, status.kind, status.label, showError?`<div class="field-error">${I.alert}<span>Select a file column or None of above.</span></div>`:'')}
+        ${mappingControlHTML(selectHTML, status.kind, status.label, showError?`<div class="field-error">${I.alert}<span>${replacementReview?'Unable to recognize this column. Select a matching column from your file.':'Select a file column or None of above.'}</span></div>`:'')}
         ${mapSampleCell(selectedSource ? selectedSource.sample : '')}
       </div>`;
     }).join('')}
@@ -5924,7 +6063,11 @@ function updateERP2TargetMapping(targetName, sourceId) {
   Object.keys(w.manualSelections).forEach(name => {
     if (name === targetName || w.manualSelections[name] === actualSourceId) delete w.manualSelections[name];
   });
-  const isManualStage = w.erpFlowVersion === 'v2' ? w.erp2Stage === 3 : w.erpFlowVersion === 'v3' ? w.erp3Stage === 2 : w.step === 2;
+  const isManualStage = w.erpFlowVersion === 'v2'
+    ? (w.erp2Stage === 3 || (w.erp2Stage === 4 && w.erp2ReplacementState === 'done'))
+    : w.erpFlowVersion === 'v3'
+      ? (w.erp3Stage === 2 || (w.erp3Stage === 3 && w.erp3ReplacementState === 'done'))
+      : w.step === 2;
   if (isManualStage && actualSourceId) w.manualSelections[targetName] = actualSourceId;
   w.missingResolvedManually = Object.keys(w.manualSelections).length > 0;
   w.mappingAttempted = false;
@@ -6003,11 +6146,11 @@ function stepERP2Upload(w) {
           <p style="font-size:13px;color:var(--muted-foreground)">CSV · Max 50 MB · Keep the original header row.</p>
         </div>
       </div>
-      <div class="upload-zone" style="cursor:pointer;padding:48px 32px" onclick="${w.isReplacement?'simulateErp()':'openUploadV2SamplePicker()'}">
+      <div class="upload-zone" style="cursor:pointer;padding:48px 32px" onclick="${w.isReplacement?'openERPCorrectedFilePicker()':'openUploadV2SamplePicker()'}">
         <div style="color:var(--muted-foreground);margin-bottom:12px">${I.upload}</div>
         <p style="font-size:15px;font-weight:600">Upload ERP CSV</p>
         <p style="font-size:13px;color:var(--muted-foreground);margin:6px 0 14px">CSV · Max 50 MB</p>
-        <button type="button" class="btn btn-sm btn-primary" onclick="event.stopPropagation();${w.isReplacement?'simulateErp()':'openUploadV2SamplePicker()'}">Upload file</button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="event.stopPropagation();${w.isReplacement?'openERPCorrectedFilePicker()':'openUploadV2SamplePicker()'}">Upload file</button>
       </div>`}
   </div>`;
 }
@@ -6074,44 +6217,18 @@ function stepERP2Unrecognized(w) {
     ${erp2TargetMappingTable(resolutionNames, unrecognizedSources, w.mappings, 'updateERP2TargetMapping', true)}
   </div>`;
 }
-function simulateERP2CorrectedUpload() {
+function simulateERP2CorrectedUpload(outcome) {
   const w = state.wiz; if (!w || w.erpFlowVersion !== 'v2') return;
-  const missingFields = getERPMappingStats(w).missing.map(field => field.name);
-  const previousFileName = w.fileName || 'erp_missing_columns.csv';
-  const cachedByColumn = {};
-  getERPSources(w).forEach(source => { cachedByColumn[source.colName] = (w.mappings && w.mappings[source.id]) || ''; });
+  if (outcome !== 'mapped' && outcome !== 'unrecognized') { openERPCorrectedFilePicker(); return; }
+  if (!(w.erp2NewHeaders && w.erp2NewHeaders.length)) {
+    w.erp2NewHeaders = getERPMappingStats(w).missing.map(field => field.name);
+  }
   w.erp2ReplacementState = 'processing';
   render();
   setTimeout(() => {
     if (state.wiz !== w) return;
-    const nextMappings = {};
-    const usedTargets = new Set();
-    ERP_MAP_SOURCES.forEach(source => {
-      const cachedTarget = cachedByColumn[source.colName] || '';
-      if (cachedTarget) { nextMappings[source.id] = cachedTarget; usedTargets.add(cachedTarget); }
-    });
-    ERP_MAP_SOURCES.forEach(source => {
-      if (Object.prototype.hasOwnProperty.call(nextMappings,source.id)) return;
-      const target = ERP_DEFAULT_MAP[source.id] || '';
-      nextMappings[source.id] = target && !usedTargets.has(target) ? target : '';
-      if (nextMappings[source.id]) usedTargets.add(nextMappings[source.id]);
-    });
-    w.erp2PreviousFileName = previousFileName;
-    w.erp2ReplacementFileName = 'erp_missing_columns_corrected.csv';
-    w.fileName = w.erp2ReplacementFileName;
-    w.erp2ReusedMappings = Object.values(cachedByColumn).filter(Boolean).length;
-    w.erp2NewHeaders = missingFields.slice();
-    w.erpScenario = 'unmapped-only';
-    w.mappings = nextMappings;
+    applyERPCorrectedUpload(w, outcome);
     w.erp2ReplacementState = 'done';
-    w.erp2SupplementState = 'empty';
-    w.erp2SupplementFileName = null;
-    w.erp2SupplementedFields = [];
-    w.erp2SupplementSources = [];
-    w.erp2SupplementTargetNames = [];
-    w.erp2SupplementMaps = {};
-    w.manualResolutionFields = [];
-    w.erp2NoneSelections = {};
     const stats = getERPMappingStats(w);
     w.erp2IdentifiedSourceIds = stats.mapped.map(source => source.id);
     w.erp2IdentifiedTargetNames = Array.from(new Set(stats.mapped.map(source => w.mappings[source.id]).filter(Boolean)));
@@ -6119,7 +6236,9 @@ function simulateERP2CorrectedUpload() {
     render();
   }, 1200);
 }
+
 function stepERP2Missing(w) {
+  if (w.erp2ReplacementState === 'done') return erpReplacementResultHTML(w);
   const stats = getERPMappingStats(w);
   const missingNames = stats.missing.map(field => field.name);
   if (!missingNames.length) {
@@ -6139,22 +6258,23 @@ function stepERP2Missing(w) {
       <div class="erp2-missing-card-h">
         <h3>Details about the ${formatMissingFieldsList(missingNames)} are missing</h3>
         <p>Add the missing headers to your file, complete the new columns, and submit your updated file again.</p>
-        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${erpRequiredLabel(name)}</span>`).join('')}</div>
+        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
       </div>
       <div class="erp2-supplement-body">
         <div class="erp2-draft-note">${I.info}<p>If you’ll complete the file later, save your progress as a draft for now.</p></div>
         ${w.erp2ReplacementState === 'processing' ? `
           <div class="upload-zone"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing the corrected file and reusing previous mappings…</p></div>` : `
-          <div class="upload-zone" style="cursor:pointer" onclick="simulateERP2CorrectedUpload()">
+          <div class="upload-zone" style="cursor:pointer" onclick="openERPCorrectedFilePicker()">
             <div style="color:var(--muted-foreground);margin-bottom:10px">${I.upload}</div>
             <p style="font-size:15px;font-weight:600">Upload transaction document</p>
             <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include all original columns plus the ${formatMissingFieldsList(missingNames)} columns.</p>
-            <button type="button" class="btn btn-primary" onclick="event.stopPropagation();simulateERP2CorrectedUpload()">Choose file</button>
+            <button type="button" class="btn btn-primary" onclick="event.stopPropagation();openERPCorrectedFilePicker()">Choose file</button>
           </div>`}
       </div>
     </div>
   </div>`;
 }
+
 function erp2Steps(w) {
   const stats = getERPMappingStats(w);
   const steps = [
@@ -6244,7 +6364,7 @@ function viewWizardERP2(w) {
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body:`<div style="display:flex;flex-direction:column;gap:20px">${versionControl}${body}</div>`,
     footer:navigation,
-  }) + erpExampleModal() + uploadV2SamplePicker(w);
+  }) + erpExampleModal() + uploadV2SamplePicker(w) + erpCorrectedFilePicker(w);
 }
 
 function erpNoneOfAboveOption(selected) {
@@ -6329,48 +6449,23 @@ function downloadERP3CorrectedFile() {
   URL.revokeObjectURL(url);
   toast('System-corrected file downloaded. Fill in the missing columns and upload the complete file.');
 }
-function simulateERP3CorrectedUpload() {
+function simulateERP3CorrectedUpload(outcome) {
   const w = state.wiz; if (!w || w.erpFlowVersion !== 'v3') return;
-  const missingFields = getERPMappingStats(w).missing.map(field => field.name);
-  const previousFileName = w.fileName || 'erp_missing_columns.csv';
-  const cachedByColumn = {};
-  getERPSources(w).forEach(source => {
-    cachedByColumn[source.colName] = (w.mappings && w.mappings[source.id]) || '';
-  });
+  if (outcome !== 'mapped' && outcome !== 'unrecognized') { openERPCorrectedFilePicker(); return; }
+  if (!(w.erp2NewHeaders && w.erp2NewHeaders.length)) {
+    w.erp2NewHeaders = getERPMappingStats(w).missing.map(field => field.name);
+  }
   w.erp3ReplacementState = 'processing';
   render();
   setTimeout(() => {
     if (state.wiz !== w) return;
-    const nextMappings = {};
-    const usedTargets = new Set();
-    ERP_MAP_SOURCES.forEach(source => {
-      const cachedTarget = cachedByColumn[source.colName] || '';
-      if (cachedTarget) {
-        nextMappings[source.id] = cachedTarget;
-        usedTargets.add(cachedTarget);
-      }
-    });
-    ERP_MAP_SOURCES.forEach(source => {
-      if (Object.prototype.hasOwnProperty.call(nextMappings, source.id)) return;
-      const target = ERP_DEFAULT_MAP[source.id] || '';
-      nextMappings[source.id] = target && !usedTargets.has(target) ? target : '';
-      if (nextMappings[source.id]) usedTargets.add(nextMappings[source.id]);
-    });
-    w.fileName = 'erp_missing_columns_corrected.csv';
-    w.erp2PreviousFileName = previousFileName;
-    w.erp2ReplacementFileName = w.fileName;
-    w.erp2ReusedMappings = Object.values(cachedByColumn).filter(Boolean).length;
-    w.erp2NewHeaders = missingFields.slice();
-    w.erpScenario = 'all-matched';
-    w.mappings = getERPScenarioMappings('all-matched');
-    w.manualSelections = {};
-    w.manualResolutionFields = [];
-    w.missingResolvedManually = false;
+    applyERPCorrectedUpload(w, outcome);
     w.erp3ReplacementState = 'done';
     w.mappingAttempted = false;
     render();
   }, 1200);
 }
+
 function stepERP3Confirm(w) {
   const stats = getERPMappingStats(w);
   const rows = getERP3FieldRows(w);
@@ -6385,6 +6480,7 @@ function stepERP3Confirm(w) {
   </div>`;
 }
 function stepERP3Missing(w) {
+  if (w.erp3ReplacementState === 'done') return erpReplacementResultHTML(w);
   const stats = getERPMappingStats(w);
   const missingNames = stats.missing.map(field => field.name);
   if (!missingNames.length) {
@@ -6405,23 +6501,24 @@ function stepERP3Missing(w) {
       <div class="erp3-corrected-card-h">
         <h3>Details about the ${formatMissingFieldsList(missingNames)} are missing</h3>
         <p>All original headers have been renamed to the fields we need, and the missing headers have already been added. You only need to fill in the corresponding data.</p>
-        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${erpRequiredLabel(name)}</span>`).join('')}</div>
+        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
       </div>
       <div class="erp3-corrected-body">
         <div class="erp2-draft-note">${I.info}<p>Download the system-corrected document first if you want a file that already uses the required headers. Then complete the empty columns and upload the full file.</p></div>
         <button type="button" class="btn btn-secondary" onclick="downloadERP3CorrectedFile()">${I.download} Download system-corrected file</button>
         ${w.erp3ReplacementState === 'processing' ? `
           <div class="upload-zone"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing the corrected file and reusing previous mappings…</p></div>` : `
-          <div class="upload-zone" style="cursor:pointer" onclick="simulateERP3CorrectedUpload()">
+          <div class="upload-zone" style="cursor:pointer" onclick="openERPCorrectedFilePicker()">
             <div style="color:var(--muted-foreground);margin-bottom:10px">${I.upload}</div>
             <p style="font-size:15px;font-weight:600">Upload the complete corrected file</p>
             <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include every required header and the missing ${formatMissingFieldsList(missingNames)} data.</p>
-            <button type="button" class="btn btn-primary" onclick="event.stopPropagation();simulateERP3CorrectedUpload()">Choose file</button>
+            <button type="button" class="btn btn-primary" onclick="event.stopPropagation();openERPCorrectedFilePicker()">Choose file</button>
           </div>`}
       </div>
     </div>
   </div>`;
 }
+
 function erp3Steps(w) {
   const steps = [{n:1,label:'Upload CSV'},{n:2,label:'Confirm info'}];
   if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
@@ -6515,7 +6612,7 @@ function viewWizardERP3(w) {
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body:`<div style="display:flex;flex-direction:column;gap:20px">${versionControl}${body}</div>`,
     footer:navigation,
-  }) + erpExampleModal() + uploadV2SamplePicker(w);
+  }) + erpExampleModal() + uploadV2SamplePicker(w) + erpCorrectedFilePicker(w);
 }
 
 function stepERPInfo() {
@@ -6546,11 +6643,11 @@ function stepERPInfo() {
         ${I.info}
         <p style="font-size:12px;line-height:1.45"><strong>Upload the corrected file.</strong> Existing mappings are cached, and matching column names will keep their previous mapping.</p>
       </div>` : ''}
-      <div class="upload-zone" style="cursor:pointer" onclick="${w.isReplacement?'simulateErp()':'openUploadV2SamplePicker()'}">
+      <div class="upload-zone" style="cursor:pointer" onclick="${w.isReplacement?'openERPCorrectedFilePicker()':'openUploadV2SamplePicker()'}">
       <div style="color:var(--muted-foreground);margin-bottom:12px">${I.upload}</div>
       <p style="font-size:15px;font-weight:600">${w.isReplacement?'Upload corrected ERP CSV':'Upload ERP CSV'}</p>
       <p style="font-size:13px;color:var(--muted-foreground);margin:6px 0 14px">CSV · Max 50 MB</p>
-      <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();${w.isReplacement?'simulateErp()':'openUploadV2SamplePicker()'}">Upload file</button>
+      <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();${w.isReplacement?'openERPCorrectedFilePicker()':'openUploadV2SamplePicker()'}">Upload file</button>
     </div>`;
   } else if (w.dsState==='processing') {
     html += `<div class="upload-zone" style="border-color:var(--primary);background:var(--accent)">
@@ -6566,7 +6663,8 @@ function stepERPInfo() {
   }
   html += `</div></div>`;
   if (w.dsState==='mapped') {
-    html += `${w.cachedMatches ? `<div class="alert-info">
+    html += `${w.erp2ReplacementOutcome ? `<div style="display:flex;flex-direction:column;gap:16px">${erpReplacementNewColumnsSection(w)}</div>` : ''}
+      ${w.cachedMatches && w.erp2ReplacementOutcome !== 'unrecognized' ? `<div class="alert-info">
         ${I.check}
         <p style="font-size:13px"><strong>Corrected file uploaded.</strong> Mapping decisions for ${w.cachedMatches} unchanged columns were retained, and all missing required columns were detected and mapped. ${stats.unmapped.length} non-required columns remain unmapped; this does not block you from continuing.</p>
       </div>` : ''}
@@ -6813,7 +6911,7 @@ function viewWizardERP() {
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body,
     footer:navigation
-  }) + erpExampleModal() + uploadV2SamplePicker(w);
+  }) + erpExampleModal() + uploadV2SamplePicker(w) + erpCorrectedFilePicker(w);
 }
 
 
@@ -9446,6 +9544,15 @@ const CN_UI_REPLACEMENTS = [
   [/Each system field can only be selected once\. Resolve duplicate selections before continuing\./g, '每个系统字段只能选择一次。请处理重复选择后再继续。'],
   [/All unrecognized columns have been reviewed/g, '所有未识别字段均已处理'], [/Continue to check whether any required system fields are still missing\./g, '继续检查是否仍缺少必填字段。'],
   [/^Update and re-upload$/g, '更新并重新上传'], [/Resubmit your document/g, '重新提交单据'], [/Complete missing columns/g, '补充缺少字段'], [/Check whether the file still needs any required system fields\./g, '检查文件是否仍缺少必填字段。'],
+  [/Simulate a corrected CSV after adding the missing columns\./g, '模拟补充缺失列后的修正 CSV。'],
+  [/New columns mapped/g, '新增列已匹配'], [/Unable to recognize new columns/g, '无法识别新增列'],
+  [/Unable to recognize the new columns/g, '无法识别新增列'],
+  [/The updated file includes the added columns, but we could not match them automatically\. Select the correct column for each field\./g, '更新后的文件包含新增列，但未能自动匹配。请为每个字段选择对应列。'],
+  [/Unable to recognize this column\. Select a matching column from your file\./g, '无法识别此列。请从文件中选择对应列。'],
+  [/We reviewed the new columns in your file\./g, '已核对文件中的新增列。'],
+  [/The missing fields have been added and matched\./g, '缺失字段已补充并完成匹配。'],
+  [/The corrected file replaced the previous upload\. Existing mappings were reused, and the new columns were mapped\./g, '修正文件已覆盖上次上传。已保留原有匹配，并将新增列匹配完成。'],
+  [/ recognized automatically/g, '已自动识别'], [/ still need matching/g, '仍需匹配'],
   [/Add the remaining required fields now, or save this upload as a draft and continue later\./g, '可先补充剩余必填字段，或保存草稿后再继续。'],
   [/Details about the (.+) are missing/g, '缺少$1相关信息'],
   [/required column is still missing/g, '个必填字段仍缺少'], [/required columns are still missing/g, '个必填字段仍缺少'],
