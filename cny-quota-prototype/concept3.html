@@ -2163,15 +2163,21 @@ const DOCUMENT_REQUIRED_DETAILS = {
     { name:'product_quantity', label:'Product Quantity', labelCN:'产品数量', desc:'Number of product units.', descCN:'产品数量。', example:'500' },
   ],
   software: [
-    { name:'order_id', desc:'Unique invoice or contract identifier', example:'SW-2026-0142' },
-    { name:'buyer_name', desc:'Company purchasing the software', example:'Shenzhen Global Trade Co., Ltd.' },
-    { name:'service_description', desc:'Software product, license, or subscription being billed', example:'Adobe Creative Cloud annual license' },
-    { name:'quantity', desc:'Number of licenses or seats', example:'25' },
-    { name:'unit_price', desc:'Price per license — no currency symbol', example:'1940.00' },
-    { name:'currency', desc:'3-letter ISO currency code', example:'USD' },
-    { name:'total_amount', desc:'quantity × unit_price', example:'48500.00' },
-    { name:'service_period', desc:'Start and end of the subscription or license term', example:'2026-07-01 – 2027-06-30' },
-    { name:'transaction_date', desc:'Invoice or contract date (YYYY-MM-DD)', example:'2026-07-15' },
+    { name:'business_subcategory', label:'Business Subcategory/Transaction Mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
+    { name:'merchant_order_no', label:'Merchant Order No.', labelCN:'商户订单号', desc:'', descCN:'', example:'SW-2026-0142' },
+    { name:'order_currency', label:'Order Currency', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217.', descCN:'语言要求：英文三字码（ISO 4217）。', example:'USD' },
+    { name:'order_amount', label:'Order Amount', labelCN:'订单金额', desc:'', descCN:'', example:'48,500.00' },
+    { name:'order_time', label:'Order Time', labelCN:'订单签约时间/发票时间', desc:'Signing date / invoice date.', descCN:'签约日期/发票日期。', example:'2026-07-15' },
+    { name:'payer_name', label:'Payer Name', labelCN:'付款人姓名', desc:'', descCN:'', example:'Chen Wei' },
+    { name:'software_category', label:'Software category', labelCN:'软件类别', desc:'', descCN:'', example:'Productivity' },
+    { name:'software_identifier', label:'Software identifier', labelCN:'软件标识符', desc:'', descCN:'', example:'com.adobe.creativecloud' },
+    { name:'software_name', label:'Software name', labelCN:'软件名称', desc:'', descCN:'', example:'Adobe Creative Cloud' },
+    { name:'launch_date', label:'Launch date', labelCN:'发布日期', desc:'', descCN:'', example:'2026-07-01' },
+    { name:'product_quantity', label:'Product Quantity', labelCN:'产品数量', desc:'', descCN:'', example:'25' },
+    { name:'trade_type', label:'Trade Type', labelCN:'贸易类型', desc:'', descCN:'', example:'Software' },
+    { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'', descCN:'', example:'https://www.adobe.com' },
+    { name:'platform_order_no', label:'Platform Order No./App store order No.', labelCN:'平台或应用商店订单号', desc:'App store order No.', descCN:'应用商店订单号。', example:'APP-STORE-88421' },
+    { name:'software_provider', label:'Software Provider', labelCN:'软件提供方', desc:'Developer name on the app store or software listing.', descCN:'应用商店或软件列表上的开发者名称。', example:'Adobe Inc.' },
   ],
   'international-logistics': [
     { name:'shipped_or_not', label:'Shipped or not', labelCN:'是否已发货?', desc:'Yes or No.', descCN:'是或否。', example:'Yes' },
@@ -6885,6 +6891,107 @@ function tradeTourismBlock() {
     </div>`;
 }
 
+function tradeSoftwareBlock() {
+  const req = '<span style="color:var(--destructive)">*</span>';
+  const note = function(en, cn) {
+    const text = tradeFieldNote(en, cn);
+    return text ? `<p class="field-note">${text}</p>` : '';
+  };
+  return `<div class="review-card">
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic Info', '基本信息')}</span></div>
+      <div class="review-card-b">
+        <div class="field-grid">
+          <div class="field">
+            <label>${tradeFieldLabel('Business Subcategory/Transaction Mode', '贸易类型子类')} ${req}</label>
+            <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
+            ${note('B2C/D2C/B2B.', 'B2C/D2C/B2B。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Trade Type', '贸易类型')} ${req}</label>
+            <input value="Software" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Merchant Order No.', '商户订单号')} ${req}</label>
+            <input class="mono" value="SW-2026-0142" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Platform Order No./App store order No.', '平台或应用商店订单号')} ${req}</label>
+            <input class="mono" value="APP-STORE-88421" readonly />
+            ${note('App store order No.', '应用商店订单号。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Order Time', '订单签约时间/发票时间')} ${req}</label>
+            <input type="date" value="2026-07-15" readonly />
+            ${note('Signing date / invoice date.', '签约日期/发票日期。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Order Amount', '订单金额')} ${req}</label>
+            <input value="48,500.00" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Order Currency', '订单币种')} ${req}</label>
+            <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
+            ${note('Language: ENG. Three-letter code per ISO 4217.', '语言要求：英文三字码（ISO 4217）。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Payer Name', '付款人姓名')} ${req}</label>
+            <input value="Chen Wei" readonly />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.clipboard} ${tradeFieldLabel('Software Product Info', '软件产品信息')}</span></div>
+      <div class="review-card-b">
+        <div class="field-grid">
+          <div class="field">
+            <label>${tradeFieldLabel('Software category', '软件类别')} ${req}</label>
+            <input value="Productivity" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Software identifier', '软件标识符')} ${req}</label>
+            <input class="mono" value="com.adobe.creativecloud" readonly />
+          </div>
+          <div class="field full">
+            <label>${tradeFieldLabel('Software name', '软件名称')} ${req}</label>
+            <input value="Adobe Creative Cloud" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Launch date', '发布日期')} ${req}</label>
+            <input type="date" value="2026-07-01" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Product Quantity', '产品数量')} ${req}</label>
+            <input class="mono" value="25" readonly />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.link} ${tradeFieldLabel('Sales Channel', '销售渠道')}</span></div>
+      <div class="review-card-b">
+        <div class="field-grid">
+          <div class="field full">
+            <label>${tradeFieldLabel('Business URL', '业务网址')} ${req}</label>
+            <input type="url" value="https://www.adobe.com" readonly />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.store} ${tradeFieldLabel('Provider Info', '提供方信息')}</span></div>
+      <div class="review-card-b">
+        <div class="field-grid">
+          <div class="field full">
+            <label>${tradeFieldLabel('Software Provider', '软件提供方')} ${req}</label>
+            <input value="Adobe Inc." readonly />
+            ${note('Developer name on the app store or software listing.', '应用商店或软件列表上的开发者名称。')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
 function renderTradeLogisticsAnchored() {
   const scroller = document.querySelector('.focused-body');
   const anchor = document.querySelector('.trade-logistics-anchor');
@@ -7129,7 +7236,7 @@ function stepTradeInfo(hideHeading) {
       <div class="upload-zone" style="border-color:var(--primary);background:var(--accent);padding:56px 32px">
         <div class="spin" style="margin:0 auto 16px"></div>
         <p style="font-size:16px;font-weight:600;color:var(--primary)">Analyzing document…</p>
-        <p style="font-size:13px;color:var(--muted-foreground);margin-top:6px">AI is extracting ${isGoods?'contract and goods':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':w.source==='tourism'?'transaction and tourism':'transaction and service'} information</p>
+        <p style="font-size:13px;color:var(--muted-foreground);margin-top:6px">AI is extracting ${isGoods?'contract and goods':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':w.source==='tourism'?'transaction and tourism':w.source==='software'?'transaction and software':'transaction and service'} information</p>
       </div>
     </div>`;
   }
@@ -7155,7 +7262,7 @@ function stepTradeInfo(hideHeading) {
     </div>
     <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">Confirm the following details we prefilled based on your document.</p>
     <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
-        ${(w.source === 'advertisement' || w.source === 'tourism') ? '' : `<div class="review-card">
+        ${(w.source === 'advertisement' || w.source === 'tourism' || w.source === 'software') ? '' : `<div class="review-card">
           <div class="review-card-h" style="justify-content:space-between">
             <span style="display:flex;align-items:center;gap:8px">${I.file} Contract Information</span>
           </div>
@@ -7173,7 +7280,7 @@ function stepTradeInfo(hideHeading) {
             </div>
           </div>
         </div>`}
-        ${isGoods ? tradeGoodsTable() : (w.source === 'international-logistics' ? '' : w.source === 'advertisement' ? tradeAdvertisementBlock() : w.source === 'tourism' ? tradeTourismBlock() : tradeServiceDetailsBlock())}
+        ${isGoods ? tradeGoodsTable() : (w.source === 'international-logistics' ? '' : w.source === 'advertisement' ? tradeAdvertisementBlock() : w.source === 'tourism' ? tradeTourismBlock() : w.source === 'software' ? tradeSoftwareBlock() : tradeServiceDetailsBlock())}
         ${needsTradeLogistics(w) ? tradeLogisticsBlock() : ''}
     </div>
     ${tradeDocumentPreviewModal()}
@@ -7283,7 +7390,7 @@ function stepTradeDynamic() {
       <div class="upload-zone" style="margin:20px;border-color:var(--primary);background:var(--accent);padding:38px 24px">
         <div class="spin" style="margin:0 auto 14px"></div>
         <p style="font-size:15px;font-weight:600;color:var(--primary)">Analyzing document…</p>
-        <p style="font-size:12px;color:var(--muted-foreground);margin-top:5px">AI is extracting ${isGoods?'contract, goods, and logistics':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':w.source==='tourism'?'transaction and tourism':'transaction and service'} information.</p>
+        <p style="font-size:12px;color:var(--muted-foreground);margin-top:5px">AI is extracting ${isGoods?'contract, goods, and logistics':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':w.source==='tourism'?'transaction and tourism':w.source==='software'?'transaction and software':'transaction and service'} information.</p>
       </div>
     </div>`;
   } else {
