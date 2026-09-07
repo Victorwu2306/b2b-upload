@@ -1128,15 +1128,17 @@ table.data tr:hover td { background: var(--muted); }
 .supported-tx-type-field { max-width:420px; margin:0 0 14px; }
 .supported-tx-type-field label { font-weight:600; color:var(--foreground); }
 .req-type-list { display:flex; flex-direction:column; gap:12px; }
-.req-type-accordion .mapping-c2-accordion-body { padding:0 16px 16px; }
-.req-type-download { display:flex; align-items:center; justify-content:flex-end; margin:0 0 12px; }
+.req-type-accordion .mapping-c2-accordion-body {
+  display:flex; flex-direction:column; gap:16px; padding:16px;
+}
+.req-type-download { display:flex; align-items:center; justify-content:flex-end; margin:0; }
 .req-type-download .btn-link { font-size:13px; }
 .req-h-table-wrap { border:1px solid var(--border); border-radius:8px; overflow:hidden; background:#fff; max-width:100%; }
 .req-h-table-scroll { overflow-x:auto; max-width:100%; }
 table.data.req-h-table {
   --req-stub: 108px;
-  --req-col-min: 200px;
-  --req-col-max: 280px;
+  --req-col-min: 160px;
+  --req-col-max: 240px;
   --req-cols: 8;
   table-layout:fixed; border-collapse:collapse; font-size:12px; box-sizing:border-box;
   width:max(
