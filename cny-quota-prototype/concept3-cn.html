@@ -2234,15 +2234,22 @@ const DOCUMENT_REQUIRED_DETAILS = {
     { name:'ticket_number', label:'Ticket Number', labelCN:'电子客票号', desc:'Electronic ticket number (required after ticketing).', descCN:'电子客票号（出票后必填）。', example:'781-1234567890' },
   ],
   accommodation: [
-    { name:'order_id', desc:'Unique booking or confirmation identifier', example:'HT-2026-5520' },
-    { name:'guest_name', desc:'Name of the guest on the reservation', example:'Wei Zhang' },
-    { name:'buyer_name', desc:'Company paying for the stay', example:'Shenzhen Global Trade Co., Ltd.' },
-    { name:'hotel_name', desc:'Name of the hotel or lodging property', example:'Park Hyatt Shenzhen' },
-    { name:'check_in_date', desc:'Check-in date (YYYY-MM-DD)', example:'2026-08-12' },
-    { name:'check_out_date', desc:'Check-out date (YYYY-MM-DD)', example:'2026-08-16' },
-    { name:'nights', desc:'Number of nights', example:'4' },
-    { name:'currency', desc:'3-letter ISO currency code', example:'USD' },
-    { name:'total_amount', desc:'Room and lodging charges', example:'1680.00' },
+    { name:'business_category', label:'Business Category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
+    { name:'business_subcategory', label:'Business Subcategory/Transaction Mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
+    { name:'merchant_order_no', label:'Merchant Order No.', labelCN:'商户订单号', desc:'', descCN:'', example:'HT-2026-5520' },
+    { name:'order_currency', label:'Order Currency/feeType', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217.', descCN:'语言要求：英文三字码（ISO 4217）。', example:'USD' },
+    { name:'order_amount', label:'Order Amount/totalFee', labelCN:'订单金额', desc:'', descCN:'', example:'1,680.00' },
+    { name:'order_time', label:'Order Time/orderDate', labelCN:'订单签约时间/发票时间', desc:'Signing date / invoice date.', descCN:'签约日期/发票日期。', example:'2026-07-15' },
+    { name:'payer_name', label:'Payer Name', labelCN:'付款人姓名', desc:'Payer’s name: individual name when custType is INDIVIDUAL, company name when custType is COMPANY.', descCN:'付款人姓名：客户类型为个人时填写个人姓名，为公司时填写公司名称。', example:'Chen Wei' },
+    { name:'hotel_city', label:'Hotel city', labelCN:'酒店所在城市', desc:'', descCN:'', example:'Shenzhen' },
+    { name:'hotel_name', label:'Hotel Name', labelCN:'酒店名称', desc:'', descCN:'', example:'Park Hyatt Shenzhen' },
+    { name:'number_of_guests', label:'Number of guests', labelCN:'入住人数', desc:'', descCN:'', example:'2' },
+    { name:'guest_name', label:'Guest Name', labelCN:'入住人姓名', desc:'', descCN:'', example:'Wei Zhang' },
+    { name:'check_in_date', label:'Check-in date', labelCN:'入住日期', desc:'', descCN:'', example:'2026-08-12' },
+    { name:'check_in_days', label:'Check-in days', labelCN:'入住天数', desc:'', descCN:'', example:'4' },
+    { name:'product_quantity', label:'Product Quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1' },
+    { name:'trade_type', label:'Trade Type', labelCN:'贸易类型', desc:'', descCN:'', example:'Accommodation' },
+    { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'', descCN:'', example:'https://www.hyatt.com' },
   ],
   tourism: [
     { name:'business_category', label:'Business Category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
@@ -7147,6 +7154,111 @@ function tradeAirTicketBlock() {
     </div>`;
 }
 
+function tradeAccommodationBlock() {
+  const req = '<span style="color:var(--destructive)">*</span>';
+  const note = function(en, cn) {
+    const text = tradeFieldNote(en, cn);
+    return text ? `<p class="field-note">${text}</p>` : '';
+  };
+  return `<div class="review-card">
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic Info', '基本信息')}</span></div>
+      <div class="review-card-b">
+        <div class="field-grid">
+          <div class="field">
+            <label>${tradeFieldLabel('Business Category', '贸易类型大类')} ${req}</label>
+            <select disabled><option>Goods</option><option selected>Service</option></select>
+            ${note('Goods/Service.', '货物/服务。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Business Subcategory/Transaction Mode', '贸易类型子类')} ${req}</label>
+            <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
+            ${note('B2C/D2C/B2B.', 'B2C/D2C/B2B。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Merchant Order No.', '商户订单号')} ${req}</label>
+            <input class="mono" value="HT-2026-5520" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Order Currency/feeType', '订单币种')} ${req}</label>
+            <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
+            ${note('Language: ENG. Three-letter code per ISO 4217.', '语言要求：英文三字码（ISO 4217）。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Order Amount/totalFee', '订单金额')} ${req}</label>
+            <input value="1,680.00" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Order Time/orderDate', '订单签约时间/发票时间')} ${req}</label>
+            <input type="date" value="2026-07-15" readonly />
+            ${note('Signing date / invoice date.', '签约日期/发票日期。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Payer Name', '付款人姓名')} ${req}</label>
+            <input value="Chen Wei" readonly />
+            ${note('Payer’s name: individual name when custType is INDIVIDUAL, company name when custType is COMPANY.', '付款人姓名：客户类型为个人时填写个人姓名，为公司时填写公司名称。')}
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Number of guests', '入住人数')} ${req}</label>
+            <input class="mono" value="2" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Trade Type', '贸易类型')} ${req}</label>
+            <input value="Accommodation" readonly />
+          </div>
+          <div class="field full">
+            <label>${tradeFieldLabel('Business URL', '业务网址')} ${req}</label>
+            <input type="url" value="https://www.hyatt.com" readonly />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.store} ${tradeFieldLabel('Accommodation Info', '住宿信息')}</span></div>
+      <div class="review-card-b">
+        <div class="field-grid">
+          <div class="field">
+            <label>${tradeFieldLabel('Hotel city', '酒店所在城市')} ${req}</label>
+            <input value="Shenzhen" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Hotel Name', '酒店名称')} ${req}</label>
+            <input value="Park Hyatt Shenzhen" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Check-in date', '入住日期')} ${req}</label>
+            <input type="date" value="2026-08-12" readonly />
+          </div>
+          <div class="field">
+            <label>${tradeFieldLabel('Check-in days', '入住天数')} ${req}</label>
+            <input class="mono" value="4" readonly />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.card} ${tradeFieldLabel('Guest Info', '入住人信息')}</span></div>
+      <div class="review-card-b">
+        <div class="field-grid">
+          <div class="field full">
+            <label>${tradeFieldLabel('Guest Name', '入住人姓名')} ${req}</label>
+            <input value="Wei Zhang" readonly />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.clipboard} ${tradeFieldLabel('Room Info', '房间信息')}</span></div>
+      <div class="review-card-b">
+        <div class="field-grid">
+          <div class="field">
+            <label>${tradeFieldLabel('Product Quantity', '产品数量')} ${req}</label>
+            <input class="mono" value="1" readonly />
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
 function renderTradeLogisticsAnchored() {
   const scroller = document.querySelector('.focused-body');
   const anchor = document.querySelector('.trade-logistics-anchor');
@@ -7391,7 +7503,7 @@ function stepTradeInfo(hideHeading) {
       <div class="upload-zone" style="border-color:var(--primary);background:var(--accent);padding:56px 32px">
         <div class="spin" style="margin:0 auto 16px"></div>
         <p style="font-size:16px;font-weight:600;color:var(--primary)">Analyzing document…</p>
-        <p style="font-size:13px;color:var(--muted-foreground);margin-top:6px">AI is extracting ${isGoods?'contract and goods':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':w.source==='tourism'?'transaction and tourism':w.source==='software'?'transaction and software':w.source==='air-ticket'?'transaction and air ticket':'transaction and service'} information</p>
+        <p style="font-size:13px;color:var(--muted-foreground);margin-top:6px">AI is extracting ${isGoods?'contract and goods':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':w.source==='tourism'?'transaction and tourism':w.source==='software'?'transaction and software':w.source==='air-ticket'?'transaction and air ticket':w.source==='accommodation'?'transaction and accommodation':'transaction and service'} information</p>
       </div>
     </div>`;
   }
@@ -7417,7 +7529,7 @@ function stepTradeInfo(hideHeading) {
     </div>
     <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">Confirm the following details we prefilled based on your document.</p>
     <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
-        ${(w.source === 'advertisement' || w.source === 'tourism' || w.source === 'software' || w.source === 'air-ticket') ? '' : `<div class="review-card">
+        ${(w.source === 'advertisement' || w.source === 'tourism' || w.source === 'software' || w.source === 'air-ticket' || w.source === 'accommodation') ? '' : `<div class="review-card">
           <div class="review-card-h" style="justify-content:space-between">
             <span style="display:flex;align-items:center;gap:8px">${I.file} Contract Information</span>
           </div>
@@ -7435,7 +7547,7 @@ function stepTradeInfo(hideHeading) {
             </div>
           </div>
         </div>`}
-        ${isGoods ? tradeGoodsTable() : (w.source === 'international-logistics' ? '' : w.source === 'advertisement' ? tradeAdvertisementBlock() : w.source === 'tourism' ? tradeTourismBlock() : w.source === 'software' ? tradeSoftwareBlock() : w.source === 'air-ticket' ? tradeAirTicketBlock() : tradeServiceDetailsBlock())}
+        ${isGoods ? tradeGoodsTable() : (w.source === 'international-logistics' ? '' : w.source === 'advertisement' ? tradeAdvertisementBlock() : w.source === 'tourism' ? tradeTourismBlock() : w.source === 'software' ? tradeSoftwareBlock() : w.source === 'air-ticket' ? tradeAirTicketBlock() : w.source === 'accommodation' ? tradeAccommodationBlock() : tradeServiceDetailsBlock())}
         ${needsTradeLogistics(w) ? tradeLogisticsBlock() : ''}
     </div>
     ${tradeDocumentPreviewModal()}
@@ -7545,7 +7657,7 @@ function stepTradeDynamic() {
       <div class="upload-zone" style="margin:20px;border-color:var(--primary);background:var(--accent);padding:38px 24px">
         <div class="spin" style="margin:0 auto 14px"></div>
         <p style="font-size:15px;font-weight:600;color:var(--primary)">Analyzing document…</p>
-        <p style="font-size:12px;color:var(--muted-foreground);margin-top:5px">AI is extracting ${isGoods?'contract, goods, and logistics':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':w.source==='tourism'?'transaction and tourism':w.source==='software'?'transaction and software':w.source==='air-ticket'?'transaction and air ticket':'transaction and service'} information.</p>
+        <p style="font-size:12px;color:var(--muted-foreground);margin-top:5px">AI is extracting ${isGoods?'contract, goods, and logistics':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':w.source==='tourism'?'transaction and tourism':w.source==='software'?'transaction and software':w.source==='air-ticket'?'transaction and air ticket':w.source==='accommodation'?'transaction and accommodation':'transaction and service'} information.</p>
       </div>
     </div>`;
   } else {
@@ -9049,6 +9161,13 @@ const CN_UI_REPLACEMENTS = [
   [/AI is extracting transaction and tourism information\.?/g, '正在提取交易和旅游信息。'],
   [/AI is extracting transaction and software information\.?/g, '正在提取交易和软件信息。'],
   [/AI is extracting transaction and air ticket information\.?/g, '正在提取交易和机票信息。'],
+  [/AI is extracting transaction and accommodation information\.?/g, '正在提取交易和住宿信息。'],
+  [/Accommodation Info/g, '住宿信息'], [/Guest Info/g, '入住人信息'], [/Room Info/g, '房间信息'],
+  [/Hotel city/g, '酒店所在城市'], [/Check-in days/g, '入住天数'], [/Check-in date/g, '入住日期'],
+  [/Number of guests/g, '入住人数'], [/Guest Name/g, '入住人姓名'],
+  [/Order Currency\/feeType/g, '订单币种'], [/Order Amount\/totalFee/g, '订单金额'], [/Order Time\/orderDate/g, '订单签约时间/发票时间'],
+  [/Payer’s name: individual name when custType is INDIVIDUAL, company name when custType is COMPANY\./g, '付款人姓名：客户类型为个人时填写个人姓名，为公司时填写公司名称。'],
+  [/Signing date \/ invoice date\./g, '签约日期/发票日期。'],
   [/^\s*Passport\s*$/g, '护照'], [/^\s*ID Card\s*$/g, '身份证'],
   [/Logistics Information/g, '物流信息'], [/Shipped or not/g, '是否已发货?'], [/Has the order been shipped\?/g, '订单是否已发货？'], [/Select whether the order has been shipped to continue\./g, '请选择订单是否已发货后继续。'], [/Select a shipment status to continue\./g, '请选择发货状态后继续。'], [/Estimated shipping date/g, '人民币订单的预计发货时间'], [/Expected shipment date/g, '预计发货日期'], [/Enter the estimated shipping date before submitting\./g, '提交前请填写预计发货时间。'], [/Enter the expected shipment date before submitting\./g, '提交前请填写预计发货日期。'],
   [/^\s*Yes\s*$/g, '是'], [/^\s*No\s*$/g, '否'],
