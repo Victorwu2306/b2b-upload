@@ -763,7 +763,7 @@ table.data tr:hover td { background: var(--muted); }
 /* Details */
 .details-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 32px; }
 .read-field label { font-size: 12px; color: var(--muted-foreground); display: block; margin-bottom: 2px; }
-.read-field p { font-size: 14px; font-weight: 500; }
+.read-field p { font-size: 14px; font-weight: 500; overflow-wrap: anywhere; }
 .alert-warn {
   display: flex; align-items: flex-start; gap: 12px;
   background: #FFF8EB; border: 1px solid #F5D9A8; border-radius: 8px; padding: 16px;
@@ -2243,7 +2243,7 @@ const escapeHTML = value => String(value == null ? '' : value).replace(/[&<>"']/
   '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;',
 })[char]);
 const RECORDS = [
-  { id:'1', uploadDate:'2026-07-18', orderNumber:'PO-2026-07-0892', source:'Good Trading', buyerName:'Shenzhen Global Trade Co.', status:'Partially Used', shipmentStatus:'Shipped', totalCNY:350000, usedCNY:231500, orderAmountUSD:'48,500.00', currency:'USD' },
+  { id:'1', uploadDate:'2026-07-18', orderNumber:'PO-2026-07-0892', source:'Good Trading', buyerName:'Shenzhen Global Trade Co., Ltd.', status:'Partially Used', shipmentStatus:'Shipped', totalCNY:350000, usedCNY:231500, orderAmountUSD:'48,500.00', currency:'USD' },
   { id:'2', uploadDate:'2026-07-15', orderNumber:'PO-2026-07-0741', source:'Drop Shipping', buyerName:'HK Commerce Solutions Ltd.', status:'Fully Used', shipmentStatus:'Shipped', totalCNY:840000, usedCNY:840000, orderAmountUSD:'116,000.00', currency:'USD' },
   { id:'3', uploadDate:'2026-07-10', orderNumber:'PO-2026-07-0603', source:'Good Trading', buyerName:'Guangzhou Apex Trading Co.', status:'Partially Used', shipmentStatus:'Unshipped', totalCNY:525000, usedCNY:42000, orderAmountUSD:'72,500.00', currency:'USD' },
   { id:'4', uploadDate:'2026-07-06', orderNumber:'PO-2026-07-0519', source:'Drop Shipping', buyerName:'SZ Electronics Import Co.', status:'Partially Used', shipmentStatus:'Unshipped', totalCNY:210000, usedCNY:84000, orderAmountUSD:'29,000.00', currency:'USD' },
@@ -2876,7 +2876,7 @@ const UPLOAD_HISTORY = [
     status:'Processed', quotaAdded:350000, recordId:'1',
     message:'Trade documents submitted successfully.',
     tip:'Quota has been released for this order.',
-    orderNumber:'PO-2026-07-0892', buyerName:'Shenzhen Global Trade Co.', source:'Good Trading',
+    orderNumber:'PO-2026-07-0892', buyerName:'Shenzhen Global Trade Co., Ltd.', source:'Good Trading',
     shipmentStatus:'Shipped', orderAmount:'USD 48,500.00', currency:'USD',
   },
   {
@@ -2898,7 +2898,7 @@ const UPLOAD_HISTORY = [
     id:'uh4', uploadDate:'2026-07-18 09:05', fileName:'CI_Guangzhou_Apex_0603.pdf', fileType:'Trade documents', typeKey:'trade',
     status:'Processed', quotaAdded:525000, recordId:'3',
     message:'Trade documents submitted successfully.',
-    tip:'This order is unshipped. Supplement logistics documents to release reserved unshipped quota.',
+    tip:'This order is unshipped. Supplement logistics documents to complete verification.',
     orderNumber:'PO-2026-07-0603', buyerName:'Guangzhou Apex Trading Co.', source:'Good Trading',
     shipmentStatus:'Unshipped', orderAmount:'USD 72,500.00', currency:'USD',
   },
@@ -3750,10 +3750,18 @@ function wizBackLabel(w) {
 }
 function openUploadDetail(id) {
   if (id && String(id).indexOf('draft-') === 0) { resumeDraft(id); return; }
+  const rec = UPLOAD_HISTORY.find(item => item.id === id);
   state.uploadId = id;
-  state.view = 'upload-details';
   state.moreId = null;
   state.tooltip = false;
+  if (rec && rec.typeKey === 'trade') {
+    state.detailReturn = 'upload-history';
+    if (rec.recordId) state.recordId = rec.recordId;
+    state.view = 'details';
+    render();
+    return;
+  }
+  state.view = 'upload-details';
   render();
 }
 function getUploadRecord() {
@@ -3830,10 +3838,10 @@ function inferUploadedPreviewKind(fileName) {
 }
 function resolveUploadedPreview(source, fileName) {
   const w = state.wiz;
+  if (source === 'trade' || source === 'pici') return { fileName: fileName || (w && w.fileName) || 'trade_document.pdf', kind: 'trade', source };
   if (fileName) return { fileName, kind: inferUploadedPreviewKind(fileName), source: source || 'file' };
   if (source === 'template') return { fileName: (w && w.fileName) || 'template_transactions.csv', kind: 'spreadsheet', source };
   if (source === 'erp' || source === 'erp-corrected') return { fileName: (w && (w.erp2ReplacementFileName || w.fileName)) || 'erp_file.csv', kind: 'spreadsheet', source };
-  if (source === 'trade' || source === 'pici') return { fileName: (w && w.fileName) || 'trade_document.pdf', kind: 'trade', source };
   if (source === 'v2') return { fileName: (w && w.fileName) || 'uploaded_file', kind: inferUploadedPreviewKind(w && w.fileName), source };
   if (source === 'logistics') return { fileName: state.logFileName || 'shipping_receipt_and_tracking.pdf', kind: 'document', source };
   if (source === 'history') return { fileName: 'erp_missing_columns_corrected.csv', kind: 'spreadsheet', source };
@@ -3878,7 +3886,7 @@ function documentPreviewMarkup() {
 function uploadedFilePreviewModal() {
   const preview = state.filePreview;
   if (!preview) return '';
-  if ((preview.kind === 'trade' || (state.wiz && state.wiz.kind === 'trade')) && preview.source !== 'logistics') return '';
+  if (state.wiz && (preview.kind === 'trade' || state.wiz.kind === 'trade') && preview.source !== 'logistics') return '';
   const isSheet = preview.kind === 'spreadsheet';
   const body = isSheet ? spreadsheetPreviewMarkup() : documentPreviewMarkup();
   return `<div class="modal-backdrop open file-preview-backdrop" style="align-items:center" onclick="if(event.target===this)closeUploadedFilePreview()">
@@ -8320,9 +8328,11 @@ function tradeLogisticsBlock() {
 }
 
 function tradeDocPreview(inModal) {
-  const w = state.wiz;
+  const w = state.wiz || {};
   const zoom = w.docZoom || 100;
   const page = w.docPage || 1;
+  const canNav = !!state.wiz;
+  const previewName = w.fileName || (state.filePreview && state.filePreview.fileName) || 'Sales_Contract_Q3_2026.pdf';
   const pageContent = page === 1 ? `
     <div class="doc-page-body">
       <p class="doc-h1">SALES CONTRACT</p>
@@ -8354,7 +8364,7 @@ function tradeDocPreview(inModal) {
       </table>
       <div style="margin-top:10px">
         <p style="font-size:6px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">Shipping Method</p>
-        <p>Sea Freight — Maersk Line · MSKU3456789 · ETA Aug 20, 2026</p>
+        <p>Sea Freight — Maersk Line · MSKU7834521 · ETA Aug 20, 2026</p>
       </div>
       <div style="margin-top:28px;padding-top:12px;border-top:1px solid #ddd;display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:center">
         <div><div style="border-bottom:1px solid #333;height:18px;margin-bottom:4px"></div><p style="font-size:6px">Authorized Signature (Seller)</p></div>
@@ -8367,20 +8377,20 @@ function tradeDocPreview(inModal) {
     <div class="doc-preview-h">
       <div style="display:flex;align-items:center;gap:8px;min-width:0">
         ${I.file}
-        <span style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${w.fileName || 'Sales_Contract_Q3_2026.pdf'}</span>
+        <span style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${previewName}</span>
       </div>
       ${inModal?'':`<button type="button" class="btn btn-xs btn-secondary" onclick="replaceTradeFile()">${I.rotate} Replace</button>`}
     </div>
     <div class="doc-toolbar">
       <div style="display:flex;align-items:center;gap:4px">
-        <button type="button" class="doc-zoom-btn" ${zoom<=60?'disabled':''} onclick="state.wiz.docZoom=Math.max(60,(state.wiz.docZoom||100)-10);render()" title="Zoom out">${I.zoomOut}</button>
+        <button type="button" class="doc-zoom-btn" ${!canNav||zoom<=60?'disabled':''} onclick="state.wiz.docZoom=Math.max(60,(state.wiz.docZoom||100)-10);render()" title="Zoom out">${I.zoomOut}</button>
         <span style="font-size:12px;color:var(--muted-foreground);width:40px;text-align:center">${zoom}%</span>
-        <button type="button" class="doc-zoom-btn" ${zoom>=160?'disabled':''} onclick="state.wiz.docZoom=Math.min(160,(state.wiz.docZoom||100)+10);render()" title="Zoom in">${I.zoomIn}</button>
+        <button type="button" class="doc-zoom-btn" ${!canNav||zoom>=160?'disabled':''} onclick="state.wiz.docZoom=Math.min(160,(state.wiz.docZoom||100)+10);render()" title="Zoom in">${I.zoomIn}</button>
       </div>
       <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted-foreground)">
-        <button type="button" class="doc-zoom-btn" ${page<=1?'disabled':''} onclick="state.wiz.docPage=Math.max(1,(state.wiz.docPage||1)-1);render()">${I.chevronL}</button>
+        <button type="button" class="doc-zoom-btn" ${!canNav||page<=1?'disabled':''} onclick="state.wiz.docPage=Math.max(1,(state.wiz.docPage||1)-1);render()">${I.chevronL}</button>
         <span>Page ${page} / 3</span>
-        <button type="button" class="doc-zoom-btn" ${page>=3?'disabled':''} onclick="state.wiz.docPage=Math.min(3,(state.wiz.docPage||1)+1);render()">${I.chevronR}</button>
+        <button type="button" class="doc-zoom-btn" ${!canNav||page>=3?'disabled':''} onclick="state.wiz.docPage=Math.min(3,(state.wiz.docPage||1)+1);render()">${I.chevronR}</button>
       </div>
     </div>
     <div class="doc-canvas-wrap">
@@ -8808,6 +8818,7 @@ function viewERPDetails() {
 function viewLinkPayment() {
   if (!LINK_PAYMENT_VISIBLE) return viewDetails();
   const r = getRecord();
+  const ctx = buildTradeDetailContext(r, findTradeUploadForOrder(r));
   const rem = r.totalCNY - r.usedCNY;
   return `<div class="focused active">
     <div class="focused-top">
@@ -8830,9 +8841,9 @@ function viewLinkPayment() {
       <div class="split">
         <div class="side-panel">
           <div class="side-card">
-            <div class="side-card-h">${I.clipboard} Order Info</div>
+            <div class="side-card-h">${I.clipboard} ${tradeFieldLabel('Order information', '订单信息')}</div>
             <div class="side-card-b">
-              ${[['Order No.',r.orderNumber],['Buyer',r.buyerName],['Source',r.source],['Amount',`${r.currency} ${r.orderAmountUSD}`],['Shipment',r.shipmentStatus],['Status',r.status]].map(([l,v])=>`
+              ${tradeCompactOrderRows(ctx).map(([l,v])=>`
                 <div class="field-mini"><label>${l}</label><p>${v}</p></div>
               `).join('')}
             </div>
@@ -8929,6 +8940,7 @@ function browseDrawer() {
 
 function viewSupplement() {
   const r = getRecord();
+  const ctx = buildTradeDetailContext(r, findTradeUploadForOrder(r));
   const rem = r.totalCNY - r.usedCNY;
   if (state.logSubmitted) {
     return `<div class="focused active">
@@ -8963,12 +8975,8 @@ function viewSupplement() {
     </div>
     <div class="focused-body"><div class="focused-inner" style="max-width:var(--wizard-content-width);display:flex;flex-direction:column;gap:24px">
       <div class="card card-lg">
-        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Order details</h3>
-        <div class="details-grid">
-          ${[['Order number',r.orderNumber],['Buyer name',r.buyerName],['Order amount',`${r.currency} ${r.orderAmountUSD}`],['Shipment status',r.shipmentStatus],['Remaining unshipped quota',money(rem)],['Transaction source',r.source]].map(([l,v])=>`
-            <div class="read-field"><label>${l}</label><p>${v}</p></div>
-          `).join('')}
-        </div>
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">${tradeFieldLabel('Order information', '订单信息')}</h3>
+        ${detailsFieldGrid(tradeCompactOrderRows(ctx))}
       </div>
       ${LINK_PAYMENT_VISIBLE?`<div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">Linked Payments</h3>
@@ -9004,10 +9012,10 @@ function viewSupplement() {
           })}
           <div class="alert-info" style="margin:16px 0">${I.check} 2 logistics records extracted by AI. Review and edit if needed.</div>
           <div style="overflow-x:auto"><table class="data" style="min-width:720px">
-            <thead><tr>${['Logistics Method','Company','Tracking No.','Shipment Date','Related Item','Status'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+            <thead><tr>${['Logistics company name','Logistics tracking number'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
             <tbody>
-              <tr><td>Sea Freight</td><td>Maersk Line</td><td class="mono">MSKU3456789</td><td>2026-07-18</td><td>Electronic Components</td><td><span class="chip" style="background:var(--secondary);color:var(--primary);border:1px solid rgba(91,59,232,.3)">AI</span></td></tr>
-              <tr><td>Sea Freight</td><td>Maersk Line</td><td class="mono">MSKU3456790</td><td>2026-07-20</td><td>Packaging Materials</td><td><span class="chip" style="background:var(--secondary);color:var(--primary);border:1px solid rgba(91,59,232,.3)">AI</span></td></tr>
+              <tr><td>Maersk Line</td><td class="mono">MSKU7834521</td></tr>
+              <tr><td>Maersk Line</td><td class="mono">MSKU7834522</td></tr>
             </tbody>
           </table></div>
         `}
@@ -9027,16 +9035,112 @@ function simulateLog() {
   setTimeout(() => { state.logState = 'done'; state.logFileName = 'shipping_receipt_and_tracking.pdf'; render(); }, 1800);
 }
 
-function viewDetails() {
-  const r = getRecord();
-  const rem = r.totalCNY - r.usedCNY;
-  const backView = state.detailReturn || 'trade-orders';
-  const backLabel = state.detailReturn === 'upload-history' ? 'Upload History'
-    : state.detailReturn === 'upload-details' ? 'Upload Details'
-    : 'Trade Documents';
-  const showLink = LINK_PAYMENT_VISIBLE && r.usedCNY < r.totalCNY;
-  const unshipped = r.shipmentStatus === 'Unshipped';
-  const linkedAmt = money(r.usedCNY);
+function detailsFieldGrid(rows, columns) {
+  const cols = columns || 3;
+  return `<div class="details-grid" style="grid-template-columns:repeat(${cols},minmax(0,1fr))">${rows.map(([label, value, extraClass]) => `<div class="read-field"><label>${label}</label><p${extraClass ? ` class="${extraClass}"` : ''}>${value}</p></div>`).join('')}</div>`;
+}
+function tradeGoodsReadValues() {
+  const items = TRADE_GOODS;
+  return {
+    productName: items.map(item => item.nameCN).join('|'),
+    productQty: items.reduce((sum, item) => sum + (parseFloat(item.qty) || 0), 0).toLocaleString('en-US'),
+  };
+}
+function findTradeUploadForOrder(order) {
+  if (state.uploadId) {
+    const current = UPLOAD_HISTORY.find(item => item.id === state.uploadId);
+    if (current && current.typeKey === 'trade' && (!order || current.recordId === order.id)) return current;
+  }
+  if (!order) return null;
+  return UPLOAD_HISTORY.find(item => item.typeKey === 'trade' && item.recordId === order.id) || null;
+}
+function buildTradeDetailContext(order, upload) {
+  const shipmentStatus = (upload && upload.shipmentStatus) || (order && order.shipmentStatus) || 'Shipped';
+  const currency = (upload && upload.currency) || (order && order.currency) || 'USD';
+  const orderNumber = (upload && upload.orderNumber) || (order && order.orderNumber) || '—';
+  const buyerName = (order && order.buyerName) || (upload && upload.buyerName) || '—';
+  const orderAmount = (order && order.orderAmountUSD) || String((upload && upload.orderAmount) || '').replace(/^[A-Z]{3}\s*/, '') || '—';
+  const uploadDate = (upload && upload.uploadDate) || (order && order.uploadDate) || '';
+  const orderDate = orderNumber === 'PO-2026-07-0892' ? '2026-07-15' : (String(uploadDate).slice(0, 10) || '—');
+  return {
+    order: order || null,
+    upload: upload || null,
+    recordId: (order && order.id) || (upload && upload.recordId) || '',
+    orderNumber,
+    buyerName,
+    currency,
+    orderAmount,
+    orderDate,
+    fileName: (upload && upload.fileName) || 'Sales_Contract_Q3_2026.pdf',
+    fileType: (upload && upload.fileType) || 'Trade documents',
+    uploadDate,
+    shipmentStatus,
+    unshipped: shipmentStatus === 'Unshipped',
+  };
+}
+function tradeOrderReadRows(ctx) {
+  return [
+    [tradeFieldLabel('Business subcategory/transaction mode', '贸易方式/交易编码'), 'B2B'],
+    [tradeFieldLabel('Trade type', '贸易类型'), 'Goods'],
+    [tradeFieldLabel('Merchant order no.', '商户订单编号'), ctx.orderNumber, 'mono'],
+    [tradeFieldLabel("Buyer's English name/payer name", '买家名称'), ctx.buyerName],
+    [tradeFieldLabel('Destination country', '收货国家或地区'), 'China'],
+    [tradeFieldLabel('Order time', '订单签约时间/发票时间'), ctx.orderDate],
+    [tradeFieldLabel('Order currency', '订单币种'), ctx.currency],
+    [tradeFieldLabel('Order amount', '订单金额'), ctx.orderAmount],
+    [tradeFieldLabel('E-commerce platform name/business website name', '店铺网站名称'), 'Amazon'],
+    [tradeFieldLabel('Business URL', '业务/店铺链接'), 'https://www.amazon.com'],
+  ];
+}
+function tradeCompactOrderRows(ctx) {
+  return [
+    [tradeFieldLabel('Trade type', '贸易类型'), 'Goods'],
+    [tradeFieldLabel('Merchant order no.', '商户订单编号'), ctx.orderNumber],
+    [tradeFieldLabel("Buyer's English name/payer name", '买家名称'), ctx.buyerName],
+    [tradeFieldLabel('Destination country', '收货国家或地区'), 'China'],
+    [tradeFieldLabel('Order time', '订单签约时间/发票时间'), ctx.orderDate],
+    [tradeFieldLabel('Order currency', '订单币种'), ctx.currency],
+    [tradeFieldLabel('Order amount', '订单金额'), ctx.orderAmount],
+    [tradeFieldLabel('Shipped or not', '是否已发货?'), ctx.unshipped ? 'No' : 'Yes'],
+  ];
+}
+function tradeLogisticsReadRows(ctx) {
+  return ctx.unshipped
+    ? [[tradeFieldLabel('Shipped or not', '是否已发货?'), 'No'], [tradeFieldLabel('Estimated shipping date', '人民币订单的预计发货时间'), '2026-08-20']]
+    : [[tradeFieldLabel('Shipped or not', '是否已发货?'), 'Yes'], [tradeFieldLabel('Logistics company name', '物流公司名称'), 'Maersk Line'], [tradeFieldLabel('Logistics tracking number', '物流追踪号'), 'MSKU7834521', 'mono']];
+}
+function viewTradeRecordDetails(ctx, backView, backLabel) {
+  const goods = tradeGoodsReadValues();
+  const order = ctx.order;
+  const upload = ctx.upload;
+  const showLink = LINK_PAYMENT_VISIBLE && order && order.usedCNY < order.totalCNY;
+  const needsReupload = !!(upload && (upload.needsReupload || upload.status === 'Failed' || upload.status === 'File issue'));
+  const headerActions = [
+    upload ? uploadHistoryStatus(upload.status) : '',
+    upload ? `<button type="button" class="btn btn-secondary" onclick="toast('Downloading ${ctx.fileName}…')">${I.download} Download file</button>` : '',
+    showLink ? `<button class="btn btn-primary" onclick="go('link-payment','${order.id}')">${I.link} Link Payment</button>` : '',
+    ctx.unshipped && ctx.recordId ? `<button class="btn btn-secondary" onclick="go('supplement','${ctx.recordId}')">${I.truck} Supplement Logistics</button>` : '',
+    needsReupload ? `<button type="button" class="btn btn-primary" onclick="reuploadFromHistory('trade')">${I.upload} Re-upload</button>` : '',
+  ].filter(Boolean).join('');
+  const logisticsRows = tradeLogisticsReadRows(ctx);
+  const fromHistory = backView === 'upload-history';
+  const alertHtml = fromHistory && upload && (upload.message || upload.tip)
+    ? `<div class="${(upload.status === 'Failed' || upload.status === 'File issue' || upload.status === 'Partially accepted') ? 'alert-warn' : 'alert-info'}">
+        ${(upload.status === 'Failed' || upload.status === 'File issue' || upload.status === 'Partially accepted') ? I.alert : I.info}
+        <div style="flex:1">
+          ${upload.message ? `<p style="font-size:14px;font-weight:600;margin-bottom:4px">${upload.message}</p>` : ''}
+          ${upload.tip ? `<p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">${upload.tip}</p>` : ''}
+          ${ctx.unshipped && ctx.recordId ? `<button type="button" class="btn btn-sm btn-primary" style="margin-top:12px" onclick="go('supplement','${ctx.recordId}')">Supplement Logistics</button>` : ''}
+        </div>
+      </div>`
+    : (ctx.unshipped ? `<div class="alert-warn">
+        <div style="color:var(--warning)">${I.truck}</div>
+        <div style="flex:1">
+          <p style="font-weight:600;margin-bottom:4px">This order has not been shipped</p>
+          <p style="font-size:13px;color:var(--muted-foreground);margin-bottom:12px">Please supplement logistics documents to complete verification.</p>
+          <button class="btn btn-sm btn-primary" onclick="go('supplement','${ctx.recordId}')">Supplement Logistics</button>
+        </div>
+      </div>` : '');
   return `<div class="focused active">
     <div class="focused-top">
       <div class="focused-back-row">
@@ -9050,92 +9154,43 @@ function viewDetails() {
       <div class="focused-title-row">
         <div>
           <h1 style="font-size:28px;letter-spacing:-0.02em">Order details</h1>
-          <p style="font-size:14px;margin-top:4px">${r.orderNumber}</p>
+          <p style="font-size:14px;margin-top:4px">${ctx.orderNumber}</p>
         </div>
-        <div style="display:flex;gap:8px;flex-shrink:0">
-          ${showLink?`<button class="btn btn-primary" onclick="go('link-payment','${r.id}')">${I.link} Link Payment</button>`:''}
-          ${unshipped?`<button class="btn btn-secondary" onclick="go('supplement','${r.id}')">${I.truck} Supplement Logistics</button>`:''}
-        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end">${headerActions}</div>
       </div>
     </div>
     <div class="focused-body"><div class="focused-inner" style="max-width:960px;display:flex;flex-direction:column;gap:20px">
+      ${alertHtml}
       <div class="card card-lg">
-        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Basic Order information</h3>
-        <div class="details-grid">
-          ${[
-            ['Order number',r.orderNumber],['Order date',r.uploadDate],['Order amount',`${r.currency} ${r.orderAmountUSD}`],
-            ['Buyer name',r.buyerName],['Transaction source',r.source],['Shipment status',r.shipmentStatus],
-            ['Status',r.status],['Currency',r.currency],['Receiving country','China'],
-          ].map(([l,v])=>`<div class="read-field"><label>${l}</label><p>${v}</p></div>`).join('')}
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">${tradeFieldLabel('Order information', '订单信息')}</h3>
+        ${detailsFieldGrid(tradeOrderReadRows(ctx))}
+        <div class="read-field" style="margin-top:16px">
+          <label>${tradeFieldLabel('PI/CI upload', '发票合同上传')}</label>
+          <div style="margin-top:8px">${uploadedFileCard({
+            fileName: ctx.fileName,
+            onView: "openUploadedFilePreview('pici','" + String(ctx.fileName || '').replace(/\\\\/g,'\\\\\\\\').replace(/'/g,"\\\\'") + "')",
+          })}</div>
         </div>
       </div>
-
       <div class="card card-lg">
-        <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">Quota Usage</h3>
-        ${quotaBar(r.totalCNY, r.usedCNY, false)}
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">${tradeFieldLabel('Goods information', '货物信息')}</h3>
+        ${detailsFieldGrid([[tradeFieldLabel('Product name', '产品中文名称'), goods.productName], [tradeFieldLabel('Product quantity', '产品数量'), goods.productQty]], 2)}
       </div>
-
-      ${unshipped?`
-        <div class="alert-warn">
-          <div style="color:var(--warning)">${I.truck}</div>
-          <div style="flex:1">
-            <p style="font-weight:600;margin-bottom:4px">This order has not been shipped</p>
-            <p style="font-size:13px;color:var(--muted-foreground);margin-bottom:12px">Please supplement logistics documents to release the unshipped quota (${money(rem)}).</p>
-            <button class="btn btn-sm btn-primary" onclick="go('supplement','${r.id}')">Supplement Logistics</button>
-          </div>
-        </div>
-      `:`
-        <div class="card card-lg">
-          <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">Logistics information</h3>
-          <div class="details-table-wrap">
-            <table class="data">
-              <thead><tr>${['Method','Company','Tracking No.','Shipment Date','Related Item'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
-              <tbody><tr>
-                <td>Sea Freight</td>
-                <td>Maersk Line</td>
-                <td class="mono">MSKU3456789</td>
-                <td>${r.uploadDate}</td>
-                <td>Electronic Components</td>
-              </tr></tbody>
-            </table>
-          </div>
-        </div>
-      `}
-
-      ${LINK_PAYMENT_VISIBLE?`<div class="card card-lg">
-        <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">Linked Payments</h3>
-        <div class="details-table-wrap">
-          <table class="data">
-            <thead><tr>${['Payment ID','Received time','Payer','Payment amount','Linked Amount','Status'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
-            <tbody>${(r.usedCNY>0?LINKED:[]).map(p=>`<tr>
-              <td class="mono">${p.id}</td>
-              <td>${p.time}</td>
-              <td>${p.payer}</td>
-              <td>${p.amount}</td>
-              <td>${linkedAmt}</td>
-              <td><span class="chip chip-success">${I.check} Linked</span></td>
-            </tr>`).join('')||`<tr><td colspan="6" style="color:var(--muted-foreground)">No payments linked yet</td></tr>`}
-            </tbody>
-          </table>
-        </div>
-      </div>`:''}
-
       <div class="card card-lg">
-        <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">Goods information</h3>
-        <div class="details-table-wrap">
-          <table class="data">
-            <thead><tr>${['Product name','Product quantity'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
-            <tbody>
-              <tr><td>电子元件</td><td>500</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">${tradeFieldLabel('Logistics information', '物流信息')}</h3>
+        ${detailsFieldGrid(logisticsRows, ctx.unshipped ? 2 : 3)}
       </div>
     </div></div>
   </div>`;
 }
+function viewDetails() {
+  const order = getRecord();
+  const upload = findTradeUploadForOrder(order);
+  const backView = (state.detailReturn === 'upload-history' || state.detailReturn === 'upload-details') ? 'upload-history' : (state.detailReturn || 'trade-orders');
+  const backLabel = backView === 'upload-history' ? 'Upload History' : 'Trade Documents';
+  return viewTradeRecordDetails(buildTradeDetailContext(order, upload), backView, backLabel);
+}
 
-/* ─── Render ───────────────────────────────────────────── */
 function uploadHistoryStatus(status) {
   const map = {
     'Processed':'chip-success',
@@ -9151,12 +9206,14 @@ function uploadHistoryStatus(status) {
 
 function viewUploadDetails() {
   const r = getUploadRecord();
+  if (r.typeKey === 'trade') {
+    const order = RECORDS.find(item => item.id === r.recordId) || null;
+    return viewTradeRecordDetails(buildTradeDetailContext(order, r), 'upload-history', 'Upload History');
+  }
   const needsReupload = !!(r.needsReupload || r.status === 'Failed' || r.status === 'File issue' || r.status === 'Partially accepted');
   const isWarn = r.status === 'Failed' || r.status === 'File issue' || r.status === 'Partially accepted';
   const alertCls = isWarn ? 'alert-warn' : 'alert-info';
   const alertIco = isWarn ? I.alert : I.info;
-  const order = r.typeKey === 'trade' ? RECORDS.find(x => x.id === r.recordId) : null;
-  const unshipped = r.typeKey === 'trade' && (r.shipmentStatus === 'Unshipped' || (order && order.shipmentStatus === 'Unshipped'));
   const erpFieldMappings = r.typeKey === 'erp' ? [
     ['order_id','order_id','System identified','ERP-2026-001'],
     ['supplier_name','supplier_name','System identified','Shenzhen Tech Co.'],
@@ -9170,53 +9227,16 @@ function viewUploadDetails() {
     ['payment_terms','—','Not mapped','Net 30'],
   ] : [];
 
-  /* Header CTAs only: status · download file · download result (template) · full order (trade) · re-upload */
+  /* Header CTAs only: status · download file · download result (template) · re-upload */
   const headerActions = [
     uploadHistoryStatus(r.status),
     `<button type="button" class="btn btn-secondary" onclick="toast('Downloading ${r.fileName}…')">${I.download} Download file</button>`,
     r.canDownloadResult ? `<button type="button" class="btn btn-secondary" onclick="toast('Downloading result file…')">${I.download} Download result</button>` : '',
-    order ? `<button type="button" class="btn btn-secondary" onclick="state.detailReturn='upload-details';go('details','${order.id}')">${I.eye} Order details</button>` : '',
     needsReupload ? `<button type="button" class="btn btn-primary" onclick="reuploadFromHistory('${r.typeKey}')">${I.upload} Re-upload</button>` : '',
   ].filter(Boolean).join('');
 
   let typeBody = '';
-  if (r.typeKey === 'trade') {
-    typeBody = `
-      <div class="card card-lg">
-        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Order information</h3>
-        <div class="details-grid">
-          ${[
-            ['Order number', r.orderNumber || (order&&order.orderNumber) || '—'],
-            ['Buyer name', r.buyerName || (order&&order.buyerName) || '—'],
-            ['Transaction source', r.source || (order&&order.source) || '—'],
-            ['Order amount', r.orderAmount || (order?`${order.currency} ${order.orderAmountUSD}`:'—')],
-            ['Shipment status', r.shipmentStatus || (order&&order.shipmentStatus) || '—'],
-            ['Order status', order ? order.status : '—'],
-          ].map(([l,v])=>`<div class="read-field"><label>${l}</label><p>${v}</p></div>`).join('')}
-        </div>
-      </div>
-      ${unshipped?`
-        <div class="alert-warn">
-          ${I.truck}
-          <div style="flex:1">
-            <p style="font-weight:600;margin-bottom:4px">Logistics documents required</p>
-            <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:12px">Supplement logistics to release reserved unshipped quota.</p>
-            <button type="button" class="btn btn-sm btn-primary" onclick="go('supplement','${r.recordId}')">${I.truck} Supplement Logistics</button>
-          </div>
-        </div>`:`
-        <div class="card card-lg">
-          <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">Logistics information</h3>
-          <div class="details-table-wrap">
-            <table class="data">
-              <thead><tr>${['Method','Company','Tracking No.','Shipment Date','Related Item'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
-              <tbody><tr>
-                <td>Sea Freight</td><td>Maersk Line</td><td class="mono">MSKU3456789</td>
-                <td>${(r.uploadDate||'').slice(0,10)}</td><td>Electronic Components</td>
-              </tr></tbody>
-            </table>
-          </div>
-        </div>`}`;
-  } else if (r.typeKey === 'template') {
+  if (r.typeKey === 'template') {
     typeBody = `
       <div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Template CSV Result</h3>
