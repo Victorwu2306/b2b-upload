@@ -2518,11 +2518,8 @@ function tradeFieldNoteHtml(en, cn) {
   const text = tradeFieldNote(en, cn);
   if (!text) return '';
   const parts = splitDetailCopy(text, usesChineseCopy());
-  const bits = [];
-  if (parts.lang) bits.push(`<p class="field-note"><span class="req-k">${tradeFieldLabel('Language:', '语言要求：')}</span> ${parts.lang}</p>`);
-  if (parts.desc) bits.push(`<p class="field-note">${parts.desc}</p>`);
-  if (parts.when) bits.push(`<p class="field-note field-note-conditional"><span class="req-k">${tradeFieldLabel('Conditional:', '条件：')}</span> ${parts.when}</p>`);
-  return bits.join('');
+  if (parts.when) return `<p class="field-note field-note-conditional"><span class="req-k">${tradeFieldLabel('Conditional:', '条件：')}</span> ${parts.when}</p>`;
+  return '';
 }
 function setSupportedTxType(value) {
   state.supportedTxType = value;
@@ -7183,12 +7180,10 @@ function tradeAdvertisementBlock() {
           <div class="field">
             <label>Business Category ${req}</label>
             <select disabled><option>Goods</option><option selected>Service</option></select>
-            <p class="field-note">Goods/Service.</p>
           </div>
           <div class="field">
             <label>Business Subcategory/Transaction Mode ${req}</label>
             <select disabled><option>B2C</option><option>D2C</option><option selected>B2B</option></select>
-            <p class="field-note">B2C/D2C/B2B.</p>
           </div>
           <div class="field">
             <label>Trade Type ${req}</label>
@@ -7197,12 +7192,10 @@ function tradeAdvertisementBlock() {
           <div class="field">
             <label>Purpose of Remittance</label>
             <input value="Advertisement (code 228024)" readonly />
-            <p class="field-note">Advertisement (code 228024).</p>
           </div>
           <div class="field">
             <label>Merchant Order No. ${req}</label>
             <input class="mono" value="YP-20260715-AD-001" readonly />
-            <p class="field-note">YP: order ID + Product ID + Sub-order ID.</p>
           </div>
           <div class="field">
             <label>Order Time ${req}</label>
@@ -7239,12 +7232,10 @@ function tradeAdvertisementBlock() {
           <div class="field">
             <label>Platform Name ${req}</label>
             <input value="Google Ads" readonly />
-            <p class="field-note">Overseas AD platform name. Platform names can be inferred from order number prefixes/patterns; otherwise, Payo must indicate the platform name in the data row.</p>
           </div>
           <div class="field full">
             <label>Publisher ID/Seller ID ${req}</label>
             <input class="mono" value="pub-482910573" readonly />
-            <p class="field-note">Publisher’s account identifier on the AD platform, used to identify the payer entity.</p>
           </div>
         </div>
       </div>
@@ -7256,17 +7247,14 @@ function tradeAdvertisementBlock() {
           <div class="field">
             <label>Resource Name ${req}</label>
             <input value="YouTube — Pre-roll" readonly />
-            <p class="field-note">Display name of the resource (AD unit), such as the app name or website name.</p>
           </div>
           <div class="field">
             <label>Resource Type/advertising type ${req}</label>
             <input value="Video" readonly />
-            <p class="field-note">The format how the advertisement is displayed.</p>
           </div>
           <div class="field full">
             <label>Resource URL ${req}</label>
             <input type="url" value="https://youtube.com" readonly />
-            <p class="field-note">App Download URL / Website URL.</p>
           </div>
         </div>
       </div>
