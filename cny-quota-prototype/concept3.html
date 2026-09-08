@@ -769,10 +769,12 @@ table.data tr:hover td { background: var(--muted); }
   font-size: 13px;
 }
 .upload-zone {
-  border: 2px dashed var(--border); border-radius: 8px; padding: 32px;
-  text-align: center; background: #fff; transition: .15s;
+  border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px;
+  background: #fff; transition: .15s;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  text-align: left;
 }
-.upload-zone:hover { border-color: var(--primary); background: var(--secondary); }
+.upload-zone:hover { border-color: var(--primary); }
 .success-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 48px; }
 .success-box { text-align: center; max-width: 420px; }
 .success-icon {
@@ -1827,6 +1829,33 @@ table.data.req-v-table .detail-with-chip { flex-direction:column; align-items:fl
 }
 .file-ok-action:hover { background:var(--muted); color:var(--primary); }
 .file-ok-action svg { width:18px; height:18px; }
+.upload-box-block { display:flex; flex-direction:column; gap:12px; min-width:0; }
+.upload-box-title {
+  display:flex; align-items:center; gap:8px;
+  font-size:14px; font-weight:600; color:var(--foreground);
+}
+.upload-box-title svg { width:16px; height:16px; flex:0 0 16px; }
+.file-ok.upload-empty { cursor:pointer; }
+.file-ok.upload-empty.is-disabled { cursor:not-allowed; opacity:.55; }
+.file-ok.upload-empty:not(.is-disabled):hover { border-color:var(--primary); }
+.file-ok-check.upload-empty-ico {
+  background:var(--muted); color:var(--muted-foreground);
+}
+.file-ok-check.upload-empty-ico svg { width:12px; height:12px; }
+.upload-empty-btn {
+  height:32px; min-width:auto; padding:0 8px; flex:0 0 auto;
+  border:none; background:transparent; color:var(--primary);
+  font-size:14px; font-weight:600; border-radius:6px;
+}
+.upload-empty-btn:hover { background:var(--muted); color:var(--primary); }
+.upload-empty-btn:disabled {
+  color:var(--muted-foreground); background:transparent; cursor:not-allowed;
+}
+.file-ok .spin {
+  width:20px; height:20px; border-width:2px; flex:0 0 20px; margin:0;
+}
+.file-ok.upload-empty .file-ok-name,
+.file-ok.upload-busy .file-ok-name { white-space:normal; }
 .uploaded-preview-sheet { overflow:auto; }
 .uploaded-preview-doc { padding:24px; background:#F3F3F7; min-height:420px; }
 .uploaded-preview-page {
@@ -2145,8 +2174,9 @@ body.concept-3 {
   border-color:var(--primary); background:#F7F5FF; box-shadow:none;
 }
 .concept-3 .upload-zone {
-  border-radius:8px; background:#fff; border-color:#CFCFD9; padding:32px 16px;
+  border-radius:8px; background:#fff; border-color:#CFCFD9; padding:16px 20px;
 }
+.concept-3 .file-ok .spin { width:20px; height:20px; border-width:2px; }
 .concept-3 .upload-zone .btn-primary {
   height:32px; min-width:auto; padding:0 8px;
   border-color:transparent; background:transparent; color:var(--primary);
@@ -3293,7 +3323,7 @@ function setUploadV2Marketplace(value){
 function syncUploadV2PrerequisiteUI(){
   const w=state.wiz;if(!w||w.uploadVersion!==2)return;
   const enabled=uploadV2PrerequisitesComplete(w),zone=document.querySelector('[data-upload-v2-zone]'),button=document.querySelector('[data-upload-v2-button]');
-  if(zone){zone.style.cursor=enabled?'pointer':'not-allowed';zone.style.opacity=enabled?'1':'.55';}if(button)button.disabled=!enabled;
+  if(zone){zone.style.cursor=enabled?'pointer':'not-allowed';zone.style.opacity=enabled?'1':'.55';zone.classList.toggle('is-disabled',!enabled);}if(button)button.disabled=!enabled;
 }
 function setUploadV2SellerId(value){const w=state.wiz;if(!w||w.uploadVersion!==2)return;w.sellerId=String(value||'').slice(0,100);syncUploadV2PrerequisiteUI();}
 function isUploadV2TemplateCSV(category,headers) {
@@ -3674,6 +3704,43 @@ function uploadedFileCard(opts) {
       </div>
     </div>
     ${viewBtn || deleteBtn ? `<div class="file-ok-actions">${viewBtn}${deleteBtn}</div>` : ''}
+  </div>`;
+}
+function uploadBoxBlock(title, inner) {
+  return `<div class="upload-box-block">
+    <div class="upload-box-title">${I.upload} ${title}</div>
+    ${inner}
+  </div>`;
+}
+function emptyUploadBox(opts) {
+  const o = opts || {};
+  const disabled = !!o.disabled;
+  const onClick = o.onClick || '';
+  const clickAttr = onClick ? ` onclick="${onClick}"` : '';
+  const btnClick = onClick ? ` onclick="event.stopPropagation();${onClick}"` : '';
+  const zoneAttr = o.zoneAttr ? ` ${o.zoneAttr}` : '';
+  const buttonAttr = o.buttonAttr ? ` ${o.buttonAttr}` : '';
+  return `<div class="file-ok upload-empty${disabled ? ' is-disabled' : ''}"${zoneAttr}${clickAttr}>
+    <div class="file-ok-main">
+      <span class="file-ok-check upload-empty-ico" aria-hidden="true">${I.upload}</span>
+      <div class="file-ok-text">
+        <p class="file-ok-name">${o.title || 'Upload file'}</p>
+        ${o.meta ? `<p class="file-ok-meta">${o.meta}</p>` : ''}
+        ${o.hint ? `<p class="file-ok-meta">${o.hint}</p>` : ''}
+      </div>
+    </div>
+    <button type="button" class="upload-empty-btn"${buttonAttr}${disabled ? ' disabled' : ''}${btnClick}>${o.buttonLabel || 'Upload file'}</button>
+  </div>`;
+}
+function busyUploadBox(title, sub) {
+  return `<div class="file-ok upload-busy">
+    <div class="file-ok-main">
+      <span class="spin" aria-hidden="true"></span>
+      <div class="file-ok-text">
+        <p class="file-ok-name">${title}</p>
+        ${sub ? `<p class="file-ok-meta">${sub}</p>` : ''}
+      </div>
+    </div>
   </div>`;
 }
 function inferUploadedPreviewKind(fileName) {
@@ -5868,13 +5935,9 @@ function simulateErp(incomingFileName, outcome) {
     }
     w.dsState='mapped';
     w.isReplacement=false;
+    snapshotERPColumnMatchState(w);
     if (w.erpFlowVersion === 'v1') w.mappingExpanded = true;
     if (w.erpFlowVersion === 'v2') {
-      const stats = getERPMappingStats(w);
-      w.erp2IdentifiedSourceIds = stats.mapped.map(source => source.id);
-      w.erp2IdentifiedTargetNames = Array.from(new Set(stats.mapped.map(source => w.mappings[source.id]).filter(Boolean)));
-      w.erp2UnrecognizedSourceIds = stats.unmapped.map(source => source.id);
-      w.erp2HadUnrecognized = w.erp2UnrecognizedSourceIds.length > 0;
       w.erp2Stage = 2;
       w.erp2SupplementState = 'empty';
       w.erp2SupplementFileName = null;
@@ -5995,35 +6058,27 @@ function stepTemplateUpload() {
       <h2 style="font-size:20px;font-weight:700">${heading}</h2>
       <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">${subcopy}</p>
     </div>
-    ${templateCategoryFields(w)}
-    <div class="card" style="overflow:hidden">
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted)">
-        <div style="display:flex;align-items:center;gap:8px;font-weight:600">${I.upload} Template CSV</div>
-      </div>
-      <div style="padding:20px">`;
+    ${templateCategoryFields(w)}`;
+  let fileControl = '';
   if (w.csvState==='empty') {
-    body += `<div class="upload-zone" style="cursor:${canChooseFile?'pointer':'not-allowed'};opacity:${canChooseFile?'1':'.55'}" ${canChooseFile?'onclick="openUploadV2SamplePicker()"':''}>
-      <div style="color:var(--muted-foreground);margin-bottom:12px">${I.upload}</div>
-      <p style="font-size:15px;font-weight:600">Upload transaction CSV</p>
-      <p style="font-size:13px;color:var(--muted-foreground);margin:6px 0 14px">CSV · Max 50 MB</p>
-      <button class="btn btn-sm btn-primary" ${canChooseFile?'onclick="event.stopPropagation();openUploadV2SamplePicker()"':'disabled'}>Upload file</button>
-      ${canChooseFile?'':`<p style="font-size:12px;color:var(--muted-foreground);margin-top:12px">${marketplaceOnly?'Select a marketplace to enable file upload.':'Complete the required category information to enable file upload.'}</p>`}
-    </div>`;
+    fileControl = emptyUploadBox({
+      title: 'Upload transaction CSV',
+      meta: 'CSV · Max 50 MB',
+      hint: canChooseFile ? '' : (marketplaceOnly ? 'Select a marketplace to enable file upload.' : 'Complete the required category information to enable file upload.'),
+      disabled: !canChooseFile,
+      onClick: canChooseFile ? 'openUploadV2SamplePicker()' : '',
+      buttonLabel: 'Upload file',
+    });
   } else if (w.csvState==='processing') {
-    body += `<div class="upload-zone" style="border-color:var(--primary);background:var(--accent)">
-      <div class="spin" style="margin:0 auto 12px"></div>
-      <p style="font-size:14px;font-weight:600;color:var(--primary)">Parsing CSV file…</p>
-      <p style="font-size:13px;color:var(--muted-foreground);margin-top:4px">Validating rows and transaction data</p>
-    </div>`;
+    fileControl = busyUploadBox('Parsing CSV file…', 'Validating rows and transaction data');
   } else {
-    const sourceLabel = `${selectedCategory ? selectedCategory.label : '—'}${w.category==='marketplace' && w.marketplace ? ` · ${w.marketplace}` : ''}`;
-    body += uploadedFileCard({
+    fileControl = uploadedFileCard({
       fileName: w.fileName || 'template_transactions.csv',
       onView: "openUploadedFilePreview('template')",
       onDelete: 'deleteUploadedTemplateFile()',
     });
   }
-  body += `</div></div></div>`;
+  body += `${uploadBoxBlock('Template CSV', fileControl)}</div>`;
   return body;
 }
 
@@ -6100,12 +6155,12 @@ function erpReplaceDialogConcept2() {
           ${I.info}
           <p style="font-size:12px;line-height:1.45">Existing mapping decisions will be retained for columns with the same names.</p>
         </div>
-        <div class="upload-zone" style="cursor:pointer" onclick="uploadERPReplacementFromDialog()">
-          <div style="color:var(--muted-foreground);margin-bottom:10px">${I.upload}</div>
-          <p style="font-size:15px;font-weight:600">Upload corrected ERP CSV</p>
-          <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">CSV · Max 50 MB</p>
-          <button type="button" class="btn btn-primary" onclick="event.stopPropagation();uploadERPReplacementFromDialog()">Choose file</button>
-        </div>
+        ${emptyUploadBox({
+          title: 'Upload corrected ERP CSV',
+          meta: 'CSV · Max 50 MB',
+          onClick: 'uploadERPReplacementFromDialog()',
+          buttonLabel: 'Choose file',
+        })}
       </div>
     </div>
   </div>`;
@@ -6191,16 +6246,11 @@ function stepERPInfoConcept2(w, stats) {
 
   return `<div class="mapping-c2">
     ${erpScenarioControl()}
-    <div class="card erp-file-card" style="overflow:hidden">
-      <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} ERP CSV</div>
-      <div style="padding:20px">
-        ${uploadedFileCard({
-          fileName,
-          onView: "openUploadedFilePreview('erp')",
-          onDelete: 'deleteUploadedERPFile()',
-        })}
-      </div>
-    </div>
+    ${uploadBoxBlock('ERP CSV', uploadedFileCard({
+      fileName,
+      onView: "openUploadedFilePreview('erp')",
+      onDelete: 'deleteUploadedERPFile()',
+    }))}
 
     ${statusBlock}
     ${manualResolutionBlock}
@@ -6225,16 +6275,11 @@ function erpWizardTitle(w) {
 function erp2FileSummary(w, stats) {
   const entryCategory = w.entryCategory ? (TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label : '';
   const entryMarketplace = w.entryCategory==='marketplace'&&w.marketplace?w.marketplace:'';
-  return `<div class="card erp-file-card" style="overflow:hidden">
-    <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} Uploaded file</div>
-    <div style="padding:20px">
-      ${uploadedFileCard({
-        fileName: erpDisplayedFileName(w) || 'erp_missing_columns.csv',
-        onView: "openUploadedFilePreview('erp')",
-        onDelete: 'deleteUploadedERPFile()',
-      })}
-    </div>
-  </div>`;
+  return uploadBoxBlock('Uploaded file', uploadedFileCard({
+    fileName: erpDisplayedFileName(w) || 'erp_missing_columns.csv',
+    onView: "openUploadedFilePreview('erp')",
+    onDelete: 'deleteUploadedERPFile()',
+  }));
 }
 function mapTableHead() {
   return `<div class="map-head">
@@ -6315,6 +6360,36 @@ function duplicateSourceErrorHTML(source, otherTargetNames) {
   const otherLabel = others.map(formatFieldLabel).join(', ');
   return `<div class="map-row-error">${I.alert}<span>${formatFieldLabel(source.colName)} is already mapped to ${otherLabel}. Choose a different column.</span></div>`;
 }
+function snapshotERPColumnMatchState(w) {
+  if (!w) return;
+  const stats = getERPMappingStats(w);
+  w.erp2IdentifiedSourceIds = stats.mapped.map(source => source.id);
+  w.erp2IdentifiedTargetNames = Array.from(new Set(stats.mapped.map(source => w.mappings[source.id]).filter(Boolean)));
+  w.erp2UnrecognizedSourceIds = stats.unmapped.map(source => source.id);
+  w.erp2HadUnrecognized = w.erp2UnrecognizedSourceIds.length > 0;
+}
+function erpUnrecognizedFileColumns(w, sources, selectedSource) {
+  const all = (sources || []).filter(source => !source.unmappable);
+  const unrecognizedIds = (w && Array.isArray(w.erp2UnrecognizedSourceIds))
+    ? w.erp2UnrecognizedSourceIds.filter(Boolean)
+    : [];
+  const identifiedIds = (w && Array.isArray(w.erp2IdentifiedSourceIds))
+    ? w.erp2IdentifiedSourceIds.filter(Boolean)
+    : [];
+  if (unrecognizedIds.length) {
+    const allow = new Set(unrecognizedIds);
+    if (selectedSource && selectedSource.id) allow.add(selectedSource.id);
+    return all.filter(source => allow.has(source.id));
+  }
+  if (identifiedIds.length) {
+    const hide = new Set(identifiedIds);
+    return all.filter(source => !hide.has(source.id) || (selectedSource && source.id === selectedSource.id));
+  }
+  return all.filter(source => {
+    if (selectedSource && source.id === selectedSource.id) return true;
+    return !(w && w.mappings && w.mappings[source.id]);
+  });
+}
 function erpFileColumnOptions(targetName, sources, mappings, selectedSource) {
   const w = state.wiz;
   return (sources || []).map(source => {
@@ -6355,9 +6430,12 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
       const extra = conflict
         ? duplicateSourceErrorHTML(selectedSource, otherTargets)
         : showError ? `<div class="field-error">${I.alert}<span>${replacementReview?'Unable to recognize this column. Select a matching column from your file.':'Select a file column or None of above.'}</span></div>` : '';
+      const columnSources = manualStage
+        ? erpUnrecognizedFileColumns(state.wiz, availableSources, selectedSource)
+        : availableSources;
       const selectHTML = `<select class="${(showError||conflict)?'invalid':''}" aria-label="Choose an uploaded file column for ${targetName}" onchange="${updater}('${targetName}',this.value)">
               <option value="">Select a column from your file</option>
-              ${erpFileColumnOptions(targetName, availableSources, mappings, selectedSource)}
+              ${erpFileColumnOptions(targetName, columnSources, mappings, selectedSource)}
               ${manualStage?erpNoneOfAboveOption(noneSelected):''}
             </select>`;
       return `<div class="map-row ${rowState}${showError?' needs-selection':''}${conflict?' needs-selection':''}">
@@ -6462,10 +6540,7 @@ function stepERP2Upload(w) {
   const stats = getERPMappingStats(w);
   if (w.dsState === 'processing') {
     return `<div class="erp2-stage">${erpScenarioControl()}
-      <div class="upload-zone" style="border-color:var(--primary);background:var(--accent);padding:56px 32px">
-        <div class="spin" style="margin:0 auto 12px"></div>
-        <p style="font-size:14px;font-weight:600;color:var(--primary)">AI is analyzing your file and identifying fields…</p>
-      </div>
+      ${busyUploadBox('AI is analyzing your file and identifying fields…')}
     </div>`;
   }
   return `<div class="erp2-stage">${erpScenarioControl()}
@@ -6481,12 +6556,12 @@ function stepERP2Upload(w) {
           <p style="font-size:13px;color:var(--muted-foreground)">CSV · Max 50 MB · Keep the original header row.</p>
         </div>
       </div>
-      <div class="upload-zone" style="cursor:pointer;padding:48px 32px" onclick="${w.isReplacement?'openERPCorrectedFilePicker()':'openUploadV2SamplePicker()'}">
-        <div style="color:var(--muted-foreground);margin-bottom:12px">${I.upload}</div>
-        <p style="font-size:15px;font-weight:600">Upload ERP CSV</p>
-        <p style="font-size:13px;color:var(--muted-foreground);margin:6px 0 14px">CSV · Max 50 MB</p>
-        <button type="button" class="btn btn-sm btn-primary" onclick="event.stopPropagation();${w.isReplacement?'openERPCorrectedFilePicker()':'openUploadV2SamplePicker()'}">Upload file</button>
-      </div>`}
+      ${emptyUploadBox({
+        title: 'Upload ERP CSV',
+        meta: 'CSV · Max 50 MB',
+        onClick: w.isReplacement ? 'openERPCorrectedFilePicker()' : 'openUploadV2SamplePicker()',
+        buttonLabel: 'Upload file',
+      })}`}
   </div>`;
 }
 function erpUnmatchedDetailsIntro(count) {
@@ -6569,10 +6644,7 @@ function simulateERP2CorrectedUpload(outcome) {
     if (state.wiz !== w) return;
     applyERPCorrectedUpload(w, outcome);
     w.erp2ReplacementState = 'done';
-    const stats = getERPMappingStats(w);
-    w.erp2IdentifiedSourceIds = stats.mapped.map(source => source.id);
-    w.erp2IdentifiedTargetNames = Array.from(new Set(stats.mapped.map(source => w.mappings[source.id]).filter(Boolean)));
-    w.erp2UnrecognizedSourceIds = stats.unmapped.map(source => source.id);
+    snapshotERPColumnMatchState(w);
     render();
   }, 1200);
 }
@@ -6606,14 +6678,12 @@ function stepERP2Missing(w) {
       </div>
       <div class="erp2-supplement-body">
         <div class="erp2-draft-note">${I.info}<p>If you’ll complete the file later, save your progress as a draft for now.</p></div>
-        ${w.erp2ReplacementState === 'processing' ? `
-          <div class="upload-zone"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing the corrected file and reusing previous mappings…</p></div>` : `
-          <div class="upload-zone" style="cursor:pointer" onclick="openERPCorrectedFilePicker()">
-            <div style="color:var(--muted-foreground);margin-bottom:10px">${I.upload}</div>
-            <p style="font-size:15px;font-weight:600">Upload transaction document</p>
-            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include all original columns plus the ${formatMissingFieldsList(missingNames)} columns.</p>
-            <button type="button" class="btn btn-primary" onclick="event.stopPropagation();openERPCorrectedFilePicker()">Choose file</button>
-          </div>`}
+        ${w.erp2ReplacementState === 'processing' ? busyUploadBox('Analyzing the corrected file and reusing previous mappings…') : emptyUploadBox({
+            title: 'Upload transaction document',
+            meta: `Include all original columns plus the ${formatMissingFieldsList(missingNames)} columns.`,
+            onClick: 'openERPCorrectedFilePicker()',
+            buttonLabel: 'Choose file',
+          })}
       </div>
     </div>
   </div>`;
@@ -6756,9 +6826,12 @@ function erp3TargetMappingTable(w) {
       const extra = conflict
         ? duplicateSourceErrorHTML(selectedSource, otherTargets)
         : showError ? `<div class="field-error">${I.alert}<span>Select a file column or None of above.</span></div>` : '';
+      const columnSources = (row.status === 'unrecognized' || row.status === 'none')
+        ? erpUnrecognizedFileColumns(w, availableSources, selectedSource)
+        : availableSources;
       const selectHTML = `<select class="${(showError||conflict)?'invalid':''}" aria-label="Choose an uploaded file column for ${row.field.name}" ${isMissing?'disabled':''} onchange="updateERP2TargetMapping('${row.field.name}',this.value)">
               <option value="">${isMissing?'Not found in your file':'Select a column from your file'}</option>
-              ${isMissing?'':erpFileColumnOptions(row.field.name, availableSources, w.mappings, selectedSource)}
+              ${isMissing?'':erpFileColumnOptions(row.field.name, columnSources, w.mappings, selectedSource)}
               ${isMissing?'':erpNoneOfAboveOption(noneSelected)}
             </select>`;
       return `<div class="map-row ${row.status}${showError?' needs-selection':''}${conflict?' needs-selection':''}">
@@ -6786,6 +6859,7 @@ function simulateERP3CorrectedUpload(outcome) {
     applyERPCorrectedUpload(w, outcome);
     w.erp3ReplacementState = 'done';
     w.mappingAttempted = false;
+    snapshotERPColumnMatchState(w);
     render();
   }, 1200);
 }
@@ -6831,14 +6905,12 @@ function stepERP3Missing(w) {
         <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
       </div>
       <div class="erp3-corrected-body">
-        ${w.erp3ReplacementState === 'processing' ? `
-          <div class="upload-zone"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing the corrected file and reusing previous mappings…</p></div>` : `
-          <div class="upload-zone" style="cursor:pointer" onclick="openERPCorrectedFilePicker()">
-            <div style="color:var(--muted-foreground);margin-bottom:10px">${I.upload}</div>
-            <p style="font-size:15px;font-weight:600">Upload the complete corrected file</p>
-            <p style="font-size:12px;color:var(--muted-foreground);margin:6px 0 14px">Include every required header and the missing ${formatMissingFieldsList(missingNames)} data.</p>
-            <button type="button" class="btn btn-primary" onclick="event.stopPropagation();openERPCorrectedFilePicker()">Choose file</button>
-          </div>`}
+        ${w.erp3ReplacementState === 'processing' ? busyUploadBox('Analyzing the corrected file and reusing previous mappings…') : emptyUploadBox({
+            title: 'Upload the complete corrected file',
+            meta: `Include every required header and the missing ${formatMissingFieldsList(missingNames)} data.`,
+            onClick: 'openERPCorrectedFilePicker()',
+            buttonLabel: 'Choose file',
+          })}
       </div>
     </div>
   </div>`;
@@ -6960,27 +7032,18 @@ function stepERPInfo() {
       </div>
     </div>`;
   }
-  html += `<div class="card erp-file-card" style="overflow:hidden">
-    <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} ERP CSV</div>
-    <div style="padding:20px">`;
+  let fileControl = '';
   if (w.dsState==='empty') {
-    html += `${w.isReplacement ? `<div class="alert-info" style="margin-bottom:14px">
-        ${I.info}
-        <p style="font-size:12px;line-height:1.45"><strong>Upload the corrected file.</strong> Existing mappings are cached, and matching column names will keep their previous mapping.</p>
-      </div>` : ''}
-      <div class="upload-zone" style="cursor:pointer" onclick="${w.isReplacement?'openERPCorrectedFilePicker()':'openUploadV2SamplePicker()'}">
-      <div style="color:var(--muted-foreground);margin-bottom:12px">${I.upload}</div>
-      <p style="font-size:15px;font-weight:600">${w.isReplacement?'Upload corrected ERP CSV':'Upload ERP CSV'}</p>
-      <p style="font-size:13px;color:var(--muted-foreground);margin:6px 0 14px">CSV · Max 50 MB</p>
-      <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();${w.isReplacement?'openERPCorrectedFilePicker()':'openUploadV2SamplePicker()'}">Upload file</button>
-    </div>`;
+    fileControl = emptyUploadBox({
+      title: w.isReplacement ? 'Upload corrected ERP CSV' : 'Upload ERP CSV',
+      meta: 'CSV · Max 50 MB',
+      onClick: w.isReplacement ? 'openERPCorrectedFilePicker()' : 'openUploadV2SamplePicker()',
+      buttonLabel: 'Upload file',
+    });
   } else if (w.dsState==='processing') {
-    html += `<div class="upload-zone" style="border-color:var(--primary);background:var(--accent)">
-      <div class="spin" style="margin:0 auto 12px"></div>
-      <p style="font-size:14px;font-weight:600;color:var(--primary)">AI is analyzing your file and matching fields…</p>
-    </div>`;
+    fileControl = busyUploadBox('AI is analyzing your file and matching fields…');
   } else {
-    html += stats.missing.length ? `<div class="file-problem">${I.alert}
+    fileControl = stats.missing.length ? `<div class="file-problem">${I.alert}
       <div style="flex:1"><p style="font-weight:600">${w.fileName || 'drop_shipping_orders_Q3.xlsx'}</p>
       <p style="font-size:12px;color:var(--muted-foreground)">Uploaded on 2026-07-20 · ${stats.mapped.length} of ${stats.sources.length} file columns mapped · ${stats.missing.length} required column${stats.missing.length===1?'':'s'} missing</p></div>
       <button class="btn btn-xs btn-primary" onclick="replaceERPFile()">${I.rotate} Replace</button>
@@ -6990,7 +7053,11 @@ function stepERPInfo() {
       onDelete: 'deleteUploadedERPFile()',
     });
   }
-  html += `</div></div>`;
+  html += `${w.dsState==='empty' && w.isReplacement ? `<div class="alert-info" style="margin-bottom:0">
+        ${I.info}
+        <p style="font-size:12px;line-height:1.45"><strong>Upload the corrected file.</strong> Existing mappings are cached, and matching column names will keep their previous mapping.</p>
+      </div>` : ''}
+      ${uploadBoxBlock('ERP CSV', fileControl)}`;
   if (w.dsState==='mapped') {
     html += `${w.erp2ReplacementOutcome ? `<div style="display:flex;flex-direction:column;gap:16px">${erpReplacementNewColumnsSection(w)}</div>` : ''}
       ${w.cachedMatches && w.erp2ReplacementOutcome !== 'unrecognized' ? `<div class="alert-info">
@@ -7340,12 +7407,8 @@ function stepTradeUpload() {
       ? 'Upload sales contracts, PI, or CI. The file will be analyzed after you click Next.'
       : 'Upload service agreements, invoices, or contracts. The file will be analyzed after you click Next.';
   const hasFile = w.uploadState !== 'empty';
-  return `<div style="max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px">
-    ${tradeBusinessTypeField()}
-    ${hasFile ? `
-      <div class="card" style="overflow:hidden">
-        <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} Trade document file</div>
-        <div style="padding:20px;display:flex;flex-direction:column;gap:12px">
+  const fileControl = hasFile
+    ? `<div style="display:flex;flex-direction:column;gap:12px">
           ${uploadedFileCard({
             fileName: w.fileName || 'trade_document.pdf',
             onView: "openUploadedFilePreview('trade')",
@@ -7355,16 +7418,18 @@ function stepTradeUpload() {
             ${I.info}
             <p style="font-size:12px;line-height:1.45">Your file is uploaded but has not been analyzed yet. Click <strong>Next</strong> to extract and review its transaction information.</p>
           </div>
-        </div>
-      </div>` : `
-      <div class="upload-zone" style="cursor:${w.source?'pointer':'not-allowed'};padding:56px 32px;opacity:${w.source?'1':'.62'}" ${w.source?'onclick="simulateTradeUpload()"':''}>
-        <div style="width:64px;height:64px;border-radius:50%;background:var(--muted);display:grid;place-items:center;margin:0 auto 16px;color:var(--muted-foreground)">${I.upload}</div>
-        <p style="font-size:16px;font-weight:600">Upload trade documents</p>
-        <p style="font-size:14px;color:var(--muted-foreground);margin:8px auto 12px;max-width:420px">${uploadDescription}</p>
-        <p style="font-size:12px;color:var(--muted-foreground);margin-bottom:16px">Sales Contract · Service Agreement · PI · CI · PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB</p>
-        <button type="button" class="btn btn-primary" ${w.source?'onclick="event.stopPropagation();simulateTradeUpload()"':'disabled'}>Upload File</button>
-        ${w.source?'':`<p style="font-size:12px;color:var(--destructive);margin-top:12px">Select your business type before uploading.</p>`}
-      </div>`}
+        </div>`
+    : emptyUploadBox({
+        title: 'Upload trade documents',
+        meta: 'Sales Contract · Service Agreement · PI · CI · PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB',
+        hint: w.source ? uploadDescription : 'Select your business type before uploading.',
+        disabled: !w.source,
+        onClick: w.source ? 'simulateTradeUpload()' : '',
+        buttonLabel: 'Upload File',
+      });
+  return `<div style="max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px">
+    ${tradeBusinessTypeField()}
+    ${uploadBoxBlock('Trade document file', fileControl)}
   </div>`;
 }
 
@@ -8271,11 +8336,7 @@ function stepTradeInfo(hideHeading) {
   const isGoods = w.source === 'goods';
   if (w.uploadState === 'processing') {
     return `<div style="max-width:720px;margin:0 auto">
-      <div class="upload-zone" style="border-color:var(--primary);background:var(--accent);padding:56px 32px">
-        <div class="spin" style="margin:0 auto 16px"></div>
-        <p style="font-size:16px;font-weight:600;color:var(--primary)">Analyzing document…</p>
-        <p style="font-size:13px;color:var(--muted-foreground);margin-top:6px">AI is extracting ${isGoods?'contract and goods':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':w.source==='tourism'?'transaction and tourism':w.source==='software'?'transaction and software':w.source==='air-ticket'?'transaction and air ticket':w.source==='accommodation'?'transaction and accommodation':'transaction and service'} information</p>
-      </div>
+      ${busyUploadBox('Analyzing document…', `AI is extracting ${isGoods?'contract and goods':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':w.source==='tourism'?'transaction and tourism':w.source==='software'?'transaction and software':w.source==='air-ticket'?'transaction and air ticket':w.source==='accommodation'?'transaction and accommodation':'transaction and service'} information`)}
     </div>`;
   }
   if (w.uploadState !== 'done') {
@@ -8398,47 +8459,34 @@ function stepTradeDynamic() {
     : isGoods
       ? 'Upload a sales contract, purchase order, PI, CI, shipping, or customs document.'
       : 'Upload a service agreement, invoice, or contract.';
+  const extractCopy = `AI is extracting ${isGoods?'contract, goods, and logistics':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':w.source==='tourism'?'transaction and tourism':w.source==='software'?'transaction and software':w.source==='air-ticket'?'transaction and air ticket':w.source==='accommodation'?'transaction and accommodation':'transaction and service'} information.`;
   let fileBlock = '';
   if (w.uploadState === 'empty') {
-    fileBlock = `<div class="upload-zone" style="cursor:${w.source?'pointer':'not-allowed'};padding:44px 28px;opacity:${w.source?'1':'.62'}" ${w.source?'onclick="simulateTradeUpload()"':''}>
-      <div style="width:52px;height:52px;border-radius:50%;background:var(--muted);display:grid;place-items:center;margin:0 auto 14px;color:var(--muted-foreground)">${I.upload}</div>
-      <p style="font-size:16px;font-weight:600">Upload trade document</p>
-      <p style="font-size:13px;color:var(--muted-foreground);margin:7px auto 10px;max-width:440px">${uploadDescription}</p>
-      <p style="font-size:11px;color:var(--muted-foreground);margin-bottom:14px">PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB</p>
-      <button type="button" class="btn btn-primary" ${w.source?'onclick="event.stopPropagation();simulateTradeUpload()"':'disabled'}>Upload file</button>
-    </div>`;
+    fileBlock = emptyUploadBox({
+      title: 'Upload trade document',
+      meta: 'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB',
+      hint: uploadDescription,
+      disabled: !w.source,
+      onClick: w.source ? 'simulateTradeUpload()' : '',
+      buttonLabel: 'Upload file',
+    });
   } else if (w.uploadState === 'uploaded') {
-    fileBlock = `<div class="card" style="overflow:hidden">
-      <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} Trade document</div>
-      <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
+    fileBlock = `<div style="display:flex;flex-direction:column;gap:12px">
         ${uploadedFileCard({
           fileName: w.fileName || 'trade_document.pdf',
           onView: "openUploadedFilePreview('trade')",
           onDelete: 'deleteUploadedTradeFile()',
         })}
         <div class="alert-info">${I.info}<p style="font-size:12px">Preparing the document for automatic analysis…</p></div>
-      </div>
-    </div>`;
+      </div>`;
   } else if (w.uploadState === 'processing') {
-    fileBlock = `<div class="card" style="overflow:hidden">
-      <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} Trade document</div>
-      <div class="upload-zone" style="margin:20px;border-color:var(--primary);background:var(--accent);padding:38px 24px">
-        <div class="spin" style="margin:0 auto 14px"></div>
-        <p style="font-size:15px;font-weight:600;color:var(--primary)">Analyzing document…</p>
-        <p style="font-size:12px;color:var(--muted-foreground);margin-top:5px">AI is extracting ${isGoods?'contract, goods, and logistics':w.source==='international-logistics'?'transaction and logistics':w.source==='advertisement'?'transaction and advertisement':w.source==='tourism'?'transaction and tourism':w.source==='software'?'transaction and software':w.source==='air-ticket'?'transaction and air ticket':w.source==='accommodation'?'transaction and accommodation':'transaction and service'} information.</p>
-      </div>
-    </div>`;
+    fileBlock = busyUploadBox('Analyzing document…', extractCopy);
   } else {
-    fileBlock = `<div class="card" style="overflow:hidden">
-      <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} Trade document</div>
-      <div style="padding:20px">
-        ${uploadedFileCard({
-          fileName: w.fileName || 'trade_document.pdf',
-          onView: "openUploadedFilePreview('trade')",
-          onDelete: 'deleteUploadedTradeFile()',
-        })}
-      </div>
-    </div>`;
+    fileBlock = uploadedFileCard({
+      fileName: w.fileName || 'trade_document.pdf',
+      onView: "openUploadedFilePreview('trade')",
+      onDelete: 'deleteUploadedTradeFile()',
+    });
   }
 
   return `<div class="trade-dynamic-form">
@@ -8838,18 +8886,14 @@ function viewSupplement() {
         <h3 style="font-size:15px;font-weight:600;margin-bottom:4px">Upload logistics documents</h3>
         <p style="font-size:13px;color:var(--muted-foreground);margin-bottom:16px">Supported: shipping receipt, logistics invoice, tracking document, other shipment evidence.</p>
         ${state.logState==='empty'?`
-          <div class="upload-zone" onclick="simulateLog()">
-            <div style="color:var(--primary);margin-bottom:8px">${I.upload}</div>
-            <p style="font-weight:600;margin-bottom:4px">Upload logistics evidence</p>
-            <p style="font-size:12px;color:var(--muted-foreground);margin-bottom:12px">PDF · PNG · JPG · Max 20 MB</p>
-            <button type="button" class="btn btn-primary" onclick="event.stopPropagation();simulateLog()">Upload file</button>
-          </div>
+          ${emptyUploadBox({
+            title: 'Upload logistics evidence',
+            meta: 'PDF · PNG · JPG · Max 20 MB',
+            onClick: 'simulateLog()',
+            buttonLabel: 'Upload file',
+          })}
         `:state.logState==='processing'?`
-          <div class="upload-zone" style="border-color:var(--primary);background:var(--accent)">
-            <div class="spin" style="margin:0 auto 12px"></div>
-            <p style="font-weight:600;color:var(--primary)">Analyzing logistics documents…</p>
-            <p style="font-size:12px;color:var(--muted-foreground);margin-top:6px">Extracting shipment and tracking information</p>
-          </div>
+          ${busyUploadBox('Analyzing logistics documents…', 'Extracting shipment and tracking information')}
         `:`
           ${uploadedFileCard({
             fileName: state.logFileName || 'shipping_receipt_and_tracking.pdf',
@@ -9212,17 +9256,17 @@ function uploadV2Body(w) {
   const marketplaceOnly=isMarketplaceOnlyWizard(w);
   const canUpload=uploadV2PrerequisitesComplete(w);
   let fileContent='';
-  if (w.v2FileState==='analyzing') fileContent=`<div class="upload-zone" style="border-color:var(--primary);background:var(--accent)"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing file type and structure…</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:4px">Selecting the appropriate processing flow</p></div>`;
+  if (w.v2FileState==='analyzing') fileContent=busyUploadBox('Analyzing file type and structure…','Selecting the appropriate processing flow');
   else if (w.v2FileState==='ready') fileContent=uploadedFileCard({fileName:w.fileName,onView:"openUploadedFilePreview('v2')",onDelete:'deleteUploadedV2File()'});
   else if (w.v2FileState==='error') fileContent=`<div style="display:flex;flex-direction:column;gap:12px"><div class="file-problem">${I.alert}<div style="flex:1"><p class="mono" style="font-weight:600">${escapeHTML(w.fileName||'File not accepted')}</p><p style="font-size:12px;margin-top:3px">${w.routeError}</p></div></div><button type="button" class="btn btn-secondary" style="align-self:flex-start" onclick="openUploadV2SamplePicker()">Choose another file</button></div>`;
-  else fileContent=`<div class="upload-zone" data-upload-v2-zone style="cursor:${canUpload?'pointer':'not-allowed'};padding:52px 32px;opacity:${canUpload?'1':'.55'}" onclick="openUploadV2SamplePicker()"><div style="color:var(--muted-foreground);margin-bottom:12px">${I.upload}</div><p style="font-size:15px;font-weight:600">Upload transaction document</p><p style="font-size:13px;color:var(--muted-foreground);margin:6px 0 14px">PDF, JPG, PNG, TIFF, DOC, DOCX, CSV · Max 50 MB</p><button type="button" class="btn btn-primary" data-upload-v2-button onclick="event.stopPropagation();openUploadV2SamplePicker()" ${canUpload?'':'disabled'}>Choose file</button>${canUpload?'':'<p style="font-size:12px;color:var(--muted-foreground);margin-top:12px">Complete the category details to enable upload.</p>'}</div>`;
+  else fileContent=emptyUploadBox({title:'Upload transaction document',meta:'PDF, JPG, PNG, TIFF, DOC, DOCX, CSV · Max 50 MB',hint:canUpload?'':'Complete the category details to enable upload.',disabled:!canUpload,onClick:'openUploadV2SamplePicker()',buttonLabel:'Choose file',zoneAttr:'data-upload-v2-zone',buttonAttr:'data-upload-v2-button'});
   return `<div style="display:flex;flex-direction:column;gap:20px">
     ${uploadFlowVersionSelector(w)}
     <div><h2 style="font-size:20px;font-weight:700">${marketplaceOnly?'Upload marketplace CSV':'Upload your document'}</h2></div>
     <div class="template-upload-fields">${marketplaceOnly?'':`<div class="field"><label>What was this transaction for? <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.category?'':'placeholder'}" onchange="setUploadV2Category(this.value)"><option value="">Select a category</option>${wizardCategoryOptions(w).map(type=>`<option value="${type.key}" ${w.category===type.key?'selected':''}>${type.label}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div>${selected?`<p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">${selected.desc}</p>`:''}</div>`}
     ${w.category==='marketplace'?`<div class="field"><label>Select the marketplace <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.marketplace?'':'placeholder'}" onchange="setUploadV2Marketplace(this.value)"><option value="">Select a marketplace</option>${MARKETPLACE_UPLOAD_OPTIONS.map(name=>`<option value="${name}" ${w.marketplace===name?'selected':''}>${name}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Choose the marketplace associated with these transaction records.</p></div>`:''}
     ${uploadV2NeedsSellerId(w)?`<div class="field"><label>Seller ID <span style="color:var(--destructive)">*</span></label><input maxlength="100" value="${escapeHTML(w.sellerId)}" placeholder="Enter your ${w.marketplace} Seller ID" oninput="setUploadV2SellerId(this.value)" /><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Required to associate this upload with the correct store.</p></div>`:''}</div>
-    <div class="card" style="overflow:hidden"><div style="padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} Upload file</div><div style="padding:20px">${fileContent}</div></div>
+    ${uploadBoxBlock('Upload file', fileContent)}
   </div>`;
 }
 function viewWizardUpload() {
