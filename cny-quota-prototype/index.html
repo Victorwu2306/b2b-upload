@@ -8706,7 +8706,7 @@ function viewERP() {
                 <td class="mono" style="color:var(--muted-foreground)">${r.uploadDate}</td>
                 <td><span class="chip ${style[r.status]}">${r.status}</span></td>
                 <td>
-                  <button type="button" class="btn btn-xs btn-secondary" onclick="go('erp-details','${r.id}')">${I.eye} View details</button>
+                  <button type="button" class="btn-link" onclick="go('erp-details','${r.id}')">View details</button>
                 </td>
               </tr>
             `).join('')}</tbody>
@@ -9543,7 +9543,7 @@ function viewUploadHistory() {
                     ? `<span class="money-value" style="color:var(--muted-foreground)">Est. ${money(r.potentialQuota)}</span>`
                     : `<span style="color:var(--switch)">—</span>`)}</td>
                 <td>
-                  <button type="button" class="btn btn-xs btn-secondary" onclick="openUploadDetail('${r.id}')">${I.eye} View details</button>
+                  <button type="button" class="btn-link" onclick="openUploadDetail('${r.id}')">View details</button>
                 </td>
               </tr>
             `).join('')}</tbody>
