@@ -2366,7 +2366,6 @@ const DOCUMENT_REQUIRED_DETAILS = {
     { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'Validate against PI/CI/contract.', descCN:'与形式发票/商业发票/合同核对。', example:'48,500.00' },
     { name:'platform_website_name', label:'E-commerce platform name/business website name', labelCN:'店铺网站名称', desc:'Language: ENG. To parse from URL.', descCN:'语言要求：英文。从网址解析。', example:'Amazon' },
     { name:'business_url', label:'Business URL', labelCN:'业务/店铺链接', desc:'', descCN:'', example:'https://www.amazon.com' },
-    { name:'pi_ci_upload', label:'PI/CI upload', labelCN:'发票合同上传', desc:'Not UD, but we collect it for OCR.', descCN:'非申报数据，但会采集用于 OCR。', example:'Sales_Contract_Q3_2026.pdf' },
     { name:'product_name', label:'Product name', labelCN:'产品中文名称', desc:'Language: Chinese. Transcribe to Chinese. Use "|" between product names.', descCN:'语言要求：中文。转写为中文，多个产品名称之间用 “|” 分隔。', example:'电子元件|包装材料|工业连接器' },
     { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1,750' },
     { name:'shipped_or_not', label:'Shipped or not', labelCN:'是否已发货?', desc:'', descCN:'', example:'Yes' },
@@ -2402,7 +2401,6 @@ const DOCUMENT_REQUIRED_DETAILS = {
     { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'Validate against PI/CI/contract.', descCN:'与形式发票/商业发票/合同核对。', example:'48,500.00' },
     { name:'platform_website_name', label:'E-commerce platform name/business website name', labelCN:'店铺网站名称', desc:'Language: ENG. To parse from URL.', descCN:'语言要求：英文。从网址解析。', example:'Amazon' },
     { name:'business_url', label:'Business URL', labelCN:'业务/店铺链接', desc:'', descCN:'', example:'https://www.amazon.com' },
-    { name:'pi_ci_upload', label:'PI/CI upload', labelCN:'发票合同上传', desc:'Not UD, but we collect it for OCR.', descCN:'非申报数据，但会采集用于 OCR。', example:'Sales_Contract_Q3_2026.pdf' },
     { name:'product_name', label:'Product name', labelCN:'产品中文名称', desc:'Language: Chinese. Transcribe to Chinese. Use "|" between product names.', descCN:'语言要求：中文。转写为中文，多个产品名称之间用 “|” 分隔。', example:'电子元件|包装材料|工业连接器' },
     { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1,750' },
     { name:'shipped_or_not', label:'Shipped or not', labelCN:'是否已发货?', desc:'', descCN:'', example:'Yes' },
@@ -3086,7 +3084,6 @@ function resetWiz(kind) {
       goodsView: 'cards',
       tradePreviewOpen: false,
       analysisScheduled: false,
-      piCiRemoved: false,
       logisticsUploadState: 'empty',
       logisticsFileName: null,
       logisticsCompany: 'Maersk Line',
@@ -3805,17 +3802,6 @@ function deleteUploadedTradeFile() {
 function deleteUploadedV2File() {
   state.filePreview = null;
   resetUploadV2File();
-}
-function deleteUploadedPiCiFile() {
-  const w = state.wiz; if (!w) return;
-  w.piCiRemoved = true;
-  state.filePreview = null;
-  render();
-}
-function simulatePiCiUpload() {
-  const w = state.wiz; if (!w) return;
-  w.piCiRemoved = false;
-  render();
 }
 function deleteUploadedLogisticsFile() {
   state.logState = 'empty';
@@ -7243,7 +7229,6 @@ function replaceTradeFile() {
   w.tradeStage = 1;
   w.uploadState = 'empty';
   w.fileName = null;
-  w.piCiRemoved = false;
   w.shipped = null;
   w.logisticsUploadState = 'empty';
   w.logisticsFileName = null;
@@ -7261,7 +7246,6 @@ function setTradeSource(value) {
   if (w.source !== value && w.uploadState !== 'empty') {
     w.uploadState = 'empty';
     w.fileName = null;
-    w.piCiRemoved = false;
     w.shipped = null;
     w.logisticsUploadState = 'empty';
     w.logisticsFileName = null;
@@ -7362,7 +7346,6 @@ function tradeGoodsTable() {
   const productName = items.map(function(r) { return r.nameCN; }).join('|');
   const productQty = items.reduce(function(sum, r) { return sum + (parseFloat(r.qty) || 0); }, 0).toLocaleString('en-US');
   const isLogistics = w.source === 'international-logistics';
-  const fileName = w.fileName || 'Sales_Contract_Q3_2026.pdf';
   return `<div class="review-card">
       <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Order information', '订单信息')}</span></div>
       <div class="review-card-b">
@@ -7418,21 +7401,6 @@ function tradeGoodsTable() {
           <div class="field">
             <label>${tradeFieldLabel('Business URL', '业务/店铺链接')} ${req}</label>
             <input value="https://www.amazon.com" readonly />
-          </div>
-          <div class="field full">
-            <label>${tradeFieldLabel('PI/CI upload', '发票合同上传')} ${req}</label>
-            ${w.piCiRemoved ? `<div class="upload-zone" style="cursor:pointer;padding:22px 16px;margin-top:0" onclick="simulatePiCiUpload()">
-              <div style="color:var(--muted-foreground);margin-bottom:8px">${I.upload}</div>
-              <p style="font-size:14px;font-weight:600">Upload PI/CI</p>
-              <p style="font-size:12px;color:var(--muted-foreground);margin:4px 0 10px">PDF · Max 50 MB</p>
-              <button type="button" class="btn btn-sm btn-primary" onclick="event.stopPropagation();simulatePiCiUpload()">Upload file</button>
-            </div>` : uploadedFileCard({
-              fileName,
-              style: 'margin-top:0',
-              onView: "openUploadedFilePreview('pici')",
-              onDelete: 'deleteUploadedPiCiFile()',
-            })}
-            ${note('Not UD, but we collect it for OCR.', '非申报数据，但会采集用于 OCR。')}
           </div>
         </div>
       </div>
@@ -8995,13 +8963,6 @@ function viewTradeRecordDetails(ctx, backView, backLabel) {
       <div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">${tradeFieldLabel('Order information', '订单信息')}</h3>
         ${detailsFieldGrid(tradeOrderReadRows(ctx))}
-        <div class="read-field" style="margin-top:16px">
-          <label>${tradeFieldLabel('PI/CI upload', '发票合同上传')}</label>
-          <div style="margin-top:8px">${uploadedFileCard({
-            fileName: ctx.fileName,
-            onView: "openUploadedFilePreview('pici','" + String(ctx.fileName || '').replace(/\\\\/g,'\\\\\\\\').replace(/'/g,"\\\\'") + "')",
-          })}</div>
-        </div>
       </div>
       <div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">${tradeFieldLabel('Goods information', '货物信息')}</h3>
