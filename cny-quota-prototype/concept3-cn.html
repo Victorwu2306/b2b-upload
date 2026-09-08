@@ -2237,7 +2237,7 @@ const MARKETPLACE_UPLOAD_OPTIONS = Object.values(MARKETPLACE_UPLOAD_GROUPS).flat
 const TRADE_SOURCES = [
   { key:'goods', label:'Goods', desc:'Physical products, including retail, wholesale, and drop shipping' },
   { key:'software', label:'Software', desc:'Software licenses, SaaS subscriptions, and digital product fees' },
-  { key:'international-logistics', label:'International Logistics', desc:'Cross-border freight, logistics, and shipping service fees' },
+  { key:'international-logistics', label:'International logistics', desc:'Cross-border freight, logistics, and shipping service fees' },
   { key:'advertisement', label:'Advertisement', desc:'Online and offline advertising, media buying, and campaign fees' },
   { key:'communication', label:'Communication', desc:'Telecom, messaging, and other communication service charges' },
   { key:'air-ticket', label:'Air ticket', desc:'Business travel airfare and related airline booking fees' },
@@ -2288,78 +2288,78 @@ const DOCUMENT_REQUIRED_DETAILS = {
     { name:'logistics_number', label:'Logistics number (optional)', labelCN:'物流单号（选填）', desc:'The tracking number from the logistics provider.', descCN:'物流服务商提供的运单号。', example:'MSKU7834521' },
   ],
   goods: [
-    { name:'business_subcategory', label:'Business Subcategory/Transaction Mode', labelCN:'贸易方式/交易编码', desc:'Language: UI language. User selects their category from DL.', descCN:'语言要求：界面语言。用户从下拉列表中选择类别。', example:'B2B' },
-    { name:'trade_type', label:'Trade Type', labelCN:'贸易类型', desc:'Language: UI language. User selects their category from DL.', descCN:'语言要求：界面语言。用户从下拉列表中选择类别。', example:'Goods' },
-    { name:'merchant_order_no', label:'Merchant Order No.', labelCN:'商户订单编号', desc:'Unique order ID traceable to original platform.', descCN:'可追溯至原平台的唯一订单号。', example:'PO-2026-07-0892' },
-    { name:'buyer_payer_name', label:'Buyer\'s English Name/Payer Name', labelCN:'买家名称', desc:'Language: Latin letter. Payer name matches with buyer name.', descCN:'语言要求：拉丁字母。付款人姓名须与买家名称一致。', example:'Shenzhen Global Trade Co., Ltd.' },
-    { name:'destination_country', label:'Destination Country', labelCN:'收货国家或地区', desc:'Language: UI language.', descCN:'语言要求：界面语言。', example:'China' },
-    { name:'order_time', label:'Order Time', labelCN:'订单签约时间/发票时间', desc:'Contract date.', descCN:'签约日期。', example:'2026-07-15' },
-    { name:'order_currency', label:'Order Currency', labelCN:'订单币种', desc:'Language: UI language. Three-digit code.', descCN:'语言要求：界面语言。三位代码。', example:'USD' },
-    { name:'order_amount', label:'Order Amount', labelCN:'订单金额', desc:'Validate against PI/CI/contract.', descCN:'与形式发票/商业发票/合同核对。', example:'48,500.00' },
-    { name:'platform_website_name', label:'e-Commerce Platform Name/Business Website Name', labelCN:'店铺网站名称', desc:'Language: ENG. To parse from URL.', descCN:'语言要求：英文。从网址解析。', example:'Amazon' },
+    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易方式/交易编码', desc:'Language: UI language. User selects their category from DL.', descCN:'语言要求：界面语言。用户从下拉列表中选择类别。', example:'B2B' },
+    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Language: UI language. User selects their category from DL.', descCN:'语言要求：界面语言。用户从下拉列表中选择类别。', example:'Goods' },
+    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单编号', desc:'Unique order ID traceable to original platform.', descCN:'可追溯至原平台的唯一订单号。', example:'PO-2026-07-0892' },
+    { name:'buyer_payer_name', label:'Buyer\'s English name/payer name', labelCN:'买家名称', desc:'Language: Latin letter. Payer name matches with buyer name.', descCN:'语言要求：拉丁字母。付款人姓名须与买家名称一致。', example:'Shenzhen Global Trade Co., Ltd.' },
+    { name:'destination_country', label:'Destination country', labelCN:'收货国家或地区', desc:'Language: UI language.', descCN:'语言要求：界面语言。', example:'China' },
+    { name:'order_time', label:'Order time', labelCN:'订单签约时间/发票时间', desc:'Contract date.', descCN:'签约日期。', example:'2026-07-15' },
+    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'Language: UI language. Three-digit code.', descCN:'语言要求：界面语言。三位代码。', example:'USD' },
+    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'Validate against PI/CI/contract.', descCN:'与形式发票/商业发票/合同核对。', example:'48,500.00' },
+    { name:'platform_website_name', label:'E-commerce platform name/business website name', labelCN:'店铺网站名称', desc:'Language: ENG. To parse from URL.', descCN:'语言要求：英文。从网址解析。', example:'Amazon' },
     { name:'business_url', label:'Business URL', labelCN:'业务/店铺链接', desc:'', descCN:'', example:'https://www.amazon.com' },
     { name:'pi_ci_upload', label:'PI/CI upload', labelCN:'发票合同上传', desc:'Not UD, but we collect it for OCR.', descCN:'非申报数据，但会采集用于 OCR。', example:'Sales_Contract_Q3_2026.pdf' },
-    { name:'product_name', label:'Product Name', labelCN:'产品中文名称', desc:'Language: Chinese. Transcribe to Chinese. Use "|" between product names.', descCN:'语言要求：中文。转写为中文，多个产品名称之间用 “|” 分隔。', example:'电子元件|包装材料|工业连接器' },
-    { name:'product_quantity', label:'Product Quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1,750' },
+    { name:'product_name', label:'Product name', labelCN:'产品中文名称', desc:'Language: Chinese. Transcribe to Chinese. Use "|" between product names.', descCN:'语言要求：中文。转写为中文，多个产品名称之间用 “|” 分隔。', example:'电子元件|包装材料|工业连接器' },
+    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1,750' },
     { name:'shipped_or_not', label:'Shipped or not', labelCN:'是否已发货?', desc:'', descCN:'', example:'Yes' },
     { name:'logistics_company_name', label:'Logistics company name', labelCN:'物流公司名称', desc:'Language: original language. Required when shipped.', descCN:'语言要求：原文。已发货时必填。', example:'Maersk Line' },
     { name:'logistics_tracking_number', label:'Logistics tracking number', labelCN:'物流追踪号', desc:'Require 1/max 6, when shipped.', descCN:'已发货时必填，需 1 个物流追踪号，最多 6 个。', example:'MSKU7834521' },
     { name:'estimated_shipping_date', label:'Estimated shipping date', labelCN:'人民币订单的预计发货时间', desc:'Required when not shipped.', descCN:'未发货时必填。', example:'2026-08-15' },
   ],
   software: [
-    { name:'business_subcategory', label:'Business Subcategory/Transaction Mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
-    { name:'merchant_order_no', label:'Merchant Order No.', labelCN:'商户订单号', desc:'', descCN:'', example:'SW-2026-0142' },
-    { name:'order_currency', label:'Order Currency', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217.', descCN:'语言要求：英文三字码（ISO 4217）。', example:'USD' },
-    { name:'order_amount', label:'Order Amount', labelCN:'订单金额', desc:'', descCN:'', example:'48,500.00' },
-    { name:'order_time', label:'Order Time', labelCN:'订单签约时间/发票时间', desc:'Signing date / invoice date.', descCN:'签约日期/发票日期。', example:'2026-07-15' },
-    { name:'payer_name', label:'Payer Name', labelCN:'付款人姓名', desc:'', descCN:'', example:'Chen Wei' },
+    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
+    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'', descCN:'', example:'SW-2026-0142' },
+    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217.', descCN:'语言要求：英文三字码（ISO 4217）。', example:'USD' },
+    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'', descCN:'', example:'48,500.00' },
+    { name:'order_time', label:'Order time', labelCN:'订单签约时间/发票时间', desc:'Signing date / invoice date.', descCN:'签约日期/发票日期。', example:'2026-07-15' },
+    { name:'payer_name', label:'Payer name', labelCN:'付款人姓名', desc:'', descCN:'', example:'Chen Wei' },
     { name:'software_category', label:'Software category', labelCN:'软件类别', desc:'', descCN:'', example:'Productivity' },
     { name:'software_identifier', label:'Software identifier', labelCN:'软件标识符', desc:'', descCN:'', example:'com.adobe.creativecloud' },
     { name:'software_name', label:'Software name', labelCN:'软件名称', desc:'', descCN:'', example:'Adobe Creative Cloud' },
     { name:'launch_date', label:'Launch date', labelCN:'发布日期', desc:'', descCN:'', example:'2026-07-01' },
-    { name:'product_quantity', label:'Product Quantity', labelCN:'产品数量', desc:'', descCN:'', example:'25' },
-    { name:'trade_type', label:'Trade Type', labelCN:'贸易类型', desc:'', descCN:'', example:'Software' },
+    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'', descCN:'', example:'25' },
+    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'', descCN:'', example:'Software' },
     { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'', descCN:'', example:'https://www.adobe.com' },
-    { name:'platform_order_no', label:'Platform Order No./App store order No.', labelCN:'平台或应用商店订单号', desc:'App store order No.', descCN:'应用商店订单号。', example:'APP-STORE-88421' },
-    { name:'software_provider', label:'Software Provider', labelCN:'软件提供方', desc:'Developer name on the app store or software listing.', descCN:'应用商店或软件列表上的开发者名称。', example:'Adobe Inc.' },
+    { name:'platform_order_no', label:'Platform order no./app store order no.', labelCN:'平台或应用商店订单号', desc:'App store order No.', descCN:'应用商店订单号。', example:'APP-STORE-88421' },
+    { name:'software_provider', label:'Software provider', labelCN:'软件提供方', desc:'Developer name on the app store or software listing.', descCN:'应用商店或软件列表上的开发者名称。', example:'Adobe Inc.' },
   ],
   'international-logistics': [
-    { name:'business_subcategory', label:'Business Subcategory/Transaction Mode', labelCN:'贸易方式/交易编码', desc:'Language: UI language. User selects their category from DL.', descCN:'语言要求：界面语言。用户从下拉列表中选择类别。', example:'B2B' },
-    { name:'trade_type', label:'Trade Type', labelCN:'贸易类型', desc:'Language: UI language. User selects their category from DL.', descCN:'语言要求：界面语言。用户从下拉列表中选择类别。', example:'International Logistics' },
-    { name:'merchant_order_no', label:'Merchant Order No.', labelCN:'商户订单编号', desc:'Unique order ID traceable to original platform.', descCN:'可追溯至原平台的唯一订单号。', example:'PO-2026-07-0892' },
-    { name:'buyer_payer_name', label:'Buyer\'s English Name/Payer Name', labelCN:'买家名称', desc:'Language: Latin letter. Payer name matches with buyer name.', descCN:'语言要求：拉丁字母。付款人姓名须与买家名称一致。', example:'Shenzhen Global Trade Co., Ltd.' },
-    { name:'destination_country', label:'Destination Country', labelCN:'收货国家或地区', desc:'Language: UI language.', descCN:'语言要求：界面语言。', example:'China' },
-    { name:'order_time', label:'Order Time', labelCN:'订单签约时间/发票时间', desc:'Contract date.', descCN:'签约日期。', example:'2026-07-15' },
-    { name:'order_currency', label:'Order Currency', labelCN:'订单币种', desc:'Language: UI language. Three-digit code.', descCN:'语言要求：界面语言。三位代码。', example:'USD' },
-    { name:'order_amount', label:'Order Amount', labelCN:'订单金额', desc:'Validate against PI/CI/contract.', descCN:'与形式发票/商业发票/合同核对。', example:'48,500.00' },
-    { name:'platform_website_name', label:'e-Commerce Platform Name/Business Website Name', labelCN:'店铺网站名称', desc:'Language: ENG. To parse from URL.', descCN:'语言要求：英文。从网址解析。', example:'Amazon' },
+    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易方式/交易编码', desc:'Language: UI language. User selects their category from DL.', descCN:'语言要求：界面语言。用户从下拉列表中选择类别。', example:'B2B' },
+    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Language: UI language. User selects their category from DL.', descCN:'语言要求：界面语言。用户从下拉列表中选择类别。', example:'International logistics' },
+    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单编号', desc:'Unique order ID traceable to original platform.', descCN:'可追溯至原平台的唯一订单号。', example:'PO-2026-07-0892' },
+    { name:'buyer_payer_name', label:'Buyer\'s English name/payer name', labelCN:'买家名称', desc:'Language: Latin letter. Payer name matches with buyer name.', descCN:'语言要求：拉丁字母。付款人姓名须与买家名称一致。', example:'Shenzhen Global Trade Co., Ltd.' },
+    { name:'destination_country', label:'Destination country', labelCN:'收货国家或地区', desc:'Language: UI language.', descCN:'语言要求：界面语言。', example:'China' },
+    { name:'order_time', label:'Order time', labelCN:'订单签约时间/发票时间', desc:'Contract date.', descCN:'签约日期。', example:'2026-07-15' },
+    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'Language: UI language. Three-digit code.', descCN:'语言要求：界面语言。三位代码。', example:'USD' },
+    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'Validate against PI/CI/contract.', descCN:'与形式发票/商业发票/合同核对。', example:'48,500.00' },
+    { name:'platform_website_name', label:'E-commerce platform name/business website name', labelCN:'店铺网站名称', desc:'Language: ENG. To parse from URL.', descCN:'语言要求：英文。从网址解析。', example:'Amazon' },
     { name:'business_url', label:'Business URL', labelCN:'业务/店铺链接', desc:'', descCN:'', example:'https://www.amazon.com' },
     { name:'pi_ci_upload', label:'PI/CI upload', labelCN:'发票合同上传', desc:'Not UD, but we collect it for OCR.', descCN:'非申报数据，但会采集用于 OCR。', example:'Sales_Contract_Q3_2026.pdf' },
-    { name:'product_name', label:'Product Name', labelCN:'产品中文名称', desc:'Language: Chinese. Transcribe to Chinese. Use "|" between product names.', descCN:'语言要求：中文。转写为中文，多个产品名称之间用 “|” 分隔。', example:'电子元件|包装材料|工业连接器' },
-    { name:'product_quantity', label:'Product Quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1,750' },
+    { name:'product_name', label:'Product name', labelCN:'产品中文名称', desc:'Language: Chinese. Transcribe to Chinese. Use "|" between product names.', descCN:'语言要求：中文。转写为中文，多个产品名称之间用 “|” 分隔。', example:'电子元件|包装材料|工业连接器' },
+    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1,750' },
     { name:'shipped_or_not', label:'Shipped or not', labelCN:'是否已发货?', desc:'', descCN:'', example:'Yes' },
     { name:'logistics_company_name', label:'Logistics company name', labelCN:'物流公司名称', desc:'Language: original language. Required when shipped.', descCN:'语言要求：原文。已发货时必填。', example:'Maersk Line' },
     { name:'logistics_tracking_number', label:'Logistics tracking number', labelCN:'物流追踪号', desc:'Require 1/max 6, when shipped.', descCN:'已发货时必填，需 1 个物流追踪号，最多 6 个。', example:'MSKU7834521' },
     { name:'estimated_shipping_date', label:'Estimated shipping date', labelCN:'人民币订单的预计发货时间', desc:'Required when not shipped.', descCN:'未发货时必填。', example:'2026-08-15' },
   ],
   advertisement: [
-    { name:'business_category', label:'Business Category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
-    { name:'business_subcategory', label:'Business Subcategory/Transaction Mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2B' },
-    { name:'trade_type', label:'Trade Type', labelCN:'贸易类型', desc:'Advertisement.', descCN:'广告。', example:'Advertisement' },
-    { name:'purpose_of_remittance', label:'Purpose of Remittance', labelCN:'汇款用途', desc:'Advertisement (code 228024).', descCN:'广告（编码 228024）。', example:'Advertisement (code 228024)' },
-    { name:'merchant_order_no', label:'Merchant Order No.', labelCN:'商户订单号', desc:'YP: order ID + Product ID + Sub-order ID.', descCN:'YP：订单号 + 产品号 + 子订单号。', example:'YP-20260715-AD-001' },
-    { name:'order_time', label:'Order Time', labelCN:'订单签约时间/发票时间', desc:'', descCN:'', example:'2026-07-15' },
-    { name:'order_amount', label:'Order Amount', labelCN:'订单金额', desc:'', descCN:'', example:'48,500.00' },
-    { name:'order_currency', label:'Order Currency', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217. Currency of the revenue.', descCN:'语言要求：英文三字码（ISO 4217）。收款币种。', example:'USD' },
-    { name:'advertising_brand', label:'Advertising brand/Product Name', labelCN:'广告品牌', desc:'', descCN:'', example:'Nike' },
+    { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
+    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2B' },
+    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Advertisement.', descCN:'广告。', example:'Advertisement' },
+    { name:'purpose_of_remittance', label:'Purpose of remittance', labelCN:'汇款用途', desc:'Advertisement (code 228024).', descCN:'广告（编码 228024）。', example:'Advertisement (code 228024)' },
+    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'YP: order ID + Product ID + Sub-order ID.', descCN:'YP：订单号 + 产品号 + 子订单号。', example:'YP-20260715-AD-001' },
+    { name:'order_time', label:'Order time', labelCN:'订单签约时间/发票时间', desc:'', descCN:'', example:'2026-07-15' },
+    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'', descCN:'', example:'48,500.00' },
+    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217. Currency of the revenue.', descCN:'语言要求：英文三字码（ISO 4217）。收款币种。', example:'USD' },
+    { name:'advertising_brand', label:'Advertising brand/product name', labelCN:'广告品牌', desc:'', descCN:'', example:'Nike' },
     { name:'placement_region', label:'Placement region', labelCN:'投放地区', desc:'', descCN:'', example:'Southeast Asia' },
     { name:'display_times', label:'Display times/product quantity', labelCN:'展示次数', desc:'', descCN:'', example:'1,250,000' },
-    { name:'platform_name', label:'Platform Name', labelCN:'广告平台名称', desc:'Overseas AD platform name. Platform names can be inferred from order number prefixes/patterns; otherwise, Payo must indicate the platform name in the data row.', descCN:'境外广告平台名称。可根据订单号前缀或规则推断；否则须在数据行中标明平台名称。', example:'Google Ads' },
-    { name:'publisher_id', label:'Publisher ID/Seller ID', labelCN:'发布商账号标识', desc:'Publisher’s account identifier on the AD platform, used to identify the payer entity.', descCN:'广告平台上的发布商账号标识，用于识别付款主体。', example:'pub-482910573' },
-    { name:'resource_name', label:'Resource Name', labelCN:'广告资源名称', desc:'Display name of the resource (AD unit), such as the app name or website name.', descCN:'广告资源（广告位）展示名称，如应用名称、网站名称。', example:'YouTube — Pre-roll' },
-    { name:'resource_type', label:'Resource Type/advertising type', labelCN:'广告资源类型/广告形式', desc:'The format how the advertisement is displayed.', descCN:'广告展示形式。', example:'Video' },
+    { name:'platform_name', label:'Platform name', labelCN:'广告平台名称', desc:'Overseas AD platform name. Platform names can be inferred from order number prefixes/patterns; otherwise, Payo must indicate the platform name in the data row.', descCN:'境外广告平台名称。可根据订单号前缀或规则推断；否则须在数据行中标明平台名称。', example:'Google Ads' },
+    { name:'publisher_id', label:'Publisher ID/seller ID', labelCN:'发布商账号标识', desc:'Publisher’s account identifier on the AD platform, used to identify the payer entity.', descCN:'广告平台上的发布商账号标识，用于识别付款主体。', example:'pub-482910573' },
+    { name:'resource_name', label:'Resource name', labelCN:'广告资源名称', desc:'Display name of the resource (AD unit), such as the app name or website name.', descCN:'广告资源（广告位）展示名称，如应用名称、网站名称。', example:'YouTube — Pre-roll' },
+    { name:'resource_type', label:'Resource type/advertising type', labelCN:'广告资源类型/广告形式', desc:'The format how the advertisement is displayed.', descCN:'广告展示形式。', example:'Video' },
     { name:'resource_url', label:'Resource URL', labelCN:'广告资源链接', desc:'App Download URL / Website URL.', descCN:'应用下载链接 / 网站链接。', example:'https://youtube.com' },
-    { name:'payee_name', label:'Payee Name', labelCN:'境内持卡收款人中文名', desc:'Language: Chinese. Chinese name of the domestic cardholder payee.', descCN:'语言要求：中文。境内持卡收款人中文名。', example:'张伟' },
+    { name:'payee_name', label:'Payee name', labelCN:'境内持卡收款人中文名', desc:'Language: Chinese. Chinese name of the domestic cardholder payee.', descCN:'语言要求：中文。境内持卡收款人中文名。', example:'张伟' },
   ],
   communication: [
     { name:'order_id', desc:'Unique invoice or service-order identifier', example:'CM-2026-2204' },
@@ -2371,63 +2371,63 @@ const DOCUMENT_REQUIRED_DETAILS = {
     { name:'transaction_date', desc:'Invoice date (YYYY-MM-DD)', example:'2026-07-15' },
   ],
   'air-ticket': [
-    { name:'business_category', label:'Business Category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
-    { name:'business_subcategory', label:'Business Subcategory/Transaction Mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
-    { name:'merchant_order_no', label:'Merchant Order No.', labelCN:'商户订单号', desc:'', descCN:'', example:'TK-2026-7741' },
-    { name:'order_currency', label:'Order Currency', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217.', descCN:'语言要求：英文三字码（ISO 4217）。', example:'USD' },
-    { name:'order_amount', label:'Order Amount', labelCN:'订单金额', desc:'', descCN:'', example:'2,180.00' },
-    { name:'order_time', label:'Order Time', labelCN:'订单创建时间', desc:'', descCN:'', example:'2026-07-15' },
-    { name:'payer_name', label:'Payer Name', labelCN:'付款人姓名', desc:'', descCN:'', example:'Chen Wei' },
+    { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
+    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
+    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'', descCN:'', example:'TK-2026-7741' },
+    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217.', descCN:'语言要求：英文三字码（ISO 4217）。', example:'USD' },
+    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'', descCN:'', example:'2,180.00' },
+    { name:'order_time', label:'Order time', labelCN:'订单创建时间', desc:'', descCN:'', example:'2026-07-15' },
+    { name:'payer_name', label:'Payer name', labelCN:'付款人姓名', desc:'', descCN:'', example:'Chen Wei' },
     { name:'flight_departure_country', label:'Flight departure country', labelCN:'航班出发地', desc:'', descCN:'', example:'China' },
     { name:'flight_destination', label:'Flight destination', labelCN:'航班目的地', desc:'', descCN:'', example:'United States' },
     { name:'number_of_passengers', label:'Number of passengers', labelCN:'乘客人数', desc:'', descCN:'', example:'1' },
-    { name:'product_quantity', label:'Product Quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1' },
-    { name:'trade_type', label:'Trade Type', labelCN:'贸易类型', desc:'', descCN:'', example:'Air ticket' },
+    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1' },
+    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'', descCN:'', example:'Air ticket' },
     { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'', descCN:'', example:'https://www.ceair.com' },
-    { name:'departure_date', label:'Departure Date', labelCN:'出发日期', desc:'Departure date.', descCN:'出发日期。', example:'2026-08-12' },
-    { name:'flight_number', label:'Flight Number', labelCN:'航班号', desc:'Flight number.', descCN:'航班号。', example:'MU583' },
-    { name:'passenger_first_name', label:'Passenger First Name', labelCN:'乘客名字', desc:'Given name (as shown on ID).', descCN:'证件上的名字（名）。', example:'Wei' },
-    { name:'passenger_id_type', label:'Passenger ID Type', labelCN:'乘客身份证件类型', desc:'Passport / ID Card.', descCN:'护照 / 身份证。', example:'Passport' },
-    { name:'passenger_last_name', label:'Passenger Last Name', labelCN:'乘客姓氏', desc:'Surname (as shown on ID).', descCN:'证件上的姓氏。', example:'Zhang' },
-    { name:'ticket_number', label:'Ticket Number', labelCN:'电子客票号', desc:'Electronic ticket number (required after ticketing).', descCN:'电子客票号（出票后必填）。', example:'781-1234567890' },
+    { name:'departure_date', label:'Departure date', labelCN:'出发日期', desc:'Departure date.', descCN:'出发日期。', example:'2026-08-12' },
+    { name:'flight_number', label:'Flight number', labelCN:'航班号', desc:'Flight number.', descCN:'航班号。', example:'MU583' },
+    { name:'passenger_first_name', label:'Passenger first name', labelCN:'乘客名字', desc:'Given name (as shown on ID).', descCN:'证件上的名字（名）。', example:'Wei' },
+    { name:'passenger_id_type', label:'Passenger ID type', labelCN:'乘客身份证件类型', desc:'Passport / ID Card.', descCN:'护照 / 身份证。', example:'Passport' },
+    { name:'passenger_last_name', label:'Passenger last name', labelCN:'乘客姓氏', desc:'Surname (as shown on ID).', descCN:'证件上的姓氏。', example:'Zhang' },
+    { name:'ticket_number', label:'Ticket number', labelCN:'电子客票号', desc:'Electronic ticket number (required after ticketing).', descCN:'电子客票号（出票后必填）。', example:'781-1234567890' },
   ],
   accommodation: [
-    { name:'business_category', label:'Business Category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
-    { name:'business_subcategory', label:'Business Subcategory/Transaction Mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
-    { name:'merchant_order_no', label:'Merchant Order No.', labelCN:'商户订单号', desc:'', descCN:'', example:'HT-2026-5520' },
-    { name:'order_currency', label:'Order Currency/feeType', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217.', descCN:'语言要求：英文三字码（ISO 4217）。', example:'USD' },
-    { name:'order_amount', label:'Order Amount/totalFee', labelCN:'订单金额', desc:'', descCN:'', example:'1,680.00' },
-    { name:'order_time', label:'Order Time/orderDate', labelCN:'订单签约时间/发票时间', desc:'Signing date / invoice date.', descCN:'签约日期/发票日期。', example:'2026-07-15' },
-    { name:'payer_name', label:'Payer Name', labelCN:'付款人姓名', desc:'Payer’s name: individual name when custType is INDIVIDUAL, company name when custType is COMPANY.', descCN:'付款人姓名：客户类型为个人时填写个人姓名，为公司时填写公司名称。', example:'Chen Wei' },
+    { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
+    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
+    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'', descCN:'', example:'HT-2026-5520' },
+    { name:'order_currency', label:'Order currency/feeType', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217.', descCN:'语言要求：英文三字码（ISO 4217）。', example:'USD' },
+    { name:'order_amount', label:'Order amount/totalFee', labelCN:'订单金额', desc:'', descCN:'', example:'1,680.00' },
+    { name:'order_time', label:'Order time/orderDate', labelCN:'订单签约时间/发票时间', desc:'Signing date / invoice date.', descCN:'签约日期/发票日期。', example:'2026-07-15' },
+    { name:'payer_name', label:'Payer name', labelCN:'付款人姓名', desc:'Payer’s name: individual name when custType is INDIVIDUAL, company name when custType is COMPANY.', descCN:'付款人姓名：客户类型为个人时填写个人姓名，为公司时填写公司名称。', example:'Chen Wei' },
     { name:'hotel_city', label:'Hotel city', labelCN:'酒店所在城市', desc:'', descCN:'', example:'Shenzhen' },
-    { name:'hotel_name', label:'Hotel Name', labelCN:'酒店名称', desc:'', descCN:'', example:'Park Hyatt Shenzhen' },
+    { name:'hotel_name', label:'Hotel name', labelCN:'酒店名称', desc:'', descCN:'', example:'Park Hyatt Shenzhen' },
     { name:'number_of_guests', label:'Number of guests', labelCN:'入住人数', desc:'', descCN:'', example:'2' },
-    { name:'guest_name', label:'Guest Name', labelCN:'入住人姓名', desc:'', descCN:'', example:'Wei Zhang' },
+    { name:'guest_name', label:'Guest name', labelCN:'入住人姓名', desc:'', descCN:'', example:'Wei Zhang' },
     { name:'check_in_date', label:'Check-in date', labelCN:'入住日期', desc:'', descCN:'', example:'2026-08-12' },
     { name:'check_in_days', label:'Check-in days', labelCN:'入住天数', desc:'', descCN:'', example:'4' },
-    { name:'product_quantity', label:'Product Quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1' },
-    { name:'trade_type', label:'Trade Type', labelCN:'贸易类型', desc:'', descCN:'', example:'Accommodation' },
+    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1' },
+    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'', descCN:'', example:'Accommodation' },
     { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'', descCN:'', example:'https://www.hyatt.com' },
   ],
   tourism: [
-    { name:'business_category', label:'Business Category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
-    { name:'business_subcategory', label:'Business Subcategory/Transaction Mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
-    { name:'trade_type', label:'Trade Type', labelCN:'贸易类型', desc:'', descCN:'', example:'Tourism' },
-    { name:'order_date', label:'Order Date', labelCN:'下单日期时间', desc:'Date and time when the order was placed.', descCN:'下单日期和时间。', example:'2026-07-15 10:30' },
-    { name:'merchant_order_no', label:'Merchant Order No.', labelCN:'商户订单号', desc:'', descCN:'', example:'TR-2026-0198' },
-    { name:'order_currency', label:'Order Currency', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217. Currency of the platform order.', descCN:'语言要求：英文三字码（ISO 4217）。平台订单币种。', example:'USD' },
-    { name:'unit_price', label:'Unit Price', labelCN:'单价', desc:'The price of the unit product.', descCN:'单位产品价格。', example:'3,200.00' },
-    { name:'product_quantity', label:'Product Quantity', labelCN:'数量', desc:'Number of units purchased for this product.', descCN:'该产品的购买数量。', example:'2' },
-    { name:'order_amount', label:'Order Amount', labelCN:'订单金额', desc:'', descCN:'', example:'6,400.00' },
-    { name:'payer_name', label:'Payer Name', labelCN:'付款人姓名', desc:'', descCN:'', example:'Chen Wei' },
+    { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
+    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
+    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'', descCN:'', example:'Tourism' },
+    { name:'order_date', label:'Order date', labelCN:'下单日期时间', desc:'Date and time when the order was placed.', descCN:'下单日期和时间。', example:'2026-07-15 10:30' },
+    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'', descCN:'', example:'TR-2026-0198' },
+    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217. Currency of the platform order.', descCN:'语言要求：英文三字码（ISO 4217）。平台订单币种。', example:'USD' },
+    { name:'unit_price', label:'Unit price', labelCN:'单价', desc:'The price of the unit product.', descCN:'单位产品价格。', example:'3,200.00' },
+    { name:'product_quantity', label:'Product quantity', labelCN:'数量', desc:'Number of units purchased for this product.', descCN:'该产品的购买数量。', example:'2' },
+    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'', descCN:'', example:'6,400.00' },
+    { name:'payer_name', label:'Payer name', labelCN:'付款人姓名', desc:'', descCN:'', example:'Chen Wei' },
     { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'', descCN:'', example:'https://www.booking.com' },
     { name:'tourism_city', label:'Tourism city', labelCN:'旅游城市', desc:'', descCN:'', example:'Tokyo' },
     { name:'booker_full_name', label:'Booker\'s Full Name', labelCN:'预订人全名', desc:'Full name of the person making the booking.', descCN:'预订人的全名。', example:'Chen Wei' },
-    { name:'number_of_guests', label:'Number of Guests', labelCN:'游客人数', desc:'Total number of travellers covered by this booking.', descCN:'此订单覆盖的游客总人数。', example:'2' },
-    { name:'platform_name', label:'Platform Name', labelCN:'平台名称', desc:'Language: original language. The official name of the overseas OTA platform.', descCN:'语言要求：原文。境外 OTA 平台官方名称。', example:'Booking.com' },
-    { name:'service_name', label:'Service Name', labelCN:'服务名称', desc:'Clear description of the tourism service.', descCN:'旅游服务的明确描述。', example:'7-day Japan business travel package' },
-    { name:'service_end_date', label:'Service End Date', labelCN:'服务结束日期', desc:'Scheduled end date of the service.', descCN:'服务的计划结束日期。', example:'2026-09-07' },
-    { name:'service_start_date', label:'Service Start Date', labelCN:'服务开始日期', desc:'Scheduled start date of the service.', descCN:'服务的计划开始日期。', example:'2026-09-01' },
+    { name:'number_of_guests', label:'Number of guests', labelCN:'游客人数', desc:'Total number of travellers covered by this booking.', descCN:'此订单覆盖的游客总人数。', example:'2' },
+    { name:'platform_name', label:'Platform name', labelCN:'平台名称', desc:'Language: original language. The official name of the overseas OTA platform.', descCN:'语言要求：原文。境外 OTA 平台官方名称。', example:'Booking.com' },
+    { name:'service_name', label:'Service name', labelCN:'服务名称', desc:'Clear description of the tourism service.', descCN:'旅游服务的明确描述。', example:'7-day Japan business travel package' },
+    { name:'service_end_date', label:'Service end date', labelCN:'服务结束日期', desc:'Scheduled end date of the service.', descCN:'服务的计划结束日期。', example:'2026-09-07' },
+    { name:'service_start_date', label:'Service start date', labelCN:'服务开始日期', desc:'Scheduled start date of the service.', descCN:'服务的计划开始日期。', example:'2026-09-01' },
   ],
 };
 function documentRequiredDetails(typeKey) {
@@ -3837,13 +3837,13 @@ function uploadHistorySection(records, heading='Order List', sub='Track quota us
       <div><h2 class="section-title">${heading}</h2><p class="section-sub">${sub}</p></div>
     </div>
     <div class="filters" style="margin-bottom:12px">
-      <div class="filter-field" style="min-width:140px"><label>Order Number</label>
+      <div class="filter-field" style="min-width:140px"><label>Order number</label>
         <div class="search-wrap">${I.search}<input value="${f.order}" placeholder="Search..." oninput="setFilter('order', this.value)" /></div>
       </div>
-      <div class="filter-field" style="min-width:160px"><label>Buyer Name</label>
+      <div class="filter-field" style="min-width:160px"><label>Buyer name</label>
         <div class="search-wrap">${I.search}<input value="${f.buyer}" placeholder="Search..." oninput="setFilter('buyer', this.value)" /></div>
       </div>
-      <div class="filter-field"><label>Upload Date</label>
+      <div class="filter-field"><label>Upload date</label>
         <input type="date" value="${f.date}" onchange="setFilter('date', this.value)" />
       </div>
       <div class="filter-field"><label>Status</label>
@@ -3853,7 +3853,7 @@ function uploadHistorySection(records, heading='Order List', sub='Track quota us
           <option ${f.status==='Fully Used'?'selected':''}>Fully Used</option>
         </select>
       </div>
-      <div class="filter-field"><label>Shipment Status</label>
+      <div class="filter-field"><label>Shipment status</label>
         <select onchange="setFilter('shipment', this.value)">
           <option value="">All</option>
           <option ${f.shipment==='Shipped'?'selected':''}>Shipped</option>
@@ -3866,8 +3866,8 @@ function uploadHistorySection(records, heading='Order List', sub='Track quota us
       ${empty?`<div style="padding:56px;text-align:center;color:var(--muted-foreground)">No records match your filters.</div>`:`
       <div style="overflow-x:auto"><table class="data">
         <thead><tr>
-          <th>Upload Time</th><th>Order / File Information</th><th>Quota Added</th>
-          <th>Shipment Status</th><th>Status</th><th>Action</th>
+          <th>Upload time</th><th>Order / file information</th><th>Quota added</th>
+          <th>Shipment status</th><th>Status</th><th>Action</th>
         </tr></thead>
         <tbody>${draftRows}${filtered.map(r=>`
           <tr>
@@ -4411,7 +4411,7 @@ function erpGuidePanel() {
           </div>
         </section>
         <section>
-          <p style="font-size:13px;font-weight:600;margin-bottom:10px">Required Columns</p>
+          <p style="font-size:13px;font-weight:600;margin-bottom:10px">Required columns</p>
           <div class="table-card"><div style="overflow-x:auto"><table class="data" style="min-width:0;font-size:12px">
             <thead><tr><th>Column name</th><th>Description</th><th>Example</th></tr></thead>
             <tbody>${ERP_REQUIRED_FIELDS.map(f=>`<tr>
@@ -5740,8 +5740,8 @@ function stepTemplateResult() {
 }
 function stepTemplateV2Review() {
   const w=state.wiz,category=(TEMPLATE_TYPES.find(type=>type.key===w.category)||{}).label||'—';
-  const details=[['File Name',w.fileName||'template_transactions.csv'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[]),['File Type','Template CSV']];
-  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} Uploaded file summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p class="${label==='File Name'?'mono':''}">${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
+  const details=[['File name',w.fileName||'template_transactions.csv'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[]),['File type','Template CSV']];
+  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} Uploaded file summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p class="${label==='File name'?'mono':''}">${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
 }
 
 function viewWizardTemplate() {
@@ -6729,7 +6729,7 @@ function stepERPInfo() {
       <div>
       <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:12px;flex-wrap:wrap">
         <div>
-          <p style="font-size:15px;font-weight:600">Field Mapping Results</p>
+          <p style="font-size:15px;font-weight:600">Field mapping results</p>
           <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px">Resolve issues from top to bottom, then review all successful mappings.</p>
         </div>
         <span style="font-size:12px;color:var(--muted-foreground)">Changes are saved automatically</span>
@@ -6807,7 +6807,7 @@ function stepERPLink() {
     <div class="card card-pad">
       <p style="font-size:12px;font-weight:600;color:var(--muted-foreground);text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px">Order Summary</p>
       <div class="grid-4" style="gap:16px">
-        ${[['Order Amount','USD 48,500.00'],['Buyer Name','Shenzhen Global Trade'],['Shipment Status','In Transit'],['Available Receivable','USD 48,500.00']].map(([l,v])=>`<div><label style="font-size:12px;color:var(--muted-foreground)">${l}</label><p style="font-size:14px;font-weight:600;margin-top:2px">${v}</p></div>`).join('')}
+        ${[['Order amount','USD 48,500.00'],['Buyer name','Shenzhen Global Trade'],['Shipment status','In Transit'],['Available receivable','USD 48,500.00']].map(([l,v])=>`<div><label style="font-size:12px;color:var(--muted-foreground)">${l}</label><p style="font-size:14px;font-weight:600;margin-top:2px">${v}</p></div>`).join('')}
       </div>
     </div>
     <label style="display:flex;align-items:center;gap:10px;cursor:pointer;width:fit-content" onclick="state.wiz.skipLink=!state.wiz.skipLink;render()">
@@ -6859,7 +6859,7 @@ function stepERPReview() {
     <div class="review-card">
       <div class="review-card-h">${I.file} Uploaded file summary</div>
       <div class="review-card-b"><div class="kv-grid">
-        ${[['File Name',w.fileName||'drop_shipping_orders_Q3.csv'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['File Type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['Upload Date','2026-07-20'],['Records Detected', DS_TX_PREVIEW.length+' transaction records']].map(([k,v])=>`<div><label>${k}</label><p>${escapeHTML(v)}</p></div>`).join('')}
+        ${[['File name',w.fileName||'drop_shipping_orders_Q3.csv'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['File type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['Upload date','2026-07-20'],['Records detected', DS_TX_PREVIEW.length+' transaction records']].map(([k,v])=>`<div><label>${k}</label><p>${escapeHTML(v)}</p></div>`).join('')}
       </div></div>
     </div>
     ${paymentLinkingActive?`<div class="review-card">
@@ -6894,7 +6894,7 @@ function viewWizardERP() {
         {n:4,displayN:3,label:'Review'},
       ]
       : [
-        {n:2,label:'Order Information'},
+        {n:2,label:'Order information'},
         {n:3,label:'Link Payment'},
         {n:4,label:'Review & Submit'},
       ])
@@ -6904,7 +6904,7 @@ function viewWizardERP() {
         {n:4,displayN:2,label:'Review'},
       ]
       : [
-        {n:2,displayN:1,label:'Order Information'},
+        {n:2,displayN:1,label:'Order information'},
         {n:4,displayN:2,label:'Review & Submit'},
       ]);
   let body = '';
@@ -7087,54 +7087,54 @@ function tradeGoodsTable() {
   const isLogistics = w.source === 'international-logistics';
   const fileName = w.fileName || 'Sales_Contract_Q3_2026.pdf';
   return `<div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Order Information', '订单信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Order information', '订单信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
-            <label>${tradeFieldLabel('Business Subcategory/Transaction Mode', '贸易方式/交易编码')} ${req}</label>
+            <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易方式/交易编码')} ${req}</label>
             <select disabled><option>B2C</option><option>D2C</option><option selected>B2B</option></select>
             ${note('Language: UI language. User selects their category from DL.', '语言要求：界面语言。用户从下拉列表中选择类别。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Trade Type', '贸易类型')} ${req}</label>
+            <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
             <select disabled>
               <option ${isLogistics?'':'selected'}>Goods</option>
-              <option ${isLogistics?'selected':''}>International Logistics</option>
+              <option ${isLogistics?'selected':''}>International logistics</option>
             </select>
             ${note('Language: UI language. User selects their category from DL.', '语言要求：界面语言。用户从下拉列表中选择类别。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Merchant Order No.', '商户订单编号')} ${req}</label>
+            <label>${tradeFieldLabel('Merchant order no.', '商户订单编号')} ${req}</label>
             <input class="mono" value="PO-2026-07-0892" readonly />
             ${note('Unique order ID traceable to original platform.', '可追溯至原平台的唯一订单号。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Buyer\'s English Name/Payer Name', '买家名称')} ${req}</label>
+            <label>${tradeFieldLabel('Buyer\'s English name/payer name', '买家名称')} ${req}</label>
             <input value="Shenzhen Global Trade Co., Ltd." readonly />
             ${note('Language: Latin letter. Payer name matches with buyer name.', '语言要求：拉丁字母。付款人姓名须与买家名称一致。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Destination Country', '收货国家或地区')} ${req}</label>
+            <label>${tradeFieldLabel('Destination country', '收货国家或地区')} ${req}</label>
             <select disabled><option selected>China</option><option>United States</option><option>United Kingdom</option><option>Germany</option><option>Japan</option></select>
             ${note('Language: UI language.', '语言要求：界面语言。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Time', '订单签约时间/发票时间')} ${req}</label>
+            <label>${tradeFieldLabel('Order time', '订单签约时间/发票时间')} ${req}</label>
             <input type="date" value="2026-07-15" readonly />
             ${note('Contract date.', '签约日期。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Currency', '订单币种')} ${req}</label>
+            <label>${tradeFieldLabel('Order currency', '订单币种')} ${req}</label>
             <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
             ${note('Language: UI language. Three-digit code.', '语言要求：界面语言。三位代码。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Amount', '订单金额')} ${req}</label>
+            <label>${tradeFieldLabel('Order amount', '订单金额')} ${req}</label>
             <input value="48,500.00" readonly />
             ${note('Validate against PI/CI/contract.', '与形式发票/商业发票/合同核对。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('e-Commerce Platform Name/Business Website Name', '店铺网站名称')} ${req}</label>
+            <label>${tradeFieldLabel('E-commerce platform name/business website name', '店铺网站名称')} ${req}</label>
             <input value="Amazon" readonly />
             ${note('Language: ENG. To parse from URL.', '语言要求：英文。从网址解析。')}
           </div>
@@ -7157,16 +7157,16 @@ function tradeGoodsTable() {
       </div>
     </div>
     <div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.package} ${tradeFieldLabel('Goods Information', '货物信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.package} ${tradeFieldLabel('Goods information', '货物信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field full">
-            <label>${tradeFieldLabel('Product Name', '产品中文名称')} ${req}</label>
+            <label>${tradeFieldLabel('Product name', '产品中文名称')} ${req}</label>
             <input value="${productName}" readonly />
             ${note('Language: Chinese. Transcribe to Chinese. Use "|" between product names.', '语言要求：中文。转写为中文，多个产品名称之间用 “|” 分隔。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Product Quantity', '产品数量')} ${req}</label>
+            <label>${tradeFieldLabel('Product quantity', '产品数量')} ${req}</label>
             <input class="mono" value="${productQty}" readonly />
           </div>
         </div>
@@ -7179,15 +7179,15 @@ function tradeServiceDetailsBlock() {
   const type = TRADE_SOURCES.find(item => item.key === w.source) || TRADE_SOURCES[1];
   return `<div class="review-card">
     <div class="review-card-h">
-      <span style="display:flex;align-items:center;gap:8px">${I.clipboard} Service Information</span>
+      <span style="display:flex;align-items:center;gap:8px">${I.clipboard} Service information</span>
     </div>
     <div class="review-card-b">
       <div class="field-grid">
-        <div class="field"><label>Business Type</label><input value="${type.label}" readonly /></div>
-        <div class="field"><label>Service Period</label><input value="Jul 2026 – Jun 2027" readonly /></div>
-        <div class="field full"><label>Service Description</label><input value="${type.desc}" readonly /></div>
+        <div class="field"><label>Business type</label><input value="${type.label}" readonly /></div>
+        <div class="field"><label>Service period</label><input value="Jul 2026 – Jun 2027" readonly /></div>
+        <div class="field full"><label>Service description</label><input value="${type.desc}" readonly /></div>
         <div class="field"><label>Quantity</label><input value="1" readonly /></div>
-        <div class="field"><label>Service Amount</label><input value="USD 48,500.00" readonly /></div>
+        <div class="field"><label>Service amount</label><input value="USD 48,500.00" readonly /></div>
       </div>
     </div>
   </div>`;
@@ -7196,39 +7196,39 @@ function tradeServiceDetailsBlock() {
 function tradeAdvertisementBlock() {
   const req = '<span style="color:var(--destructive)">*</span>';
   return `<div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} Order Information</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} Order information</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
-            <label>Business Category ${req}</label>
+            <label>Business category ${req}</label>
             <select disabled><option>Goods</option><option selected>Service</option></select>
           </div>
           <div class="field">
-            <label>Business Subcategory/Transaction Mode ${req}</label>
+            <label>Business subcategory/transaction mode ${req}</label>
             <select disabled><option>B2C</option><option>D2C</option><option selected>B2B</option></select>
           </div>
           <div class="field">
-            <label>Trade Type ${req}</label>
+            <label>Trade type ${req}</label>
             <input value="Advertisement" readonly />
           </div>
           <div class="field">
-            <label>Purpose of Remittance</label>
+            <label>Purpose of remittance</label>
             <input value="Advertisement (code 228024)" readonly />
           </div>
           <div class="field">
-            <label>Merchant Order No. ${req}</label>
+            <label>Merchant order no. ${req}</label>
             <input class="mono" value="YP-20260715-AD-001" readonly />
           </div>
           <div class="field">
-            <label>Order Time ${req}</label>
+            <label>Order time ${req}</label>
             <input type="date" value="2026-07-15" readonly />
           </div>
           <div class="field">
-            <label>Order Amount ${req}</label>
+            <label>Order amount ${req}</label>
             <input value="48,500.00" readonly />
           </div>
           <div class="field">
-            <label>Order Currency ${req}</label>
+            <label>Order currency ${req}</label>
             <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
             ${tradeFieldNoteHtml('Language: ENG. Three-letter code per ISO 4217. Currency of the revenue.', '语言要求：英文三字码（ISO 4217）。收款币种。')}
           </div>
@@ -7240,7 +7240,7 @@ function tradeAdvertisementBlock() {
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
-            <label>Advertising brand/Product Name ${req}</label>
+            <label>Advertising brand/product name ${req}</label>
             <input value="Nike" readonly />
           </div>
           <div class="field">
@@ -7252,11 +7252,11 @@ function tradeAdvertisementBlock() {
             <input class="mono" value="1,250,000" readonly />
           </div>
           <div class="field">
-            <label>Platform Name ${req}</label>
+            <label>Platform name ${req}</label>
             <input value="Google Ads" readonly />
           </div>
           <div class="field full">
-            <label>Publisher ID/Seller ID ${req}</label>
+            <label>Publisher ID/seller ID ${req}</label>
             <input class="mono" value="pub-482910573" readonly />
           </div>
         </div>
@@ -7267,11 +7267,11 @@ function tradeAdvertisementBlock() {
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
-            <label>Resource Name ${req}</label>
+            <label>Resource name ${req}</label>
             <input value="YouTube — Pre-roll" readonly />
           </div>
           <div class="field">
-            <label>Resource Type/advertising type ${req}</label>
+            <label>Resource type/advertising type ${req}</label>
             <input value="Video" readonly />
           </div>
           <div class="field full">
@@ -7286,7 +7286,7 @@ function tradeAdvertisementBlock() {
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field full">
-            <label>Payee Name ${req}</label>
+            <label>Payee name ${req}</label>
             <input value="张伟" readonly />
             ${tradeFieldNoteHtml('Language: Chinese. Chinese name of the domestic cardholder payee.', '语言要求：中文。境内持卡收款人中文名。')}
           </div>
@@ -7301,43 +7301,43 @@ function tradeTourismBlock() {
     return tradeFieldNoteHtml(en, cn);
   };
   return `<div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic Info', '基本信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic info', '基本信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
-            <label>${tradeFieldLabel('Business Category', '贸易类型大类')} ${req}</label>
+            <label>${tradeFieldLabel('Business category', '贸易类型大类')} ${req}</label>
             <select disabled><option>Goods</option><option selected>Service</option></select>
             ${note('Goods/Service.', '货物/服务。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Business Subcategory/Transaction Mode', '贸易类型子类')} ${req}</label>
+            <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
             <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
             ${note('B2C/D2C/B2B.', 'B2C/D2C/B2B。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Trade Type', '贸易类型')} ${req}</label>
+            <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
             <input value="Tourism" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Date', '下单日期时间')} ${req}</label>
+            <label>${tradeFieldLabel('Order date', '下单日期时间')} ${req}</label>
             <input type="datetime-local" value="2026-07-15T10:30" readonly />
             ${note('Date and time when the order was placed.', '下单日期和时间。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Merchant Order No.', '商户订单号')} ${req}</label>
+            <label>${tradeFieldLabel('Merchant order no.', '商户订单号')} ${req}</label>
             <input class="mono" value="TR-2026-0198" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Currency', '订单币种')} ${req}</label>
+            <label>${tradeFieldLabel('Order currency', '订单币种')} ${req}</label>
             <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
             ${note('Language: ENG. Three-letter code per ISO 4217. Currency of the platform order.', '语言要求：英文三字码（ISO 4217）。平台订单币种。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Amount', '订单金额')} ${req}</label>
+            <label>${tradeFieldLabel('Order amount', '订单金额')} ${req}</label>
             <input value="6,400.00" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Payer Name', '付款人姓名')} ${req}</label>
+            <label>${tradeFieldLabel('Payer name', '付款人姓名')} ${req}</label>
             <input value="Chen Wei" readonly />
           </div>
           <div class="field">
@@ -7345,12 +7345,12 @@ function tradeTourismBlock() {
             <input type="url" value="https://www.booking.com" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Number of Guests', '游客人数')} ${req}</label>
+            <label>${tradeFieldLabel('Number of guests', '游客人数')} ${req}</label>
             <input class="mono" value="2" readonly />
             ${note('Total number of travellers covered by this booking.', '此订单覆盖的游客总人数。')}
           </div>
           <div class="field full">
-            <label>${tradeFieldLabel('Platform Name', '平台名称')} ${req}</label>
+            <label>${tradeFieldLabel('Platform name', '平台名称')} ${req}</label>
             <input value="Booking.com" readonly />
             ${note('Language: original language. The official name of the overseas OTA platform.', '语言要求：原文。境外 OTA 平台官方名称。')}
           </div>
@@ -7358,16 +7358,16 @@ function tradeTourismBlock() {
       </div>
     </div>
     <div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.clipboard} ${tradeFieldLabel('Service Info', '服务信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.clipboard} ${tradeFieldLabel('Service info', '服务信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
-            <label>${tradeFieldLabel('Unit Price', '单价')} ${req}</label>
+            <label>${tradeFieldLabel('Unit price', '单价')} ${req}</label>
             <input value="3,200.00" readonly />
             ${note('The price of the unit product.', '单位产品价格。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Product Quantity', '数量')} ${req}</label>
+            <label>${tradeFieldLabel('Product quantity', '数量')} ${req}</label>
             <input class="mono" value="2" readonly />
             ${note('Number of units purchased for this product.', '该产品的购买数量。')}
           </div>
@@ -7376,17 +7376,17 @@ function tradeTourismBlock() {
             <input value="Tokyo" readonly />
           </div>
           <div class="field full">
-            <label>${tradeFieldLabel('Service Name', '服务名称')} ${req}</label>
+            <label>${tradeFieldLabel('Service name', '服务名称')} ${req}</label>
             <input value="7-day Japan business travel package" readonly />
             ${note('Clear description of the tourism service.', '旅游服务的明确描述。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Service Start Date', '服务开始日期')} ${req}</label>
+            <label>${tradeFieldLabel('Service start date', '服务开始日期')} ${req}</label>
             <input type="date" value="2026-09-01" readonly />
             ${note('Scheduled start date of the service.', '服务的计划开始日期。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Service End Date', '服务结束日期')} ${req}</label>
+            <label>${tradeFieldLabel('Service end date', '服务结束日期')} ${req}</label>
             <input type="date" value="2026-09-07" readonly />
             ${note('Scheduled end date of the service.', '服务的计划结束日期。')}
           </div>
@@ -7394,11 +7394,11 @@ function tradeTourismBlock() {
       </div>
     </div>
     <div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.card} ${tradeFieldLabel('Booker Info', '预订人信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.card} ${tradeFieldLabel('Booker info', '预订人信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field full">
-            <label>${tradeFieldLabel("Booker's Full Name", '预订人全名')} ${req}</label>
+            <label>${tradeFieldLabel("Booker's full name", '预订人全名')} ${req}</label>
             <input value="Chen Wei" readonly />
             ${note('Full name of the person making the booking.', '预订人的全名。')}
           </div>
@@ -7413,50 +7413,50 @@ function tradeSoftwareBlock() {
     return tradeFieldNoteHtml(en, cn);
   };
   return `<div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic Info', '基本信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic info', '基本信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
-            <label>${tradeFieldLabel('Business Subcategory/Transaction Mode', '贸易类型子类')} ${req}</label>
+            <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
             <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
             ${note('B2C/D2C/B2B.', 'B2C/D2C/B2B。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Trade Type', '贸易类型')} ${req}</label>
+            <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
             <input value="Software" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Merchant Order No.', '商户订单号')} ${req}</label>
+            <label>${tradeFieldLabel('Merchant order no.', '商户订单号')} ${req}</label>
             <input class="mono" value="SW-2026-0142" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Platform Order No./App store order No.', '平台或应用商店订单号')} ${req}</label>
+            <label>${tradeFieldLabel('Platform order no./app store order no.', '平台或应用商店订单号')} ${req}</label>
             <input class="mono" value="APP-STORE-88421" readonly />
             ${note('App store order No.', '应用商店订单号。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Time', '订单签约时间/发票时间')} ${req}</label>
+            <label>${tradeFieldLabel('Order time', '订单签约时间/发票时间')} ${req}</label>
             <input type="date" value="2026-07-15" readonly />
             ${note('Signing date / invoice date.', '签约日期/发票日期。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Amount', '订单金额')} ${req}</label>
+            <label>${tradeFieldLabel('Order amount', '订单金额')} ${req}</label>
             <input value="48,500.00" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Currency', '订单币种')} ${req}</label>
+            <label>${tradeFieldLabel('Order currency', '订单币种')} ${req}</label>
             <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
             ${note('Language: ENG. Three-letter code per ISO 4217.', '语言要求：英文三字码（ISO 4217）。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Payer Name', '付款人姓名')} ${req}</label>
+            <label>${tradeFieldLabel('Payer name', '付款人姓名')} ${req}</label>
             <input value="Chen Wei" readonly />
           </div>
         </div>
       </div>
     </div>
     <div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.clipboard} ${tradeFieldLabel('Software Product Info', '软件产品信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.clipboard} ${tradeFieldLabel('Software product info', '软件产品信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
@@ -7476,14 +7476,14 @@ function tradeSoftwareBlock() {
             <input type="date" value="2026-07-01" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Product Quantity', '产品数量')} ${req}</label>
+            <label>${tradeFieldLabel('Product quantity', '产品数量')} ${req}</label>
             <input class="mono" value="25" readonly />
           </div>
         </div>
       </div>
     </div>
     <div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.link} ${tradeFieldLabel('Sales Channel', '销售渠道')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.link} ${tradeFieldLabel('Sales channel', '销售渠道')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field full">
@@ -7494,11 +7494,11 @@ function tradeSoftwareBlock() {
       </div>
     </div>
     <div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.store} ${tradeFieldLabel('Provider Info', '提供方信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.store} ${tradeFieldLabel('Provider info', '提供方信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field full">
-            <label>${tradeFieldLabel('Software Provider', '软件提供方')} ${req}</label>
+            <label>${tradeFieldLabel('Software provider', '软件提供方')} ${req}</label>
             <input value="Adobe Inc." readonly />
             ${note('Developer name on the app store or software listing.', '应用商店或软件列表上的开发者名称。')}
           </div>
@@ -7513,42 +7513,42 @@ function tradeAirTicketBlock() {
     return tradeFieldNoteHtml(en, cn);
   };
   return `<div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic Info', '基本信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic info', '基本信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
-            <label>${tradeFieldLabel('Business Category', '贸易类型大类')} ${req}</label>
+            <label>${tradeFieldLabel('Business category', '贸易类型大类')} ${req}</label>
             <select disabled><option>Goods</option><option selected>Service</option></select>
             ${note('Goods/Service.', '货物/服务。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Business Subcategory/Transaction Mode', '贸易类型子类')} ${req}</label>
+            <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
             <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
             ${note('B2C/D2C/B2B.', 'B2C/D2C/B2B。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Trade Type', '贸易类型')} ${req}</label>
+            <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
             <input value="Air ticket" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Merchant Order No.', '商户订单号')} ${req}</label>
+            <label>${tradeFieldLabel('Merchant order no.', '商户订单号')} ${req}</label>
             <input class="mono" value="TK-2026-7741" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Time', '订单创建时间')} ${req}</label>
+            <label>${tradeFieldLabel('Order time', '订单创建时间')} ${req}</label>
             <input type="date" value="2026-07-15" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Amount', '订单金额')} ${req}</label>
+            <label>${tradeFieldLabel('Order amount', '订单金额')} ${req}</label>
             <input value="2,180.00" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Currency', '订单币种')} ${req}</label>
+            <label>${tradeFieldLabel('Order currency', '订单币种')} ${req}</label>
             <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
             ${note('Language: ENG. Three-letter code per ISO 4217.', '语言要求：英文三字码（ISO 4217）。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Payer Name', '付款人姓名')} ${req}</label>
+            <label>${tradeFieldLabel('Payer name', '付款人姓名')} ${req}</label>
             <input value="Chen Wei" readonly />
           </div>
           <div class="field">
@@ -7556,7 +7556,7 @@ function tradeAirTicketBlock() {
             <input class="mono" value="1" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Product Quantity', '产品数量')} ${req}</label>
+            <label>${tradeFieldLabel('Product quantity', '产品数量')} ${req}</label>
             <input class="mono" value="1" readonly />
           </div>
           <div class="field full">
@@ -7567,7 +7567,7 @@ function tradeAirTicketBlock() {
       </div>
     </div>
     <div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.store} ${tradeFieldLabel('Flight Info', '航班信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.store} ${tradeFieldLabel('Flight info', '航班信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
@@ -7579,12 +7579,12 @@ function tradeAirTicketBlock() {
             <input value="United States" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Departure Date', '出发日期')} ${req}</label>
+            <label>${tradeFieldLabel('Departure date', '出发日期')} ${req}</label>
             <input type="date" value="2026-08-12" readonly />
             ${note('Departure date.', '出发日期。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Flight Number', '航班号')} ${req}</label>
+            <label>${tradeFieldLabel('Flight number', '航班号')} ${req}</label>
             <input class="mono" value="MU583" readonly />
             ${note('Flight number.', '航班号。')}
           </div>
@@ -7592,21 +7592,21 @@ function tradeAirTicketBlock() {
       </div>
     </div>
     <div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.card} ${tradeFieldLabel('Passenger Info', '乘客信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.card} ${tradeFieldLabel('Passenger info', '乘客信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
-            <label>${tradeFieldLabel('Passenger First Name', '乘客名字')} ${req}</label>
+            <label>${tradeFieldLabel('Passenger first name', '乘客名字')} ${req}</label>
             <input value="Wei" readonly />
             ${note('Given name (as shown on ID).', '证件上的名字（名）。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Passenger Last Name', '乘客姓氏')} ${req}</label>
+            <label>${tradeFieldLabel('Passenger last name', '乘客姓氏')} ${req}</label>
             <input value="Zhang" readonly />
             ${note('Surname (as shown on ID).', '证件上的姓氏。')}
           </div>
           <div class="field full">
-            <label>${tradeFieldLabel('Passenger ID Type', '乘客身份证件类型')} ${req}</label>
+            <label>${tradeFieldLabel('Passenger ID type', '乘客身份证件类型')} ${req}</label>
             <select disabled><option selected>Passport</option><option>ID Card</option></select>
             ${note('Passport / ID Card.', '护照 / 身份证。')}
           </div>
@@ -7614,11 +7614,11 @@ function tradeAirTicketBlock() {
       </div>
     </div>
     <div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.clipboard} ${tradeFieldLabel('Ticket Info', '客票信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.clipboard} ${tradeFieldLabel('Ticket info', '客票信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field full">
-            <label>${tradeFieldLabel('Ticket Number', '电子客票号')} ${req}</label>
+            <label>${tradeFieldLabel('Ticket number', '电子客票号')} ${req}</label>
             <input class="mono" value="781-1234567890" readonly />
             ${note('Electronic ticket number (required after ticketing).', '电子客票号（出票后必填）。')}
           </div>
@@ -7633,39 +7633,39 @@ function tradeAccommodationBlock() {
     return tradeFieldNoteHtml(en, cn);
   };
   return `<div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic Info', '基本信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Basic info', '基本信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
-            <label>${tradeFieldLabel('Business Category', '贸易类型大类')} ${req}</label>
+            <label>${tradeFieldLabel('Business category', '贸易类型大类')} ${req}</label>
             <select disabled><option>Goods</option><option selected>Service</option></select>
             ${note('Goods/Service.', '货物/服务。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Business Subcategory/Transaction Mode', '贸易类型子类')} ${req}</label>
+            <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
             <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
             ${note('B2C/D2C/B2B.', 'B2C/D2C/B2B。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Merchant Order No.', '商户订单号')} ${req}</label>
+            <label>${tradeFieldLabel('Merchant order no.', '商户订单号')} ${req}</label>
             <input class="mono" value="HT-2026-5520" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Currency/feeType', '订单币种')} ${req}</label>
+            <label>${tradeFieldLabel('Order currency/feeType', '订单币种')} ${req}</label>
             <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
             ${note('Language: ENG. Three-letter code per ISO 4217.', '语言要求：英文三字码（ISO 4217）。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Amount/totalFee', '订单金额')} ${req}</label>
+            <label>${tradeFieldLabel('Order amount/totalFee', '订单金额')} ${req}</label>
             <input value="1,680.00" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Order Time/orderDate', '订单签约时间/发票时间')} ${req}</label>
+            <label>${tradeFieldLabel('Order time/orderDate', '订单签约时间/发票时间')} ${req}</label>
             <input type="date" value="2026-07-15" readonly />
             ${note('Signing date / invoice date.', '签约日期/发票日期。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Payer Name', '付款人姓名')} ${req}</label>
+            <label>${tradeFieldLabel('Payer name', '付款人姓名')} ${req}</label>
             <input value="Chen Wei" readonly />
             ${note('Payer’s name: individual name when custType is INDIVIDUAL, company name when custType is COMPANY.', '付款人姓名：客户类型为个人时填写个人姓名，为公司时填写公司名称。')}
           </div>
@@ -7674,7 +7674,7 @@ function tradeAccommodationBlock() {
             <input class="mono" value="2" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Trade Type', '贸易类型')} ${req}</label>
+            <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
             <input value="Accommodation" readonly />
           </div>
           <div class="field full">
@@ -7685,7 +7685,7 @@ function tradeAccommodationBlock() {
       </div>
     </div>
     <div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.store} ${tradeFieldLabel('Accommodation Info', '住宿信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.store} ${tradeFieldLabel('Accommodation info', '住宿信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
@@ -7693,7 +7693,7 @@ function tradeAccommodationBlock() {
             <input value="Shenzhen" readonly />
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Hotel Name', '酒店名称')} ${req}</label>
+            <label>${tradeFieldLabel('Hotel name', '酒店名称')} ${req}</label>
             <input value="Park Hyatt Shenzhen" readonly />
           </div>
           <div class="field">
@@ -7708,22 +7708,22 @@ function tradeAccommodationBlock() {
       </div>
     </div>
     <div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.card} ${tradeFieldLabel('Guest Info', '入住人信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.card} ${tradeFieldLabel('Guest info', '入住人信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field full">
-            <label>${tradeFieldLabel('Guest Name', '入住人姓名')} ${req}</label>
+            <label>${tradeFieldLabel('Guest name', '入住人姓名')} ${req}</label>
             <input value="Wei Zhang" readonly />
           </div>
         </div>
       </div>
     </div>
     <div class="review-card">
-      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.clipboard} ${tradeFieldLabel('Room Info', '房间信息')}</span></div>
+      <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.clipboard} ${tradeFieldLabel('Room info', '房间信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
-            <label>${tradeFieldLabel('Product Quantity', '产品数量')} ${req}</label>
+            <label>${tradeFieldLabel('Product quantity', '产品数量')} ${req}</label>
             <input class="mono" value="1" readonly />
           </div>
         </div>
@@ -7846,7 +7846,7 @@ function tradeLogisticsBlock() {
   const trackingCount = tradeTrackingNumbers(w.logisticsTrackingNumber).length;
   const trackingInvalid = !!(w.logisticsTrackingAttempted && (trackingCount < 1 || trackingCount > 6));
   return `<div class="review-card trade-logistics-anchor">
-    <div class="review-card-h">${I.truck} ${tradeFieldLabel('Logistics Information', '物流信息')}</div>
+    <div class="review-card-h">${I.truck} ${tradeFieldLabel('Logistics information', '物流信息')}</div>
     <div class="review-card-b" style="display:flex;flex-direction:column;gap:16px">
       <div class="field">
         <label>${tradeFieldLabel('Shipped or not', '是否已发货?')} ${req}</label>
@@ -7904,7 +7904,7 @@ function tradeDocPreview(inModal) {
         <p style="font-size:6px;font-weight:700;text-transform:uppercase">Total Contract Amount: <span style="font-size:9px">USD 48,500.00</span></p>
       </div>
       <table>
-        <thead><tr>${['No.','Product Name (CN)','Product Name (EN)','Qty','Unit','Unit Price','Amount'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+        <thead><tr>${['No.','Product name (CN)','Product name (EN)','Qty','Unit','Unit price','Amount'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
         <tbody>
           <tr><td>1</td><td>电子元件</td><td>Electronic Components</td><td>500</td><td>PCS</td><td>48.50</td><td>24,250.00</td></tr>
           <tr><td>2</td><td>包装材料</td><td>Packaging Materials</td><td>1000</td><td>SET</td><td>12.25</td><td>12,250.00</td></tr>
@@ -8005,17 +8005,17 @@ function stepTradeInfo(hideHeading) {
     <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
         ${(w.source === 'advertisement' || w.source === 'tourism' || w.source === 'software' || w.source === 'air-ticket' || w.source === 'accommodation' || w.source === 'goods' || w.source === 'international-logistics') ? '' : `<div class="review-card">
           <div class="review-card-h" style="justify-content:space-between">
-            <span style="display:flex;align-items:center;gap:8px">${I.file} Contract Information</span>
+            <span style="display:flex;align-items:center;gap:8px">${I.file} Contract information</span>
           </div>
           <div class="review-card-b">
             <div class="field-grid">
-              <div class="field"><label>Order Number</label><input value="PO-2026-07-0892" readonly /></div>
-              <div class="field"><label>Order Date</label><input type="date" value="2026-07-15" readonly /></div>
-              <div class="field"><label>Order Amount</label>
+              <div class="field"><label>Order number</label><input value="PO-2026-07-0892" readonly /></div>
+              <div class="field"><label>Order date</label><input type="date" value="2026-07-15" readonly /></div>
+              <div class="field"><label>Order amount</label>
                 <div style="display:flex;gap:8px"><input value="48,500.00" readonly style="flex:1" /><select disabled style="width:96px"><option>USD</option></select></div>
               </div>
-              <div class="field"><label>Receiving Country / Region</label><select disabled><option>China (CN)</option></select></div>
-              <div class="field"><label>Buyer Type</label><select disabled><option>Corporate</option></select></div>
+              <div class="field"><label>Receiving country / region</label><select disabled><option>China (CN)</option></select></div>
+              <div class="field"><label>Buyer type</label><select disabled><option>Corporate</option></select></div>
               <div class="field"><label>Company URL</label><input placeholder="https://example.com" /></div>
               <div class="field full"><label>买方名称</label><input value="深圳市环球贸易有限公司" readonly /></div>
             </div>
@@ -8037,9 +8037,9 @@ function stepTradeLink() {
       <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Link received payments to this trade document to release CNY quota.</p>
     </div>
     <div class="card card-pad">
-      <p style="font-size:12px;font-weight:600;color:var(--muted-foreground);text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px">Document Summary</p>
+      <p style="font-size:12px;font-weight:600;color:var(--muted-foreground);text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px">Document summary</p>
       <div class="grid-4" style="gap:16px">
-        ${[['Order Amount','USD 48,500.00'],['Buyer Name','Shenzhen Global Trade'],[w.source==='goods'?'Shipment Status':'Business Type', w.source==='goods'?(w.shipped==='yes'?'Shipped':w.shipped==='no'?'Not Yet Shipped':'In Transit'):businessType],['Available Receivable','USD 48,500.00']].map(([l,v])=>`<div><label style="font-size:12px;color:var(--muted-foreground)">${l}</label><p style="font-size:14px;font-weight:600;margin-top:2px">${v}</p></div>`).join('')}
+        ${[['Order amount','USD 48,500.00'],['Buyer name','Shenzhen Global Trade'],[w.source==='goods'?'Shipment status':'Business type', w.source==='goods'?(w.shipped==='yes'?'Shipped':w.shipped==='no'?'Not Yet Shipped':'In Transit'):businessType],['Available receivable','USD 48,500.00']].map(([l,v])=>`<div><label style="font-size:12px;color:var(--muted-foreground)">${l}</label><p style="font-size:14px;font-weight:600;margin-top:2px">${v}</p></div>`).join('')}
       </div>
     </div>
     <label style="display:flex;align-items:center;gap:10px;cursor:pointer;width:fit-content" onclick="state.wiz.skipLink=!state.wiz.skipLink;render()">
@@ -8082,10 +8082,10 @@ function stepTradeReview() {
       <div class="review-card-h">${I.file} Uploaded file summary</div>
       <div class="review-card-b">
         <div class="kv-grid">
-          <div><label>Business Type</label><p>${srcLabel}</p></div>
-          <div><label>File Name</label><p class="mono">${w.fileName || 'trade_document.pdf'}</p></div>
-          <div><label>File Type</label><p>Trade document</p></div>
-          <div><label>Quota increase from this file</label><p class="money-value">USD 48,500.00</p></div>
+          <div><label>Business type</label><p>${srcLabel}</p></div>
+          <div><label>File name</label><p class="mono">${w.fileName || 'trade_document.pdf'}</p></div>
+          <div><label>File type</label><p>Trade document</p></div>
+          <div><label>Transaction amount</label><p class="money-value">USD 48,500.00</p></div>
         </div>
       </div>
     </div>
@@ -8427,7 +8427,7 @@ function viewLinkPayment() {
               ${state.linked.length?`<span class="chip" style="background:var(--secondary);color:var(--primary);border:1px solid rgba(91,59,232,.3)">${I.check} ${state.linked.length} selected</span>`:''}
             </div>
             <div style="overflow-x:auto"><table class="data" style="min-width:640px">
-              <thead><tr><th style="width:48px"></th><th>Payment ID</th><th>Received Time</th><th>Payer</th><th>Amount</th><th>Match</th></tr></thead>
+              <thead><tr><th style="width:48px"></th><th>Payment ID</th><th>Received time</th><th>Payer</th><th>Amount</th><th>Match</th></tr></thead>
               <tbody>${PAYMENTS.map(p=>{
                 const on = state.linked.includes(p.id);
                 return `<tr class="pay-row ${on?'selected':''}" onclick="togglePay('${p.id}')">
@@ -8470,7 +8470,7 @@ function browseDrawer() {
         <div class="search-wrap">${I.search}<input placeholder="Search by Payment ID or payer..." style="width:100%;height:36px;border:1px solid var(--border);border-radius:6px;padding-left:32px" /></div>
       </div>
       <div class="drawer-b"><table class="data">
-        <thead><tr><th></th><th>Payment ID</th><th>Payer</th><th>Received Date</th><th>Amount</th><th>Status</th></tr></thead>
+        <thead><tr><th></th><th>Payment ID</th><th>Payer</th><th>Received date</th><th>Amount</th><th>Status</th></tr></thead>
         <tbody>${PAYMENTS.map(p=>{
           const on = state.linked.includes(p.id);
           return `<tr class="${on?'selected':''}">
@@ -8512,7 +8512,7 @@ function viewSupplement() {
           <p style="font-size:14px;color:var(--muted-foreground);margin-bottom:40px">of unshipped quota. Your available CNY settlement limit has been updated.</p>
           <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
             <button class="btn btn-primary" onclick="go('home')">Back to CNY quota management</button>
-            <button class="btn-link" style="font-size:14px" onclick="go('details','${r.id}')">View Order Details</button>
+            <button class="btn-link" style="font-size:14px" onclick="go('details','${r.id}')">View order details</button>
           </div>
         </div>
       </div>
@@ -8530,7 +8530,7 @@ function viewSupplement() {
       <div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Order details</h3>
         <div class="details-grid">
-          ${[['Order Number',r.orderNumber],['Buyer Name',r.buyerName],['Order Amount',`${r.currency} ${r.orderAmountUSD}`],['Shipment Status',r.shipmentStatus],['Remaining Unshipped Quota',money(rem)],['Transaction Source',r.source]].map(([l,v])=>`
+          ${[['Order number',r.orderNumber],['Buyer name',r.buyerName],['Order amount',`${r.currency} ${r.orderAmountUSD}`],['Shipment status',r.shipmentStatus],['Remaining unshipped quota',money(rem)],['Transaction source',r.source]].map(([l,v])=>`
             <div class="read-field"><label>${l}</label><p>${v}</p></div>
           `).join('')}
         </div>
@@ -8538,7 +8538,7 @@ function viewSupplement() {
       ${LINK_PAYMENT_VISIBLE?`<div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">Linked Payments</h3>
         <table class="data">
-          <thead><tr>${['Payment ID','Received Time','Payer','Amount','Linked Amount','Status'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+          <thead><tr>${['Payment ID','Received time','Payer','Amount','Linked Amount','Status'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
           <tbody>${LINKED.map(p=>`<tr>
             <td class="mono">${p.id}</td><td>${p.time}</td><td>${p.payer}</td><td>${p.amount}</td><td>${p.linkedAmount}</td>
             <td><span class="chip chip-success">${I.check} Linked</span></td>
@@ -8609,7 +8609,7 @@ function viewDetails() {
       </div>
       <div class="focused-title-row">
         <div>
-          <h1 style="font-size:28px;letter-spacing:-0.02em">Order Details</h1>
+          <h1 style="font-size:28px;letter-spacing:-0.02em">Order details</h1>
           <p style="font-size:14px;margin-top:4px">${r.orderNumber}</p>
         </div>
         <div style="display:flex;gap:8px;flex-shrink:0">
@@ -8620,12 +8620,12 @@ function viewDetails() {
     </div>
     <div class="focused-body"><div class="focused-inner" style="max-width:960px;display:flex;flex-direction:column;gap:20px">
       <div class="card card-lg">
-        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Basic Order Information</h3>
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Basic Order information</h3>
         <div class="details-grid">
           ${[
-            ['Order Number',r.orderNumber],['Order Date',r.uploadDate],['Order Amount',`${r.currency} ${r.orderAmountUSD}`],
-            ['Buyer Name',r.buyerName],['Transaction Source',r.source],['Shipment Status',r.shipmentStatus],
-            ['Status',r.status],['Currency',r.currency],['Receiving Country','China'],
+            ['Order number',r.orderNumber],['Order date',r.uploadDate],['Order amount',`${r.currency} ${r.orderAmountUSD}`],
+            ['Buyer name',r.buyerName],['Transaction source',r.source],['Shipment status',r.shipmentStatus],
+            ['Status',r.status],['Currency',r.currency],['Receiving country','China'],
           ].map(([l,v])=>`<div class="read-field"><label>${l}</label><p>${v}</p></div>`).join('')}
         </div>
       </div>
@@ -8646,7 +8646,7 @@ function viewDetails() {
         </div>
       `:`
         <div class="card card-lg">
-          <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">Logistics Information</h3>
+          <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">Logistics information</h3>
           <div class="details-table-wrap">
             <table class="data">
               <thead><tr>${['Method','Company','Tracking No.','Shipment Date','Related Item'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
@@ -8666,7 +8666,7 @@ function viewDetails() {
         <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">Linked Payments</h3>
         <div class="details-table-wrap">
           <table class="data">
-            <thead><tr>${['Payment ID','Received Time','Payer','Payment Amount','Linked Amount','Status'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+            <thead><tr>${['Payment ID','Received time','Payer','Payment amount','Linked Amount','Status'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
             <tbody>${(r.usedCNY>0?LINKED:[]).map(p=>`<tr>
               <td class="mono">${p.id}</td>
               <td>${p.time}</td>
@@ -8681,10 +8681,10 @@ function viewDetails() {
       </div>`:''}
 
       <div class="card card-lg">
-        <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">Goods Information</h3>
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">Goods information</h3>
         <div class="details-table-wrap">
           <table class="data">
-            <thead><tr>${['Product Name','Product Quantity'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+            <thead><tr>${['Product name','Product quantity'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
             <tbody>
               <tr><td>电子元件</td><td>500</td></tr>
             </tbody>
@@ -8743,15 +8743,15 @@ function viewUploadDetails() {
   if (r.typeKey === 'trade') {
     typeBody = `
       <div class="card card-lg">
-        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Order Information</h3>
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Order information</h3>
         <div class="details-grid">
           ${[
-            ['Order Number', r.orderNumber || (order&&order.orderNumber) || '—'],
-            ['Buyer Name', r.buyerName || (order&&order.buyerName) || '—'],
-            ['Transaction Source', r.source || (order&&order.source) || '—'],
-            ['Order Amount', r.orderAmount || (order?`${order.currency} ${order.orderAmountUSD}`:'—')],
-            ['Shipment Status', r.shipmentStatus || (order&&order.shipmentStatus) || '—'],
-            ['Order Status', order ? order.status : '—'],
+            ['Order number', r.orderNumber || (order&&order.orderNumber) || '—'],
+            ['Buyer name', r.buyerName || (order&&order.buyerName) || '—'],
+            ['Transaction source', r.source || (order&&order.source) || '—'],
+            ['Order amount', r.orderAmount || (order?`${order.currency} ${order.orderAmountUSD}`:'—')],
+            ['Shipment status', r.shipmentStatus || (order&&order.shipmentStatus) || '—'],
+            ['Order status', order ? order.status : '—'],
           ].map(([l,v])=>`<div class="read-field"><label>${l}</label><p>${v}</p></div>`).join('')}
         </div>
       </div>
@@ -8765,7 +8765,7 @@ function viewUploadDetails() {
           </div>
         </div>`:`
         <div class="card card-lg">
-          <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">Logistics Information</h3>
+          <h3 style="font-size:15px;font-weight:600;margin-bottom:12px">Logistics information</h3>
           <div class="details-table-wrap">
             <table class="data">
               <thead><tr>${['Method','Company','Tracking No.','Shipment Date','Related Item'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
@@ -8781,7 +8781,7 @@ function viewUploadDetails() {
       <div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Template CSV Result</h3>
         <div class="details-grid" style="grid-template-columns:1fr 1fr">
-          <div class="read-field"><label>Marketplace / Source</label><p>${r.marketplace||'—'}</p></div>
+          <div class="read-field"><label>Marketplace / source</label><p>${r.marketplace||'—'}</p></div>
           <div class="read-field"><label>Template type</label><p>CSV from templates</p></div>
         </div>
         <div class="grid-3" style="gap:12px;margin-top:16px">
@@ -8806,7 +8806,7 @@ function viewUploadDetails() {
       <div class="card card-lg">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px">
           <div>
-            <h3 style="font-size:15px;font-weight:600">Field Mapping Results</h3>
+            <h3 style="font-size:15px;font-weight:600">Field mapping results</h3>
             <p style="font-size:12px;color:var(--muted-foreground);margin-top:4px">Review how required system fields correspond to uploaded file headers.</p>
           </div>
           <span class="chip chip-success">Mapping completed</span>
@@ -9180,12 +9180,12 @@ const CN_UI_REPLACEMENTS = [
   [/Link payment/g, '绑定付款'],
   [/Search by Payment ID or payer\.\.\./g, '按付款 ID 或付款方搜索…'],
   [/Payment ID/g, '付款 ID'],
-  [/Payment Amount/g, '付款金额'],
+  [/Payment amount/g, '付款金额'],
   [/Payer/g, '付款方'],
-  [/Received Date/g, '收款日期'],
-  [/Received Time/g, '收款时间'],
+  [/Received date/g, '收款日期'],
+  [/Received time/g, '收款时间'],
   [/Received/g, '收款时间'],
-  [/Available Receivable/g, '可用应收款'],
+  [/Available receivable/g, '可用应收款'],
   [/Available to link/g, '可绑定'],
   [/Remaining to link payment/g, '待绑定付款'],
   [/^Match$/g, '匹配度'],
@@ -9193,7 +9193,7 @@ const CN_UI_REPLACEMENTS = [
   [/In Transit/g, '运输中'],
   [/Not Yet Shipped/g, '尚未发货'],
   [/Order Summary/g, '订单摘要'],
-  [/Document Summary/g, '单据摘要'],
+  [/Document summary/g, '单据摘要'],
   [/Contract \/ Order No\./g, '合同/订单号'],
   [/Contract Date/g, '合同日期'],
   [/^Seller$/g, '卖方'],
@@ -9316,7 +9316,7 @@ const CN_UI_REPLACEMENTS = [
   [/Duplicate transaction ID/g, '交易 ID 重复'], [/Order date must be within the past 365 days/g, '订单日期必须在过去 365 天内'], [/Unit price must be numeric/g, '单价必须为数字'],
   [/Currency is not supported/g, '不支持该币种'], [/Amount does not match quantity × unit price/g, '金额与数量 × 单价不一致'], [/Unit price/g, '单价'],
   [/Upload failed — no records could be mapped\./g, '上传失败，未能识别任何记录。'], [/Advertising Service/g, '广告服务'], [/Freight Service/g, '货运服务'], [/Accepted quota/g, '已接受额度'], [/Accepted/g, '已接受'],
-  [/Order Status/g, '订单状态'], [/Remaining Unshipped Quota/g, '剩余未发货额度'], [/Available quota/g, '可用额度'], [/Total documents/g, '单据总数'], [/Quota added through uploads, with a breakdown by method and a full list of each upload\./g, '查看上传带来的额度、各方式明细及全部上传记录。'],
+  [/Order status/g, '订单状态'], [/Remaining unshipped quota/g, '剩余未发货额度'], [/Available quota/g, '可用额度'], [/Total documents/g, '单据总数'], [/Quota added through uploads, with a breakdown by method and a full list of each upload\./g, '查看上传带来的额度、各方式明细及全部上传记录。'],
   [/Unshipped orders temporarily occupy quota\. To release it, filter/g, '未发货订单会暂时占用额度。如需释放，请筛选'], [/Supplement Logistics Documents/g, '补充物流材料'],
   [/Goods · Service · Drop Shipping/g, '货物 · 服务 · 代发货'], [/Goods · Service/g, '货物 · 服务'], [/download template/g, '下载模板'],
   [/^([\s]*)Upload([\s]*)$/g, '$1上传$2'], [/Upload records/g, '上传记录'], [/Upload record/g, '上传记录'], [/Upload CSV/g, '上传 CSV'],
@@ -9410,8 +9410,8 @@ const CN_UI_REPLACEMENTS = [
   [/Learn more/g, '了解更多'], [/Upload documents/g, '上传材料'],
   [/Order List/g, '订单列表'], [/Track quota usage and take action on orders that need attention\./g, '查看额度使用情况，并处理需要关注的订单。'],
   [/No records match your filters\./g, '没有符合筛选条件的记录。'],
-  [/Order \/ File Information/g, '订单/文件信息'], [/Order Number/g, '订单号'], [/Buyer Name/g, '买方名称'], [/Upload Time/g, '上传时间'], [/Upload Date/g, '上传日期'],
-  [/Shipment Status/g, '发货状态'], [/Quota Added/g, '新增额度'], [/All Statuses/g, '全部状态'], [/Clear all/g, '清除全部'],
+  [/Order \/ file information/g, '订单/文件信息'], [/Order number/g, '订单号'], [/Buyer name/g, '买方名称'], [/Upload time/g, '上传时间'], [/Upload date/g, '上传日期'],
+  [/Shipment status/g, '发货状态'], [/Quota added/g, '新增额度'], [/All Statuses/g, '全部状态'], [/Clear all/g, '清除全部'],
   [/Uploads/g, '全部上传'], [/Drafts/g, '草稿'], [/Fully Used/g, '已全部使用'], [/Partially Used/g, '部分使用'], [/Unshipped/g, '未发货'], [/Shipped/g, '已发货'], [/Draft/g, '草稿'],
   [/Supplement Logistics/g, '补充物流信息'], [/Link Payment/g, '绑定付款'], [/View Details/g, '查看详情'], [/Download Original File/g, '下载原文件'],
   [/Saved draft — not submitted/g, '已保存草稿，尚未提交'], [/Save draft/g, '保存草稿'], [/Continue/g, '继续'],
@@ -9420,7 +9420,7 @@ const CN_UI_REPLACEMENTS = [
   [/Privacy · Terms · Fees/g, '隐私 · 条款 · 费用'],
   [/Find and download template/g, '查找并下载模板'], [/Select your business type/g, '选择业务类型'],
   [/The templates we provide are CSV files\. Upload the completed CSV using the same column headers\./g, '模板为 CSV 文件。填写后请保留原表头并上传。'],
-  [/Marketplace/g, '电商平台'], [/Goods/g, '货物贸易'], [/Software/g, '软件服务'], [/International Logistics/g, '国际物流'], [/International logistics/g, '国际物流'], [/Advertisement/g, '广告服务'], [/Communication/g, '通信服务'], [/Air tickets/g, '机票'], [/Air ticket/g, '机票'], [/Accommodation/g, '住宿'], [/Tourism/g, '旅游服务'],
+  [/Marketplace/g, '电商平台'], [/Goods/g, '货物贸易'], [/Software/g, '软件服务'], [/International logistics/g, '国际物流'], [/International logistics/g, '国际物流'], [/Advertisement/g, '广告服务'], [/Communication/g, '通信服务'], [/Air tickets/g, '机票'], [/Air ticket/g, '机票'], [/Accommodation/g, '住宿'], [/Tourism/g, '旅游服务'],
   [/SHEIN\.COM, TikTok Shop, Wayfair, and other marketplaces/g, 'SHEIN.COM、TikTok Shop、Wayfair 等电商平台'],
   [/Physical products, including retail, wholesale, and drop shipping/g, '实体商品，包括零售、批发和代发货'],
   [/Software licenses, SaaS subscriptions, and digital product fees/g, '软件许可、SaaS 订阅和数字产品费用'], [/Cross-border freight, logistics, and shipping service fees/g, '跨境货运、物流和运输服务费'],
@@ -9439,7 +9439,7 @@ const CN_UI_REPLACEMENTS = [
   [/Logistics company \(optional\)/g, '物流公司（选填）'], [/The name of the logistics company that delivered the order\./g, '承运此订单的物流公司名称。'], [/Logistics number \(optional\)/g, '物流单号（选填）'], [/The tracking number from the logistics provider\./g, '物流服务商提供的运单号。'],
   [/File sample/g, '文件示例'], [/Finishing up/g, '完成填写'], [/Review and save the data file:/g, '检查并保存数据文件：'], [/Keep the file size under 10 MB\./g, '文件大小不得超过 10 MB。'], [/Have questions\? Read our FAQ\./g, '有疑问？查看常见问题。'],
   [/After submission, we’ll validate the file and notify you when processing is complete\. You can then download the submission results\./g, '提交后将校验文件。处理完成后会通知，届时可下载结果。'],
-  [/ERP CSV Requirements/g, 'ERP 文件要求'], [/What your ERP CSV file must contain to process successfully/g, '文件需包含以下内容，才能顺利处理'], [/Accepted file format/g, '支持的文件格式'], [/Required Columns/g, '必填列'],
+  [/ERP CSV Requirements/g, 'ERP 文件要求'], [/What your ERP CSV file must contain to process successfully/g, '文件需包含以下内容，才能顺利处理'], [/Accepted file format/g, '支持的文件格式'], [/Required columns/g, '必填列'],
   [/Column name/g, '列名'], [/Description/g, '说明'], [/Example/g, '示例'], [/Unique order identifier from your ERP/g, 'ERP 中的唯一订单标识'], [/Name of the supplier \/ seller entity/g, '供应商或卖方主体名称'], [/Recipient or buyer entity name/g, '收货方或买方主体名称'],
   [/Product SKU or item code/g, '产品 SKU 或商品代码'], [/Number of units \(numeric\)/g, '数量（数字）'], [/Unit price — no currency symbol/g, '单价，不含货币符号'], [/3-letter ISO currency code/g, '3 位 ISO 货币代码'], [/quantity × unit_price/g, '数量 × 单价'], [/Order or transaction date \(YYYY-MM-DD\)/g, '订单或交易日期（YYYY-MM-DD）'],
   [/Column names are case-insensitive and can contain spaces or underscores\. Our AI field mapper will automatically detect and align most standard ERP export formats\./g, '列名不区分大小写，可含空格或下划线。多数标准 ERP 导出格式可自动识别。'],
@@ -9605,15 +9605,15 @@ const CN_UI_REPLACEMENTS = [
   [/Linked by /g, '通过 '], [/ · Added field: /g, ' 绑定 · 已补充字段：'], [/Merged/g, '已合并'],
   [/Records detected/g, '识别到的记录'], [/Records processed/g, '已处理记录'], [/Records with errors/g, '错误记录'],
   [/Columns in your file/g, '文件中的列'], [/Mapped columns/g, '已处理列'], [/Unmapped columns/g, '待处理列'], [/Missing required columns/g, '缺失的必填列'], [/You can’t continue yet/g, '暂时无法继续'],
-  [/Field Mapping Results/g, '核对结果'], [/Resolve issues from top to bottom, then review all successful mappings\./g, '请从上到下处理问题，再检查已完成的列。'], [/Changes are saved automatically/g, '更改会自动保存'],
+  [/Field mapping results/g, '核对结果'], [/Resolve issues from top to bottom, then review all successful mappings\./g, '请从上到下处理问题，再检查已完成的列。'], [/Changes are saved automatically/g, '更改会自动保存'],
   [/Your file columns/g, '文件列'], [/Source columns and sample values/g, '来源列和示例值'], [/System field \(target\)/g, '系统字段（目标）'], [/Choose where each column maps/g, '选择每列对应的系统字段'], [/Required target/g, '必填目标'],
   [/Map useful columns or leave them unmapped/g, '可为需要的列选择对应字段，也可暂不处理'], [/No unmapped file columns\./g, '没有待处理的文件列。'], [/Review or change any mapping/g, '检查或更改对应关系'], [/Select a target field/g, '选择目标字段'], [/Matched by AI/g, '系统已识别'],
   [/Review and submit/g, '检查'], [/Confirm the details of your document before submitting\./g, '提交前，请确认单据信息。'], [/Review the uploaded records and field mapping before submitting\./g, '提交前，请核对上传记录和字段对应情况。'],
   [/Review & Submit/g, '检查并提交'], [/Review & submit/g, '检查并提交'],
   [/Original file processing summary/g, '原文件处理结果汇总'], [/Supplementary file processing summary/g, '补充文件处理结果汇总'],
-  [/Headers Detected/g, '识别到的表头'], [/Headers Matched/g, '已对应表头'], [/Processing Status/g, '处理状态'], [/All supplementary headers matched/g, '补充文件表头已全部对应'], [/Review required/g, '需要核对'], [/(\d+) columns/g, '$1 个表头'],
-  [/Uploaded file summary/g, '上传文件汇总'], [/File Name/g, '文件名'], [/File Type/g, '文件类型'], [/Records Detected/g, '识别到的记录'], [/Mapping Status/g, '处理状态'], [/Processing summary/g, '处理结果汇总'], [/Your file field/g, '文件表头字段'], [/Sample values/g, '示例值'], [/Mapped field/g, '系统对应表头字段'],
-  [/Upload & map/g, '上传并处理'], [/Order Information/g, '订单信息'], [/Upload CSV from ERP/g, '上传 ERP 文件'], [/Upload your ERP CSV export for field mapping and quota release\./g, '上传 ERP 导出文件，核对字段并释放额度。'],
+  [/Headers detected/g, '识别到的表头'], [/Headers matched/g, '已对应表头'], [/Processing status/g, '处理状态'], [/All supplementary headers matched/g, '补充文件表头已全部对应'], [/Review required/g, '需要核对'], [/(\d+) columns/g, '$1 个表头'],
+  [/Uploaded file summary/g, '上传文件汇总'], [/File name/g, '文件名'], [/File type/g, '文件类型'], [/Records detected/g, '识别到的记录'], [/Mapping status/g, '处理状态'], [/Processing summary/g, '处理结果汇总'], [/Your file field/g, '文件表头字段'], [/Sample values/g, '示例值'], [/Mapped field/g, '系统对应表头字段'],
+  [/Upload & map/g, '上传并处理'], [/Order information/g, '订单信息'], [/Upload CSV from ERP/g, '上传 ERP 文件'], [/Upload your ERP CSV export for field mapping and quota release\./g, '上传 ERP 导出文件，核对字段并释放额度。'],
   [/Select a business type to enable document upload\./g, '选择业务类型后才能上传单据。'], [/Upload a sales contract, purchase order, PI, CI, shipping, or customs document\./g, '上传销售合同、采购订单、PI、CI、运输或报关单据。'], [/Upload a service agreement, invoice, or contract\./g, '上传服务协议、发票或合同。'],
   [/Upload trade document/g, '上传贸易单据'], [/Uploaded · Analysis starts automatically/g, '已上传 · 将自动开始分析'], [/Preparing the document for automatic analysis…/g, '正在准备自动分析单据…'], [/Analyzing document…/g, '正在分析单据…'],
   [/Choose the business type/g, '选择业务类型'], [/This helps us extract the correct transaction information\./g, '便于准确提取交易信息。'], [/Upload the document/g, '上传单据'], [/The file is analyzed automatically, and extracted fields appear below on this page\./g, '文件会自动分析，提取结果将显示在本页下方。'],
@@ -9622,19 +9622,19 @@ const CN_UI_REPLACEMENTS = [
   [/Upload & complete/g, '上传并补充信息'], [/Review the submission information before submitting\./g, '提交前，请检查提交信息。'],
   [/Confirm the business type, uploaded file, and quota increase before submitting\./g, '提交前，请确认业务类型、已上传文件，以及本文件可增加的额度。'],
   [/Submission summary/g, '提交汇总'], [/Business type/g, '业务类型'], [/Edit details/g, '修改信息'], [/Uploaded file/g, '已上传文件'], [/View document/g, '查看单据'],
-  [/Quota increase from this file/g, '本文件增加的额度'], [/Calculated from the eligible transaction amount in the uploaded file\. Subject to final verification\./g, '按已上传文件中的合格交易金额计算，以最终校验结果为准。'],
+  [/Transaction amount/g, '交易金额'], [/Calculated from the eligible transaction amount in the uploaded file\. Subject to final verification\./g, '按已上传文件中的合格交易金额计算，以最终校验结果为准。'],
   [/Submitting will add the eligible quota and save this document to upload history\./g, '提交后将增加合格额度，并将此单据保存至上传历史。'],
   [/Source document/g, '原始单据'], [/Preview the uploaded document\./g, '预览已上传单据。'], [/Review the uploaded document\./g, '请核对已上传单据。'], [/Document Preview & Extracted Information/g, '单据预览与提取信息'], [/Preview available/g, '可预览'], [/Enlarge preview/g, '放大预览'],
-  [/The following details were auto-filled from the document\. Review them and complete any missing fields\./g, '以下信息已从单据自动填写。请核对并补充缺失内容。'], [/Contract Information/g, '合同信息'], [/Order Date/g, '订单日期'], [/Order Amount/g, '订单金额'], [/Receiving Country \/ Region/g, '收货国家/地区'], [/Buyer Type/g, '买方类型'], [/Corporate/g, '企业'], [/Company URL/g, '公司网址'],
-  [/Product \(CN\)/g, '产品（中文）'], [/Product \(EN\)/g, '产品（英文）'], [/Product Name \(CN\)/g, '产品名称（中文）'], [/Product Name \(EN\)/g, '产品名称（英文）'], [/Product Quantity/g, '产品数量'], [/Product Name/g, '产品中文名称'], [/Unit Price \(USD\)/g, '单价（USD）'], [/Unit Price/g, '单价'], [/Total amount/g, '总金额'], [/Total Amount/g, '总金额'], [/Goods Information/g, '货物信息'],
-  [/Service Information/g, '服务信息'], [/Business Type/g, '业务类型'], [/Service Period/g, '服务期间'], [/Service Description/g, '服务说明'], [/Service Amount/g, '服务金额'],
-  [/Order Information/g, '订单信息'], [/Advertising Placement/g, '广告投放'], [/Ad Resource/g, '广告资源'],
-  [/Business Subcategory\/Transaction Mode/g, '贸易类型子类'], [/Business Category/g, '贸易类型大类'], [/Trade Type/g, '贸易类型'],
-  [/Purpose of Remittance/g, '汇款用途'], [/Merchant Order No\./g, '商户订单号'], [/Order Time/g, '订单签约时间/发票时间'], [/Order Currency/g, '订单币种'],
-  [/Advertising brand\/Product Name/g, '广告品牌'], [/Display times\/product quantity/g, '展示次数'], [/Placement region/g, '投放地区'],
-  [/Publisher ID\/Seller ID/g, '发布商账号标识'], [/Platform Name/g, '广告平台名称'],
-  [/Resource Type\/advertising type/g, '广告资源类型/广告形式'], [/Resource Name/g, '广告资源名称'], [/Resource URL/g, '广告资源链接'],
-  [/Payee Name/g, '境内持卡收款人中文名'], [/^\s*Payee\s*$/g, '收款人'], [/^\s*Service\s*$/g, '服务'],
+  [/The following details were auto-filled from the document\. Review them and complete any missing fields\./g, '以下信息已从单据自动填写。请核对并补充缺失内容。'], [/Contract information/g, '合同信息'], [/Order date/g, '订单日期'], [/Order amount/g, '订单金额'], [/Receiving country \/ region/g, '收货国家/地区'], [/Buyer type/g, '买方类型'], [/Corporate/g, '企业'], [/Company URL/g, '公司网址'],
+  [/Product \(CN\)/g, '产品（中文）'], [/Product \(EN\)/g, '产品（英文）'], [/Product name \(CN\)/g, '产品名称（中文）'], [/Product name \(EN\)/g, '产品名称（英文）'], [/Product quantity/g, '产品数量'], [/Product name/g, '产品中文名称'], [/Unit price \(USD\)/g, '单价（USD）'], [/Unit price/g, '单价'], [/Total amount/g, '总金额'], [/Total Amount/g, '总金额'], [/Goods information/g, '货物信息'],
+  [/Service information/g, '服务信息'], [/Business type/g, '业务类型'], [/Service period/g, '服务期间'], [/Service description/g, '服务说明'], [/Service amount/g, '服务金额'],
+  [/Order information/g, '订单信息'], [/Advertising Placement/g, '广告投放'], [/Ad Resource/g, '广告资源'],
+  [/Business subcategory\/transaction mode/g, '贸易类型子类'], [/Business category/g, '贸易类型大类'], [/Trade type/g, '贸易类型'],
+  [/Purpose of remittance/g, '汇款用途'], [/Merchant order no\./g, '商户订单号'], [/Order time/g, '订单签约时间/发票时间'], [/Order currency/g, '订单币种'],
+  [/Advertising brand\/Product name/g, '广告品牌'], [/Display times\/product quantity/g, '展示次数'], [/Placement region/g, '投放地区'],
+  [/Publisher ID\/seller ID/g, '发布商账号标识'], [/Platform name/g, '广告平台名称'],
+  [/Resource type\/advertising type/g, '广告资源类型/广告形式'], [/Resource name/g, '广告资源名称'], [/Resource URL/g, '广告资源链接'],
+  [/Payee name/g, '境内持卡收款人中文名'], [/^\s*Payee\s*$/g, '收款人'], [/^\s*Service\s*$/g, '服务'],
   [/Goods\/Service\./g, '货物/服务。'],
   [/Advertisement \(code 228024\)\./g, '广告（编码 228024）。'],
   [/YP: order ID \+ Product ID \+ Sub-order ID\./g, 'YP：订单号 + 产品号 + 子订单号。'],
@@ -9651,17 +9651,17 @@ const CN_UI_REPLACEMENTS = [
   [/AI is extracting transaction and software information\.?/g, '正在提取交易和软件信息。'],
   [/AI is extracting transaction and air ticket information\.?/g, '正在提取交易和机票信息。'],
   [/AI is extracting transaction and accommodation information\.?/g, '正在提取交易和住宿信息。'],
-  [/Accommodation Info/g, '住宿信息'], [/Guest Info/g, '入住人信息'], [/Room Info/g, '房间信息'],
+  [/Accommodation info/g, '住宿信息'], [/Guest info/g, '入住人信息'], [/Room info/g, '房间信息'],
   [/Hotel city/g, '酒店所在城市'], [/Check-in days/g, '入住天数'], [/Check-in date/g, '入住日期'],
-  [/Number of guests/g, '入住人数'], [/Guest Name/g, '入住人姓名'],
-  [/Order Currency\/feeType/g, '订单币种'], [/Order Amount\/totalFee/g, '订单金额'], [/Order Time\/orderDate/g, '订单签约时间/发票时间'],
+  [/Number of guests/g, '入住人数'], [/Guest name/g, '入住人姓名'],
+  [/Order currency\/feeType/g, '订单币种'], [/Order amount\/totalFee/g, '订单金额'], [/Order time\/orderDate/g, '订单签约时间/发票时间'],
   [/Payer’s name: individual name when custType is INDIVIDUAL, company name when custType is COMPANY\./g, '付款人姓名：客户类型为个人时填写个人姓名，为公司时填写公司名称。'],
   [/Signing date \/ invoice date\./g, '签约日期/发票日期。'],
   [/Conditional:/g, '条件：'], [/^Conditional$/g, '条件必填'],
-  [/Buyer'?s English Name\/Payer Name/g, '买家名称'],
-  [/e-Commerce Platform Name\/Business Website Name/g, '店铺网站名称'],
+  [/Buyer'?s English Name\/Payer name/g, '买家名称'],
+  [/e-Commerce Platform name\/Business Website Name/g, '店铺网站名称'],
   [/PI\/CI upload/g, '发票合同上传'],
-  [/Destination Country/g, '收货国家或地区'],
+  [/Destination country/g, '收货国家或地区'],
   [/Language: UI language\. User selects their category from DL\./g, '语言要求：界面语言。用户从下拉列表中选择类别。'],
   [/Language: UI language\. Three-digit code\./g, '语言要求：界面语言。三位代码。'],
   [/Language: UI language\./g, '语言要求：界面语言。'],
@@ -9673,7 +9673,7 @@ const CN_UI_REPLACEMENTS = [
   [/Require 1\/max 6, when shipped\./g, '已发货时必填，需 1 个物流追踪号，最多 6 个。'],
   [/Contract date\./g, '签约日期。'],
   [/^\s*Passport\s*$/g, '护照'], [/^\s*ID Card\s*$/g, '身份证'],
-  [/Logistics Information/g, '物流信息'], [/Shipped or not/g, '是否已发货?'], [/Has the order been shipped\?/g, '订单是否已发货？'], [/Select whether the order has been shipped to continue\./g, '请选择订单是否已发货后继续。'], [/Select a shipment status to continue\./g, '请选择发货状态后继续。'], [/Estimated shipping date/g, '人民币订单的预计发货时间'], [/Expected shipment date/g, '预计发货日期'], [/Enter the estimated shipping date before submitting\./g, '提交前请填写预计发货时间。'], [/Enter the expected shipment date before submitting\./g, '提交前请填写预计发货日期。'],
+  [/Logistics information/g, '物流信息'], [/Shipped or not/g, '是否已发货?'], [/Has the order been shipped\?/g, '订单是否已发货？'], [/Select whether the order has been shipped to continue\./g, '请选择订单是否已发货后继续。'], [/Select a shipment status to continue\./g, '请选择发货状态后继续。'], [/Estimated shipping date/g, '人民币订单的预计发货时间'], [/Expected shipment date/g, '预计发货日期'], [/Enter the estimated shipping date before submitting\./g, '提交前请填写预计发货时间。'], [/Enter the expected shipment date before submitting\./g, '提交前请填写预计发货日期。'],
   [/^\s*Yes\s*$/g, '是'], [/^\s*No\s*$/g, '否'],
   [/Logistics company name/g, '物流公司名称'], [/Logistics tracking number/g, '物流追踪号'],
   [/Language: Chinese\. Transcribe to Chinese\. Use "\|" between product names\./g, '语言要求：中文。转写为中文，多个产品名称之间用 “|” 分隔。'],
@@ -9697,11 +9697,11 @@ const CN_UI_REPLACEMENTS = [
   [/Quota for this order is fully used\./g, '此订单额度已全部使用。'], [/Missing columns:/g, '缺少列：'], [/Fix the file using the standard template and upload again\./g, '请按标准模板修正文件后重新上传。'],
   [/File is being processed\./g, '文件正在处理。'], [/Processing usually completes within a few minutes\. Refresh this page later to see the result\./g, '处理通常在几分钟内完成。请稍后刷新页面查看结果。'], [/Upload is under review\./g, '上传内容正在审核。'], [/Our team is reviewing this file\. Quota will be updated once the review is complete\./g, '文件正在审核，用于核对交易信息。审核完成后会更新额度，期间无需操作。'],
   [/All accepted/g, '全部接受'], [/Partially accepted/g, '部分接受'], [/File issue/g, '文件有问题'], [/Under review/g, '审核中'], [/Processed/g, '已处理'], [/Processing/g, '处理中'], [/Failed/g, '失败'],
-  [/Order Details/g, '订单详情'], [/Basic Order Information/g, '订单基本信息'], [/Transaction Source/g, '交易来源'], [/Receiving Country/g, '收货国家'], [/Quota Usage/g, '额度使用情况'],
+  [/Order details/g, '订单详情'], [/Basic Order information/g, '订单基本信息'], [/Transaction source/g, '交易来源'], [/Receiving country/g, '收货国家'], [/Quota Usage/g, '额度使用情况'],
   [/This order has not been shipped/g, '此订单尚未发货'], [/Please supplement logistics documents to release the unshipped quota/g, '请补充物流材料，以释放未发货额度'], [/Logistics documents required/g, '需要物流材料'], [/Supplement logistics to release reserved unshipped quota\./g, '补充物流材料后可释放已占用的未发货额度。'],
-  [/Product Name CN/g, '产品名称（中文）'], [/Product Name EN/g, '产品名称（英文）'], [/Supplement Logistics Documents/g, '补充物流材料'], [/Logistics documents submitted/g, '物流材料已提交'], [/You have successfully released/g, '已释放'],
-  [/of unshipped quota\. Your available CNY settlement limit has been updated\./g, '的未发货额度。人民币结汇可用额度已更新。'], [/View Order Details/g, '查看订单详情'], [/Supplement logistics documents/g, '补充物流材料'],
-  [/Upload logistics evidence to release unshipped quota for/g, '上传物流凭证，以释放以下订单的未发货额度：'], [/Remaining Unshipped Quota/g, '剩余未发货额度'], [/Upload logistics documents/g, '上传物流材料'],
+  [/Product name CN/g, '产品名称（中文）'], [/Product name EN/g, '产品名称（英文）'], [/Supplement Logistics Documents/g, '补充物流材料'], [/Logistics documents submitted/g, '物流材料已提交'], [/You have successfully released/g, '已释放'],
+  [/of unshipped quota\. Your available CNY settlement limit has been updated\./g, '的未发货额度。人民币结汇可用额度已更新。'], [/View order details/g, '查看订单详情'], [/Supplement logistics documents/g, '补充物流材料'],
+  [/Upload logistics evidence to release unshipped quota for/g, '上传物流凭证，以释放以下订单的未发货额度：'], [/Remaining unshipped quota/g, '剩余未发货额度'], [/Upload logistics documents/g, '上传物流材料'],
   [/Supported: shipping receipt, logistics invoice, tracking document, other shipment evidence\./g, '支持发货凭证、物流发票、跟踪文件及其他运输证明。'], [/Upload logistics evidence/g, '上传物流凭证'], [/Analyzing logistics documents…/g, '正在分析物流材料…'], [/Extracting shipment and tracking information/g, '正在提取发货和物流跟踪信息'],
   [/logistics records extracted by AI\. Review and edit if needed\./g, '条物流记录已自动提取。请核对并按需修改。'], [/Logistics Method/g, '物流方式'], [/Shipment Date/g, '发货日期'], [/Related Item/g, '相关商品'], [/Submit logistics documents/g, '提交物流材料'],
   [/Draft saved\. You can continue it from the upload list\./g, '草稿已保存。可从上传列表继续。'], [/Untitled trade document/g, '未命名贸易单据'], [/Untitled template CSV/g, '未命名模板 CSV'], [/Untitled ERP CSV/g, '未命名 ERP 文件'], [/Untitled upload/g, '未命名上传'],
