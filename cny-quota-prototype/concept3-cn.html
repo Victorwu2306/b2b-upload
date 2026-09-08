@@ -1805,10 +1805,36 @@ table.data.req-v-table .detail-with-chip { flex-direction:column; align-items:fl
 .kv-grid p { font-size:14px; font-weight:500; }
 .drawer.wide { width:520px; }
 .file-ok {
-  border:1px solid rgba(27,138,76,.3); border-radius:8px; padding:14px;
-  background:rgba(27,138,76,.05); display:flex; align-items:center; gap:12px;
+  border:1px solid var(--border); border-radius:8px; padding:16px 20px;
+  background:#fff; display:flex; align-items:center; justify-content:space-between; gap:16px;
 }
-.file-ok > svg { width:20px; height:20px; flex:0 0 20px; color:var(--success); }
+.file-ok-main { display:flex; align-items:center; gap:12px; min-width:0; flex:1; }
+.file-ok-check {
+  width:20px; height:20px; border-radius:50%; background:var(--success); color:#fff;
+  display:grid; place-items:center; flex:0 0 20px;
+}
+.file-ok-check svg { width:11px; height:11px; display:block; }
+.file-ok-text { min-width:0; }
+.file-ok-name {
+  font-size:14px; font-weight:600; color:var(--foreground); line-height:20px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.file-ok-meta { font-size:12px; line-height:18px; color:var(--muted-foreground); margin-top:2px; }
+.file-ok-actions { display:flex; align-items:center; gap:4px; flex:0 0 auto; }
+.file-ok-action {
+  width:32px; height:32px; border-radius:6px; color:var(--foreground);
+  display:grid; place-items:center;
+}
+.file-ok-action:hover { background:var(--muted); color:var(--primary); }
+.file-ok-action svg { width:18px; height:18px; }
+.uploaded-preview-sheet { overflow:auto; }
+.uploaded-preview-doc { padding:24px; background:#F3F3F7; min-height:420px; }
+.uploaded-preview-page {
+  max-width:640px; margin:0 auto; background:#fff; border:1px solid var(--border);
+  border-radius:4px; padding:28px; min-height:460px; box-shadow:0 8px 24px rgba(28,28,46,.08);
+}
+.uploaded-preview-page .doc-h1 { font-size:18px; font-weight:700; margin-bottom:6px; }
+.uploaded-preview-page .doc-sub { font-size:12px; color:var(--muted-foreground); margin-bottom:16px; }
 .file-problem {
   border:1px solid #FECDCA; border-radius:8px; padding:14px;
   background:#FFF8F7; display:flex; align-items:center; gap:12px;
@@ -2982,6 +3008,7 @@ const I = {
   truck: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>`,
   more: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
   eye: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  trash: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg>`,
   download: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>`,
   check: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>`,
   x: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>`,
@@ -3017,7 +3044,9 @@ const state = {
   moreId: null,
   tooltip: false,
   logState: 'empty', // empty | processing | done
+  logFileName: null,
   logSubmitted: false,
+  filePreview: null,
   connectOpen: false,
   browseOpen: false,
   templatePanel: false,
@@ -3061,6 +3090,7 @@ function resetWiz(kind) {
       goodsView: 'cards',
       tradePreviewOpen: false,
       analysisScheduled: false,
+      piCiRemoved: false,
       logisticsUploadState: 'empty',
       logisticsFileName: null,
       logisticsCompany: 'Maersk Line',
@@ -3630,11 +3660,12 @@ function reuploadFromHistory(typeKey) {
 
 function getRecord() { return RECORDS.find(r => r.id === state.recordId) || RECORDS[0]; }
 function go(view, recordId) {
+  state.filePreview = null;
   if (view === 'link-payment' && !LINK_PAYMENT_VISIBLE) view = 'details';
   state.view = view;
   if (recordId) state.recordId = recordId;
   if (view === 'link-payment') state.linked = [];
-  if (view === 'supplement') { state.logState = 'empty'; state.logSubmitted = false; }
+  if (view === 'supplement') { state.logState = 'empty'; state.logSubmitted = false; state.logFileName = null; }
   if (view === 'home' || view === 'templates' || view === 'erp' || view === 'upload-history' || view === 'trade-orders') {
     state.wiz = null;
     state.templatePanel = false;
@@ -3660,6 +3691,133 @@ function toast(msg) {
   el.textContent = msg;
   el.classList.add('open');
   setTimeout(() => el.classList.remove('open'), 2400);
+}
+
+function uploadedFileMeta() {
+  return '10 MB - Uploaded';
+}
+function uploadedFileCard(opts) {
+  const fileName = escapeHTML((opts && opts.fileName) || 'uploaded_file');
+  const meta = escapeHTML((opts && opts.meta) || uploadedFileMeta());
+  const style = opts && opts.style ? ` style="${opts.style}"` : '';
+  const viewFn = opts && opts.onView;
+  const deleteFn = opts && opts.onDelete;
+  const viewBtn = viewFn ? `<button type="button" class="file-ok-action" onclick="${viewFn}" aria-label="View uploaded file">${I.eye}</button>` : '';
+  const deleteBtn = deleteFn ? `<button type="button" class="file-ok-action" onclick="${deleteFn}" aria-label="Delete uploaded file">${I.trash}</button>` : '';
+  return `<div class="file-ok"${style}>
+    <div class="file-ok-main">
+      <span class="file-ok-check" aria-hidden="true">${I.check}</span>
+      <div class="file-ok-text">
+        <p class="file-ok-name mono">${fileName}</p>
+        <p class="file-ok-meta">${meta}</p>
+      </div>
+    </div>
+    ${viewBtn || deleteBtn ? `<div class="file-ok-actions">${viewBtn}${deleteBtn}</div>` : ''}
+  </div>`;
+}
+function inferUploadedPreviewKind(fileName) {
+  const ext = String(fileName || '').split('.').pop().toLowerCase();
+  if (['pdf','jpg','jpeg','png','tif','tiff','doc','docx'].includes(ext)) return 'document';
+  return 'spreadsheet';
+}
+function resolveUploadedPreview(source, fileName) {
+  const w = state.wiz;
+  if (fileName) return { fileName, kind: inferUploadedPreviewKind(fileName), source: source || 'file' };
+  if (source === 'template') return { fileName: (w && w.fileName) || 'template_transactions.csv', kind: 'spreadsheet', source };
+  if (source === 'erp' || source === 'erp-corrected') return { fileName: (w && (w.erp2ReplacementFileName || w.fileName)) || 'erp_file.csv', kind: 'spreadsheet', source };
+  if (source === 'trade' || source === 'pici') return { fileName: (w && w.fileName) || 'trade_document.pdf', kind: 'trade', source };
+  if (source === 'v2') return { fileName: (w && w.fileName) || 'uploaded_file', kind: inferUploadedPreviewKind(w && w.fileName), source };
+  if (source === 'logistics') return { fileName: state.logFileName || 'shipping_receipt_and_tracking.pdf', kind: 'document', source };
+  if (source === 'history') return { fileName: 'erp_missing_columns_corrected.csv', kind: 'spreadsheet', source };
+  return { fileName: (w && w.fileName) || 'uploaded_file', kind: inferUploadedPreviewKind(w && w.fileName), source: source || 'file' };
+}
+function openUploadedFilePreview(source, fileName) {
+  const preview = resolveUploadedPreview(source, fileName);
+  state.filePreview = preview;
+  const openTradeModal = (preview.kind === 'trade' || (state.wiz && state.wiz.kind === 'trade')) && preview.source !== 'logistics';
+  if (state.wiz) state.wiz.tradePreviewOpen = openTradeModal;
+  render();
+}
+function closeUploadedFilePreview() {
+  state.filePreview = null;
+  render();
+}
+function spreadsheetPreviewMarkup() {
+  const rows = [
+    ['order_id','buyer_name','amount','currency','order_date'],
+    ['PO-2026-07-0892','Shenzhen Global Trade Co., Ltd.','48500.00','USD','2026-07-15'],
+    ['PO-2026-07-0893','Guangzhou Apex Trading Co.','12800.00','USD','2026-07-16'],
+    ['PO-2026-07-0894','HK Commerce Solutions Ltd.','9600.50','USD','2026-07-16'],
+  ];
+  return `<div class="uploaded-preview-sheet">
+    <table class="data">
+      <thead><tr>${rows[0].map(h=>`<th>${escapeHTML(h)}</th>`).join('')}</tr></thead>
+      <tbody>${rows.slice(1).map(row=>`<tr>${row.map((cell,i)=>`<td${i===0||i===2?' class="mono"':''}>${escapeHTML(cell)}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table>
+  </div>`;
+}
+function documentPreviewMarkup() {
+  if (state.filePreview && (state.filePreview.kind === 'trade' || (state.wiz && state.wiz.kind === 'trade'))) return tradeDocPreview(true);
+  const name = (state.filePreview && state.filePreview.fileName) || 'Uploaded document';
+  return `<div class="uploaded-preview-doc">
+    <div class="uploaded-preview-page">
+      <p class="doc-h1">${escapeHTML(name)}</p>
+      <p class="doc-sub">Document preview</p>
+      <p>This prototype shows a preview of the uploaded file. In production, the original document would open here.</p>
+    </div>
+  </div>`;
+}
+function uploadedFilePreviewModal() {
+  const preview = state.filePreview;
+  if (!preview) return '';
+  if ((preview.kind === 'trade' || (state.wiz && state.wiz.kind === 'trade')) && preview.source !== 'logistics') return '';
+  const isSheet = preview.kind === 'spreadsheet';
+  const body = isSheet ? spreadsheetPreviewMarkup() : documentPreviewMarkup();
+  return `<div class="modal-backdrop open file-preview-backdrop" style="align-items:center" onclick="if(event.target===this)closeUploadedFilePreview()">
+    <div class="modal" style="width:${isSheet?'860px':'900px'};max-width:94vw;max-height:92vh;display:flex;flex-direction:column">
+      <div class="modal-h">
+        <div>
+          <h3>View uploaded file</h3>
+          <p class="mono">${escapeHTML(preview.fileName)}</p>
+        </div>
+        <button type="button" onclick="closeUploadedFilePreview()">${I.x}</button>
+      </div>
+      <div class="modal-b" style="padding:${isSheet?'20px':'0'};overflow:auto;display:block">${body}</div>
+    </div>
+  </div>`;
+}
+function deleteUploadedTemplateFile() {
+  state.filePreview = null;
+  resetTemplateFile();
+}
+function deleteUploadedERPFile() {
+  state.filePreview = null;
+  replaceERPFile();
+}
+function deleteUploadedTradeFile() {
+  state.filePreview = null;
+  replaceTradeFile();
+}
+function deleteUploadedV2File() {
+  state.filePreview = null;
+  resetUploadV2File();
+}
+function deleteUploadedPiCiFile() {
+  const w = state.wiz; if (!w) return;
+  w.piCiRemoved = true;
+  state.filePreview = null;
+  render();
+}
+function simulatePiCiUpload() {
+  const w = state.wiz; if (!w) return;
+  w.piCiRemoved = false;
+  render();
+}
+function deleteUploadedLogisticsFile() {
+  state.logState = 'empty';
+  state.logFileName = null;
+  state.filePreview = null;
+  render();
 }
 
 function nowStamp() {
@@ -5839,11 +5997,11 @@ function stepTemplateUpload() {
     </div>`;
   } else {
     const sourceLabel = `${selectedCategory ? selectedCategory.label : '—'}${w.category==='marketplace' && w.marketplace ? ` · ${w.marketplace}` : ''}`;
-    body += `<div class="file-ok">
-      ${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
-      <div style="flex:1"><p class="mono" style="font-weight:600">${w.fileName || 'template_transactions.csv'}</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Uploaded · ${sourceLabel}${w.v2UseCaseTitle?` · ${w.v2UseCaseTitle}`:''}</p></div>
-      <button type="button" class="btn btn-xs btn-secondary" onclick="resetTemplateFile()">${I.rotate} Replace</button>
-    </div>`;
+    body += uploadedFileCard({
+      fileName: w.fileName || 'template_transactions.csv',
+      onView: "openUploadedFilePreview('template')",
+      onDelete: 'deleteUploadedTemplateFile()',
+    });
   }
   body += `</div></div></div>`;
   return body;
@@ -5937,8 +6095,6 @@ function stepERPInfoConcept2(w, stats) {
   const missing = stats.missing[0];
   const missingNames = stats.missing.map(field => field.name);
   const fileName = w.fileName || 'drop_shipping_orders_Q3.xlsx';
-  const fileState = 'file-ok';
-  const fileIcon = I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"');
   const resolutionNames = (w.manualResolutionFields || []).length
     ? w.manualResolutionFields
     : missingNames;
@@ -6018,13 +6174,11 @@ function stepERPInfoConcept2(w, stats) {
     <div class="card erp-file-card" style="overflow:hidden">
       <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} ERP CSV</div>
       <div style="padding:20px">
-        <div class="${fileState}">
-          ${fileIcon}
-          <div style="flex:1">
-            <p style="font-weight:600">${fileName}</p>
-            <p style="font-size:12px;color:var(--muted-foreground)">Uploaded successfully · ${stats.sources.length} columns detected</p>
-          </div>
-        </div>
+        ${uploadedFileCard({
+          fileName,
+          onView: "openUploadedFilePreview('erp')",
+          onDelete: 'deleteUploadedERPFile()',
+        })}
       </div>
     </div>
 
@@ -6054,13 +6208,11 @@ function erp2FileSummary(w, stats) {
   return `<div class="card erp-file-card" style="overflow:hidden">
     <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} Uploaded file</div>
     <div style="padding:20px">
-      <div class="file-ok">
-        ${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
-        <div style="flex:1;min-width:0">
-          <p style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${erpDisplayedFileName(w) || 'erp_missing_columns.csv'}</p>
-          <p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Uploaded successfully · ${stats.sources.length} columns detected${entryCategory?` · Category: ${entryCategory}`:''}${entryMarketplace?` · Marketplace: ${entryMarketplace}`:''}${w.v2UseCaseTitle?` · ${w.v2UseCaseTitle}`:''}</p>
-        </div>
-      </div>
+      ${uploadedFileCard({
+        fileName: erpDisplayedFileName(w) || 'erp_missing_columns.csv',
+        onView: "openUploadedFilePreview('erp')",
+        onDelete: 'deleteUploadedERPFile()',
+      })}
     </div>
   </div>`;
 }
@@ -6376,9 +6528,11 @@ function stepERP2Missing(w) {
       <div class="erp2-stage-head"><h2>Update and re-upload</h2><p>Check whether the file still needs any required system fields.</p></div>
       ${erp2FileSummary(w, stats)}
       <div class="mapping-c2-success">${I.check}<div><strong>All required columns are covered</strong><p>${w.erp2ReplacementState==='done'?'The corrected full file replaced the previous upload. Existing automatic and manual mappings were reused.':'No corrected file is needed.'}</p></div></div>
-      ${w.erp2ReplacementState==='done' ? `<div class="file-ok">${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
-        <div style="flex:1"><p style="font-weight:600">${w.erp2ReplacementFileName}</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Current file · ${w.erp2ReusedMappings} previous mappings reused · ${w.erp2NewHeaders.length} new header${w.erp2NewHeaders.length===1?'':'s'} matched</p></div>
-      </div>` : ''}
+      ${w.erp2ReplacementState==='done' ? uploadedFileCard({
+        fileName: w.erp2ReplacementFileName,
+        onView: "openUploadedFilePreview('erp-corrected')",
+        onDelete: 'deleteUploadedERPFile()',
+      }) : ''}
     </div>`;
   }
   return `<div class="erp2-stage">
@@ -6619,9 +6773,11 @@ function stepERP3Missing(w) {
     return `<div class="erp2-stage">
       <div class="erp2-stage-head"><h2>Update and re-upload</h2><p>The missing fields have been added to the corrected file.</p></div>
       <div class="mapping-c2-success">${I.check}<div><strong>All required columns are covered</strong><p>The system-corrected file replaced the previous upload. Existing mappings were reused, and missing headers were added.</p></div></div>
-      <div class="file-ok">${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
-        <div style="flex:1"><p style="font-weight:600">${w.erp2ReplacementFileName || w.fileName}</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Current file · ${w.erp2ReusedMappings || 0} previous mappings reused · ${(w.erp2NewHeaders||[]).length} new header${(w.erp2NewHeaders||[]).length===1?'':'s'} added</p></div>
-      </div>
+      ${uploadedFileCard({
+        fileName: w.erp2ReplacementFileName || w.fileName,
+        onView: "openUploadedFilePreview('erp-corrected')",
+        onDelete: 'deleteUploadedERPFile()',
+      })}
     </div>`;
   }
   return `<div class="erp2-stage">
@@ -6788,11 +6944,15 @@ function stepERPInfo() {
       <p style="font-size:14px;font-weight:600;color:var(--primary)">AI is analyzing your file and matching fields…</p>
     </div>`;
   } else {
-    html += `<div class="${stats.missing.length?'file-problem':'file-ok'}">${stats.missing.length?I.alert:I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
+    html += stats.missing.length ? `<div class="file-problem">${I.alert}
       <div style="flex:1"><p style="font-weight:600">${w.fileName || 'drop_shipping_orders_Q3.xlsx'}</p>
-      <p style="font-size:12px;color:var(--muted-foreground)">Uploaded on 2026-07-20 · ${stats.mapped.length} of ${stats.sources.length} file columns mapped${stats.missing.length?` · ${stats.missing.length} required column${stats.missing.length===1?'':'s'} missing`:' · All required columns covered'}</p></div>
-      <button class="btn btn-xs ${stats.missing.length?'btn-primary':'btn-secondary'}" onclick="replaceERPFile()">${I.rotate} Replace</button>
-    </div>`;
+      <p style="font-size:12px;color:var(--muted-foreground)">Uploaded on 2026-07-20 · ${stats.mapped.length} of ${stats.sources.length} file columns mapped · ${stats.missing.length} required column${stats.missing.length===1?'':'s'} missing</p></div>
+      <button class="btn btn-xs btn-primary" onclick="replaceERPFile()">${I.rotate} Replace</button>
+    </div>` : uploadedFileCard({
+      fileName: w.fileName || 'drop_shipping_orders_Q3.xlsx',
+      onView: "openUploadedFilePreview('erp')",
+      onDelete: 'deleteUploadedERPFile()',
+    });
   }
   html += `</div></div>`;
   if (w.dsState==='mapped') {
@@ -7079,6 +7239,7 @@ function replaceTradeFile() {
   w.tradeStage = 1;
   w.uploadState = 'empty';
   w.fileName = null;
+  w.piCiRemoved = false;
   w.shipped = null;
   w.logisticsUploadState = 'empty';
   w.logisticsFileName = null;
@@ -7096,6 +7257,7 @@ function setTradeSource(value) {
   if (w.source !== value && w.uploadState !== 'empty') {
     w.uploadState = 'empty';
     w.fileName = null;
+    w.piCiRemoved = false;
     w.shipped = null;
     w.logisticsUploadState = 'empty';
     w.logisticsFileName = null;
@@ -7150,14 +7312,11 @@ function stepTradeUpload() {
       <div class="card" style="overflow:hidden">
         <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} Trade document file</div>
         <div style="padding:20px;display:flex;flex-direction:column;gap:12px">
-          <div class="file-ok">
-            ${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
-            <div style="flex:1;min-width:0">
-              <p class="mono" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${w.fileName || 'trade_document.pdf'}</p>
-              <p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Uploaded successfully · Ready for analysis</p>
-            </div>
-            <button type="button" class="btn btn-xs btn-secondary" onclick="replaceTradeFile()">${I.rotate} Replace</button>
-          </div>
+          ${uploadedFileCard({
+            fileName: w.fileName || 'trade_document.pdf',
+            onView: "openUploadedFilePreview('trade')",
+            onDelete: 'deleteUploadedTradeFile()',
+          })}
           <div class="alert-info">
             ${I.info}
             <p style="font-size:12px;line-height:1.45">Your file is uploaded but has not been analyzed yet. Click <strong>Next</strong> to extract and review its transaction information.</p>
@@ -7258,13 +7417,17 @@ function tradeGoodsTable() {
           </div>
           <div class="field full">
             <label>${tradeFieldLabel('PI/CI upload', '发票合同上传')} ${req}</label>
-            <div class="file-ok" style="margin-top:0">
-              ${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
-              <div style="flex:1;min-width:0">
-                <p class="mono" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${fileName}</p>
-                <p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">PDF</p>
-              </div>
-            </div>
+            ${w.piCiRemoved ? `<div class="upload-zone" style="cursor:pointer;padding:22px 16px;margin-top:0" onclick="simulatePiCiUpload()">
+              <div style="color:var(--muted-foreground);margin-bottom:8px">${I.upload}</div>
+              <p style="font-size:14px;font-weight:600">Upload PI/CI</p>
+              <p style="font-size:12px;color:var(--muted-foreground);margin:4px 0 10px">PDF · Max 50 MB</p>
+              <button type="button" class="btn btn-sm btn-primary" onclick="event.stopPropagation();simulatePiCiUpload()">Upload file</button>
+            </div>` : uploadedFileCard({
+              fileName,
+              style: 'margin-top:0',
+              onView: "openUploadedFilePreview('pici')",
+              onDelete: 'deleteUploadedPiCiFile()',
+            })}
             ${note('Not UD, but we collect it for OCR.', '非申报数据，但会采集用于 OCR。')}
           </div>
         </div>
@@ -8228,14 +8391,11 @@ function stepTradeDynamic() {
     fileBlock = `<div class="card" style="overflow:hidden">
       <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} Trade document</div>
       <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
-        <div class="file-ok">
-          ${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
-          <div style="flex:1;min-width:0">
-            <p class="mono" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${w.fileName || 'trade_document.pdf'}</p>
-            <p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Uploaded · Analysis starts automatically</p>
-          </div>
-          <button type="button" class="btn btn-xs btn-secondary" onclick="replaceTradeFile()">${I.rotate} Replace</button>
-        </div>
+        ${uploadedFileCard({
+          fileName: w.fileName || 'trade_document.pdf',
+          onView: "openUploadedFilePreview('trade')",
+          onDelete: 'deleteUploadedTradeFile()',
+        })}
         <div class="alert-info">${I.info}<p style="font-size:12px">Preparing the document for automatic analysis…</p></div>
       </div>
     </div>`;
@@ -8252,14 +8412,11 @@ function stepTradeDynamic() {
     fileBlock = `<div class="card" style="overflow:hidden">
       <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.upload} Trade document</div>
       <div style="padding:20px">
-        <div class="file-ok">
-          ${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
-          <div style="flex:1;min-width:0">
-            <p class="mono" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${w.fileName || 'trade_document.pdf'}</p>
-            <p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Analyzed successfully · Complete the trade info below</p>
-          </div>
-          <button type="button" class="btn btn-xs btn-secondary" onclick="replaceTradeFile()">${I.rotate} Replace</button>
-        </div>
+        ${uploadedFileCard({
+          fileName: w.fileName || 'trade_document.pdf',
+          onView: "openUploadedFilePreview('trade')",
+          onDelete: 'deleteUploadedTradeFile()',
+        })}
       </div>
     </div>`;
   }
@@ -8676,7 +8833,12 @@ function viewSupplement() {
             <p style="font-size:12px;color:var(--muted-foreground);margin-top:6px">Extracting shipment and tracking information</p>
           </div>
         `:`
-          <div class="alert-info" style="margin-bottom:16px">${I.check} 2 logistics records extracted by AI. Review and edit if needed.</div>
+          ${uploadedFileCard({
+            fileName: state.logFileName || 'shipping_receipt_and_tracking.pdf',
+            onView: "openUploadedFilePreview('logistics')",
+            onDelete: 'deleteUploadedLogisticsFile()',
+          })}
+          <div class="alert-info" style="margin:16px 0">${I.check} 2 logistics records extracted by AI. Review and edit if needed.</div>
           <div style="overflow-x:auto"><table class="data" style="min-width:720px">
             <thead><tr>${['Logistics Method','Company','Tracking No.','Shipment Date','Related Item','Status'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
             <tbody>
@@ -8698,7 +8860,7 @@ function viewSupplement() {
 function simulateLog() {
   state.logState = 'processing';
   render();
-  setTimeout(() => { state.logState = 'done'; render(); }, 1800);
+  setTimeout(() => { state.logState = 'done'; state.logFileName = 'shipping_receipt_and_tracking.pdf'; render(); }, 1800);
 }
 
 function viewDetails() {
@@ -8953,14 +9115,10 @@ function viewUploadDetails() {
         <p style="font-size:12px;color:var(--muted-foreground);margin-bottom:16px">When required headers are missing, upload a complete corrected file to replace the original. Existing automatic and manual mappings are reused.</p>
         ${needsReupload ? `
           <div class="alert-warn">${I.alert}<div><p style="font-weight:600">Corrected full file required</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:3px">Add the missing headers to the original document and upload the complete corrected CSV.</p></div></div>` : `
-          <div class="file-ok">
-            ${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}
-            <div style="flex:1">
-              <p class="mono" style="font-weight:600">erp_missing_columns_corrected.csv</p>
-              <p style="font-size:12px;color:var(--muted-foreground);margin-top:3px">Replaced original file · Existing field mappings reused</p>
-            </div>
-            <span class="chip chip-success">Current file</span>
-          </div>`}
+          ${uploadedFileCard({
+            fileName: 'erp_missing_columns_corrected.csv',
+            onView: "openUploadedFilePreview('history','erp_missing_columns_corrected.csv')",
+          })}`}
       </div>
       <div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Processing Summary</h3>
@@ -9032,7 +9190,7 @@ function uploadV2Body(w) {
   const canUpload=uploadV2PrerequisitesComplete(w);
   let fileContent='';
   if (w.v2FileState==='analyzing') fileContent=`<div class="upload-zone" style="border-color:var(--primary);background:var(--accent)"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing file type and structure…</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:4px">Selecting the appropriate processing flow</p></div>`;
-  else if (w.v2FileState==='ready') fileContent=`<div class="file-ok">${I.checkCircle.replace('width="40"','width="20"').replace('height="40"','height="20"')}<div style="flex:1;min-width:0"><p class="mono" style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(w.fileName)}</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:2px">Ready to continue · ${w.detectedLabel} detected${w.v2UseCaseTitle?` · ${w.v2UseCaseTitle}`:''}</p></div><button type="button" class="btn btn-xs btn-secondary" onclick="openUploadV2SamplePicker()">${I.rotate} Replace</button></div>`;
+  else if (w.v2FileState==='ready') fileContent=uploadedFileCard({fileName:w.fileName,onView:"openUploadedFilePreview('v2')",onDelete:'deleteUploadedV2File()'});
   else if (w.v2FileState==='error') fileContent=`<div style="display:flex;flex-direction:column;gap:12px"><div class="file-problem">${I.alert}<div style="flex:1"><p class="mono" style="font-weight:600">${escapeHTML(w.fileName||'File not accepted')}</p><p style="font-size:12px;margin-top:3px">${w.routeError}</p></div></div><button type="button" class="btn btn-secondary" style="align-self:flex-start" onclick="openUploadV2SamplePicker()">Choose another file</button></div>`;
   else fileContent=`<div class="upload-zone" data-upload-v2-zone style="cursor:${canUpload?'pointer':'not-allowed'};padding:52px 32px;opacity:${canUpload?'1':'.55'}" onclick="openUploadV2SamplePicker()"><div style="color:var(--muted-foreground);margin-bottom:12px">${I.upload}</div><p style="font-size:15px;font-weight:600">Upload transaction document</p><p style="font-size:13px;color:var(--muted-foreground);margin:6px 0 14px">PDF, JPG, PNG, TIFF, DOC, DOCX, CSV · Max 50 MB</p><button type="button" class="btn btn-primary" data-upload-v2-button onclick="event.stopPropagation();openUploadV2SamplePicker()" ${canUpload?'':'disabled'}>Choose file</button>${canUpload?'':'<p style="font-size:12px;color:var(--muted-foreground);margin-top:12px">Complete the category details to enable upload.</p>'}</div>`;
   return `<div style="display:flex;flex-direction:column;gap:20px">
@@ -9228,7 +9386,7 @@ function render() {
     state.wiz ? state.wiz.step : '',
     state.wiz && state.wiz.done ? 'done' : 'active',
   ].join(':');
-  root.innerHTML = html;
+  root.innerHTML = html + uploadedFilePreviewModal();
   root.dataset.renderKey = nextRenderKey;
   if (previousRenderKey === nextRenderKey) {
     const nextScroller = root.querySelector('.focused-body') || root.querySelector('.main .content');
@@ -9738,6 +9896,12 @@ const CN_UI_REPLACEMENTS = [
   [/Upload & complete/g, '上传并补充信息'], [/Review the submission information before submitting\./g, '提交前，请检查提交信息。'],
   [/Confirm the business type, uploaded file, and quota increase before submitting\./g, '提交前，请确认业务类型、已上传文件，以及本文件可增加的额度。'],
   [/Submission summary/g, '提交汇总'], [/Business type/g, '业务类型'], [/Edit details/g, '修改信息'], [/Uploaded file/g, '已上传文件'], [/View document/g, '查看单据'],
+  [/View uploaded file/g, '查看已上传文件'],
+  [/Delete uploaded file/g, '删除已上传文件'],
+  [/10 MB - Uploaded/g, '10 MB · 已上传'],
+  [/Document preview/g, '单据预览'],
+  [/This prototype shows a preview of the uploaded file\. In production, the original document would open here\./g, '此为已上传文件的预览。正式环境将打开原始文件。'],
+  [/Upload PI\/CI/g, '上传发票/合同'],
   [/Transaction amount/g, '交易金额'], [/Calculated from the eligible transaction amount in the uploaded file\. Subject to final verification\./g, '按已上传文件中的合格交易金额计算，以最终校验结果为准。'],
   [/Submitting will add the eligible quota and save this document to upload history\./g, '提交后将增加合格额度，并将此单据保存至上传历史。'],
   [/Source document/g, '原始单据'], [/Preview the uploaded document\./g, '预览已上传单据。'], [/Review the uploaded document\./g, '请核对已上传单据。'], [/Document Preview & Extracted Information/g, '单据预览与提取信息'], [/Preview available/g, '可预览'], [/Enlarge preview/g, '放大预览'],
@@ -9930,7 +10094,7 @@ function render() {
     state.wiz ? state.wiz.step : '',
     state.wiz && state.wiz.done ? 'done' : 'active',
   ].join(':');
-  root.innerHTML = html;
+  root.innerHTML = html + uploadedFilePreviewModal();
   localizeVisibleUI(root);
   root.dataset.renderKey = nextRenderKey;
   if (previousRenderKey === nextRenderKey) {
