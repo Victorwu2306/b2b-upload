@@ -6706,28 +6706,6 @@ function erp3TargetMappingTable(w) {
   </div>
   <p style="font-size:12px;color:var(--muted-foreground);margin-top:10px">${mappedCount} of ${ERP_REQUIRED_FIELDS.length} required fields are mapped.</p>`;
 }
-function downloadERP3CorrectedFile() {
-  const w = state.wiz; if (!w) return;
-  const stats = getERPMappingStats(w);
-  const csvCell = value => `"${String(value == null ? '' : value).replace(/"/g, '""')}"`;
-  const headers = ERP_REQUIRED_FIELDS.map(field => field.name);
-  const rows = ERP_EXAMPLE_ROWS.map((exampleRow, rowIndex) => ERP_REQUIRED_FIELDS.map((field, index) => {
-    const source = erp2TargetSource(field.name, stats.sources, w.mappings);
-    if (source) return rowIndex === 0 ? source.sample : (exampleRow[index] || source.sample);
-    return '';
-  }));
-  const csv = [headers].concat(rows).map(row => row.map(csvCell).join(',')).join('\r\n');
-  const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'erp_system_corrected_headers.csv';
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-  toast('System-corrected file downloaded. Fill in the missing columns and upload the complete file.');
-}
 function simulateERP3CorrectedUpload(outcome) {
   const w = state.wiz; if (!w || w.erpFlowVersion !== 'v3') return;
   if (outcome !== 'mapped' && outcome !== 'unrecognized') { openERPCorrectedFilePicker(); return; }
@@ -6776,7 +6754,7 @@ function stepERP3Missing(w) {
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
       <h2>Add the missing fields and re-upload</h2>
-      <p>These required fields are still missing. Download the system-corrected file, fill in the new columns, and upload the complete file.</p>
+      <p>These required fields are still missing. Fill in the new columns and upload the complete file.</p>
     </div>
     ${erp2FileSummary(w, stats)}
     <div class="erp3-corrected-card">
@@ -6786,8 +6764,6 @@ function stepERP3Missing(w) {
         <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
       </div>
       <div class="erp3-corrected-body">
-        <div class="erp2-draft-note">${I.info}<p>Download the system-corrected document first if you want a file that already uses the required headers. Then complete the empty columns and upload the full file.</p></div>
-        <button type="button" class="btn btn-secondary" onclick="downloadERP3CorrectedFile()">${I.download} Download system-corrected file</button>
         ${w.erp3ReplacementState === 'processing' ? `
           <div class="upload-zone"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing the corrected file and reusing previous mappings…</p></div>` : `
           <div class="upload-zone" style="cursor:pointer" onclick="openERPCorrectedFilePicker()">
@@ -9758,11 +9734,8 @@ const CN_UI_REPLACEMENTS = [
   [/Add the missing fields, then upload a complete corrected file\./g, '请补充缺失字段，然后上传完整修正版。'],
   [/Upload a complete corrected file that includes every missing required field\./g, '请上传包含全部缺失必填字段的完整修正版。'],
   [/Add the missing fields and re-upload/g, '补充缺失字段并重新上传'],
-  [/These required fields are still missing\. Download the system-corrected file, fill in the new columns, and upload the complete file\./g, '这些必填字段仍缺失。请下载系统修正文件，填写新增列后上传完整文件。'],
+  [/These required fields are still missing\. Fill in the new columns and upload the complete file\./g, '这些必填字段仍缺失。请填写新增列后上传完整文件。'],
   [/All original headers have been renamed to the fields we need, and the missing headers have already been added\. You only need to fill in the corresponding data\./g, '原文件表头已全部修正为所需表头，缺失表头也已补充。只需填入对应数据。'],
-  [/Download the system-corrected document first if you want a file that already uses the required headers\. Then complete the empty columns and upload the full file\./g, '如需已含系统表头的文件，请先下载系统修正版。填写空白列后，再上传完整文件。'],
-  [/Download system-corrected file/g, '下载系统修正文件'],
-  [/System-corrected file downloaded\. Fill in the missing columns and upload the complete file\./g, '系统修正文件已下载。请填写缺失列后上传完整文件。'],
   [/Upload the complete corrected file/g, '上传完整修正文件'],
   [/Include every required header and the missing (.+) data\./g, '请包含全部必填表头，并填写缺失的 $1 数据。'],
   [/The missing fields have been added to the corrected file\./g, '缺失字段已添加到修正文件中。'],

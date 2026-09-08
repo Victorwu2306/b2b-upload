@@ -6872,28 +6872,6 @@ function erp3TargetMappingTable(w) {
   </div>
   <p style="font-size:12px;color:var(--muted-foreground);margin-top:10px">${mappedCount} of ${ERP_REQUIRED_FIELDS.length} required fields are mapped.</p>`;
 }
-function downloadERP3CorrectedFile() {
-  const w = state.wiz; if (!w) return;
-  const stats = getERPMappingStats(w);
-  const csvCell = value => `"${String(value == null ? '' : value).replace(/"/g, '""')}"`;
-  const headers = ERP_REQUIRED_FIELDS.map(field => field.name);
-  const rows = ERP_EXAMPLE_ROWS.map((exampleRow, rowIndex) => ERP_REQUIRED_FIELDS.map((field, index) => {
-    const source = erp2TargetSource(field.name, stats.sources, w.mappings);
-    if (source) return rowIndex === 0 ? source.sample : (exampleRow[index] || source.sample);
-    return '';
-  }));
-  const csv = [headers].concat(rows).map(row => row.map(csvCell).join(',')).join('\r\n');
-  const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'erp_system_corrected_headers.csv';
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-  toast('System-corrected file downloaded. Fill in the missing columns and upload the complete file.');
-}
 function simulateERP3CorrectedUpload(outcome) {
   const w = state.wiz; if (!w || w.erpFlowVersion !== 'v3') return;
   if (outcome !== 'mapped' && outcome !== 'unrecognized') { openERPCorrectedFilePicker(); return; }
@@ -6941,7 +6919,7 @@ function stepERP3Missing(w) {
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
       <h2>Add the missing fields and re-upload</h2>
-      <p>These required fields are still missing. Download the system-corrected file, fill in the new columns, and upload the complete file.</p>
+      <p>These required fields are still missing. Fill in the new columns and upload the complete file.</p>
     </div>
     ${erp2FileSummary(w, stats)}
     <div class="erp3-corrected-card">
@@ -6951,8 +6929,6 @@ function stepERP3Missing(w) {
         <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
       </div>
       <div class="erp3-corrected-body">
-        <div class="erp2-draft-note">${I.info}<p>Download the system-corrected document first if you want a file that already uses the required headers. Then complete the empty columns and upload the full file.</p></div>
-        <button type="button" class="btn btn-secondary" onclick="downloadERP3CorrectedFile()">${I.download} Download system-corrected file</button>
         ${w.erp3ReplacementState === 'processing' ? `
           <div class="upload-zone"><div class="spin" style="margin:0 auto 12px"></div><p style="font-size:14px;font-weight:600;color:var(--primary)">Analyzing the corrected file and reusing previous mappings…</p></div>` : `
           <div class="upload-zone" style="cursor:pointer" onclick="openERPCorrectedFilePicker()">
