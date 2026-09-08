@@ -5027,6 +5027,12 @@ function wizStepper(steps, current) {
 
 function wizShell({ title, sub, steps, step, onBack, body, footer, shellClass='', backLabel='Back to CNY quota management' }) {
   const stepper = wizStepper(steps, step);
+  const titleRow = title
+    ? `<div class="focused-title-row">
+        <div><h1>${title}</h1>${sub?`<p>${sub}</p>`:''}</div>
+        ${state.concept!==2?'':stepper}
+      </div>`
+    : (state.concept===2 && stepper ? `<div class="focused-title-row">${stepper}</div>` : '');
   const concept3Body = `<div class="c3-wizard-layout ${stepper?'has-stepper':'no-stepper'}">
       ${stepper?`<aside class="c3-stepper-rail">${stepper}</aside>`:''}
       <div class="focused-inner" style="max-width:var(--wizard-content-width)">${body}</div>
@@ -5042,10 +5048,7 @@ function wizShell({ title, sub, steps, step, onBack, body, footer, shellClass=''
           <div style="display:flex;align-items:center;gap:4px"><div class="avatar">DR</div>${I.chevron}</div>
         </div>
       </div>
-      <div class="focused-title-row">
-        <div><h1>${title}</h1><p>${sub}</p></div>
-        ${state.concept!==2?'':stepper}
-      </div>
+      ${titleRow}
     </div>
     <div class="focused-body">${state.concept!==2?concept3Body:`<div class="focused-inner" style="max-width:var(--wizard-content-width)">${body}</div>`}</div>
     <div class="bottom-bar">${footer}</div>
@@ -9407,13 +9410,8 @@ function viewWizardUpload() {
   const w = state.wiz || createUploadV2State();
   if (!state.wiz) state.wiz = w;
   if (w.uploadVersion === 2) {
-    const marketplaceOnly = isMarketplaceOnlyWizard(w);
     const canNext = uploadV2PrerequisitesComplete(w) && w.v2FileState === 'ready' && !!w.detectedRoute;
     return wizShell({
-      title: marketplaceOnly ? 'Upload marketplace CSV' : 'Upload transaction records',
-      sub: marketplaceOnly
-        ? 'Select a marketplace, upload a file, and continue with the matching processing flow.'
-        : 'Select a category, upload a file, and continue with the matching processing flow.',
       steps:uploadV2StepsForRoute(w.detectedRoute || (w.category==='marketplace'?'template':''),w),
       step:1,
       onBack:"go('home')",
@@ -9452,8 +9450,6 @@ function viewWizardUpload() {
     ${helper}
   </div>`;
   return wizShell({
-    title:'Upload transaction records',
-    sub:w.allowedTypes?'Select a trade document or an ERP export to begin.':'Select trade documents, a template CSV, or an ERP export to begin.',
     steps:state.concept!==2?[]:[{n:1,label:'Select file type'},{n:2,label:'Upload & review'},{n:3,label:'Confirm'}],
     step:1,
     onBack:"go('home')",
