@@ -9022,10 +9022,10 @@ function viewUploadDetails() {
     ['payment_terms','—','Not mapped','Net 30'],
   ] : [];
 
-  /* Header CTAs only: status · download file · download result (template) · re-upload */
+  /* Header CTAs: status · download file (ERP only) · download result (template) · re-upload */
   const headerActions = [
     uploadHistoryStatus(r.status),
-    `<button type="button" class="btn btn-secondary" onclick="toast('Downloading ${r.fileName}…')">${I.download} Download file</button>`,
+    r.typeKey === 'template' ? '' : `<button type="button" class="btn btn-secondary" onclick="toast('Downloading ${r.fileName}…')">${I.download} Download file</button>`,
     r.canDownloadResult ? `<button type="button" class="btn btn-secondary" onclick="toast('Downloading result file…')">${I.download} Download result</button>` : '',
     needsReupload ? `<button type="button" class="btn btn-primary" onclick="reuploadFromHistory('${r.typeKey}')">${I.upload} Re-upload</button>` : '',
   ].filter(Boolean).join('');
