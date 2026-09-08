@@ -1216,6 +1216,45 @@ table.data.req-h-table .chip { flex-shrink:0; }
 table.data.req-h-table tbody tr:last-child th,
 table.data.req-h-table tbody tr:last-child td { border-bottom:none; }
 table.data.req-h-table tr:hover td { background:transparent; }
+.req-version-row {
+  display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.req-version-row > p { font-size:14px; font-weight:600; margin:0; }
+.req-r2 { border:1px solid var(--border); border-radius:10px; background:#fff; overflow:hidden; }
+.req-r2-tabs {
+  display:flex; flex-wrap:wrap; gap:0 2px;
+  padding:4px 12px 0; border-bottom:1px solid var(--border); background:#fff;
+}
+.req-r2-tab {
+  height:40px; padding:0 12px; border-bottom:2px solid transparent; margin-bottom:-1px;
+  color:var(--muted-foreground); font-size:13px; font-weight:600; background:transparent;
+}
+.req-r2-tab:hover { color:var(--foreground); }
+.req-r2-tab.on { color:var(--primary); border-bottom-color:var(--primary); }
+.req-r2-panel { display:flex; flex-direction:column; gap:16px; padding:16px 20px 20px; }
+.req-r2-panel-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.req-r2-type-label { font-size:14px; font-weight:600; line-height:20px; }
+.req-r2-type-desc { margin-top:2px; color:var(--muted-foreground); font-size:12px; line-height:18px; }
+.req-v-table-wrap { border:1px solid var(--border); border-radius:8px; overflow:auto; background:#fff; }
+table.data.req-v-table { width:100%; table-layout:fixed; font-size:12px; }
+table.data.req-v-table th,
+table.data.req-v-table td {
+  padding:10px 12px; vertical-align:middle; text-align:left;
+  border-bottom:1px solid #f2f2f2; white-space:normal; overflow-wrap:break-word; line-height:1.45;
+}
+table.data.req-v-table col.req-v-field { width:22%; }
+table.data.req-v-table col.req-v-desc { width:38%; }
+table.data.req-v-table col.req-v-lang { width:16%; }
+table.data.req-v-table col.req-v-example { width:24%; }
+table.data.req-v-table thead th { background:#f7f3ff; color:#252526; font-size:12px; font-weight:600; }
+table.data.req-v-table td.mono { color:var(--muted-foreground); }
+table.data.req-v-table tbody tr:last-child td { border-bottom:none; }
+table.data.req-v-table tr:hover td { background:transparent; }
+table.data.req-v-table .detail-with-chip { flex-direction:column; align-items:flex-start; gap:6px; }
+@media (max-width:760px) {
+  table.data.req-v-table { table-layout:auto; }
+}
 .ai-badge {
   display:inline-flex; align-items:center; gap:3px; height:18px; padding:0 6px;
   border-radius:999px; background:var(--secondary); border:1px solid rgba(91,59,232,.3);
@@ -1953,6 +1992,10 @@ body.concept-3 {
 .concept-3 table.data.req-h-table td {
   padding:8px 12px; vertical-align:top; white-space:normal; overflow-wrap:break-word; word-break:normal; font-size:12px;
 }
+.concept-3 table.data.req-v-table th,
+.concept-3 table.data.req-v-table td {
+  padding:10px 12px; vertical-align:middle; white-space:normal; overflow-wrap:break-word; font-size:12px;
+}
 .concept-3 .table-footer { padding:16px; background:#fff; }
 .concept-3 .filters { gap:16px; }
 .concept-3 .filter-field { gap:8px; }
@@ -2527,6 +2570,24 @@ function requiredDetailDescriptionHtml(field) {
   if (parts.when) bits.push(`<div class="req-line req-conditional"><span class="req-k">${tradeFieldLabel('Conditional:', '条件：')}</span> ${parts.when}</div>`);
   return bits.join('');
 }
+function requiredDetailLanguageHtml(field) {
+  const lang = (requiredDetailParts(field).lang || '').trim();
+  return lang || '—';
+}
+function setRequirementsVersion(version) {
+  state.requirementsVersion = version === 'r2' ? 'r2' : 'r1';
+  if (state.requirementsVersion === 'r2') {
+    const open = state.supportedTxOpen || {};
+    const openKey = Object.keys(open).find(key => open[key]);
+    if (openKey) state.requirementsTab = openKey;
+    else if (!state.requirementsTab) state.requirementsTab = 'marketplace';
+  }
+  render();
+}
+function setRequirementsTab(key) {
+  state.requirementsTab = key;
+  render();
+}
 function tradeFieldNoteHtml(en, cn) {
   const text = tradeFieldNote(en, cn);
   if (!text) return '';
@@ -2583,6 +2644,51 @@ function requiredDetailsAccordions() {
       ${isOpen ? `<div class="mapping-c2-accordion-body">${requiredDetailsHorizontalTable(documentRequiredDetails(type.key))}</div>` : ''}
     </div>`;
   }).join('')}</div>`;
+}
+function requiredDetailsVerticalTable(fields) {
+  const items = fields || [];
+  if (!items.length) return '';
+  return `<div class="req-v-table-wrap"><table class="data req-v-table">
+    <colgroup><col class="req-v-field"><col class="req-v-desc"><col class="req-v-lang"><col class="req-v-example"></colgroup>
+    <thead><tr>
+      <th>${tradeFieldLabel('Field name', '字段名称')}</th>
+      <th>${tradeFieldLabel('Description', '说明')}</th>
+      <th>${tradeFieldLabel('Language', '语言要求')}</th>
+      <th>${tradeFieldLabel('Example', '示例')}</th>
+    </tr></thead>
+    <tbody>
+      ${items.map(field => `<tr>
+        <td>${requiredDetailLabelHtml(field)}</td>
+        <td style="color:var(--muted-foreground)">${requiredDetailDescriptionHtml(field) || '—'}</td>
+        <td>${requiredDetailLanguageHtml(field)}</td>
+        <td class="mono">${field.example || '—'}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+function requiredDetailsTabs() {
+  const types = DOCUMENT_REQUIREMENT_TYPES;
+  const activeKey = types.some(type => type.key === state.requirementsTab) ? state.requirementsTab : ((types[0] && types[0].key) || 'marketplace');
+  const active = types.find(type => type.key === activeKey) || types[0];
+  if (!active) return '';
+  return `<div class="req-r2">
+    <div class="req-r2-tabs" role="tablist" aria-label="${tradeFieldLabel('Business type', '业务类型')}">
+      ${types.map(type => `<button type="button" role="tab" class="req-r2-tab ${type.key===activeKey?'on':''}" aria-selected="${type.key===activeKey?'true':'false'}" onclick="setRequirementsTab('${type.key}')">${type.label}</button>`).join('')}
+    </div>
+    <div class="req-r2-panel" role="tabpanel">
+      <div class="req-r2-panel-head">
+        <div>
+          <p class="req-r2-type-label">${active.label}</p>
+          <p class="req-r2-type-desc">${active.desc}</p>
+        </div>
+        <button type="button" class="btn-link req-type-download" onclick="downloadRequirementTemplate('${active.key}')">${I.download} Download template</button>
+      </div>
+      ${requiredDetailsVerticalTable(documentRequiredDetails(active.key))}
+    </div>
+  </div>`;
+}
+function requiredDetailsModule() {
+  return state.requirementsVersion === 'r2' ? requiredDetailsTabs() : requiredDetailsAccordions();
 }
 function downloadRequirementTemplate(typeKey) {
   const type = DOCUMENT_REQUIREMENT_TYPES.find(item => item.key === typeKey)
@@ -2912,6 +3018,8 @@ const state = {
   supportedTxLevel: 'categories',
   supportedTxType: 'goods',
   supportedTxOpen: { marketplace: true },
+  requirementsVersion: 'r1',
+  requirementsTab: 'marketplace',
   supportedMarketplacesPanel: false,
   marketplaceResources: false,
   homepage2MarketplaceSupport: false,
@@ -4740,8 +4848,14 @@ function viewDocumentRequirements() {
           </div>
         </section>
         <section>
-          <p style="font-size:14px;font-weight:600;margin-bottom:12px">Required details in your documents</p>
-          ${requiredDetailsAccordions()}
+          <div class="req-version-row">
+            <p>Required details in your documents</p>
+            <div class="erp-version-switch" role="group" aria-label="Requirements layout">
+              <button type="button" class="mono ${state.requirementsVersion!=='r2'?'on':''}" onclick="setRequirementsVersion('r1')">R1</button>
+              <button type="button" class="mono ${state.requirementsVersion==='r2'?'on':''}" onclick="setRequirementsVersion('r2')">R2</button>
+            </div>
+          </div>
+          ${requiredDetailsModule()}
         </section>
       </div>
     </div>
