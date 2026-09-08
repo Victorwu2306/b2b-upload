@@ -1228,9 +1228,8 @@ table.data.req-h-table tr:hover td { background:transparent; }
 .req-r2-tab:hover { color:var(--foreground); }
 .req-r2-tab.on { color:var(--primary); border-bottom-color:var(--primary); }
 .req-r2-panel { display:flex; flex-direction:column; gap:16px; padding:16px 20px 20px; }
-.req-r2-panel-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
-.req-r2-type-label { font-size:14px; font-weight:600; line-height:20px; }
-.req-r2-type-desc { margin-top:2px; color:var(--muted-foreground); font-size:12px; line-height:18px; }
+.req-r2-panel-head { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.req-r2-type-desc { color:var(--muted-foreground); font-size:12px; line-height:18px; }
 .req-v-table-wrap { border:1px solid var(--border); border-radius:8px; overflow:auto; background:#fff; }
 table.data.req-v-table { width:100%; table-layout:fixed; font-size:12px; }
 table.data.req-v-table th,
@@ -2688,12 +2687,9 @@ function requiredDetailsTabs() {
     <div class="req-r2-tabs" role="tablist" aria-label="${tradeFieldLabel('Business type', '业务类型')}">
       ${types.map(type => `<button type="button" role="tab" class="req-r2-tab ${type.key===activeKey?'on':''}" aria-selected="${type.key===activeKey?'true':'false'}" onclick="setRequirementsTab('${type.key}')">${type.label}</button>`).join('')}
     </div>
-    <div class="req-r2-panel" role="tabpanel">
+    <div class="req-r2-panel" role="tabpanel" aria-label="${active.label}">
       <div class="req-r2-panel-head">
-        <div>
-          <p class="req-r2-type-label">${active.label}</p>
-          <p class="req-r2-type-desc">${active.desc}</p>
-        </div>
+        <p class="req-r2-type-desc">${active.desc}</p>
         <button type="button" class="btn-link req-type-download" onclick="downloadRequirementTemplate('${active.key}')">${I.download} Download template</button>
       </div>
       ${requiredDetailsVerticalTable(documentRequiredDetails(active.key))}
