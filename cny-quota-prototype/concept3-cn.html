@@ -9620,7 +9620,7 @@ function viewUploadDetails() {
 function uploadFlowVersionSelector(w) {
   const version=w&&w.uploadVersion===1?1:2;
   return `<div class="erp-version-card">
-    <div class="erp-version-copy"><strong>Choose an upload flow</strong><p>Upload V2 starts with a category and routes the file automatically.</p></div>
+    <div class="erp-version-copy"><strong>Switch page version</strong><p>Upload V2 starts with a category and routes the file automatically.</p></div>
     <div class="erp-version-switch" role="group" aria-label="Upload flow version">
       <button type="button" class="${version===1?'on':''}" onclick="setUploadFlowVersion(1)">Upload</button>
       <button type="button" class="${version===2?'on':''}" onclick="setUploadFlowVersion(2)">Upload V2</button>
@@ -9943,7 +9943,7 @@ const CN_UI_REPLACEMENTS = [
   [/Business travel airfare and related airline booking fees/g, '商务旅行机票及相关预订费用'],
   [/Hotel stays and lodging expenses for business travel/g, '商务旅行的酒店及住宿费用'],
   [/Tour packages, destination services, and related travel fees/g, '旅游套餐、目的地服务及相关旅行费用'],
-  [/Choose an upload flow/g, '选择上传流程'], [/Upload V2 starts with a category and routes the file automatically\./g, 'Upload V2 先选择交易类别，再自动识别并分流文件。'], [/Upload flow version/g, '上传流程版本'],
+  [/Switch page version/g, '切换页面版本'], [/Upload V2 starts with a category and routes the file automatically\./g, 'Upload V2 先选择交易类别，再自动识别并分流文件。'], [/Upload flow version/g, '上传流程版本'],
   [/Select a category and upload/g, '上传单据'], [/Choose a transaction category, then upload a related file on this page\./g, ''],
   [/^Upload document$/g, '上传单据'], [/^Confirm info$/g, '确认信息'], [/^Match remaining fields$/g, '匹配剩余字段'], [/^Identify other details$/g, '确认其他信息'], [/^Update and re-upload$/g, '更新并重新上传'], [/^Resubmit$/g, '重新提交'], [/^Review$/g, '检查'],
   [/Process & review/g, '确认信息'], [/Choose a sample file/g, '选择模拟文件'], [/This prototype simulates file selection and processing\./g, '此原型将模拟文件选择和处理。'],

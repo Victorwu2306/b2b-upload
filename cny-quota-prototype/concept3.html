@@ -9599,7 +9599,7 @@ function viewUploadDetails() {
 function uploadFlowVersionSelector(w) {
   const version=w&&w.uploadVersion===1?1:2;
   return `<div class="erp-version-card">
-    <div class="erp-version-copy"><strong>Choose an upload flow</strong><p>Upload V2 starts with a category and routes the file automatically.</p></div>
+    <div class="erp-version-copy"><strong>Switch page version</strong><p>Upload V2 starts with a category and routes the file automatically.</p></div>
     <div class="erp-version-switch" role="group" aria-label="Upload flow version">
       <button type="button" class="${version===1?'on':''}" onclick="setUploadFlowVersion(1)">Upload</button>
       <button type="button" class="${version===2?'on':''}" onclick="setUploadFlowVersion(2)">Upload V2</button>
