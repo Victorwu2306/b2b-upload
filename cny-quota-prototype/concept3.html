@@ -3592,6 +3592,7 @@ function uploadV2Next() {
   routeUploadV2();
 }
 const SHOW_REQUIREMENTS_R1 = false;
+const SHOW_UPLOAD_BEFORE_HELPER = false;
 const SHOW_CONCEPT_1 = false;
 const SHOW_CONCEPT_2 = false;
 function setConcept(n) {
@@ -9308,7 +9309,7 @@ function viewWizardUpload() {
     ? UPLOAD_METHODS.filter(method => w.allowedTypes.includes(method.key))
     : UPLOAD_METHODS;
   let helper = '';
-  if (w.uploadType === 'erp') {
+  if (SHOW_UPLOAD_BEFORE_HELPER && w.uploadType === 'erp') {
     helper = `<div class="upload-helper">
       <span class="helper-label">Before uploading</span>
       <span class="helper-sub">Review required columns for a successful ERP mapping.</span>
