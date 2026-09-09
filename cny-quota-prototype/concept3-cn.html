@@ -3737,6 +3737,7 @@ const SHOW_REQUIREMENTS_R1 = false;
 const SHOW_UPLOAD_BEFORE_HELPER = false;
 const SHOW_CONCEPT_1 = false;
 const SHOW_CONCEPT_2 = false;
+const SHOW_ERP_CSV_V1 = false;
 function setConcept(n) {
   if (n === 1 && !SHOW_CONCEPT_1) n = 3;
   if (n === 2 && !SHOW_CONCEPT_2) n = 3;
@@ -5714,6 +5715,7 @@ function setERPScenario(value) {
 }
 function setERPFlowVersion(version) {
   const current = state.wiz;
+  if (!SHOW_ERP_CSV_V1 && version === 'v1') version = 'v2';
   if (!current || current.erpFlowVersion === version || current.dsState === 'processing') return;
   const next = resetWiz('erp');
   next.erpFlowVersion = version === 'v1' ? 'v1' : version === 'v3' ? 'v3' : 'v2';
@@ -5727,6 +5729,7 @@ function setERPFlowVersion(version) {
 }
 function erpVersionSelector() {
   const w = state.wiz;
+  if (!SHOW_ERP_CSV_V1 && w.erpFlowVersion === 'v1') w.erpFlowVersion = 'v2';
   const locked = w.dsState !== 'empty';
   const versionCopy = w.erpFlowVersion === 'v3'
     ? 'ERP CSV 3 shows every required field in one list, including mapped, unrecognized, and missing columns.'
@@ -5739,7 +5742,7 @@ function erpVersionSelector() {
       <p>${versionCopy}</p>
     </div>
     <div class="erp-version-switch" role="group" aria-label="ERP CSV flow version">
-      <button type="button" class="mono ${w.erpFlowVersion==='v1'?'on':''}" ${locked?'disabled':''} onclick="setERPFlowVersion('v1')">ERP CSV</button>
+      ${SHOW_ERP_CSV_V1 ? `<button type="button" class="mono ${w.erpFlowVersion==='v1'?'on':''}" ${locked?'disabled':''} onclick="setERPFlowVersion('v1')">ERP CSV</button>` : ''}
       <button type="button" class="mono ${w.erpFlowVersion==='v2'?'on':''}" ${locked?'disabled':''} onclick="setERPFlowVersion('v2')">ERP CSV 2</button>
       <button type="button" class="mono ${w.erpFlowVersion==='v3'?'on':''}" ${locked?'disabled':''} onclick="setERPFlowVersion('v3')">ERP CSV 3</button>
     </div>
@@ -7608,6 +7611,7 @@ function viewWizardERP() {
   const w = state.wiz || resetWiz('erp');
   if (!state.wiz) state.wiz = w;
   if (w.done) return wizSuccess('erp') + erpExampleModal();
+  if (!SHOW_ERP_CSV_V1 && w.erpFlowVersion === 'v1') w.erpFlowVersion = 'v2';
   if ((w.erpFlowVersion || 'v2') === 'v3') return viewWizardERP3(w);
   if ((w.erpFlowVersion || 'v2') === 'v2') return viewWizardERP2(w);
   if (!LINK_PAYMENT_VISIBLE && w.step===3) w.step = 4;
