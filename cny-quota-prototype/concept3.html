@@ -1241,10 +1241,10 @@ table.data.req-v-table td {
   padding:10px 12px; vertical-align:middle; text-align:left;
   border-bottom:1px solid #f2f2f2; white-space:normal; overflow-wrap:break-word; line-height:1.45;
 }
-table.data.req-v-table col.req-v-field { width:22%; }
-table.data.req-v-table col.req-v-desc { width:38%; }
+table.data.req-v-table col.req-v-field { width:24%; }
+table.data.req-v-table col.req-v-desc { width:48%; }
 table.data.req-v-table col.req-v-lang { width:16%; }
-table.data.req-v-table col.req-v-example { width:24%; }
+table.data.req-v-table col.req-v-example { width:28%; }
 table.data.req-v-table thead th { background:#f7f3ff; color:#252526; font-size:12px; font-weight:600; }
 table.data.req-v-table td.mono { color:var(--muted-foreground); }
 table.data.req-v-table tbody tr:last-child td { border-bottom:none; }
@@ -2609,9 +2609,10 @@ function requiredDetailLabelHtml(field) {
   const chip = parts.when ? `<span class="chip chip-amber">${tradeFieldLabel('Conditional', '条件必填')}</span>` : '';
   return `<div class="detail-with-chip"><span style="color:var(--primary);font-weight:600">${requiredDetailLabel(field)}</span>${chip}</div>`;
 }
-function requiredDetailDescriptionHtml(field) {
+function requiredDetailDescriptionHtml(field, includeLanguage) {
   const parts = requiredDetailParts(field);
   const bits = [];
+  if (includeLanguage && parts.lang) bits.push(`<div class="req-line"><span class="req-k">${tradeFieldLabel('Language: ', '语言要求：')}</span>${parts.lang}</div>`);
   if (parts.desc) bits.push(`<div class="req-line">${parts.desc}</div>`);
   if (parts.when) bits.push(`<div class="req-line req-conditional"><span class="req-k">${tradeFieldLabel('Conditional:', '条件：')}</span> ${parts.when}</div>`);
   return bits.join('');
@@ -2695,18 +2696,16 @@ function requiredDetailsVerticalTable(fields) {
   const items = fields || [];
   if (!items.length) return '';
   return `<div class="req-v-table-wrap"><table class="data req-v-table">
-    <colgroup><col class="req-v-field"><col class="req-v-desc"><col class="req-v-lang"><col class="req-v-example"></colgroup>
+    <colgroup><col class="req-v-field"><col class="req-v-desc"><col class="req-v-example"></colgroup>
     <thead><tr>
       <th>${tradeFieldLabel('Field name', '字段名称')}</th>
       <th>${tradeFieldLabel('Description', '说明')}</th>
-      <th>${tradeFieldLabel('Language', '语言要求')}</th>
       <th>${tradeFieldLabel('Example', '示例')}</th>
     </tr></thead>
     <tbody>
       ${items.map(field => `<tr>
         <td>${requiredDetailLabelHtml(field)}</td>
-        <td style="color:var(--muted-foreground)">${requiredDetailDescriptionHtml(field) || '—'}</td>
-        <td>${requiredDetailLanguageHtml(field)}</td>
+        <td style="color:var(--muted-foreground)">${requiredDetailDescriptionHtml(field, true) || '—'}</td>
         <td class="mono">${field.example || '—'}</td>
       </tr>`).join('')}
     </tbody>
@@ -2731,7 +2730,8 @@ function requiredDetailsTabs() {
   </div>`;
 }
 function requiredDetailsModule() {
-  return state.requirementsVersion === 'r2' ? requiredDetailsTabs() : requiredDetailsAccordions();
+  if (SHOW_REQUIREMENTS_R1 && state.requirementsVersion !== 'r2') return requiredDetailsAccordions();
+  return requiredDetailsTabs();
 }
 function downloadRequirementTemplate(typeKey) {
   const type = DOCUMENT_REQUIREMENT_TYPES.find(item => item.key === typeKey)
@@ -3065,7 +3065,7 @@ const state = {
   supportedTxLevel: 'categories',
   supportedTxType: 'goods',
   supportedTxOpen: { marketplace: true },
-  requirementsVersion: 'r1',
+  requirementsVersion: 'r2',
   requirementsTab: 'marketplace',
   supportedMarketplacesPanel: false,
   marketplaceResources: false,
@@ -3591,6 +3591,7 @@ function uploadV2Next() {
   if (!w.category) { toast('Select a category before continuing.'); return; }
   routeUploadV2();
 }
+const SHOW_REQUIREMENTS_R1 = false;
 const SHOW_CONCEPT_1 = false;
 const SHOW_CONCEPT_2 = false;
 function setConcept(n) {
@@ -4938,10 +4939,10 @@ function viewDocumentRequirements() {
         <section>
           <div class="req-version-row">
             <p>Required details in your documents</p>
-            <div class="erp-version-switch" role="group" aria-label="Requirements layout">
+            ${SHOW_REQUIREMENTS_R1 ? `<div class="erp-version-switch" role="group" aria-label="Requirements layout">
               <button type="button" class="mono ${state.requirementsVersion!=='r2'?'on':''}" onclick="setRequirementsVersion('r1')">R1</button>
               <button type="button" class="mono ${state.requirementsVersion==='r2'?'on':''}" onclick="setRequirementsVersion('r2')">R2</button>
-            </div>
+            </div>` : ''}
           </div>
           ${requiredDetailsModule()}
         </section>
