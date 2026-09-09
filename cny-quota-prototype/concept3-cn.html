@@ -766,15 +766,119 @@ table.data tr:hover td { background: var(--muted); }
 .details-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 32px; }
 .read-field label { font-size: 12px; color: var(--muted-foreground); display: block; margin-bottom: 2px; }
 .read-field p { font-size: 14px; font-weight: 500; overflow-wrap: anywhere; }
-.alert-warn {
-  display: flex; align-items: flex-start; gap: 12px;
-  background: #FFF8EB; border: 1px solid #F5D9A8; border-radius: 8px; padding: 16px;
-}
-.alert-info {
-  display: flex; align-items: flex-start; gap: 10px;
-  background: var(--accent); border: 1px solid rgba(91,59,232,.3); border-radius: 6px; padding: 12px 16px;
+/* Alerts — X-NOB tones: info / neutral / error / warning / success
+   Layout: icon | title+content | optional action/dismiss */
+.alert,
+.alert-info,
+.alert-neutral,
+.alert-error,
+.alert-warning,
+.alert-warn,
+.alert-success {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 6px;
   font-size: 13px;
+  line-height: 1.45;
+  color: var(--foreground);
 }
+.alert > svg,
+.alert-icon {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  color: inherit;
+}
+.alert > svg,
+.alert-icon svg { width: 20px; height: 20px; display: block; }
+.alert-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.alert-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 20px;
+  color: inherit;
+}
+.alert-content,
+.alert-body > p,
+.alert > p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--foreground);
+}
+.alert-action {
+  flex: 0 0 auto;
+  align-self: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: 700 12px/16px var(--font-sans);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.alert-action:hover { text-decoration: underline; text-underline-offset: 2px; }
+.alert-dismiss {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  margin: 0;
+  padding: 2px;
+  border: 0;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  line-height: 0;
+}
+.alert-dismiss:hover { color: var(--foreground); }
+.alert-info {
+  background: #EFF8FF;
+  color: #175CD3;
+}
+.alert-info .alert-content,
+.alert-info .alert-body > p,
+.alert-info > p { color: var(--foreground); }
+.alert-neutral {
+  background: #F5F5F6;
+  color: #414651;
+}
+.alert-neutral .alert-content,
+.alert-neutral .alert-body > p,
+.alert-neutral > p { color: var(--foreground); }
+.alert-error {
+  background: #FEF3F2;
+  color: #D92D20;
+}
+.alert-error .alert-content,
+.alert-error .alert-body > p,
+.alert-error > p { color: var(--foreground); }
+.alert-warning,
+.alert-warn {
+  background: #FFFAEB;
+  color: #DC6803;
+}
+.alert-warning .alert-content,
+.alert-warning .alert-body > p,
+.alert-warning > p,
+.alert-warn .alert-content,
+.alert-warn .alert-body > p,
+.alert-warn > p { color: var(--foreground); }
+.alert-success {
+  background: #ECFDF3;
+  color: #067647;
+}
+.alert-success .alert-content,
+.alert-success .alert-body > p,
+.alert-success > p { color: var(--foreground); }
 .upload-zone,
 .upload-dropzone {
   border: 1px dashed #4A4A58; border-radius: 8px; padding: 40px 24px 32px;
@@ -1731,12 +1835,12 @@ table.data.req-v-table .detail-with-chip { flex-direction:column; align-items:fl
 .mapping-c2-reupload p { color:var(--muted-foreground); font-size:12px; line-height:18px; }
 .mapping-c2-reupload .btn { flex-shrink:0; white-space:nowrap; }
 .mapping-c2-success {
-  display:flex; align-items:flex-start; gap:12px; padding:16px 18px;
-  border:1px solid #ABEFC6; border-radius:10px; background:#F6FEF9;
+  display:flex; align-items:flex-start; gap:12px; padding:12px 16px;
+  border:0; border-radius:6px; background:#ECFDF3; color:#067647;
 }
-.mapping-c2-success > svg { flex:0 0 18px; color:var(--success); }
-.mapping-c2-success strong { color:#067647; font-size:14px; }
-.mapping-c2-success p { margin-top:3px; color:#087443; font-size:12px; line-height:18px; }
+.mapping-c2-success > svg { flex:0 0 20px; width:20px; height:20px; color:#067647; }
+.mapping-c2-success strong { color:#067647; font-size:13px; font-weight:700; line-height:20px; }
+.mapping-c2-success p { margin-top:2px; color:var(--foreground); font-size:13px; line-height:20px; }
 .mapping-c2-accordion { border:1px solid var(--border); border-radius:10px; overflow:hidden; background:#fff; }
 .mapping-c2-accordion-toggle {
   width:100%; display:flex; align-items:center; justify-content:space-between;
@@ -1790,11 +1894,11 @@ table.data.req-v-table .detail-with-chip { flex-direction:column; align-items:fl
 }
 .erp2-supplement-body { padding:20px; display:flex; flex-direction:column; gap:14px; }
 .erp2-draft-note {
-  display:flex; align-items:flex-start; gap:10px; padding:14px 16px;
-  border:1px solid #D8D1FF; border-radius:8px; background:#FAF9FF;
+  display:flex; align-items:flex-start; gap:12px; padding:12px 16px;
+  border:0; border-radius:6px; background:#EFF8FF; color:#175CD3;
 }
-.erp2-draft-note > svg { flex:0 0 16px; color:var(--primary); }
-.erp2-draft-note p { color:var(--muted-foreground); font-size:12px; line-height:18px; }
+.erp2-draft-note > svg { flex:0 0 20px; width:20px; height:20px; color:#175CD3; }
+.erp2-draft-note p { color:var(--foreground); font-size:13px; line-height:20px; }
 @media (max-width:900px) {
   .mapping-c2-fields { grid-template-columns:1fr; }
   .erp-version-card { align-items:flex-start; flex-direction:column; }
@@ -1877,10 +1981,10 @@ table.data.req-v-table .detail-with-chip { flex-direction:column; align-items:fl
 .uploaded-preview-page .doc-h1 { font-size:18px; font-weight:700; margin-bottom:6px; }
 .uploaded-preview-page .doc-sub { font-size:12px; color:var(--muted-foreground); margin-bottom:16px; }
 .file-problem {
-  border:1px solid #FECDCA; border-radius:8px; padding:14px;
-  background:#FFF8F7; display:flex; align-items:center; gap:12px;
+  border:0; border-radius:6px; padding:12px 16px;
+  background:#FEF3F2; color:#D92D20; display:flex; align-items:flex-start; gap:12px;
 }
-.file-problem > svg { color:var(--destructive); flex:0 0 18px; }
+.file-problem > svg { color:#D92D20; flex:0 0 20px; width:20px; height:20px; }
 .map-row select:disabled { cursor:not-allowed; color:#77798A; background-color:#F5F5F8; }
 
 /* Select controls — shared sizing, chevron placement and interaction states */
@@ -3058,6 +3162,10 @@ const I = {
   checkCircle: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>`,
   sparkles: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3"/></svg>`,
   alert: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>`,
+  alertInfo: `<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 11v5M12 8h.01" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+  alertError: `<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 7v6M12 16h.01" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+  alertWarning: `<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3 1.8 20.6c-.4.7.1 1.4.9 1.4h18.6c.8 0 1.3-.7.9-1.4L12 3z"/><path fill="#fff" d="M11 9h2v6h-2V9zm1 9a1.15 1.15 0 1 1 0-2.3 1.15 1.15 0 0 1 0 2.3z"/></svg>`,
+  alertSuccess: `<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.8 12.2 10.6 15l5.6-5.6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   rotate: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>`,
   zoomIn: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3M11 8v6M8 11h6"/></svg>`,
   zoomOut: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3M8 11h6"/></svg>`,
@@ -4692,10 +4800,7 @@ function templateFillGuidePanel() {
         <details open style="border:1px solid var(--border);border-radius:8px;background:#fff;overflow:hidden">
           <summary style="cursor:pointer;padding:14px 16px;font-size:14px;font-weight:600;background:var(--muted)">Filling in the file with your transaction info</summary>
           <div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px">
-            <div class="alert-info">
-              ${I.info}
-              <p style="font-size:12px;line-height:1.5">Complete one row for each item in an order. If the same item is sold at different prices, combine it into one row and use the average unit price.</p>
-            </div>
+            ${uiAlertHTML({ tone:'info', content:'Complete one row for each item in an order. If the same item is sold at different prices, combine it into one row and use the average unit price.' })}
             <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
               Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12.50.
             </p>
@@ -4914,10 +5019,7 @@ function supportedMarketplacesPanel() {
         </div>
         <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:#fff">
           <p style="font-size:14px;font-weight:600;margin-bottom:6px">Upload documents required</p>
-          <div class="alert-info" style="margin-bottom:16px">
-            ${I.info}
-            <p style="font-size:12px;line-height:1.45"><strong>Amazon, Walmart, and Shopify:</strong> You can manually upload documents for these stores, but connecting them lets us automatically increase quota with your new payments.</p>
-          </div>
+          <div style="margin-bottom:16px">${uiAlertHTML({ tone:'info', content:'<strong>Amazon, Walmart, and Shopify:</strong> You can manually upload documents for these stores, but connecting them lets us automatically increase quota with your new payments.' })}</div>
           <div style="display:flex;flex-direction:column;gap:12px">
             ${Object.entries(MARKETPLACE_UPLOAD_GROUPS).map(([letter,names]) => `
               <div style="display:grid;grid-template-columns:24px 1fr;gap:10px">
@@ -5937,30 +6039,55 @@ function reuploadERPFileFresh() {
   else w.step = 2;
   render();
 }
+function uiAlertHTML(opts) {
+  const o = opts || {};
+  const tone = o.tone === 'warn' ? 'warning' : (o.tone || 'info');
+  const toneClass = tone === 'warning' ? 'alert-warning' : `alert-${tone}`;
+  const icons = {
+    info: I.alertInfo || I.info,
+    neutral: I.alertInfo || I.info,
+    error: I.alertError || I.alert,
+    warning: I.alertWarning || I.alert,
+    success: I.alertSuccess || I.check,
+  };
+  const icon = o.icon || icons[tone] || I.info;
+  const title = o.title ? `<p class="alert-title">${o.title}</p>` : '';
+  const content = o.content ? `<p class="alert-content">${o.content}</p>` : '';
+  const action = o.action
+    ? `<button type="button" class="alert-action" onclick="${o.actionOnclick || ''}">${o.action}</button>`
+    : '';
+  const dismiss = o.dismissOnclick
+    ? `<button type="button" class="alert-dismiss" aria-label="Dismiss" onclick="${o.dismissOnclick}">${I.x}</button>`
+    : '';
+  return `<div class="alert ${toneClass}" role="status"><span class="alert-icon" aria-hidden="true">${icon}</span><div class="alert-body">${title}${content}</div>${action}${dismiss}</div>`;
+}
 function erpZeroMatchAlertHTML(opts) {
   const o = opts || {};
   const canMatch = !!o.canMatch;
   const body = canMatch
     ? 'None of the columns could be matched automatically. Match them manually below, or re-upload a file with recognizable headers.'
     : 'None of the columns could be recognized or matched. Re-upload a CSV that includes the required headers.';
-  return `<div class="alert-warn">${I.alert}<div style="flex:1;min-width:0">
-    <p style="font-weight:600">We couldn’t recognize the headers in your file</p>
-    <p style="font-size:12px;line-height:1.45;margin-top:4px;color:var(--muted-foreground)">${body}</p>
-    <button type="button" class="btn btn-secondary btn-sm" style="margin-top:12px" onclick="reuploadERPFileFresh();openUploadV2SamplePicker()">${I.rotate} Re-upload file</button>
-  </div></div>`;
+  return uiAlertHTML({
+    tone: 'warning',
+    title: 'We couldn’t recognize the headers in your file',
+    content: body,
+    action: 'Re-upload file',
+    actionOnclick: 'reuploadERPFileFresh();openUploadV2SamplePicker()',
+  });
 }
 function erpFileIssueAlertHTML(issue) {
   const empty = issue === 'empty';
-  const title = empty ? 'This CSV file is empty' : 'This CSV file has headers only';
-  const body = empty
-    ? 'We couldn’t find any headers or data rows. Upload a CSV that includes a header row and transaction data.'
-    : 'We found headers but no data rows. Upload a CSV that includes transaction data under the header row.';
-  return `<div class="alert-warn">${I.alert}<div style="flex:1;min-width:0">
-    <p style="font-weight:600">${title}</p>
-    <p style="font-size:12px;line-height:1.45;margin-top:4px;color:var(--muted-foreground)">${body}</p>
-    <button type="button" class="btn btn-secondary btn-sm" style="margin-top:12px" onclick="reuploadERPFileFresh();openUploadV2SamplePicker()">${I.rotate} Re-upload file</button>
-  </div></div>`;
+  return uiAlertHTML({
+    tone: 'warning',
+    title: empty ? 'This CSV file is empty' : 'This CSV file has headers only',
+    content: empty
+      ? 'We couldn’t find any headers or data rows. Upload a CSV that includes a header row and transaction data.'
+      : 'We found headers but no data rows. Upload a CSV that includes transaction data under the header row.',
+    action: 'Re-upload file',
+    actionOnclick: 'reuploadERPFileFresh();openUploadV2SamplePicker()',
+  });
 }
+
 function replaceERPFile() {
   const w = state.wiz; if (!w) return;
   w.mappingCache = {};
@@ -6341,10 +6468,7 @@ function erpReplaceDialogConcept2() {
         <button type="button" onclick="state.wiz.erpReplaceOpen=false;render()">${I.x}</button>
       </div>
       <div class="modal-b">
-        <div class="alert-info">
-          ${I.info}
-          <p style="font-size:12px;line-height:1.45">Existing mapping decisions will be retained for columns with the same names.</p>
-        </div>
+        ${uiAlertHTML({ tone:'info', content:'Existing mapping decisions will be retained for columns with the same names.' })}
         ${emptyUploadBox({
           title: 'Upload corrected ERP CSV',
           meta: 'CSV · Max 50 MB',
@@ -6408,7 +6532,7 @@ function stepERPInfoConcept2(w, stats) {
         <h2>Do you have these details in your file?</h2>
         <p>${erpUnmatchedDetailsIntro(resolutionNames.length)}</p>
       </div>
-      <div class="alert-info">${I.info}<p>If no uploaded column matches a field, select <strong>None of above</strong> and upload a complete corrected file below.</p></div>
+      ${uiAlertHTML({ tone:'info', content:'If no uploaded column matches a field, select <strong>None of above</strong> and upload a complete corrected file below.' })}
       ${erp2TargetMappingTable(resolutionNames, stats.sources, w.mappings, 'updateERP2TargetMapping', true)}
       <div class="mapping-c2-or">or</div>
       <div class="mapping-c2-choice reupload">
@@ -6752,7 +6876,7 @@ function stepERP2Upload(w) {
       <p>Upload your ERP export. We’ll identify the file headers before you review them step by step.</p>
     </div>
     ${w.dsState === 'mapped' ? `${erp2FileSummary(w, stats)}
-      <div class="alert-info">${I.info}<p>Your file has already been analyzed. Continue to review the identified columns.</p></div>` : `
+      ${uiAlertHTML({ tone:'info', content:'Your file has already been analyzed. Continue to review the identified columns.' })}` : `
       <div class="upload-prepare">
         <h3 class="upload-prepare-title">How to prepare your ERP CSV file</h3>
         <p class="upload-prepare-body">CSV · Max 50 MB · Keep the original header row.</p>
@@ -6798,7 +6922,7 @@ function stepERP2Confirm(w) {
       ${erpMatchedColumnsIntro(identifiedTargetNames.length, ERP_REQUIRED_FIELDS.length)}
       ${identifiedTargetNames.length
         ? erp2TargetMappingTable(identifiedTargetNames, stats.sources, w.mappings, 'updateERP2TargetMapping', false)
-        : `<div class="alert-info">${I.info}<p>${emptyHint}</p></div>`}
+        : uiAlertHTML({ tone:'info', content: emptyHint })}
     </div>
   </div>`;
 }
@@ -6894,7 +7018,7 @@ function stepERP2Missing(w) {
         <p>Add the missing headers to your file, complete the new columns, and submit your updated file again.</p>
       </div>
       <div class="erp2-supplement-body">
-        <div class="erp2-draft-note">${I.info}<p>If you’ll complete the file later, save your progress as a draft for now.</p></div>
+        ${uiAlertHTML({ tone:'info', content:'If you’ll complete the file later, save your progress as a draft for now.' })}
         ${w.erp2ReplacementState === 'processing' ? busyUploadBox('Analyzing the corrected file and reusing previous mappings…') : emptyUploadBox({
             meta: 'CSV · Max 50 MB',
             hint: `Include all original columns plus the ${formatMissingFieldsList(missingNames)} columns.`,
@@ -7275,17 +7399,19 @@ function stepERPInfo() {
       onDelete: 'deleteUploadedERPFile()',
     });
   }
-  html += `${w.dsState==='empty' && w.isReplacement ? `<div class="alert-info" style="margin-bottom:0">
-        ${I.info}
-        <p style="font-size:12px;line-height:1.45"><strong>Upload the corrected file.</strong> Existing mappings are cached, and matching column names will keep their previous mapping.</p>
-      </div>` : ''}
+  html += `${w.dsState==='empty' && w.isReplacement ? uiAlertHTML({
+        tone:'info',
+        title:'Upload the corrected file.',
+        content:'Existing mappings are cached, and matching column names will keep their previous mapping.',
+      }) : ''}
       ${uploadBoxBlock('ERP CSV', fileControl)}`;
   if (w.dsState==='mapped') {
     html += `${w.erp2ReplacementOutcome ? `<div style="display:flex;flex-direction:column;gap:16px">${erpReplacementNewColumnsSection(w)}</div>` : ''}
-      ${w.cachedMatches && w.erp2ReplacementOutcome !== 'unrecognized' ? `<div class="alert-info">
-        ${I.check}
-        <p style="font-size:13px"><strong>Corrected file uploaded.</strong> Mapping decisions for ${w.cachedMatches} unchanged columns were retained, and all missing required columns were detected and mapped. ${stats.unmapped.length} non-required columns remain unmapped; this does not block you from continuing.</p>
-      </div>` : ''}
+      ${w.cachedMatches && w.erp2ReplacementOutcome !== 'unrecognized' ? uiAlertHTML({
+        tone:'success',
+        title:'Corrected file uploaded.',
+        content:`Mapping decisions for ${w.cachedMatches} unchanged columns were retained, and all missing required columns were detected and mapped. ${stats.unmapped.length} non-required columns remain unmapped; this does not block you from continuing.`,
+      }) : ''}
 
       <div class="card card-pad" style="display:flex;flex-direction:column;gap:14px">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
@@ -7317,13 +7443,13 @@ function stepERPInfo() {
         </div>
       </div>
 
-      ${w.mappingAttempted && !stats.valid ? `<div class="alert-warn" style="background:#FEF3F2;border-color:#FECDCA;color:var(--destructive)">
-        ${I.alert}
-        <div>
-          <p style="font-size:13px;font-weight:600;margin-bottom:3px">You can’t continue yet</p>
-          <p style="font-size:12px;line-height:1.45;color:#B42318">${stats.requiresReplacement?'This file does not contain the required currency column. Click Replace and upload a corrected file.':'Map every required system field and resolve duplicate mappings highlighted below, then click Next again.'}</p>
-        </div>
-      </div>` : ''}
+      ${w.mappingAttempted && !stats.valid ? uiAlertHTML({
+        tone:'error',
+        title:'You can’t continue yet',
+        content: stats.requiresReplacement
+          ? 'This file does not contain the required currency column. Click Replace and upload a corrected file.'
+          : 'Map every required system field and resolve duplicate mappings highlighted below, then click Next again.',
+      }) : ''}
 
       <div>
       <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:12px;flex-wrap:wrap">
@@ -7639,10 +7765,7 @@ function stepTradeUpload() {
             onView: "openUploadedFilePreview('trade')",
             onDelete: 'deleteUploadedTradeFile()',
           })}
-          <div class="alert-info">
-            ${I.info}
-            <p style="font-size:12px;line-height:1.45">Your file is uploaded but has not been analyzed yet. Click <strong>Next</strong> to extract and review its transaction information.</p>
-          </div>
+          ${uiAlertHTML({ tone:'info', content:'Your file is uploaded but has not been analyzed yet. Click <strong>Next</strong> to extract and review its transaction information.' })}
         </div>`
     : emptyUploadBox({
         title: 'Upload trade documents',
@@ -8565,7 +8688,7 @@ function stepTradeInfo(hideHeading) {
     </div>`;
   }
   if (w.uploadState !== 'done') {
-    return `<div class="alert-warn">${I.alert}<p>The uploaded file is not ready for analysis. Click Previous to return to the upload step.</p></div>`;
+    return uiAlertHTML({ tone:'warning', content:'The uploaded file is not ready for analysis. Click Previous to return to the upload step.' });
   }
   return `<div style="display:flex;flex-direction:column;gap:16px">
     ${hideHeading?'':`<div>
@@ -8702,7 +8825,7 @@ function stepTradeDynamic() {
           onView: "openUploadedFilePreview('trade')",
           onDelete: 'deleteUploadedTradeFile()',
         })}
-        <div class="alert-info">${I.info}<p style="font-size:12px">Preparing the document for automatic analysis…</p></div>
+        ${uiAlertHTML({ tone:'info', content:'Preparing the document for automatic analysis…' })}
       </div>`;
   } else if (w.uploadState === 'processing') {
     fileBlock = busyUploadBox('Analyzing document…', extractCopy);
@@ -8897,13 +9020,13 @@ function viewERPDetails() {
       </div>
     </div>
     <div class="focused-body"><div class="focused-inner" style="max-width:720px;display:flex;flex-direction:column;gap:16px">
-      ${failed?`<div class="alert-warn">
-        ${I.alert}
-        <div style="flex:1">
-          <p style="font-size:14px;font-weight:600;margin-bottom:4px">Upload failed</p>
-          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">This ERP CSV could not be processed. Fix the file issues and re-upload to release quota.</p>
-        </div>
-      </div>`:''}
+      ${failed?uiAlertHTML({
+        tone:'error',
+        title:'Upload failed',
+        content:'This ERP CSV could not be processed. Fix the file issues and re-upload to release quota.',
+        action:'Re-upload',
+        actionOnclick:'startERPWizard()',
+      }):''}
       <div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">File Information</h3>
         <div class="details-grid" style="grid-template-columns:1fr 1fr">
@@ -9124,7 +9247,7 @@ function viewSupplement() {
             onView: "openUploadedFilePreview('logistics')",
             onDelete: 'deleteUploadedLogisticsFile()',
           })}
-          <div class="alert-info" style="margin:16px 0">${I.check} 2 logistics records extracted by AI. Review and edit if needed.</div>
+          <div style="margin:16px 0">${uiAlertHTML({ tone:'success', content:'2 logistics records extracted by AI. Review and edit if needed.' })}</div>
           <div style="overflow-x:auto"><table class="data" style="min-width:720px">
             <thead><tr>${['Logistics company name','Logistics tracking number'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
             <tbody>
@@ -9239,22 +9362,20 @@ function viewTradeRecordDetails(ctx, backView, backLabel) {
   const logisticsRows = tradeLogisticsReadRows(ctx);
   const fromHistory = backView === 'upload-history';
   const alertHtml = fromHistory && upload && (upload.message || upload.tip)
-    ? `<div class="${(upload.status === 'Failed' || upload.status === 'File issue' || upload.status === 'Partially accepted') ? 'alert-warn' : 'alert-info'}">
-        ${(upload.status === 'Failed' || upload.status === 'File issue' || upload.status === 'Partially accepted') ? I.alert : I.info}
-        <div style="flex:1">
-          ${upload.message ? `<p style="font-size:14px;font-weight:600;margin-bottom:4px">${upload.message}</p>` : ''}
-          ${upload.tip ? `<p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">${upload.tip}</p>` : ''}
-          ${ctx.unshipped && ctx.recordId ? `<button type="button" class="btn btn-sm btn-primary" style="margin-top:12px" onclick="go('supplement','${ctx.recordId}')">Supplement Logistics</button>` : ''}
-        </div>
-      </div>`
-    : (ctx.unshipped ? `<div class="alert-warn">
-        <div style="color:var(--warning)">${I.truck}</div>
-        <div style="flex:1">
-          <p style="font-weight:600;margin-bottom:4px">This order has not been shipped</p>
-          <p style="font-size:13px;color:var(--muted-foreground);margin-bottom:12px">Please supplement logistics documents to complete verification.</p>
-          <button class="btn btn-sm btn-primary" onclick="go('supplement','${ctx.recordId}')">Supplement Logistics</button>
-        </div>
-      </div>` : '');
+    ? uiAlertHTML({
+        tone: (upload.status === 'Failed' || upload.status === 'File issue' || upload.status === 'Partially accepted') ? 'warning' : 'info',
+        title: upload.message || '',
+        content: upload.tip || '',
+        action: (ctx.unshipped && ctx.recordId) ? 'Supplement Logistics' : '',
+        actionOnclick: (ctx.unshipped && ctx.recordId) ? `go('supplement','${ctx.recordId}')` : '',
+      })
+    : (ctx.unshipped ? uiAlertHTML({
+        tone:'warning',
+        title:'This order has not been shipped',
+        content:'Please supplement logistics documents to complete verification.',
+        action:'Supplement Logistics',
+        actionOnclick:`go('supplement','${ctx.recordId}')`,
+      }) : '');
   return `<div class="focused active">
     <div class="focused-top">
       <div class="focused-back-row">
@@ -9319,8 +9440,6 @@ function viewUploadDetails() {
   }
   const needsReupload = !!(r.needsReupload || r.status === 'Failed' || r.status === 'File issue' || r.status === 'Partially accepted');
   const isWarn = r.status === 'Failed' || r.status === 'File issue' || r.status === 'Partially accepted';
-  const alertCls = isWarn ? 'alert-warn' : 'alert-info';
-  const alertIco = isWarn ? I.alert : I.info;
   const erpFieldMappings = r.typeKey === 'erp' ? [
     ['order_id','order_id','System identified','ERP-2026-001'],
     ['supplier_name','supplier_name','System identified','Shenzhen Tech Co.'],
@@ -9405,7 +9524,7 @@ function viewUploadDetails() {
         <h3 style="font-size:15px;font-weight:600;margin-bottom:4px">Corrected ERP CSV</h3>
         <p style="font-size:12px;color:var(--muted-foreground);margin-bottom:16px">When required headers are missing, upload a complete corrected file to replace the original. Existing automatic and manual mappings are reused.</p>
         ${needsReupload ? `
-          <div class="alert-warn">${I.alert}<div><p style="font-weight:600">Corrected full file required</p><p style="font-size:12px;color:var(--muted-foreground);margin-top:3px">Add the missing headers to the original document and upload the complete corrected CSV.</p></div></div>` : `
+          ${uiAlertHTML({ tone:'warning', title:'Corrected full file required', content:'Add the missing headers to the original document and upload the complete corrected CSV.' })}` : `
           ${uploadedFileCard({
             fileName: 'erp_missing_columns_corrected.csv',
             onView: "openUploadedFilePreview('history','erp_missing_columns_corrected.csv')",
@@ -9442,13 +9561,11 @@ function viewUploadDetails() {
       </div>
     </div>
     <div class="focused-body"><div class="focused-inner" style="max-width:860px;display:flex;flex-direction:column;gap:16px">
-      ${(r.message || r.tip) ? `<div class="${alertCls}">
-        ${alertIco}
-        <div style="flex:1">
-          ${r.message?`<p style="font-size:14px;font-weight:600;margin-bottom:4px">${r.message}</p>`:''}
-          ${r.tip?`<p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">${r.tip}</p>`:''}
-        </div>
-      </div>` : ''}
+      ${(r.message || r.tip) ? uiAlertHTML({
+        tone: isWarn ? 'warning' : 'info',
+        title: r.message || '',
+        content: r.tip || '',
+      }) : ''}
 
       <div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">File Information</h3>
@@ -9482,7 +9599,7 @@ function uploadV2Body(w) {
   let fileContent='';
   if (w.v2FileState==='analyzing') fileContent=busyUploadBox('Analyzing file type and structure…','Selecting the appropriate processing flow');
   else if (w.v2FileState==='ready') fileContent=uploadedFileCard({fileName:w.fileName,onView:"openUploadedFilePreview('v2')",onDelete:'deleteUploadedV2File()'});
-  else if (w.v2FileState==='error') fileContent=`<div style="display:flex;flex-direction:column;gap:12px"><div class="file-problem">${I.alert}<div style="flex:1"><p class="mono" style="font-weight:600">${escapeHTML(w.fileName||'File not accepted')}</p><p style="font-size:12px;margin-top:3px">${w.routeError}</p></div></div><button type="button" class="btn btn-secondary" style="align-self:flex-start" onclick="openUploadV2SamplePicker()">Choose another file</button></div>`;
+  else if (w.v2FileState==='error') fileContent=uiAlertHTML({ tone:'error', title: escapeHTML(w.fileName||'File not accepted'), content: w.routeError||'', action:'Choose another file', actionOnclick:'openUploadV2SamplePicker()' });
   else fileContent=emptyUploadBox({title:'Upload transaction document',meta:'PDF, JPG, PNG, TIFF, DOC, DOCX, CSV · Max 50 MB',hint:canUpload?'':'Complete the category details to enable upload.',disabled:!canUpload,onClick:'openUploadV2SamplePicker()',buttonLabel:'Choose file',zoneAttr:'data-upload-v2-zone',buttonAttr:'data-upload-v2-button'});
   return `<div style="display:flex;flex-direction:column;gap:20px">
     ${uploadFlowVersionSelector(w)}
@@ -9852,7 +9969,7 @@ const CN_UI_REPLACEMENTS = [
   [/Marketplace template & supported marketplaces/g, '电商平台模板与支持列表'], [/Check the result file for the exchange rate/g, '请在结果文件中查看汇率'], [/Check the/g, '请先查看'], [/before proceeding\./g, '，再继续。'],
   [/Select a business type/g, '选择业务类型'], [/Choose the category that best describes the transaction in your document\./g, '请选择最符合单据中交易的类别。'],
   [/Do you have the required info in your uploaded file\?/g, '上传的文件中是否包含必填信息？'], [/Tell us which column in your file matches the required info\. If no column matches, add the required columns and upload it again\./g, '请选择文件中对应必填信息的列。如没有对应列，请补充必填列后重新上传。'],
-  [/Matched with/g, '已对应'], [/— Not mapped —/g, '— 未选择 —'], [/Current mapped target/g, '当前对应字段'], [/Match columns manually/g, '手动选择对应列'], [/We couldn’t recognize the headers in your file/g, '无法识别文件中的表头'], [/None of the columns could be matched automatically\. Match them manually below, or re-upload a file with recognizable headers\./g, '未能自动匹配任何列。请在下方手动选择对应列，或重新上传表头可识别的文件。'], [/None of the columns could be recognized or matched\. Re-upload a CSV that includes the required headers\./g, '未能识别或匹配任何列。请重新上传包含所需表头的 CSV。'], [/This CSV file is empty/g, '此 CSV 文件为空'], [/This CSV file has headers only/g, '此 CSV 文件仅有表头'], [/We couldn’t find any headers or data rows\. Upload a CSV that includes a header row and transaction data\./g, '未找到任何表头或数据行。请上传包含表头行和交易数据的 CSV。'], [/We found headers but no data rows\. Upload a CSV that includes transaction data under the header row\./g, '仅识别到表头，没有数据行。请上传表头下方包含交易数据的 CSV。'], [/Re-upload file/g, '重新上传文件'], [/We couldn’t map your file/g, '无法匹配您的文件'], [/Review the issue below, then re-upload a CSV with recognizable headers\./g, '请查看下方问题，然后重新上传表头可识别的 CSV。'], [/No columns were matched automatically\. Select the matching column for each required detail, or re-upload a corrected file\./g, '未能自动匹配任何列。请为每项必填信息选择对应列，或重新上传修正后的文件。'], [/Empty CSV \(re-upload required\)/g, '空 CSV（需重新上传）'], [/Header-only CSV \(re-upload required\)/g, '仅表头 CSV（需重新上传）'], [/The CSV has no headers or rows · Re-upload required/g, 'CSV 无表头或数据行 · 需重新上传'], [/The CSV has headers but no data rows · Re-upload required/g, 'CSV 仅有表头无数据行 · 需重新上传'], [/Empty file/g, '空文件'], [/Header only/g, '仅有表头'], [/Use this option when an uploaded column corresponds to each missing required field\./g, '上传文件中有与各缺失必填字段对应的列时，请选择此方式。'],
+  [/Matched with/g, '已对应'], [/— Not mapped —/g, '— 未选择 —'], [/Current mapped target/g, '当前对应字段'], [/Match columns manually/g, '手动选择对应列'], [/We couldn’t recognize the headers in your file/g, '无法识别文件中的表头'], [/None of the columns could be matched automatically\. Match them manually below, or re-upload a file with recognizable headers\./g, '未能自动匹配任何列。请在下方手动选择对应列，或重新上传表头可识别的文件。'], [/None of the columns could be recognized or matched\. Re-upload a CSV that includes the required headers\./g, '未能识别或匹配任何列。请重新上传包含所需表头的 CSV。'], [/This CSV file is empty/g, '此 CSV 文件为空'], [/This CSV file has headers only/g, '此 CSV 文件仅有表头'], [/We couldn’t find any headers or data rows\. Upload a CSV that includes a header row and transaction data\./g, '未找到任何表头或数据行。请上传包含表头行和交易数据的 CSV。'], [/We found headers but no data rows\. Upload a CSV that includes transaction data under the header row\./g, '仅识别到表头，没有数据行。请上传表头下方包含交易数据的 CSV。'], [/Re-upload file/g, '重新上传文件'], [/RE-UPLOAD FILE/g, '重新上传文件'], [/We couldn’t map your file/g, '无法匹配您的文件'], [/Review the issue below, then re-upload a CSV with recognizable headers\./g, '请查看下方问题，然后重新上传表头可识别的 CSV。'], [/No columns were matched automatically\. Select the matching column for each required detail, or re-upload a corrected file\./g, '未能自动匹配任何列。请为每项必填信息选择对应列，或重新上传修正后的文件。'], [/Empty CSV \(re-upload required\)/g, '空 CSV（需重新上传）'], [/Header-only CSV \(re-upload required\)/g, '仅表头 CSV（需重新上传）'], [/The CSV has no headers or rows · Re-upload required/g, 'CSV 无表头或数据行 · 需重新上传'], [/The CSV has headers but no data rows · Re-upload required/g, 'CSV 仅有表头无数据行 · 需重新上传'], [/Empty file/g, '空文件'], [/Header only/g, '仅有表头'], [/Use this option when an uploaded column corresponds to each missing required field\./g, '上传文件中有与各缺失必填字段对应的列时，请选择此方式。'],
   [/Use this option when none of the uploaded columns match the missing required fields\./g, '上传文件中没有与缺失必填字段对应的列时，请选择此方式。'], [/Select an uploaded column/g, '选择上传文件中的列'], [/Select the uploaded column that matches/g, '请选择对应的上传列'],
   [/Successfully mapped file columns are hidden by default\./g, '已处理完成的文件列默认收起。'], [/Update and re-upload the file/g, '修正并重新上传文件'], [/Update and re-upload file/g, '修正并重新上传文件'],
   [/The missing required columns were mapped from uploaded columns\./g, '缺失的必填列已从上传文件中完成对应。'],
