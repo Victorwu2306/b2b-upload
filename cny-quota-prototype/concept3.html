@@ -159,6 +159,13 @@ a { color: inherit; }
 }
 .card-lg { border-radius: var(--radius-card); padding: 20px; overflow: hidden; }
 .card-pad { padding: 16px; }
+.upload-prepare { display:flex; flex-direction:column; gap:8px; }
+.upload-prepare-title {
+  margin:0; font-size:15px; font-weight:600; line-height:22px; color:var(--foreground);
+}
+.upload-prepare-body { margin:0; font-size:13px; line-height:1.45; color:var(--muted-foreground); }
+.upload-prepare-body > :first-child { margin-top:0; }
+.upload-prepare-body > :last-child { margin-bottom:0; }
 .details-table-wrap {
   width: 100%; max-width: 100%; overflow-x: auto;
   border: 1px solid var(--border); border-radius: 8px;
@@ -6577,11 +6584,9 @@ function stepERP2Upload(w) {
     </div>
     ${w.dsState === 'mapped' ? `${erp2FileSummary(w, stats)}
       <div class="alert-info">${I.info}<p>Your file has already been analyzed. Continue to review the identified columns.</p></div>` : `
-      <div class="card" style="overflow:hidden">
-        <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-weight:600">${I.file} How to prepare your ERP CSV file</div>
-        <div style="padding:16px 20px">
-          <p style="font-size:13px;color:var(--muted-foreground)">CSV · Max 50 MB · Keep the original header row.</p>
-        </div>
+      <div class="upload-prepare">
+        <h3 class="upload-prepare-title">How to prepare your ERP CSV file</h3>
+        <p class="upload-prepare-body">CSV · Max 50 MB · Keep the original header row.</p>
       </div>
       ${emptyUploadBox({
         title: 'Upload ERP CSV',
@@ -7043,9 +7048,9 @@ function stepERPInfo() {
   if (w.dsState==='mapped') return stepERPInfoConcept2(w, stats);
   let html = `<div style="display:flex;flex-direction:column;gap:20px">${erpScenarioControl()}`;
   if (w.dsState==='empty') {
-    html += `<div class="card" style="overflow:hidden">
-      <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--muted);font-size:13px;font-weight:600">${I.file} How to prepare your ERP CSV file</div>
-      <div style="padding:16px 20px">
+    html += `<div class="upload-prepare">
+      <h3 class="upload-prepare-title">How to prepare your ERP CSV file</h3>
+      <div class="upload-prepare-body">
         <p style="font-size:13px;font-weight:600;margin-bottom:10px">Before you upload</p>
         <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
           ${[
@@ -7398,28 +7403,31 @@ function setTradeSource(value) {
   render();
 }
 
-function tradeBusinessTypeField() {
+function tradeBusinessTypeField(opts) {
   const w = state.wiz;
   const selected = TRADE_SOURCES.find(type => type.key === w.source);
+  const compact = !!(opts && opts.compact);
   if (w.uploadOriginVersion === 2) {
-    return `<div class="card card-pad" style="width:100%"><div class="field"><label style="font-size:14px;font-weight:600;color:var(--foreground);margin-bottom:8px">Business type</label><div style="height:var(--control-height);display:flex;align-items:center;padding:0 12px;border:1px solid var(--border);border-radius:var(--control-radius);background:var(--muted);font-weight:500">${selected?selected.label:'—'}</div><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin-top:8px">Selected in Upload V2. Return to Upload V2 to change the category.</p></div></div>`;
+    return `<div class="field" style="width:100%">
+      <label style="font-size:14px;font-weight:600;color:var(--foreground);margin-bottom:8px">Business type</label>
+      <div style="height:var(--control-height);display:flex;align-items:center;padding:0 12px;border:1px solid var(--border);border-radius:var(--control-radius);background:var(--muted);font-weight:500">${selected?selected.label:'—'}</div>
+      <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin-top:8px">${compact ? 'Return to Upload V2 to change the category.' : 'Selected in Upload V2. Return to Upload V2 to change the category.'}</p>
+    </div>`;
   }
-  return `<div class="card card-pad" style="width:100%">
-    <div class="field">
-      <label style="font-size:14px;font-weight:600;color:var(--foreground);margin-bottom:8px">
-        Select your business type <span style="color:var(--destructive)">*</span>
-      </label>
-      <div class="business-type-select-wrap">
-        <select class="business-type-select ${w.source?'':'placeholder'}" aria-label="Select your business type" onchange="setTradeSource(this.value)">
-          <option value="">Select a business type</option>
-          ${TRADE_SOURCES.map(type => `<option value="${type.key}" ${w.source===type.key?'selected':''}>${type.label}</option>`).join('')}
-        </select>
-        <span class="business-type-chevron" aria-hidden="true">${I.chevron}</span>
-      </div>
-      <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin-top:8px">
-        ${selected ? selected.desc : 'Choose the category that best describes the transaction in your document.'}
-      </p>
+  const emptyHint = compact ? '' : 'Choose the category that best describes the transaction in your document.';
+  const hint = selected ? selected.desc : emptyHint;
+  return `<div class="field" style="width:100%">
+    <label style="font-size:14px;font-weight:600;color:var(--foreground);margin-bottom:8px">
+      Select your business type <span style="color:var(--destructive)">*</span>
+    </label>
+    <div class="business-type-select-wrap">
+      <select class="business-type-select ${w.source?'':'placeholder'}" aria-label="Select your business type" onchange="setTradeSource(this.value)">
+        <option value="">Select a business type</option>
+        ${TRADE_SOURCES.map(type => `<option value="${type.key}" ${w.source===type.key?'selected':''}>${type.label}</option>`).join('')}
+      </select>
+      <span class="business-type-chevron" aria-hidden="true">${I.chevron}</span>
     </div>
+    ${hint ? `<p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin-top:8px">${hint}</p>` : ''}
   </div>`;
 }
 
@@ -8521,7 +8529,7 @@ function stepTradeDynamic() {
           <span class="trade-stage-number">1</span>
           <div><h3>${fromUploadV2?'Business type':'Choose the business type'}</h3><p>${fromUploadV2?'Selected in Upload V2.':'This helps us extract the correct transaction information.'}</p></div>
         </div>
-        ${tradeBusinessTypeField()}
+        ${tradeBusinessTypeField({ compact: true })}
       </section>
       <section class="trade-stage">
         <div class="trade-stage-head">
