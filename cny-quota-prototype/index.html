@@ -3293,7 +3293,7 @@ function startUploadWizard(keepType, allowedTypes, allowedCategories) {
   render();
 }
 function startDocumentUploadWizard() {
-  startUploadWizard(false, ['trade','erp'], TEMPLATE_TYPES.filter(type => type.key !== 'marketplace').map(type => type.key));
+  startUploadWizard(false, ['trade','template','erp'], TEMPLATE_TYPES.filter(type => type.key !== 'marketplace').map(type => type.key));
 }
 function startMarketplaceTemplateWizard() {
   state.templatePanel = false;
@@ -3678,16 +3678,12 @@ function routeUploadV2() {
     next.marketplace = current.marketplace || '';
     next.sellerId = current.sellerId || '';
     next.fileName = current.fileName;
-    next.csvState = 'processing';
+    next.csvState = 'mapped';
+    next.templateStage = 2;
     if (draftId) next.draftId = draftId;
     state.wiz = next;
     state.view = 'wizard-template';
     render();
-    setTimeout(() => {
-      if (state.wiz !== next || next.csvState !== 'processing') return;
-      next.csvState = 'mapped';
-      render();
-    },1800);
     return;
   }
   if (current.detectedRoute === 'trade') {

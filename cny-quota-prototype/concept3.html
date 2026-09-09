@@ -3266,7 +3266,7 @@ function startUploadWizard(keepType, allowedTypes, allowedCategories) {
   render();
 }
 function startDocumentUploadWizard() {
-  startUploadWizard(false,['trade','erp'], TEMPLATE_TYPES.filter(type => type.key !== 'marketplace').map(type => type.key));
+  startUploadWizard(false,['trade','template','erp'], TEMPLATE_TYPES.filter(type => type.key !== 'marketplace').map(type => type.key));
 }
 function startMarketplaceTemplateWizard() {
   state.templatePanel = false;
@@ -3569,10 +3569,9 @@ function routeUploadV2() {
   let next;
   if (current.detectedRoute==='template' || isUploadV2TemplateFileName(current.fileName)) {
     next=resetWiz('template'); attachUnifiedOrigin(next,2,context);
-    Object.assign(next,{uploadType:'template',entryCategory:current.category,category:current.category,marketplace:current.marketplace||'',sellerId:current.sellerId||'',fileName:current.fileName,csvState:'processing'});
+    Object.assign(next,{uploadType:'template',entryCategory:current.category,category:current.category,marketplace:current.marketplace||'',sellerId:current.sellerId||'',fileName:current.fileName,csvState:'mapped',templateStage:2});
     if (draftId) next.draftId=draftId;
     state.wiz=next; state.view='wizard-template'; render();
-    setTimeout(()=>{if(state.wiz!==next||next.csvState!=='processing')return;next.csvState='mapped';render();},1800);
     return;
   }
   if (current.detectedRoute==='trade') {
