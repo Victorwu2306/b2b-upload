@@ -6224,8 +6224,8 @@ function erpZeroMatchAlertHTML(opts) {
     tone: 'warning',
     title: 'We couldn’t recognize the headers in your file',
     content: body,
-    action: 'Re-upload file',
-    actionOnclick: 'reuploadERPFileFresh();openUploadV2SamplePicker()',
+    action: canMatch ? '' : 'Re-upload file',
+    actionOnclick: canMatch ? '' : 'reuploadERPFileFresh();openUploadV2SamplePicker()',
   });
 }
 function erpFileIssueAlertHTML(issue) {
