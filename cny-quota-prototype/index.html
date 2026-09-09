@@ -802,16 +802,30 @@ table.data tr:hover td { background: var(--muted); }
 .alert > svg,
 .alert-icon svg { width: 20px; height: 20px; display: block; }
 .alert-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.alert h3.alert-title,
+.alert .alert-title,
 .alert-title {
+  display: block;
   margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 24px;
-  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  line-height: 26px !important;
+  color: var(--foreground) !important;
 }
-.alert-content,
-.alert-body > p,
-.alert > p {
+.alert p.alert-content,
+.alert .alert-content,
+.alert-content {
+  display: block;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 22px !important;
+  color: var(--foreground) !important;
+}
+.alert-body > p:not(.alert-title),
+.alert > p:not(.alert-title) {
   margin: 0;
   font-size: 14px;
   font-weight: 400;
@@ -6204,7 +6218,7 @@ function uiAlertHTML(opts) {
     success: I.alertSuccess || I.check,
   };
   const icon = o.icon || icons[tone] || I.info;
-  const title = o.title ? `<p class="alert-title">${o.title}</p>` : '';
+  const title = o.title ? `<h3 class="alert-title">${o.title}</h3>` : '';
   const content = o.content ? `<p class="alert-content">${o.content}</p>` : '';
   const action = o.action
     ? `<button type="button" class="alert-action" onclick="${o.actionOnclick || ''}">${o.action}</button>`
