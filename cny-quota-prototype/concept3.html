@@ -1928,10 +1928,13 @@ table.data.req-v-table .detail-with-chip { flex-direction:column; align-items:fl
   .erp-version-card { align-items:flex-start; flex-direction:column; }
 }
 .seg { display:inline-flex; gap:0; border:1px solid var(--border); border-radius:6px; padding:2px; background:var(--muted); }
-.seg button {
+.seg button,
+.seg a {
   height:28px; padding:0 12px; border-radius:4px; font-size:12px; font-weight:500; color:var(--muted-foreground);
+  display:inline-flex; align-items:center; text-decoration:none;
 }
-.seg button.on { background:#fff; color:var(--foreground); box-shadow:0 1px 2px rgba(0,0,0,.06); border:1px solid var(--border); }
+.seg button.on,
+.seg a.on { background:#fff; color:var(--foreground); box-shadow:0 1px 2px rgba(0,0,0,.06); border:1px solid var(--border); }
 .review-card { background:#fff; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
 .review-card-h {
   display:flex; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid var(--muted);
@@ -3756,8 +3759,24 @@ function setConcept(n) {
   state.homepage2MarketplaceSupport = false;
   render();
 }
+
+function homepageHash(version) {
+  return version === 1 ? '#homepage-1' : '#homepage-2';
+}
+function applyPrototypeRoute() {
+  const hash = String(location.hash || '').replace(/^#/, '').toLowerCase();
+  if (hash === 'homepage-1' || hash === 'home-1' || hash === 'hp1') state.homepageVersion = 1;
+  else if (hash === 'homepage-2' || hash === 'home-2' || hash === 'hp2') state.homepageVersion = 2;
+  state.concept = 3;
+  if (state.view === 'home' || !state.view) state.view = 'home';
+}
+function syncPrototypeHash() {
+  if (state.concept !== 3) return;
+  const next = homepageHash(state.homepageVersion);
+  if (location.hash !== next) history.replaceState(null, '', next);
+}
 function setHomepageVersion(n) {
-  state.homepageVersion = n;
+  state.homepageVersion = n === 1 ? 1 : 2;
   state.view = 'home';
   state.wiz = null;
   state.templatePanel = false;
@@ -3765,6 +3784,7 @@ function setHomepageVersion(n) {
   state.supportedMarketplacesPanel = false;
   state.marketplaceResources = false;
   state.homepage2MarketplaceSupport = false;
+  syncPrototypeHash();
   render();
 }
 function wizHomeBack(w) {
@@ -4359,8 +4379,8 @@ function conceptBar() {
     ${state.concept!==1?`<span class="concept-divider" aria-hidden="true"></span>
       <span class="lbl">Homepage version</span>
       <div class="seg">
-        <button type="button" class="${state.homepageVersion===1?'on':''}" onclick="setHomepageVersion(1)">Homepage 1</button>
-        <button type="button" class="${state.homepageVersion===2?'on':''}" onclick="setHomepageVersion(2)">Homepage 2</button>
+        <a class="${state.homepageVersion===1?'on':''}" href="#homepage-1">Homepage 1</a>
+        <a class="${state.homepageVersion===2?'on':''}" href="#homepage-2">Homepage 2</a>
       </div>`:''}
   </div>`;
 }
@@ -9802,7 +9822,15 @@ function render() {
     const nextScroller = root.querySelector('.focused-body') || root.querySelector('.main .content');
     if (nextScroller) nextScroller.scrollTop = previousScrollTop;
   }
+  syncPrototypeHash();
 }
+applyPrototypeRoute();
+window.addEventListener('hashchange', () => {
+  applyPrototypeRoute();
+  state.view = 'home';
+  state.wiz = null;
+  render();
+});
 render();
 </script>
 </body>
