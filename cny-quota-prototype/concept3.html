@@ -4369,20 +4369,7 @@ function uploadHistorySection(records, heading='Order List', sub='Track quota us
 
 /* ─── Views ────────────────────────────────────────────── */
 function conceptBar() {
-  return `<div class="concept-bar">
-    <span class="lbl">Prototype concept</span>
-    <div class="seg">
-      ${SHOW_CONCEPT_1?`<button type="button" class="${state.concept===1?'on':''}" onclick="setConcept(1)">Concept 1 — Separate cards</button>`:''}
-      ${SHOW_CONCEPT_2?`<button type="button" class="${state.concept===2?'on':''}" onclick="setConcept(2)">Concept 2 — Unified upload</button>`:''}
-      <button type="button" class="${state.concept===3?'on':''}" onclick="setConcept(3)">Concept 3 — X-NOB redesign</button>
-    </div>
-    ${state.concept!==1?`<span class="concept-divider" aria-hidden="true"></span>
-      <span class="lbl">Homepage version</span>
-      <div class="seg">
-        <a class="${state.homepageVersion===1?'on':''}" href="#homepage-1">Homepage 1</a>
-        <a class="${state.homepageVersion===2?'on':''}" href="#homepage-2">Homepage 2</a>
-      </div>`:''}
-  </div>`;
+  return '';
 }
 
 function homeKpiBlock() {
