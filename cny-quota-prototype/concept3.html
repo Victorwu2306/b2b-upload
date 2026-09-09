@@ -799,18 +799,18 @@ table.data tr:hover td { background: var(--muted); }
 .alert-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .alert-title {
   margin: 0;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
-  line-height: 20px;
+  line-height: 24px;
   color: var(--foreground);
 }
 .alert-content,
 .alert-body > p,
 .alert > p {
   margin: 0;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 20px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
   color: var(--foreground);
 }
 .alert-content strong,
@@ -1223,8 +1223,8 @@ table.data tr:hover td { background: var(--muted); }
   border:1px solid #ABEFC6; border-radius:8px; background:#F6FEF9; color:#087443;
 }
 .template-result-resolved svg { flex:0 0 16px; }
-.template-result-resolved strong { display:block; font-size:13px; }
-.template-result-resolved p { margin-top:2px; font-size:12px; line-height:18px; }
+.template-result-resolved strong { display:block; font-size:16px; font-weight:700; line-height:24px; color:var(--foreground); }
+.template-result-resolved p { margin-top:4px; font-size:14px; font-weight:400; line-height:22px; color:var(--foreground); }
 @media (max-width:760px) {
   .template-result-overview { grid-template-columns:1fr; }
   .template-result-alert { align-items:flex-start; flex-direction:column; }
@@ -1849,8 +1849,8 @@ table.data.req-v-table .detail-with-chip { flex-direction:column; align-items:fl
   border:0; border-radius:6px; background:#ECFDF3; color:#067647;
 }
 .mapping-c2-success > svg { flex:0 0 20px; width:20px; height:20px; color:#067647; }
-.mapping-c2-success strong { color:var(--foreground); font-size:14px; font-weight:700; line-height:20px; }
-.mapping-c2-success p { margin-top:4px; color:var(--foreground); font-size:13px; font-weight:500; line-height:20px; }
+.mapping-c2-success strong { color:var(--foreground); font-size:16px; font-weight:700; line-height:24px; }
+.mapping-c2-success p { margin-top:4px; color:var(--foreground); font-size:14px; font-weight:400; line-height:22px; }
 .mapping-c2-accordion { border:1px solid var(--border); border-radius:10px; overflow:hidden; background:#fff; }
 .mapping-c2-accordion-toggle {
   width:100%; display:flex; align-items:center; justify-content:space-between;
