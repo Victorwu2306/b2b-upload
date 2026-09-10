@@ -5138,7 +5138,26 @@ function wizStepper(steps, current) {
   }).join('')}</div>`;
 }
 
+function hoistWizardPageHeading(html) {
+  const next = String(html || '');
+  const stageHead = next.match(/<div class="erp2-stage-head">\s*<h2>([\s\S]*?)<\/h2>(?:\s*<p>([\s\S]*?)<\/p>)?\s*<\/div>/);
+  if (stageHead) {
+    return { title: stageHead[1].trim(), sub: (stageHead[2] || '').trim(), html: next.replace(stageHead[0], '') };
+  }
+  const pageHead = next.match(/<div>\s*<h2 style="font-size:(?:18|20)px;font-weight:700">([\s\S]*?)<\/h2>\s*(?:<p style="font-size:14px;color:var\(--muted-foreground\);margin-top:4px">([\s\S]*?)<\/p>\s*)?<\/div>/);
+  if (pageHead) {
+    return { title: pageHead[1].trim(), sub: (pageHead[2] || '').trim(), html: next.replace(pageHead[0], '') };
+  }
+  return null;
+}
+
 function wizShell({ title, sub, steps, step, onBack, body, footer, shellClass='', backLabel='Back to CNY quota management' }) {
+  const hoisted = hoistWizardPageHeading(body);
+  if (hoisted && hoisted.title) {
+    title = hoisted.title;
+    sub = hoisted.sub;
+    body = hoisted.html;
+  }
   const stepper = wizStepper(steps, step);
   const titleRow = title
     ? `<div class="focused-title-row">
@@ -9639,7 +9658,7 @@ function uploadV2Body(w) {
   else fileContent=emptyUploadBox({title:'Upload transaction document',meta:'PDF, JPG, PNG, TIFF, DOC, DOCX, CSV · Max 50 MB',hint:canUpload?'':'Complete the category details to enable upload.',disabled:!canUpload,onClick:'openUploadV2SamplePicker()',buttonLabel:'Choose file',zoneAttr:'data-upload-v2-zone',buttonAttr:'data-upload-v2-button'});
   return `<div style="display:flex;flex-direction:column;gap:20px">
     ${uploadFlowVersionSelector(w)}
-    <div><h2 style="font-size:20px;font-weight:700">${marketplaceOnly?'Upload marketplace CSV':'Upload your document'}</h2></div>
+    <div><h2 style="font-size:20px;font-weight:700">${marketplaceOnly?'Upload marketplace CSV':'Upload your document'}</h2>${marketplaceOnly?'':`<p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">It can be a trade document, a transaction record created using our template, or a transaction record exported from your business system.</p>`}</div>
     <div class="template-upload-fields">${marketplaceOnly?'':`<div class="field"><label>What was this transaction for? <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.category?'':'placeholder'}" onchange="setUploadV2Category(this.value)"><option value="">Select a category</option>${wizardCategoryOptions(w).map(type=>`<option value="${type.key}" ${w.category===type.key?'selected':''}>${type.label}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div>${selected?`<p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">${selected.desc}</p>`:''}</div>`}
     ${w.category==='marketplace'?`<div class="field"><label>Select the marketplace <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.marketplace?'':'placeholder'}" onchange="setUploadV2Marketplace(this.value)"><option value="">Select a marketplace</option>${MARKETPLACE_UPLOAD_OPTIONS.map(name=>`<option value="${name}" ${w.marketplace===name?'selected':''}>${name}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Choose the marketplace associated with these transaction records.</p></div>`:''}
     ${uploadV2NeedsSellerId(w)?`<div class="field"><label>Seller ID <span style="color:var(--destructive)">*</span></label><input maxlength="100" value="${escapeHTML(w.sellerId)}" placeholder="Enter your ${w.marketplace} Seller ID" oninput="setUploadV2SellerId(this.value)" /><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Required to associate this upload with the correct store.</p></div>`:''}</div>
@@ -9945,8 +9964,8 @@ const CN_UI_REPLACEMENTS = [
   [/Hotel stays and lodging expenses for business travel/g, '商务旅行的酒店及住宿费用'],
   [/Tour packages, destination services, and related travel fees/g, '旅游套餐、目的地服务及相关旅行费用'],
   [/Switch page version/g, '切换页面版本'], [/Upload V1/g, '上传 V1'], [/Upload V2/g, '上传 V2'], [/Upload V2 starts with a category and routes the file automatically\./g, 'Upload V2 先选择交易类别，再自动识别并分流文件。'], [/Upload flow version/g, '上传流程版本'],
-  [/Select a category and upload/g, '上传单据'], [/Choose a transaction category, then upload a related file on this page\./g, ''],
-  [/^Upload document$/g, '上传单据'], [/^Confirm info$/g, '确认信息'], [/^Match remaining fields$/g, '匹配剩余字段'], [/^Identify other details$/g, '确认其他信息'], [/^Update and re-upload$/g, '更新并重新上传'], [/^Resubmit$/g, '重新提交'], [/^Review$/g, '检查'],
+  [/Select a category and upload/g, '上传材料'], [/Choose a transaction category, then upload a related file on this page\./g, ''],
+  [/^Upload document$/g, '上传材料'], [/^Confirm info$/g, '确认信息'], [/^Match remaining fields$/g, '匹配剩余字段'], [/^Identify other details$/g, '确认其他信息'], [/^Update and re-upload$/g, '更新并重新上传'], [/^Resubmit$/g, '重新提交'], [/^Review$/g, '检查'],
   [/Process & review/g, '确认信息'], [/Choose a sample file/g, '选择模拟文件'], [/This prototype simulates file selection and processing\./g, '此原型将模拟文件选择和处理。'],
   [/All columns are recognized and mapped automatically/g, '系统可识别并精准匹配所有列'],
   [/Some headers are unrecognized, but you can map them all manually/g, '系统未能识别部分表头，但可通过手动匹配全部补全'],
@@ -9959,14 +9978,14 @@ const CN_UI_REPLACEMENTS = [
   [/PDF document/g, 'PDF 单据'], [/standard template/g, '标准模板'], [/ERP transaction export/g, 'ERP 交易导出文件'], [/Select a category to enable upload\./g, '选择类别后即可上传。'], [/Select a category before uploading\./g, '请先选择类别再上传。'],
   [/Select the marketplace/g, '选择电商平台'], [/Choose the marketplace associated with these transaction records\./g, '请选择这些交易记录所属的电商平台。'], [/Complete the category details to enable upload\./g, '请先补充类别相关信息，再上传文件。'],
   [/Select a marketplace before uploading\./g, '请先选择电商平台再上传。'], [/Enter the Seller ID for (.+) before uploading\./g, '请先填写 $1 的卖家 ID 再上传。'], [/Required to associate this upload with the correct store\./g, '用于将本次上传绑定到正确店铺。'],
-  [/Select the transaction category/g, '选择业务类型'], [/Select the business type/g, '选择业务类型'], [/What was this transaction for\?/g, '这笔交易用于什么？'], [/Choose the category that best describes the records or document you will upload\./g, '请选择最符合待上传记录或单据的类别。'], [/The selected category determines which processing and validation flow is used\./g, ''],
+  [/Select the transaction category/g, '选择业务类型'], [/Select the business type/g, '选择业务类型'], [/What was this transaction for\?/g, '交易所属的业务类型'], [/Choose the category that best describes the records or document you will upload\./g, '请选择最符合待上传记录或单据的类别。'], [/The selected category determines which processing and validation flow is used\./g, ''],
   [/Select category/g, '选择类别'], [/Select a category, upload a file, and continue with the matching processing flow\./g, '选择类别并上传文件后，进入对应的处理流程。'],
   [/Transaction category/g, '交易类别'], [/Selected in Upload V2\. Return to Upload V2 to change the category\./g, '已在 Upload V2 中选择。如需更改类别，请返回 Upload V2。'], [/Return to Upload V2 to change the category\./g, '如需更改类别，请返回 Upload V2。'], [/Selected in Upload V2\./g, '已在 Upload V2 中选择。'],
   [/Back to Upload V2/g, '返回 Upload V2'], [/Back to upload options/g, '返回上传选项'],
   [/Complete upload details/g, '补充上传信息'], [/Review the selected category and complete any required marketplace information\./g, '请确认所选类别，并补充所需的电商平台信息。'],
   [/Review Upload V2 details/g, '查看 Upload V2 信息'], [/The category and marketplace association were completed before upload\./g, '交易类别及电商平台信息已在上传前完成。'],
   [/Confirm the uploaded CSV information, then submit\./g, '提交前，请确认单据信息。'], [/Confirm the details of your document before submitting\./g, '提交前，请确认单据信息。'],
-  [/Upload your document/g, '上传单据'], [/Upload transaction document/g, '上传交易单据'],
+  [/Upload your document/g, '上传材料'], [/It can be a trade document, a transaction record created using our template, or a transaction record exported from your business system\./g, '可以是贸易单据、使用模板填写完成的交易记录，或从业务系统导出的交易记录。'], [/Upload transaction document/g, '上传交易单据'],
   [/Complete trade info/g, '完善贸易信息'], [/Complete the trade info below/g, '完善下方贸易信息'], [/Confirm the following details we prefilled based on your document\./g, '确认以下根据单据预填的信息。'],
   [/Check the columns we matched/g, '核对已匹配的列'], [/Confirm the processing results/g, '确认处理结果'],
   [/What we did/g, '我们已完成'], [/What you need to do/g, '您需要做的'],
@@ -10056,7 +10075,7 @@ const CN_UI_REPLACEMENTS = [
   [/Upload your transaction documents/g, '上传交易材料'], [/Goods or service trading/g, '货物或服务贸易'], [/We’ll increase your quota based on the transaction amounts\./g, '额度将按交易金额提高。'],
   [/Upload trade documents or CSV transaction records\. We increase your quota based on the transaction amounts\./g, '上传贸易单据或 CSV 交易记录。额度将按交易金额提高。'],
   [/You can upload:/g, '可上传：'],
-  [/What was your transaction for\?/g, '这笔交易用于什么？'],
+  [/What was your transaction for\?/g, '交易所属的业务类型'],
   [/Next step/g, '下一步'],
   [/下一步 step/g, '下一步'],
   [/^Check $/g, '查看'],
@@ -10110,7 +10129,7 @@ const CN_UI_REPLACEMENTS = [
   [/Transaction records completed using our template/g, '使用模板填写完成的交易记录'],
   [/Transaction records exported from your business system like ERP or your marketplace/g, '从 ERP 或电商平台等业务系统导出的交易记录'],
   [/A few things to know/g, '上传前须知'],
-  [/before you upload — eligible transactions, document details, and templates\./g, ' — 符合条件的交易、单据信息和模板。'],
+  [/before you upload — eligible transactions, document details, and templates\./g, '：符合条件的交易、单据信息和模板。'],
   [/Your transactions also need to be eligible for CNY settlement, and your documents need to include certain details\./g, '交易也需符合人民币结汇要求，单据需包含指定信息。'],
   [/Check before you upload/g, '上传前请核对'],
   [/To be eligible for CNY settlement, your transactions and your document details both need to qualify\./g, '交易和单据信息均符合要求，才能进行人民币结汇。'], [/Learn requirements/g, '查看要求'],
@@ -10332,7 +10351,7 @@ const CN_UI_REPLACEMENTS = [
   [/Upload & map/g, '上传并处理'], [/Order information/g, '订单信息'], [/Upload CSV from ERP/g, '上传 ERP 文件'], [/Upload your ERP CSV export for field mapping and quota release\./g, '上传 ERP 导出文件，核对字段并释放额度。'],
   [/Select a business type to enable document upload\./g, '选择业务类型后才能上传单据。'], [/Upload a sales contract, purchase order, PI, CI, shipping, or customs document\./g, '上传销售合同、采购订单、PI、CI、运输或报关单据。'], [/Upload a service agreement, invoice, or contract\./g, '上传服务协议、发票或合同。'],
   [/Upload trade document/g, '上传贸易单据'], [/Uploaded · Analysis starts automatically/g, '已上传 · 将自动开始分析'], [/Preparing the document for automatic analysis…/g, '正在准备自动分析单据…'], [/Analyzing document…/g, '正在分析单据…'],
-  [/Choose the business type/g, '选择业务类型'], [/This helps us extract the correct transaction information\./g, '便于准确提取交易信息。'], [/Upload the document/g, '上传单据'], [/The file is analyzed automatically, and extracted fields appear below on this page\./g, '文件会自动分析，提取结果将显示在本页下方。'],
+  [/Choose the business type/g, '选择业务类型'], [/This helps us extract the correct transaction information\./g, '便于准确提取交易信息。'], [/Upload the document/g, '上传材料'], [/The file is analyzed automatically, and extracted fields appear below on this page\./g, '文件会自动分析，提取结果将显示在本页下方。'],
   [/Review the extracted information/g, '检查提取的信息'], [/Confirm or complete the details, then submit directly\./g, '确认或补充信息后即可提交。'], [/Confirm or complete the details, then continue to review\./g, '确认或补充信息后，进入提交前检查。'], [/Choose a business type, upload a document, review the extracted details, and submit\./g, '选择业务类型、上传单据，核对提取信息后提交。'],
   [/Complete the document details, review the submission summary, and submit\./g, '补充单据信息，检查提交汇总后提交。'], [/^Review$/g, '检查'],
   [/Upload & complete/g, '上传并补充信息'], [/Review the submission information before submitting\./g, '提交前，请检查提交信息。'],
@@ -10429,7 +10448,7 @@ const CN_UI_REPLACEMENTS = [
   [/Supported: shipping receipt, logistics invoice, tracking document, other shipment evidence\./g, '支持发货凭证、物流发票、跟踪文件及其他运输证明。'], [/Upload logistics evidence/g, '上传物流凭证'], [/Analyzing logistics documents…/g, '正在分析物流材料…'], [/Extracting shipment and tracking information/g, '正在提取发货和物流跟踪信息'],
   [/logistics records extracted by AI\. Review and edit if needed\./g, '条物流记录已自动提取。请核对并按需修改。'], [/Logistics Method/g, '物流方式'], [/Shipment Date/g, '发货日期'], [/Related Item/g, '相关商品'], [/Submit logistics documents/g, '提交物流材料'],
   [/Draft saved\. You can continue it from the upload list\./g, '草稿已保存。可从上传列表继续。'], [/Untitled trade document/g, '未命名贸易单据'], [/Untitled template CSV/g, '未命名模板 CSV'], [/Untitled ERP CSV/g, '未命名 ERP 文件'], [/Untitled upload/g, '未命名上传'],
-  [/What would you like to upload\?/g, '上传前请先查看支持的交易类型'],
+  [/What would you like to upload\?/g, '您想上传什么？'],
   [/Download and prepare the standard CSV template before uploading\./g, '上传前请下载并填写标准 CSV 模板。'], [/ERP CSV requirements/g, 'ERP 文件要求'],
   [/Upload transaction records/g, '上传交易记录'], [/Select a trade document or an ERP export to begin\./g, '选择贸易单据或 ERP 导出文件后开始。'], [/Select trade documents, a template CSV, or an ERP export to begin\./g, '选择贸易单据、模板 CSV 或 ERP 导出文件后开始。'],
   [/Select file type/g, '选择文件类型'], [/Upload & review/g, '上传并检查'], [/Confirm Selection/g, '确认选择'], [/Confirm/g, '确认'], [/Previous/g, '上一步'], [/Next/g, '下一步'], [/Submit/g, '提交'], [/Cancel/g, '取消'], [/Replace/g, '替换'], [/Upload file/g, '上传文件'],

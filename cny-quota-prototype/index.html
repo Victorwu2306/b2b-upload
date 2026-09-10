@@ -5252,7 +5252,26 @@ function wizStepper(steps, current) {
   }).join('')}</div>`;
 }
 
+function hoistWizardPageHeading(html) {
+  const next = String(html || '');
+  const stageHead = next.match(/<div class="erp2-stage-head">\s*<h2>([\s\S]*?)<\/h2>(?:\s*<p>([\s\S]*?)<\/p>)?\s*<\/div>/);
+  if (stageHead) {
+    return { title: stageHead[1].trim(), sub: (stageHead[2] || '').trim(), html: next.replace(stageHead[0], '') };
+  }
+  const pageHead = next.match(/<div>\s*<h2 style="font-size:(?:18|20)px;font-weight:700">([\s\S]*?)<\/h2>\s*(?:<p style="font-size:14px;color:var\(--muted-foreground\);margin-top:4px">([\s\S]*?)<\/p>\s*)?<\/div>/);
+  if (pageHead) {
+    return { title: pageHead[1].trim(), sub: (pageHead[2] || '').trim(), html: next.replace(pageHead[0], '') };
+  }
+  return null;
+}
+
 function wizShell({ title, sub, steps, step, onBack, body, footer, shellClass='', backLabel='Back to CNY quota management' }) {
+  const hoisted = hoistWizardPageHeading(body);
+  if (hoisted && hoisted.title) {
+    title = hoisted.title;
+    sub = hoisted.sub;
+    body = hoisted.html;
+  }
   const stepper = wizStepper(steps, step);
   const titleRow = title
     ? `<div class="focused-title-row">
@@ -9835,6 +9854,7 @@ function uploadV2Body(w) {
     ${uploadFlowVersionSelector(w)}
     <div>
       <h2 style="font-size:20px;font-weight:700">${marketplaceOnly?'Upload marketplace CSV':'Upload your document'}</h2>
+      ${marketplaceOnly?'':`<p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">It can be a trade document, a transaction record created using our template, or a transaction record exported from your business system.</p>`}
     </div>
     <div class="template-upload-fields">
       ${marketplaceOnly?'':`<div class="field">

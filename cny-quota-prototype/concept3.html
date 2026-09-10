@@ -5128,7 +5128,26 @@ function wizStepper(steps, current) {
   }).join('')}</div>`;
 }
 
+function hoistWizardPageHeading(html) {
+  const next = String(html || '');
+  const stageHead = next.match(/<div class="erp2-stage-head">\s*<h2>([\s\S]*?)<\/h2>(?:\s*<p>([\s\S]*?)<\/p>)?\s*<\/div>/);
+  if (stageHead) {
+    return { title: stageHead[1].trim(), sub: (stageHead[2] || '').trim(), html: next.replace(stageHead[0], '') };
+  }
+  const pageHead = next.match(/<div>\s*<h2 style="font-size:(?:18|20)px;font-weight:700">([\s\S]*?)<\/h2>\s*(?:<p style="font-size:14px;color:var\(--muted-foreground\);margin-top:4px">([\s\S]*?)<\/p>\s*)?<\/div>/);
+  if (pageHead) {
+    return { title: pageHead[1].trim(), sub: (pageHead[2] || '').trim(), html: next.replace(pageHead[0], '') };
+  }
+  return null;
+}
+
 function wizShell({ title, sub, steps, step, onBack, body, footer, shellClass='', backLabel='Back to CNY quota management' }) {
+  const hoisted = hoistWizardPageHeading(body);
+  if (hoisted && hoisted.title) {
+    title = hoisted.title;
+    sub = hoisted.sub;
+    body = hoisted.html;
+  }
   const stepper = wizStepper(steps, step);
   const titleRow = title
     ? `<div class="focused-title-row">
@@ -9630,7 +9649,7 @@ function uploadV2Body(w) {
   else fileContent=emptyUploadBox({title:'Upload transaction document',meta:'PDF, JPG, PNG, TIFF, DOC, DOCX, CSV · Max 50 MB',hint:canUpload?'':'Complete the category details to enable upload.',disabled:!canUpload,onClick:'openUploadV2SamplePicker()',buttonLabel:'Choose file',zoneAttr:'data-upload-v2-zone',buttonAttr:'data-upload-v2-button'});
   return `<div style="display:flex;flex-direction:column;gap:20px">
     ${uploadFlowVersionSelector(w)}
-    <div><h2 style="font-size:20px;font-weight:700">${marketplaceOnly?'Upload marketplace CSV':'Upload your document'}</h2></div>
+    <div><h2 style="font-size:20px;font-weight:700">${marketplaceOnly?'Upload marketplace CSV':'Upload your document'}</h2>${marketplaceOnly?'':`<p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">It can be a trade document, a transaction record created using our template, or a transaction record exported from your business system.</p>`}</div>
     <div class="template-upload-fields">${marketplaceOnly?'':`<div class="field"><label>What was this transaction for? <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.category?'':'placeholder'}" onchange="setUploadV2Category(this.value)"><option value="">Select a category</option>${wizardCategoryOptions(w).map(type=>`<option value="${type.key}" ${w.category===type.key?'selected':''}>${type.label}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div>${selected?`<p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">${selected.desc}</p>`:''}</div>`}
     ${w.category==='marketplace'?`<div class="field"><label>Select the marketplace <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.marketplace?'':'placeholder'}" onchange="setUploadV2Marketplace(this.value)"><option value="">Select a marketplace</option>${MARKETPLACE_UPLOAD_OPTIONS.map(name=>`<option value="${name}" ${w.marketplace===name?'selected':''}>${name}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Choose the marketplace associated with these transaction records.</p></div>`:''}
     ${uploadV2NeedsSellerId(w)?`<div class="field"><label>Seller ID <span style="color:var(--destructive)">*</span></label><input maxlength="100" value="${escapeHTML(w.sellerId)}" placeholder="Enter your ${w.marketplace} Seller ID" oninput="setUploadV2SellerId(this.value)" /><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Required to associate this upload with the correct store.</p></div>`:''}</div>
