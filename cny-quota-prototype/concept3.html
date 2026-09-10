@@ -7059,10 +7059,9 @@ function stepERP2Missing(w) {
       <div class="erp2-missing-card-h">
         <h3>${missingNames.length === 1 ? 'This detail is missing:' : 'These details are missing:'}</h3>
         <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
-        <p>Add the missing headers to your file, complete the new columns, and submit your updated file again.</p>
       </div>
       <div class="erp2-supplement-body">
-        ${uiAlertHTML({ tone:'info', content:'If you’ll complete the file later, save your progress as a draft for now.' })}
+        ${uiAlertHTML({ tone:'info', content:'To continue, add the missing column and complete the required information in your file, then upload the updated file again.' })}
         ${w.erp2ReplacementState === 'processing' ? busyUploadBox('Analyzing the corrected file and reusing previous mappings…') : emptyUploadBox({
             meta: 'CSV · Max 50 MB',
             hint: `Include all original columns plus the ${formatMissingFieldsList(missingNames)} columns.`,

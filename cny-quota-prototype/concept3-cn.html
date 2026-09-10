@@ -7069,10 +7069,9 @@ function stepERP2Missing(w) {
       <div class="erp2-missing-card-h">
         <h3>${missingNames.length === 1 ? 'This detail is missing:' : 'These details are missing:'}</h3>
         <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
-        <p>Add the missing headers to your file, complete the new columns, and submit your updated file again.</p>
       </div>
       <div class="erp2-supplement-body">
-        ${uiAlertHTML({ tone:'info', content:'If you’ll complete the file later, save your progress as a draft for now.' })}
+        ${uiAlertHTML({ tone:'info', content:'To continue, add the missing column and complete the required information in your file, then upload the updated file again.' })}
         ${w.erp2ReplacementState === 'processing' ? busyUploadBox('Analyzing the corrected file and reusing previous mappings…') : emptyUploadBox({
             meta: 'CSV · Max 50 MB',
             hint: `Include all original columns plus the ${formatMissingFieldsList(missingNames)} columns.`,
@@ -10310,9 +10309,8 @@ const CN_UI_REPLACEMENTS = [
   [/The supplementary CSV must include order_id so each row can be linked to this draft\./g, '补充 CSV 须含 order_id，才能将每行绑定到当前草稿。'],
   [/The supplementary CSV must include /g, '补充 CSV 必须包含 '], [/ so each row can be linked to this draft\./g, '，才能将每行绑定到当前草稿。'],
   [/Identifying headers in the supplementary CSV…/g, '正在识别补充 CSV 的表头…'],
-  [/Add the missing headers to your file, complete the new columns, and submit your updated file again\./g, '请在文件中补充缺少的表头，填写新列后再次提交。'],
   [/Add the missing headers to the original document, then upload the complete corrected file\. It will replace the current upload\./g, '请在原文件中补充缺少的表头，再上传完整修正版。修正版将覆盖当前文件。'],
-  [/If you’ll complete the file later, save your progress as a draft for now\./g, '如稍后补全，请先保存为草稿。'],
+  [/To continue, add the missing column and complete the required information in your file, then upload the updated file again\./g, '请在文件中补充缺少的列并填写所需信息，然后再次上传更新后的文件。'],
   [/Analyzing the corrected file and reusing previous mappings…/g, '正在分析修正版并复用已有字段对应关系…'],
   [/Include all original columns plus the (.+) columns\./g, '请包含全部原始列，并补充$1列。'],
   [/Include all original columns plus:/g, '请包含全部原始列，并补充：'],
