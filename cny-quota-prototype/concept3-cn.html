@@ -7305,7 +7305,7 @@ function stepERP2Missing(w) {
     <div class="erp2-missing-card">
       <div class="erp2-missing-card-h">
         <h3>${missingNames.length === 1 ? 'This detail is missing:' : 'These details are missing:'}</h3>
-        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
+        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${erpRequiredLabel(name)}</span>`).join('')}</div>
       </div>
       <div class="erp2-supplement-body">
         ${uiAlertHTML({ tone:'info', content:'To continue, add the missing column and complete the required information in your file, then upload the updated file again.' })}
@@ -7568,7 +7568,7 @@ function stepERP3Missing(w) {
       <div class="erp3-corrected-card-h">
         <h3>Details about the ${formatMissingFieldsList(missingNames)} are missing</h3>
         <p>All original headers have been renamed to the fields we need, and the missing headers have already been added. You only need to fill in the corresponding data.</p>
-        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
+        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${erpRequiredLabel(name)}</span>`).join('')}</div>
       </div>
       <div class="erp3-corrected-body">
         ${w.erp3ReplacementState === 'processing' ? busyUploadBox('Analyzing the corrected file and reusing previous mappings…') : emptyUploadBox({
@@ -10761,6 +10761,43 @@ const CN_UI_REPLACEMENTS = [
   [/logistics records extracted by AI\. Review and edit if needed\./g, '条物流记录已自动提取。请核对并按需修改。'], [/Logistics Method/g, '物流方式'], [/Shipment Date/g, '发货日期'], [/Related Item/g, '相关商品'], [/Submit logistics documents/g, '提交物流材料'],
   [/Draft saved\. You can continue it from the upload list\./g, '草稿已保存。可从上传列表继续。'], [/Untitled trade document/g, '未命名贸易单据'], [/Untitled template CSV/g, '未命名模板 CSV'], [/Untitled ERP CSV/g, '未命名 ERP 文件'], [/Untitled upload/g, '未命名上传'],
   [/What would you like to upload\?/g, '您想上传什么？'],
+  [/The uploaded file is not ready for analysis\. Click Previous to return to the upload step\./g, '已上传文件尚未分析。请点击“上一步”返回上传步骤。'],
+  [/No auto-match · some headers can be mapped \(re-upload required\)/g, '未能自动匹配 · 部分表头可手动对应（需重新上传）'],
+  [/No headers recognized \(re-upload required\)/g, '未能识别表头（需重新上传）'],
+  [/ — Continue linking receivables to release CNY quota/g, ' — 继续绑定应收款以释放人民币额度'],
+  [/Previously Linked/g, '此前已绑定'],
+  [/Marketplace \/ source/g, '电商平台 / 来源'],
+  [/This column is not present in the uploaded file\. Upload a corrected file that includes /g, '此列不在已上传文件中。请上传包含 '],
+  [/ from a file-column row below\./g, '（请从下方文件列中选择）。'],
+  [/ is also mapped from /g, ' 也已从以下列对应：'],
+  [/Not found in your file/g, '文件中未找到'],
+  [/Missing from your file/g, '文件中缺失'],
+  [/Advertising brand\/product name/g, '广告品牌/产品名称'],
+  [/Platform order no\.\/app store order no\./g, '平台或应用商店订单号'],
+  [/Business subcategory\/transaction mode/g, '贸易方式/交易编码'],
+  [/E-commerce platform name\/business website name/g, '电商平台或业务网站名称'],
+  [/Buyer\'s English name\/payer name/g, '买家英文名称/付款人名称'],
+  [/Booker\'s Full Name/g, '预订人全名'],
+  [/Passenger first name/g, '乘客名字'], [/Passenger last name/g, '乘客姓氏'], [/Passenger ID type/g, '乘客证件类型'],
+  [/Flight departure country/g, '航班出发地'], [/Flight destination/g, '航班目的地'], [/Flight number/g, '航班号'],
+  [/Number of passengers/g, '乘客人数'], [/Number of guests/g, '入住人数'],
+  [/Service start date/g, '服务开始日期'], [/Service end date/g, '服务结束日期'], [/Service name/g, '服务名称'],
+  [/Software provider/g, '软件提供方'], [/Software identifier/g, '软件标识符'], [/Software category/g, '软件类别'], [/Software name/g, '软件名称'],
+  [/Tourism city/g, '旅游城市'], [/Payer name/g, '付款人姓名'], [/Payee name/g, '收款人姓名'],
+  [/Business URL/g, '业务网址'], [/Transaction date/g, '交易日期'], [/Supplier name/g, '供应商名称'],
+  [/Ticket number/g, '电子客票号'], [/Departure date/g, '出发日期'], [/Launch date/g, '发布日期'],
+  [/Hotel city/g, '酒店所在城市'], [/Hotel name/g, '酒店名称'], [/Guest name/g, '入住人姓名'],
+  [/Check-in date/g, '入住日期'], [/Check-in days/g, '入住天数'],
+  [/Merchant order no\./g, '商户订单号'], [/Order time/g, '订单时间'], [/Order currency/g, '订单币种'],
+  [/Business category/g, '贸易类型大类'], [/Purpose of remittance/g, '汇款用途'],
+  [/Placement region/g, '投放地区'], [/Display times\/product quantity/g, '展示次数'],
+  [/Publisher ID\/seller ID/g, '发布商账号标识'], [/Resource name/g, '广告资源名称'],
+  [/Resource type\/advertising type/g, '广告资源类型/广告形式'], [/Resource URL/g, '广告资源链接'],
+  [/Platform name/g, '平台名称'], [/Logistics company name/g, '物流公司名称'],
+  [/Logistics tracking number/g, '物流追踪号'], [/Estimated shipping date/g, '预计发货时间'],
+  [/Shipped or not/g, '是否已发货'], [/Destination country/g, '收货国家或地区'],
+  [/Order currency\/feeType/g, '订单币种'], [/Order amount\/totalFee/g, '订单金额'], [/Order time\/orderDate/g, '订单时间'],
+  [/Collapse /g, '收起 '], [/Expand /g, '展开 '], [/ template…/g, '模板…'],
   [/Download and prepare the standard CSV template before uploading\./g, '上传前请下载并填写标准 CSV 模板。'], [/ERP CSV requirements/g, 'ERP 文件要求'],
   [/Upload transaction records/g, '上传交易记录'], [/Select a trade document or an ERP export to begin\./g, '选择贸易单据或 ERP 导出文件后开始。'], [/Select trade documents, a template CSV, or an ERP export to begin\./g, '选择贸易单据、模板 CSV 或 ERP 导出文件后开始。'],
   [/Select file type/g, '选择文件类型'], [/Upload & review/g, '上传并检查'], [/Confirm Selection/g, '确认选择'], [/Confirm/g, '确认'], [/Previous/g, '上一步'], [/Next/g, '下一步'], [/Submit/g, '提交'], [/Cancel/g, '取消'], [/Replace/g, '替换'], [/Upload file/g, '上传文件'],
