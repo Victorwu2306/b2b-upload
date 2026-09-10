@@ -2518,156 +2518,156 @@ const DOCUMENT_REQUIRED_DETAILS = {
     { name:'store_name', label:'Store name', labelCN:'店铺名称', desc:'The name of your store on the ecommerce marketplace.', descCN:'店铺在电商平台上的名称。', example:'MyStore' },
     { name:'store_url', label:'Store URL', labelCN:'店铺网址', desc:'The URL of your store on the marketplace.', descCN:'店铺在电商平台上的网址。', example:'https://www.amazon.com/shops/mystore' },
     { name:'order_id', label:'Order ID', labelCN:'订单编号', desc:'The order number in the marketplace.', descCN:'电商平台中的订单号。', example:'ORD-10245' },
-    { name:'order_date', label:'Order date', labelCN:'订单日期', desc:'Use YYYYMMDD or YYYY-MM-DD, including leading zeros. The date must be within the past 365 days.', descCN:'使用 YYYYMMDD 或 YYYY-MM-DD 格式，保留开头的 0。日期必须在过去 365 天内。', example:'2026-07-15' },
-    { name:'item_id', label:'Item ID', labelCN:'商品编号', desc:'The goods item number in the marketplace.', descCN:'电商平台中的商品编号。', example:'B0C8K2H1XQ' },
-    { name:'item_name', label:'Item name', labelCN:'商品名称', desc:'The goods item name in the marketplace.', descCN:'电商平台中的商品名称。', example:'Wireless Adapter' },
-    { name:'sku', label:'SKU', labelCN:'SKU', desc:'The stock keeping unit identifier.', descCN:'库存单位标识。', example:'WA-4829-BLK' },
-    { name:'category', label:'Category', labelCN:'类别', desc:'The category of the goods.', descCN:'商品类别。', example:'Electronics' },
+    { name:'order_date', label:'Order date', labelCN:'订单日期', desc:'The date of the order. Use YYYYMMDD or YYYY-MM-DD, including leading zeros. The date must be within the past 365 days.', descCN:'订单日期。使用 YYYYMMDD 或 YYYY-MM-DD 格式，并保留开头的 0。日期必须在过去 365 天内。', example:'2026-07-15' },
+    { name:'item_id', label:'Item ID', labelCN:'商品编号', desc:'The item number in the marketplace.', descCN:'电商平台中的商品编号。', example:'B0C8K2H1XQ' },
+    { name:'item_name', label:'Item name', labelCN:'商品名称', desc:'The item name in the marketplace.', descCN:'电商平台中的商品名称。', example:'Wireless Adapter' },
+    { name:'sku', label:'SKU', labelCN:'SKU', desc:'The SKU for this item.', descCN:'此商品的 SKU。', example:'WA-4829-BLK' },
+    { name:'category', label:'Category', labelCN:'类别', desc:'The product category, for example Electronics.', descCN:'商品类别，例如电子产品。', example:'Electronics' },
     { name:'quantity', label:'Quantity', labelCN:'数量', desc:'The number of units in the order. Use digits only, for example 1500, not 1,500.', descCN:'订单中的商品数量。仅使用数字，例如 1500，不要填写 1,500。', example:'2' },
     { name:'price', label:'Price', labelCN:'价格', desc:'The unit price. The total price of all units must be less than the equivalent of USD 50,000. Use digits only.', descCN:'商品单价。所有商品总价必须低于 USD 50,000 等值金额。仅使用数字。', example:'12.50' },
-    { name:'currency', label:'Currency', labelCN:'币种', desc:'Use the 3-letter currency code, for example USD, EUR, or GBP.', descCN:'使用 3 位货币代码，例如 USD、EUR 或 GBP。', example:'USD' },
+    { name:'currency', label:'Currency', labelCN:'币种', desc:'The order currency. Use a 3-letter code, for example USD, EUR, or GBP.', descCN:'订单币种。使用 3 位字母代码，例如 USD、EUR 或 GBP。', example:'USD' },
     { name:'logistics_company', label:'Logistics company (optional)', labelCN:'物流公司（选填）', desc:'The name of the logistics company that delivered the order.', descCN:'承运此订单的物流公司名称。', example:'Maersk Line' },
     { name:'logistics_number', label:'Logistics number (optional)', labelCN:'物流单号（选填）', desc:'The tracking number from the logistics provider.', descCN:'物流服务商提供的运单号。', example:'MSKU7834521' },
   ],
   goods: [
-    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易方式/交易编码', desc:'Language: UI language. User selects their category from DL.', descCN:'语言要求：界面语言。用户从下拉列表中选择类别。', example:'B2B' },
-    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Language: UI language. User selects their category from DL.', descCN:'语言要求：界面语言。用户从下拉列表中选择类别。', example:'Goods' },
-    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单编号', desc:'Unique order ID traceable to original platform.', descCN:'可追溯至原平台的唯一订单号。', example:'PO-2026-07-0892' },
-    { name:'buyer_payer_name', label:'Buyer\'s English name/payer name', labelCN:'买家名称', desc:'Language: Latin letter. Payer name matches with buyer name.', descCN:'语言要求：拉丁字母。付款人姓名须与买家名称一致。', example:'Shenzhen Global Trade Co., Ltd.' },
-    { name:'destination_country', label:'Destination country', labelCN:'收货国家或地区', desc:'Language: UI language.', descCN:'语言要求：界面语言。', example:'China' },
-    { name:'order_time', label:'Order time', labelCN:'订单签约时间/发票时间', desc:'Contract date.', descCN:'签约日期。', example:'2026-07-15' },
-    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'Language: UI language. Three-digit code.', descCN:'语言要求：界面语言。三位代码。', example:'USD' },
-    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'Validate against PI/CI/contract.', descCN:'与形式发票/商业发票/合同核对。', example:'48,500.00' },
-    { name:'platform_website_name', label:'E-commerce platform name/business website name', labelCN:'店铺网站名称', desc:'Language: ENG. To parse from URL.', descCN:'语言要求：英文。从网址解析。', example:'Amazon' },
-    { name:'business_url', label:'Business URL', labelCN:'业务/店铺链接', desc:'', descCN:'', example:'https://www.amazon.com' },
-    { name:'product_name', label:'Product name', labelCN:'产品中文名称', desc:'Language: Chinese. Transcribe to Chinese. Use "|" between product names.', descCN:'语言要求：中文。转写为中文，多个产品名称之间用 “|” 分隔。', example:'电子元件|包装材料|工业连接器' },
-    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1,750' },
-    { name:'shipped_or_not', label:'Shipped or not', labelCN:'是否已发货?', desc:'', descCN:'', example:'Yes' },
-    { name:'logistics_company_name', label:'Logistics company name', labelCN:'物流公司名称', desc:'Language: original language. Required when shipped.', descCN:'语言要求：原文。已发货时必填。', example:'Maersk Line' },
-    { name:'logistics_tracking_number', label:'Logistics tracking number', labelCN:'物流追踪号', desc:'Require 1/max 6, when shipped.', descCN:'已发货时必填，需 1 个物流追踪号，最多 6 个。', example:'MSKU7834521' },
-    { name:'estimated_shipping_date', label:'Estimated shipping date', labelCN:'人民币订单的预计发货时间', desc:'Required when not shipped.', descCN:'未发货时必填。', example:'2026-08-15' },
+    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易方式/交易编码', desc:'Select the transaction mode for this order, for example B2B.', descCN:'选择此订单的交易方式，例如 B2B。', example:'B2B' },
+    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Select the trade type that matches this document.', descCN:'选择与此单据匹配的贸易类型。', example:'Goods' },
+    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单编号', desc:'The unique order number from the original platform or contract, so we can trace the transaction.', descCN:'原平台或合同上的唯一订单号，便于追溯该笔交易。', example:'PO-2026-07-0892' },
+    { name:'buyer_payer_name', label:'Buyer\'s English name/payer name', labelCN:'买家名称', desc:'The buyer or payer name. It must match the name on the payment, and be written in Latin letters.', descCN:'买家或付款人名称。须与收款中的名称一致，并使用拉丁字母填写。', example:'Shenzhen Global Trade Co., Ltd.' },
+    { name:'destination_country', label:'Destination country', labelCN:'收货国家或地区', desc:'The country or region where the goods are delivered.', descCN:'货物送达的国家或地区。', example:'China' },
+    { name:'order_time', label:'Order time', labelCN:'订单签约时间/发票时间', desc:'The contract or invoice date.', descCN:'合同或发票上的日期。', example:'2026-07-15' },
+    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'The currency of the order. Use a 3-letter code, for example USD.', descCN:'订单币种。使用 3 位字母代码，例如 USD。', example:'USD' },
+    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'The order amount. It should match the amount on the PI, CI, or contract.', descCN:'订单金额。应与形式发票、商业发票或合同上的金额一致。', example:'48,500.00' },
+    { name:'platform_website_name', label:'E-commerce platform name/business website name', labelCN:'店铺网站名称', desc:'The marketplace or business website name, in English. We may also read this from the URL.', descCN:'电商平台或业务网站名称，请用英文填写。系统也可能从网址中识别。', example:'Amazon' },
+    { name:'business_url', label:'Business URL', labelCN:'业务/店铺链接', desc:'The URL of the store or business website.', descCN:'店铺或业务网站的网址。', example:'https://www.amazon.com' },
+    { name:'product_name', label:'Product name', labelCN:'产品中文名称', desc:'The product names in Chinese. If there is more than one product, separate the names with "|".', descCN:'产品的中文名称。如有多个产品，请用 “|” 分隔。', example:'电子元件|包装材料|工业连接器' },
+    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'The total number of product units in the order.', descCN:'订单中的产品总数量。', example:'1,750' },
+    { name:'shipped_or_not', label:'Shipped or not', labelCN:'是否已发货?', desc:'Whether the goods have been shipped.', descCN:'货物是否已发货。', example:'Yes' },
+    { name:'logistics_company_name', label:'Logistics company name', labelCN:'物流公司名称', desc:'The logistics company name as shown on the shipping documents. Use the original language from those documents. Required when shipped.', descCN:'物流公司名称，请按运输单据上的原文填写。已发货时必填。', example:'Maersk Line' },
+    { name:'logistics_tracking_number', label:'Logistics tracking number', labelCN:'物流追踪号', desc:'The tracking number from the logistics provider. Enter 1 number, and up to 6. Required when shipped.', descCN:'物流服务商提供的运单号。请填写 1 个追踪号，最多 6 个。已发货时必填。', example:'MSKU7834521' },
+    { name:'estimated_shipping_date', label:'Estimated shipping date', labelCN:'人民币订单的预计发货时间', desc:'The expected shipping date. Required when not shipped.', descCN:'预计发货日期。未发货时必填。', example:'2026-08-15' },
   ],
   software: [
-    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
-    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'', descCN:'', example:'SW-2026-0142' },
-    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217.', descCN:'语言要求：英文三字码（ISO 4217）。', example:'USD' },
-    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'', descCN:'', example:'48,500.00' },
-    { name:'order_time', label:'Order time', labelCN:'订单签约时间/发票时间', desc:'Signing date / invoice date.', descCN:'签约日期/发票日期。', example:'2026-07-15' },
-    { name:'payer_name', label:'Payer name', labelCN:'付款人姓名', desc:'', descCN:'', example:'Chen Wei' },
-    { name:'software_category', label:'Software category', labelCN:'软件类别', desc:'', descCN:'', example:'Productivity' },
-    { name:'software_identifier', label:'Software identifier', labelCN:'软件标识符', desc:'', descCN:'', example:'com.adobe.creativecloud' },
-    { name:'software_name', label:'Software name', labelCN:'软件名称', desc:'', descCN:'', example:'Adobe Creative Cloud' },
-    { name:'launch_date', label:'Launch date', labelCN:'发布日期', desc:'', descCN:'', example:'2026-07-01' },
-    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'', descCN:'', example:'25' },
-    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'', descCN:'', example:'Software' },
-    { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'', descCN:'', example:'https://www.adobe.com' },
-    { name:'platform_order_no', label:'Platform order no./app store order no.', labelCN:'平台或应用商店订单号', desc:'App store order No.', descCN:'应用商店订单号。', example:'APP-STORE-88421' },
-    { name:'software_provider', label:'Software provider', labelCN:'软件提供方', desc:'Developer name on the app store or software listing.', descCN:'应用商店或软件列表上的开发者名称。', example:'Adobe Inc.' },
+    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'Select the transaction mode, for example B2C, D2C, or B2B.', descCN:'选择交易方式，例如 B2C、D2C 或 B2B。', example:'B2C' },
+    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'The unique order number from your system or the app store.', descCN:'您的系统或应用商店中的唯一订单号。', example:'SW-2026-0142' },
+    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'The currency of the order. Use a 3-letter code, for example USD.', descCN:'订单币种。使用 3 位字母代码，例如 USD。', example:'USD' },
+    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'The total amount of the order.', descCN:'订单总金额。', example:'48,500.00' },
+    { name:'order_time', label:'Order time', labelCN:'订单签约时间/发票时间', desc:'The signing date or invoice date.', descCN:'签约日期或发票日期。', example:'2026-07-15' },
+    { name:'payer_name', label:'Payer name', labelCN:'付款人姓名', desc:'The name of the person or company that paid.', descCN:'付款的个人或公司名称。', example:'Chen Wei' },
+    { name:'software_category', label:'Software category', labelCN:'软件类别', desc:'The category of the software, for example Productivity.', descCN:'软件类别，例如效率工具。', example:'Productivity' },
+    { name:'software_identifier', label:'Software identifier', labelCN:'软件标识符', desc:'The software ID, such as the app bundle ID or product code.', descCN:'软件标识，例如应用 Bundle ID 或产品代码。', example:'com.adobe.creativecloud' },
+    { name:'software_name', label:'Software name', labelCN:'软件名称', desc:'The name of the software product.', descCN:'软件产品名称。', example:'Adobe Creative Cloud' },
+    { name:'launch_date', label:'Launch date', labelCN:'发布日期', desc:'The date this software or version was released.', descCN:'该软件或版本的发布日期。', example:'2026-07-01' },
+    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'The number of licenses or seats in this order.', descCN:'此订单中的许可数或席位数。', example:'25' },
+    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Select Software as the trade type.', descCN:'贸易类型请选择软件服务。', example:'Software' },
+    { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'The URL of the software product or developer website.', descCN:'软件产品或开发者网站的网址。', example:'https://www.adobe.com' },
+    { name:'platform_order_no', label:'Platform order no./app store order no.', labelCN:'平台或应用商店订单号', desc:'The order number from the app store or sales platform.', descCN:'应用商店或销售平台上的订单号。', example:'APP-STORE-88421' },
+    { name:'software_provider', label:'Software provider', labelCN:'软件提供方', desc:'The developer or publisher name as shown on the app store or software listing.', descCN:'应用商店或软件列表上显示的开发者或发行方名称。', example:'Adobe Inc.' },
   ],
   'international-logistics': [
-    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易方式/交易编码', desc:'Language: UI language. User selects their category from DL.', descCN:'语言要求：界面语言。用户从下拉列表中选择类别。', example:'B2B' },
-    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Language: UI language. User selects their category from DL.', descCN:'语言要求：界面语言。用户从下拉列表中选择类别。', example:'International logistics' },
-    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单编号', desc:'Unique order ID traceable to original platform.', descCN:'可追溯至原平台的唯一订单号。', example:'PO-2026-07-0892' },
-    { name:'buyer_payer_name', label:'Buyer\'s English name/payer name', labelCN:'买家名称', desc:'Language: Latin letter. Payer name matches with buyer name.', descCN:'语言要求：拉丁字母。付款人姓名须与买家名称一致。', example:'Shenzhen Global Trade Co., Ltd.' },
-    { name:'destination_country', label:'Destination country', labelCN:'收货国家或地区', desc:'Language: UI language.', descCN:'语言要求：界面语言。', example:'China' },
-    { name:'order_time', label:'Order time', labelCN:'订单签约时间/发票时间', desc:'Contract date.', descCN:'签约日期。', example:'2026-07-15' },
-    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'Language: UI language. Three-digit code.', descCN:'语言要求：界面语言。三位代码。', example:'USD' },
-    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'Validate against PI/CI/contract.', descCN:'与形式发票/商业发票/合同核对。', example:'48,500.00' },
-    { name:'platform_website_name', label:'E-commerce platform name/business website name', labelCN:'店铺网站名称', desc:'Language: ENG. To parse from URL.', descCN:'语言要求：英文。从网址解析。', example:'Amazon' },
-    { name:'business_url', label:'Business URL', labelCN:'业务/店铺链接', desc:'', descCN:'', example:'https://www.amazon.com' },
-    { name:'product_name', label:'Product name', labelCN:'产品中文名称', desc:'Language: Chinese. Transcribe to Chinese. Use "|" between product names.', descCN:'语言要求：中文。转写为中文，多个产品名称之间用 “|” 分隔。', example:'电子元件|包装材料|工业连接器' },
-    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1,750' },
-    { name:'shipped_or_not', label:'Shipped or not', labelCN:'是否已发货?', desc:'', descCN:'', example:'Yes' },
-    { name:'logistics_company_name', label:'Logistics company name', labelCN:'物流公司名称', desc:'Language: original language. Required when shipped.', descCN:'语言要求：原文。已发货时必填。', example:'Maersk Line' },
-    { name:'logistics_tracking_number', label:'Logistics tracking number', labelCN:'物流追踪号', desc:'Require 1/max 6, when shipped.', descCN:'已发货时必填，需 1 个物流追踪号，最多 6 个。', example:'MSKU7834521' },
-    { name:'estimated_shipping_date', label:'Estimated shipping date', labelCN:'人民币订单的预计发货时间', desc:'Required when not shipped.', descCN:'未发货时必填。', example:'2026-08-15' },
+    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易方式/交易编码', desc:'Select the transaction mode for this order, for example B2B.', descCN:'选择此订单的交易方式，例如 B2B。', example:'B2B' },
+    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Select International logistics as the trade type.', descCN:'贸易类型请选择国际物流。', example:'International logistics' },
+    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单编号', desc:'The unique order number from the original platform or contract, so we can trace the transaction.', descCN:'原平台或合同上的唯一订单号，便于追溯该笔交易。', example:'PO-2026-07-0892' },
+    { name:'buyer_payer_name', label:'Buyer\'s English name/payer name', labelCN:'买家名称', desc:'The buyer or payer name. It must match the name on the payment, and be written in Latin letters.', descCN:'买家或付款人名称。须与收款中的名称一致，并使用拉丁字母填写。', example:'Shenzhen Global Trade Co., Ltd.' },
+    { name:'destination_country', label:'Destination country', labelCN:'收货国家或地区', desc:'The country or region where the shipment is delivered.', descCN:'货物送达的国家或地区。', example:'China' },
+    { name:'order_time', label:'Order time', labelCN:'订单签约时间/发票时间', desc:'The contract or invoice date.', descCN:'合同或发票上的日期。', example:'2026-07-15' },
+    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'The currency of the order. Use a 3-letter code, for example USD.', descCN:'订单币种。使用 3 位字母代码，例如 USD。', example:'USD' },
+    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'The order amount. It should match the amount on the PI, CI, or contract.', descCN:'订单金额。应与形式发票、商业发票或合同上的金额一致。', example:'48,500.00' },
+    { name:'platform_website_name', label:'E-commerce platform name/business website name', labelCN:'店铺网站名称', desc:'The marketplace or business website name, in English. We may also read this from the URL.', descCN:'电商平台或业务网站名称，请用英文填写。系统也可能从网址中识别。', example:'Amazon' },
+    { name:'business_url', label:'Business URL', labelCN:'业务/店铺链接', desc:'The URL of the store or business website.', descCN:'店铺或业务网站的网址。', example:'https://www.amazon.com' },
+    { name:'product_name', label:'Product name', labelCN:'产品中文名称', desc:'The product names in Chinese. If there is more than one product, separate the names with "|".', descCN:'产品的中文名称。如有多个产品，请用 “|” 分隔。', example:'电子元件|包装材料|工业连接器' },
+    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'The total number of product units in the order.', descCN:'订单中的产品总数量。', example:'1,750' },
+    { name:'shipped_or_not', label:'Shipped or not', labelCN:'是否已发货?', desc:'Whether the goods have been shipped.', descCN:'货物是否已发货。', example:'Yes' },
+    { name:'logistics_company_name', label:'Logistics company name', labelCN:'物流公司名称', desc:'The logistics company name as shown on the shipping documents. Use the original language from those documents. Required when shipped.', descCN:'物流公司名称，请按运输单据上的原文填写。已发货时必填。', example:'Maersk Line' },
+    { name:'logistics_tracking_number', label:'Logistics tracking number', labelCN:'物流追踪号', desc:'The tracking number from the logistics provider. Enter 1 number, and up to 6. Required when shipped.', descCN:'物流服务商提供的运单号。请填写 1 个追踪号，最多 6 个。已发货时必填。', example:'MSKU7834521' },
+    { name:'estimated_shipping_date', label:'Estimated shipping date', labelCN:'人民币订单的预计发货时间', desc:'The expected shipping date. Required when not shipped.', descCN:'预计发货日期。未发货时必填。', example:'2026-08-15' },
   ],
   advertisement: [
-    { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
-    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2B' },
-    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Advertisement.', descCN:'广告。', example:'Advertisement' },
-    { name:'purpose_of_remittance', label:'Purpose of remittance', labelCN:'汇款用途', desc:'Advertisement (code 228024).', descCN:'广告（编码 228024）。', example:'Advertisement (code 228024)' },
-    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'YP: order ID + Product ID + Sub-order ID.', descCN:'YP：订单号 + 产品号 + 子订单号。', example:'YP-20260715-AD-001' },
-    { name:'order_time', label:'Order time', labelCN:'订单签约时间/发票时间', desc:'', descCN:'', example:'2026-07-15' },
-    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'', descCN:'', example:'48,500.00' },
-    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217. Currency of the revenue.', descCN:'语言要求：英文三字码（ISO 4217）。收款币种。', example:'USD' },
-    { name:'advertising_brand', label:'Advertising brand/product name', labelCN:'广告品牌', desc:'', descCN:'', example:'Nike' },
-    { name:'placement_region', label:'Placement region', labelCN:'投放地区', desc:'', descCN:'', example:'Southeast Asia' },
-    { name:'display_times', label:'Display times/product quantity', labelCN:'展示次数', desc:'', descCN:'', example:'1,250,000' },
-    { name:'platform_name', label:'Platform name', labelCN:'广告平台名称', desc:'Overseas AD platform name. Platform names can be inferred from order number prefixes/patterns; otherwise, Payo must indicate the platform name in the data row.', descCN:'境外广告平台名称。可根据订单号前缀或规则推断；否则须在数据行中标明平台名称。', example:'Google Ads' },
-    { name:'publisher_id', label:'Publisher ID/seller ID', labelCN:'发布商账号标识', desc:'Publisher’s account identifier on the AD platform, used to identify the payer entity.', descCN:'广告平台上的发布商账号标识，用于识别付款主体。', example:'pub-482910573' },
-    { name:'resource_name', label:'Resource name', labelCN:'广告资源名称', desc:'Display name of the resource (AD unit), such as the app name or website name.', descCN:'广告资源（广告位）展示名称，如应用名称、网站名称。', example:'YouTube — Pre-roll' },
-    { name:'resource_type', label:'Resource type/advertising type', labelCN:'广告资源类型/广告形式', desc:'The format how the advertisement is displayed.', descCN:'广告展示形式。', example:'Video' },
-    { name:'resource_url', label:'Resource URL', labelCN:'广告资源链接', desc:'App Download URL / Website URL.', descCN:'应用下载链接 / 网站链接。', example:'https://youtube.com' },
-    { name:'payee_name', label:'Payee name', labelCN:'境内持卡收款人中文名', desc:'Language: Chinese. Chinese name of the domestic cardholder payee.', descCN:'语言要求：中文。境内持卡收款人中文名。', example:'张伟' },
+    { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Select Goods or Service. For advertising, this is Service.', descCN:'选择货物或服务。广告业务请选择服务。', example:'Service' },
+    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'Select the transaction mode, for example B2B.', descCN:'选择交易方式，例如 B2B。', example:'B2B' },
+    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Select Advertisement as the trade type.', descCN:'贸易类型请选择广告服务。', example:'Advertisement' },
+    { name:'purpose_of_remittance', label:'Purpose of remittance', labelCN:'汇款用途', desc:'Enter Advertisement as the remittance purpose (code 228024).', descCN:'汇款用途请填写广告（编码 228024）。', example:'Advertisement (code 228024)' },
+    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'The unique order number from the advertising platform. Include the order ID, product ID, and sub-order ID.', descCN:'广告平台上的唯一订单号。请同时包含订单号、产品号和子订单号。', example:'YP-20260715-AD-001' },
+    { name:'order_time', label:'Order time', labelCN:'订单签约时间/发票时间', desc:'The signing date or invoice date.', descCN:'签约日期或发票日期。', example:'2026-07-15' },
+    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'The total amount of the advertising order.', descCN:'广告订单的总金额。', example:'48,500.00' },
+    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'The currency of the advertising revenue. Use a 3-letter code, for example USD.', descCN:'广告收入的币种。使用 3 位字母代码，例如 USD。', example:'USD' },
+    { name:'advertising_brand', label:'Advertising brand/product name', labelCN:'广告品牌', desc:'The advertised brand or product name.', descCN:'投放广告的品牌或产品名称。', example:'Nike' },
+    { name:'placement_region', label:'Placement region', labelCN:'投放地区', desc:'The region where the ads were shown.', descCN:'广告投放的地区。', example:'Southeast Asia' },
+    { name:'display_times', label:'Display times/product quantity', labelCN:'展示次数', desc:'The number of times the ad was displayed.', descCN:'广告的展示次数。', example:'1,250,000' },
+    { name:'platform_name', label:'Platform name', labelCN:'广告平台名称', desc:'The overseas advertising platform name, such as Google Ads. If we cannot tell the platform from the order number, include the platform name in the file.', descCN:'境外广告平台名称，例如 Google Ads。如无法从订单号判断平台，请在文件中写明平台名称。', example:'Google Ads' },
+    { name:'publisher_id', label:'Publisher ID/seller ID', labelCN:'发布商账号标识', desc:'The publisher or seller account ID on the advertising platform. This identifies who paid.', descCN:'广告平台上的发布商或卖家账号 ID，用于识别付款方。', example:'pub-482910573' },
+    { name:'resource_name', label:'Resource name', labelCN:'广告资源名称', desc:'The name of the ad placement, such as the app or website name.', descCN:'广告位名称，例如应用名称或网站名称。', example:'YouTube — Pre-roll' },
+    { name:'resource_type', label:'Resource type/advertising type', labelCN:'广告资源类型/广告形式', desc:'How the ad is displayed, for example Video or Banner.', descCN:'广告的展示形式，例如视频或横幅。', example:'Video' },
+    { name:'resource_url', label:'Resource URL', labelCN:'广告资源链接', desc:'The app download URL or the website URL where the ad ran.', descCN:'应用下载链接，或广告投放网站的网址。', example:'https://youtube.com' },
+    { name:'payee_name', label:'Payee name', labelCN:'境内持卡收款人中文名', desc:'The Chinese name of the domestic cardholder who received the funds. Enter this in Chinese.', descCN:'境内持卡收款人的中文姓名，请用中文填写。', example:'张伟' },
   ],
   communication: [
-    { name:'order_id', desc:'Unique invoice or service-order identifier', example:'CM-2026-2204' },
-    { name:'buyer_name', desc:'Company billed for the communication service', example:'Shenzhen Global Trade Co., Ltd.' },
-    { name:'service_description', desc:'Plan or service being billed', example:'Enterprise messaging and voice plan' },
-    { name:'service_period', desc:'Billing period for the service', example:'2026-07-01 – 2026-07-31' },
-    { name:'currency', desc:'3-letter ISO currency code', example:'USD' },
-    { name:'total_amount', desc:'Service fee for the period', example:'48500.00' },
-    { name:'transaction_date', desc:'Invoice date (YYYY-MM-DD)', example:'2026-07-15' },
+    { name:'order_id', label:'Order ID', labelCN:'订单编号', desc:'The unique invoice or service-order number.', descCN:'发票或服务订单的唯一编号。', example:'CM-2026-2204' },
+    { name:'buyer_name', label:'Buyer name', labelCN:'买方名称', desc:'The company billed for the communication service.', descCN:'通信服务的付费公司名称。', example:'Shenzhen Global Trade Co., Ltd.' },
+    { name:'service_description', label:'Service description', labelCN:'服务说明', desc:'The plan or service being billed.', descCN:'本次计费的套餐或服务内容。', example:'Enterprise messaging and voice plan' },
+    { name:'service_period', label:'Service period', labelCN:'服务期间', desc:'The billing period for the service.', descCN:'该服务的计费周期。', example:'2026-07-01 – 2026-07-31' },
+    { name:'currency', label:'Currency', labelCN:'币种', desc:'The billing currency. Use a 3-letter code, for example USD.', descCN:'计费币种。使用 3 位字母代码，例如 USD。', example:'USD' },
+    { name:'total_amount', label:'Total amount', labelCN:'总金额', desc:'The service fee for this billing period.', descCN:'该计费周期的服务费用。', example:'48500.00' },
+    { name:'transaction_date', label:'Transaction date', labelCN:'交易日期', desc:'The invoice date. Use YYYY-MM-DD.', descCN:'发票日期。请使用 YYYY-MM-DD 格式。', example:'2026-07-15' },
   ],
   'air-ticket': [
-    { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
-    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
-    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'', descCN:'', example:'TK-2026-7741' },
-    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217.', descCN:'语言要求：英文三字码（ISO 4217）。', example:'USD' },
-    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'', descCN:'', example:'2,180.00' },
-    { name:'order_time', label:'Order time', labelCN:'订单创建时间', desc:'', descCN:'', example:'2026-07-15' },
-    { name:'payer_name', label:'Payer name', labelCN:'付款人姓名', desc:'', descCN:'', example:'Chen Wei' },
-    { name:'flight_departure_country', label:'Flight departure country', labelCN:'航班出发地', desc:'', descCN:'', example:'China' },
-    { name:'flight_destination', label:'Flight destination', labelCN:'航班目的地', desc:'', descCN:'', example:'United States' },
-    { name:'number_of_passengers', label:'Number of passengers', labelCN:'乘客人数', desc:'', descCN:'', example:'1' },
-    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1' },
-    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'', descCN:'', example:'Air ticket' },
-    { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'', descCN:'', example:'https://www.ceair.com' },
-    { name:'departure_date', label:'Departure date', labelCN:'出发日期', desc:'Departure date.', descCN:'出发日期。', example:'2026-08-12' },
-    { name:'flight_number', label:'Flight number', labelCN:'航班号', desc:'Flight number.', descCN:'航班号。', example:'MU583' },
-    { name:'passenger_first_name', label:'Passenger first name', labelCN:'乘客名字', desc:'Given name (as shown on ID).', descCN:'证件上的名字（名）。', example:'Wei' },
-    { name:'passenger_id_type', label:'Passenger ID type', labelCN:'乘客身份证件类型', desc:'Passport / ID Card.', descCN:'护照 / 身份证。', example:'Passport' },
-    { name:'passenger_last_name', label:'Passenger last name', labelCN:'乘客姓氏', desc:'Surname (as shown on ID).', descCN:'证件上的姓氏。', example:'Zhang' },
-    { name:'ticket_number', label:'Ticket number', labelCN:'电子客票号', desc:'Electronic ticket number (required after ticketing).', descCN:'电子客票号（出票后必填）。', example:'781-1234567890' },
+    { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Select Goods or Service. For air tickets, this is Service.', descCN:'选择货物或服务。机票业务请选择服务。', example:'Service' },
+    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'Select the transaction mode, for example B2C.', descCN:'选择交易方式，例如 B2C。', example:'B2C' },
+    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'The unique booking or ticket order number.', descCN:'唯一的预订或出票订单号。', example:'TK-2026-7741' },
+    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'The currency of the order. Use a 3-letter code, for example USD.', descCN:'订单币种。使用 3 位字母代码，例如 USD。', example:'USD' },
+    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'The total amount of the ticket order.', descCN:'机票订单的总金额。', example:'2,180.00' },
+    { name:'order_time', label:'Order time', labelCN:'订单创建时间', desc:'The date the order was created.', descCN:'订单创建日期。', example:'2026-07-15' },
+    { name:'payer_name', label:'Payer name', labelCN:'付款人姓名', desc:'The name of the person or company that paid.', descCN:'付款的个人或公司名称。', example:'Chen Wei' },
+    { name:'flight_departure_country', label:'Flight departure country', labelCN:'航班出发地', desc:'The country the flight departs from.', descCN:'航班出发国家或地区。', example:'China' },
+    { name:'flight_destination', label:'Flight destination', labelCN:'航班目的地', desc:'The destination country of the flight.', descCN:'航班目的地国家或地区。', example:'United States' },
+    { name:'number_of_passengers', label:'Number of passengers', labelCN:'乘客人数', desc:'The number of passengers on this booking.', descCN:'此预订的乘客人数。', example:'1' },
+    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'The number of tickets in this order.', descCN:'此订单中的机票数量。', example:'1' },
+    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Select Air ticket as the trade type.', descCN:'贸易类型请选择机票。', example:'Air ticket' },
+    { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'The airline or booking website URL.', descCN:'航司或订票网站的网址。', example:'https://www.ceair.com' },
+    { name:'departure_date', label:'Departure date', labelCN:'出发日期', desc:'The flight departure date.', descCN:'航班航班出发日期。', example:'2026-08-12' },
+    { name:'flight_number', label:'Flight number', labelCN:'航班号', desc:'The flight number, for example MU583.', descCN:'航班号，例如 MU583。', example:'MU583' },
+    { name:'passenger_first_name', label:'Passenger first name', labelCN:'乘客名字', desc:'The passenger’s given name, as shown on their ID.', descCN:'乘客的名字（名），请与证件一致。', example:'Wei' },
+    { name:'passenger_id_type', label:'Passenger ID type', labelCN:'乘客身份证件类型', desc:'The ID type used for this passenger, for example passport or ID card.', descCN:'该乘客使用的证件类型，例如护照或身份证。', example:'Passport' },
+    { name:'passenger_last_name', label:'Passenger last name', labelCN:'乘客姓氏', desc:'The passenger’s surname, as shown on their ID.', descCN:'乘客的姓氏，请与证件一致。', example:'Zhang' },
+    { name:'ticket_number', label:'Ticket number', labelCN:'电子客票号', desc:'The electronic ticket number. Required after ticketing.', descCN:'电子客票号。出票后必填。', example:'781-1234567890' },
   ],
   accommodation: [
-    { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
-    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
-    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'', descCN:'', example:'HT-2026-5520' },
-    { name:'order_currency', label:'Order currency/feeType', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217.', descCN:'语言要求：英文三字码（ISO 4217）。', example:'USD' },
-    { name:'order_amount', label:'Order amount/totalFee', labelCN:'订单金额', desc:'', descCN:'', example:'1,680.00' },
-    { name:'order_time', label:'Order time/orderDate', labelCN:'订单签约时间/发票时间', desc:'Signing date / invoice date.', descCN:'签约日期/发票日期。', example:'2026-07-15' },
-    { name:'payer_name', label:'Payer name', labelCN:'付款人姓名', desc:'Payer’s name: individual name when custType is INDIVIDUAL, company name when custType is COMPANY.', descCN:'付款人姓名：客户类型为个人时填写个人姓名，为公司时填写公司名称。', example:'Chen Wei' },
-    { name:'hotel_city', label:'Hotel city', labelCN:'酒店所在城市', desc:'', descCN:'', example:'Shenzhen' },
-    { name:'hotel_name', label:'Hotel name', labelCN:'酒店名称', desc:'', descCN:'', example:'Park Hyatt Shenzhen' },
-    { name:'number_of_guests', label:'Number of guests', labelCN:'入住人数', desc:'', descCN:'', example:'2' },
-    { name:'guest_name', label:'Guest name', labelCN:'入住人姓名', desc:'', descCN:'', example:'Wei Zhang' },
-    { name:'check_in_date', label:'Check-in date', labelCN:'入住日期', desc:'', descCN:'', example:'2026-08-12' },
-    { name:'check_in_days', label:'Check-in days', labelCN:'入住天数', desc:'', descCN:'', example:'4' },
-    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'', descCN:'', example:'1' },
-    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'', descCN:'', example:'Accommodation' },
-    { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'', descCN:'', example:'https://www.hyatt.com' },
+    { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Select Goods or Service. For hotels, this is Service.', descCN:'选择货物或服务。酒店业务请选择服务。', example:'Service' },
+    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'Select the transaction mode, for example B2C.', descCN:'选择交易方式，例如 B2C。', example:'B2C' },
+    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'The unique hotel booking number.', descCN:'唯一的酒店预订号。', example:'HT-2026-5520' },
+    { name:'order_currency', label:'Order currency/feeType', labelCN:'订单币种', desc:'The currency of the order. Use a 3-letter code, for example USD.', descCN:'订单币种。使用 3 位字母代码，例如 USD。', example:'USD' },
+    { name:'order_amount', label:'Order amount/totalFee', labelCN:'订单金额', desc:'The total amount of the booking.', descCN:'预订的总金额。', example:'1,680.00' },
+    { name:'order_time', label:'Order time/orderDate', labelCN:'订单签约时间/发票时间', desc:'The signing date or invoice date.', descCN:'签约日期或发票日期。', example:'2026-07-15' },
+    { name:'payer_name', label:'Payer name', labelCN:'付款人姓名', desc:'The name of the person or company that paid. Use the individual name for personal bookings, or the company name for business bookings.', descCN:'付款的个人或公司名称。个人预订请填个人姓名，企业预订请填公司名称。', example:'Chen Wei' },
+    { name:'hotel_city', label:'Hotel city', labelCN:'酒店所在城市', desc:'The city where the hotel is located.', descCN:'酒店所在城市。', example:'Shenzhen' },
+    { name:'hotel_name', label:'Hotel name', labelCN:'酒店名称', desc:'The name of the hotel.', descCN:'酒店名称。', example:'Park Hyatt Shenzhen' },
+    { name:'number_of_guests', label:'Number of guests', labelCN:'入住人数', desc:'The number of guests on this booking.', descCN:'此预订的入住人数。', example:'2' },
+    { name:'guest_name', label:'Guest name', labelCN:'入住人姓名', desc:'The name of the guest staying at the hotel.', descCN:'入住人的姓名。', example:'Wei Zhang' },
+    { name:'check_in_date', label:'Check-in date', labelCN:'入住日期', desc:'The check-in date.', descCN:'入住日期。', example:'2026-08-12' },
+    { name:'check_in_days', label:'Check-in days', labelCN:'入住天数', desc:'The number of nights in the stay.', descCN:'入住晚数。', example:'4' },
+    { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'The number of rooms or bookings in this order.', descCN:'此订单中的房间数或预订数。', example:'1' },
+    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Select Accommodation as the trade type.', descCN:'贸易类型请选择住宿。', example:'Accommodation' },
+    { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'The hotel or booking website URL.', descCN:'酒店或预订网站的网址。', example:'https://www.hyatt.com' },
   ],
   tourism: [
-    { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Goods/Service.', descCN:'货物/服务。', example:'Service' },
-    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'B2C/D2C/B2B.', descCN:'B2C/D2C/B2B。', example:'B2C' },
-    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'', descCN:'', example:'Tourism' },
-    { name:'order_date', label:'Order date', labelCN:'下单日期时间', desc:'Date and time when the order was placed.', descCN:'下单日期和时间。', example:'2026-07-15 10:30' },
-    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'', descCN:'', example:'TR-2026-0198' },
-    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'Language: ENG. Three-letter code per ISO 4217. Currency of the platform order.', descCN:'语言要求：英文三字码（ISO 4217）。平台订单币种。', example:'USD' },
-    { name:'unit_price', label:'Unit price', labelCN:'单价', desc:'The price of the unit product.', descCN:'单位产品价格。', example:'3,200.00' },
-    { name:'product_quantity', label:'Product quantity', labelCN:'数量', desc:'Number of units purchased for this product.', descCN:'该产品的购买数量。', example:'2' },
-    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'', descCN:'', example:'6,400.00' },
-    { name:'payer_name', label:'Payer name', labelCN:'付款人姓名', desc:'', descCN:'', example:'Chen Wei' },
-    { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'', descCN:'', example:'https://www.booking.com' },
-    { name:'tourism_city', label:'Tourism city', labelCN:'旅游城市', desc:'', descCN:'', example:'Tokyo' },
-    { name:'booker_full_name', label:'Booker\'s Full Name', labelCN:'预订人全名', desc:'Full name of the person making the booking.', descCN:'预订人的全名。', example:'Chen Wei' },
-    { name:'number_of_guests', label:'Number of guests', labelCN:'游客人数', desc:'Total number of travellers covered by this booking.', descCN:'此订单覆盖的游客总人数。', example:'2' },
-    { name:'platform_name', label:'Platform name', labelCN:'平台名称', desc:'Language: original language. The official name of the overseas OTA platform.', descCN:'语言要求：原文。境外 OTA 平台官方名称。', example:'Booking.com' },
-    { name:'service_name', label:'Service name', labelCN:'服务名称', desc:'Clear description of the tourism service.', descCN:'旅游服务的明确描述。', example:'7-day Japan business travel package' },
-    { name:'service_end_date', label:'Service end date', labelCN:'服务结束日期', desc:'Scheduled end date of the service.', descCN:'服务的计划结束日期。', example:'2026-09-07' },
-    { name:'service_start_date', label:'Service start date', labelCN:'服务开始日期', desc:'Scheduled start date of the service.', descCN:'服务的计划开始日期。', example:'2026-09-01' },
+    { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Select Goods or Service. For tourism, this is Service.', descCN:'选择货物或服务。旅游业务请选择服务。', example:'Service' },
+    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'Select the transaction mode, for example B2C.', descCN:'选择交易方式，例如 B2C。', example:'B2C' },
+    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Select Tourism as the trade type.', descCN:'贸易类型请选择旅游服务。', example:'Tourism' },
+    { name:'order_date', label:'Order date', labelCN:'下单日期时间', desc:'The date and time the order was placed.', descCN:'下单的日期和时间。', example:'2026-07-15 10:30' },
+    { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'The unique booking number from the travel platform.', descCN:'旅游平台上的唯一预订号。', example:'TR-2026-0198' },
+    { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'The currency of the platform order. Use a 3-letter code, for example USD.', descCN:'平台订单的币种。使用 3 位字母代码，例如 USD。', example:'USD' },
+    { name:'unit_price', label:'Unit price', labelCN:'单价', desc:'The price of one unit of this service.', descCN:'该服务的单价。', example:'3,200.00' },
+    { name:'product_quantity', label:'Product quantity', labelCN:'数量', desc:'The number of units purchased.', descCN:'购买的数量。', example:'2' },
+    { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'The total amount of the booking.', descCN:'预订的总金额。', example:'6,400.00' },
+    { name:'payer_name', label:'Payer name', labelCN:'付款人姓名', desc:'The name of the person or company that paid.', descCN:'付款的个人或公司名称。', example:'Chen Wei' },
+    { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'The travel platform or booking website URL.', descCN:'旅游平台或预订网站的网址。', example:'https://www.booking.com' },
+    { name:'tourism_city', label:'Tourism city', labelCN:'旅游城市', desc:'The destination city of the trip.', descCN:'行程的目的地城市。', example:'Tokyo' },
+    { name:'booker_full_name', label:'Booker\'s Full Name', labelCN:'预订人全名', desc:'The full name of the person who made the booking.', descCN:'预订人的全名。', example:'Chen Wei' },
+    { name:'number_of_guests', label:'Number of guests', labelCN:'游客人数', desc:'The total number of travelers on this booking.', descCN:'此预订覆盖的游客总人数。', example:'2' },
+    { name:'platform_name', label:'Platform name', labelCN:'平台名称', desc:'The official name of the overseas travel platform, in its original language, for example Booking.com.', descCN:'境外旅游平台的官方名称，请按原文填写，例如 Booking.com。', example:'Booking.com' },
+    { name:'service_name', label:'Service name', labelCN:'服务名称', desc:'A clear description of the tourism service, for example a 7-day business travel package.', descCN:'旅游服务的明确描述，例如 7 日商务旅行套餐。', example:'7-day Japan business travel package' },
+    { name:'service_end_date', label:'Service end date', labelCN:'服务结束日期', desc:'The scheduled end date of the service.', descCN:'服务的计划结束日期。', example:'2026-09-07' },
+    { name:'service_start_date', label:'Service start date', labelCN:'服务开始日期', desc:'The scheduled start date of the service.', descCN:'服务的计划开始日期。', example:'2026-09-01' },
   ],
 };
 function documentRequiredDetails(typeKey) {
@@ -2703,34 +2703,54 @@ function splitDetailCopy(text, isCN) {
       lang = rest.replace(/^语言要求：/, '').replace(/。$/, '').trim();
       rest = '';
     }
-    const afterTicket = rest.match(/^(.*)（出票后必填）。?$/);
-    if (afterTicket) {
-      desc = afterTicket[1].replace(/[。\s]+$/, '').trim();
-      when = '出票后必填';
-    } else if (rest === '已发货时必填。' || rest === '已发货时必填') {
-      when = '已发货时必填';
-    } else if (rest === '未发货时必填。' || rest === '未发货时必填') {
-      when = '未发货时必填';
-    } else if (/^已发货时必填/.test(rest)) {
-      when = rest.replace(/。$/, '');
-    } else {
-      desc = rest;
+    const cnWhen = [
+      ['未发货时必填', '未发货时必填'],
+      ['已发货时必填', '已发货时必填'],
+      ['（出票后必填）', '出票后必填'],
+      ['出票后必填', '出票后必填'],
+    ];
+    for (let i = 0; i < cnWhen.length; i++) {
+      const suffix = cnWhen[i][0];
+      const label = cnWhen[i][1];
+      const dotted = suffix + '。';
+      if (rest === suffix || rest === dotted) {
+        when = label;
+        rest = '';
+        break;
+      }
+      if (rest.endsWith(dotted)) {
+        when = label;
+        rest = rest.slice(0, -dotted.length).replace(/[。\s]+$/, '');
+        break;
+      }
+      if (rest.endsWith(suffix)) {
+        when = label;
+        rest = rest.slice(0, -suffix.length).replace(/[。\s]+$/, '');
+        break;
+      }
     }
+    desc = rest;
   } else {
     const langMatch = rest.match(/^Language:\s*([^.]+)\.\s*([\s\S]*)$/);
     if (langMatch) {
       lang = langMatch[1].trim();
       rest = (langMatch[2] || '').trim();
     }
-    const afterTicket = rest.match(/^(.*?)\s*\(required after ticketing\)\.?$/i);
-    if (afterTicket) {
-      desc = afterTicket[1].trim().replace(/\.$/, '');
-      when = 'Required after ticketing';
-    } else if (/^Required when shipped\.?$/i.test(rest) || /^Required when not shipped\.?$/i.test(rest) || /^Require 1\/max 6, when shipped\.?$/i.test(rest) || /^Required when shipped\.\s*(Provide|Enter) 1 tracking number, up to 6\.?$/i.test(rest)) {
-      when = rest.replace(/\.$/, '');
-    } else {
-      desc = rest;
+    const enWhen = [
+      [/\s*\(required after ticketing\)\.?$/i, 'Required after ticketing'],
+      [/\s*Required after ticketing\.?$/i, 'Required after ticketing'],
+      [/\s*Required when not shipped\.?$/i, 'Required when not shipped'],
+      [/\s*Required when shipped\.?$/i, 'Required when shipped'],
+    ];
+    for (let i = 0; i < enWhen.length; i++) {
+      const match = rest.match(enWhen[i][0]);
+      if (match) {
+        when = enWhen[i][1];
+        rest = rest.slice(0, match.index).trim().replace(/[.\s]+$/, '');
+        break;
+      }
     }
+    desc = rest;
   }
   return { lang: lang, desc: desc, when: when };
 }
@@ -8155,7 +8175,7 @@ function tradeGoodsTable() {
           <div class="field">
             <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易方式/交易编码')} ${req}</label>
             <select disabled><option>B2C</option><option>D2C</option><option selected>B2B</option></select>
-            ${note('Language: UI language. User selects their category from DL.', '语言要求：界面语言。用户从下拉列表中选择类别。')}
+            ${note('Select the transaction mode for this order, for example B2B.', '选择此订单的交易方式，例如 B2B。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
@@ -8163,42 +8183,42 @@ function tradeGoodsTable() {
               <option ${isLogistics?'':'selected'}>Goods</option>
               <option ${isLogistics?'selected':''}>International logistics</option>
             </select>
-            ${note('Language: UI language. User selects their category from DL.', '语言要求：界面语言。用户从下拉列表中选择类别。')}
+            ${note('Select the trade type that matches this document.', '选择与此单据匹配的贸易类型。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Merchant order no.', '商户订单编号')} ${req}</label>
             <input class="mono" value="PO-2026-07-0892" readonly />
-            ${note('Unique order ID traceable to original platform.', '可追溯至原平台的唯一订单号。')}
+            ${note('The unique order number from the original platform or contract, so we can trace the transaction.', '原平台或合同上的唯一订单号，便于追溯该笔交易。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Buyer\'s English name/payer name', '买家名称')} ${req}</label>
             <input value="Shenzhen Global Trade Co., Ltd." readonly />
-            ${note('Language: Latin letter. Payer name matches with buyer name.', '语言要求：拉丁字母。付款人姓名须与买家名称一致。')}
+            ${note('The buyer or payer name. It must match the name on the payment, and be written in Latin letters.', '买家或付款人名称。须与收款中的名称一致，并使用拉丁字母填写。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Destination country', '收货国家或地区')} ${req}</label>
             <select disabled><option selected>China</option><option>United States</option><option>United Kingdom</option><option>Germany</option><option>Japan</option></select>
-            ${note('Language: UI language.', '语言要求：界面语言。')}
+            ${note('The country or region where the goods are delivered.', '货物送达的国家或地区。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order time', '订单签约时间/发票时间')} ${req}</label>
             <input type="date" value="2026-07-15" readonly />
-            ${note('Contract date.', '签约日期。')}
+            ${note('The contract or invoice date.', '合同或发票上的日期。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order currency', '订单币种')} ${req}</label>
             <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
-            ${note('Language: UI language. Three-digit code.', '语言要求：界面语言。三位代码。')}
+            ${note('The currency of the order. Use a 3-letter code, for example USD.', '订单币种。使用 3 位字母代码，例如 USD。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order amount', '订单金额')} ${req}</label>
             <input value="48,500.00" readonly />
-            ${note('Validate against PI/CI/contract.', '与形式发票/商业发票/合同核对。')}
+            ${note('The order amount. It should match the amount on the PI, CI, or contract.', '订单金额。应与形式发票、商业发票或合同上的金额一致。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('E-commerce platform name/business website name', '店铺网站名称')} ${req}</label>
             <input value="Amazon" readonly />
-            ${note('Language: ENG. To parse from URL.', '语言要求：英文。从网址解析。')}
+            ${note('The marketplace or business website name, in English. We may also read this from the URL.', '电商平台或业务网站名称，请用英文填写。系统也可能从网址中识别。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Business URL', '业务/店铺链接')} ${req}</label>
@@ -8214,7 +8234,7 @@ function tradeGoodsTable() {
           <div class="field full">
             <label>${tradeFieldLabel('Product name', '产品中文名称')} ${req}</label>
             <input value="${productName}" readonly />
-            ${note('Language: Chinese. Transcribe to Chinese. Use "|" between product names.', '语言要求：中文。转写为中文，多个产品名称之间用 “|” 分隔。')}
+            ${note('The product names in Chinese. If there is more than one product, separate the names with "|".', '产品的中文名称。如有多个产品，请用 “|” 分隔。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Product quantity', '产品数量')} ${req}</label>
@@ -8281,7 +8301,7 @@ function tradeAdvertisementBlock() {
           <div class="field">
             <label>Order currency ${req}</label>
             <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
-            ${tradeFieldNoteHtml('Language: ENG. Three-letter code per ISO 4217. Currency of the revenue.', '语言要求：英文三字码（ISO 4217）。收款币种。')}
+            ${tradeFieldNoteHtml('The currency of the advertising revenue. Use a 3-letter code, for example USD.', '广告收入的币种。使用 3 位字母代码，例如 USD。')}
           </div>
         </div>
       </div>
@@ -8339,7 +8359,7 @@ function tradeAdvertisementBlock() {
           <div class="field full">
             <label>Payee name ${req}</label>
             <input value="张伟" readonly />
-            ${tradeFieldNoteHtml('Language: Chinese. Chinese name of the domestic cardholder payee.', '语言要求：中文。境内持卡收款人中文名。')}
+            ${tradeFieldNoteHtml('The Chinese name of the domestic cardholder who received the funds. Enter this in Chinese.', '境内持卡收款人的中文姓名，请用中文填写。')}
           </div>
         </div>
       </div>
@@ -8358,12 +8378,12 @@ function tradeTourismBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Business category', '贸易类型大类')} ${req}</label>
             <select disabled><option>Goods</option><option selected>Service</option></select>
-            ${note('Goods/Service.', '货物/服务。')}
+            ${note('Select Goods or Service.', '选择货物或服务。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
             <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
-            ${note('B2C/D2C/B2B.', 'B2C/D2C/B2B。')}
+            ${note('Select the transaction mode, for example B2C, D2C, or B2B.', '选择交易方式，例如 B2C、D2C 或 B2B。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
@@ -8372,7 +8392,7 @@ function tradeTourismBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Order date', '下单日期时间')} ${req}</label>
             <input type="datetime-local" value="2026-07-15T10:30" readonly />
-            ${note('Date and time when the order was placed.', '下单日期和时间。')}
+            ${note('The date and time the order was placed.', '下单的日期和时间。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Merchant order no.', '商户订单号')} ${req}</label>
@@ -8381,7 +8401,7 @@ function tradeTourismBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Order currency', '订单币种')} ${req}</label>
             <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
-            ${note('Language: ENG. Three-letter code per ISO 4217. Currency of the platform order.', '语言要求：英文三字码（ISO 4217）。平台订单币种。')}
+            ${note('The currency of the platform order. Use a 3-letter code, for example USD.', '平台订单的币种。使用 3 位字母代码，例如 USD。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order amount', '订单金额')} ${req}</label>
@@ -8398,12 +8418,12 @@ function tradeTourismBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Number of guests', '游客人数')} ${req}</label>
             <input class="mono" value="2" readonly />
-            ${note('Total number of travellers covered by this booking.', '此订单覆盖的游客总人数。')}
+            ${note('The total number of travelers on this booking.', '此预订覆盖的游客总人数。')}
           </div>
           <div class="field full">
             <label>${tradeFieldLabel('Platform name', '平台名称')} ${req}</label>
             <input value="Booking.com" readonly />
-            ${note('Language: original language. The official name of the overseas OTA platform.', '语言要求：原文。境外 OTA 平台官方名称。')}
+            ${note('The official name of the overseas travel platform, in its original language, for example Booking.com.', '境外旅游平台的官方名称，请按原文填写，例如 Booking.com。')}
           </div>
         </div>
       </div>
@@ -8415,12 +8435,12 @@ function tradeTourismBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Unit price', '单价')} ${req}</label>
             <input value="3,200.00" readonly />
-            ${note('The price of the unit product.', '单位产品价格。')}
+            ${note('The price of one unit of this service.', '该服务的单价。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Product quantity', '数量')} ${req}</label>
             <input class="mono" value="2" readonly />
-            ${note('Number of units purchased for this product.', '该产品的购买数量。')}
+            ${note('The number of units purchased.', '购买的数量。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Tourism city', '旅游城市')} ${req}</label>
@@ -8429,17 +8449,17 @@ function tradeTourismBlock() {
           <div class="field full">
             <label>${tradeFieldLabel('Service name', '服务名称')} ${req}</label>
             <input value="7-day Japan business travel package" readonly />
-            ${note('Clear description of the tourism service.', '旅游服务的明确描述。')}
+            ${note('A clear description of the tourism service, for example a 7-day business travel package.', '旅游服务的明确描述，例如 7 日商务旅行套餐。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Service start date', '服务开始日期')} ${req}</label>
             <input type="date" value="2026-09-01" readonly />
-            ${note('Scheduled start date of the service.', '服务的计划开始日期。')}
+            ${note('The scheduled start date of the service.', '服务的计划开始日期。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Service end date', '服务结束日期')} ${req}</label>
             <input type="date" value="2026-09-07" readonly />
-            ${note('Scheduled end date of the service.', '服务的计划结束日期。')}
+            ${note('The scheduled end date of the service.', '服务的计划结束日期。')}
           </div>
         </div>
       </div>
@@ -8451,7 +8471,7 @@ function tradeTourismBlock() {
           <div class="field full">
             <label>${tradeFieldLabel("Booker's full name", '预订人全名')} ${req}</label>
             <input value="Chen Wei" readonly />
-            ${note('Full name of the person making the booking.', '预订人的全名。')}
+            ${note('The full name of the person who made the booking.', '预订人的全名。')}
           </div>
         </div>
       </div>
@@ -8470,7 +8490,7 @@ function tradeSoftwareBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
             <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
-            ${note('B2C/D2C/B2B.', 'B2C/D2C/B2B。')}
+            ${note('Select the transaction mode, for example B2C, D2C, or B2B.', '选择交易方式，例如 B2C、D2C 或 B2B。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
@@ -8483,12 +8503,12 @@ function tradeSoftwareBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Platform order no./app store order no.', '平台或应用商店订单号')} ${req}</label>
             <input class="mono" value="APP-STORE-88421" readonly />
-            ${note('App store order No.', '应用商店订单号。')}
+            ${note('The order number from the app store or sales platform.', '应用商店或销售平台上的订单号。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order time', '订单签约时间/发票时间')} ${req}</label>
             <input type="date" value="2026-07-15" readonly />
-            ${note('Signing date / invoice date.', '签约日期/发票日期。')}
+            ${note('The signing date or invoice date.', '签约日期或发票日期。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order amount', '订单金额')} ${req}</label>
@@ -8497,7 +8517,7 @@ function tradeSoftwareBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Order currency', '订单币种')} ${req}</label>
             <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
-            ${note('Language: ENG. Three-letter code per ISO 4217.', '语言要求：英文三字码（ISO 4217）。')}
+            ${note('The currency of the order. Use a 3-letter code, for example USD.', '订单币种。使用 3 位字母代码，例如 USD。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Payer name', '付款人姓名')} ${req}</label>
@@ -8551,7 +8571,7 @@ function tradeSoftwareBlock() {
           <div class="field full">
             <label>${tradeFieldLabel('Software provider', '软件提供方')} ${req}</label>
             <input value="Adobe Inc." readonly />
-            ${note('Developer name on the app store or software listing.', '应用商店或软件列表上的开发者名称。')}
+            ${note('The developer or publisher name as shown on the app store or software listing.', '应用商店或软件列表上显示的开发者或发行方名称。')}
           </div>
         </div>
       </div>
@@ -8570,12 +8590,12 @@ function tradeAirTicketBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Business category', '贸易类型大类')} ${req}</label>
             <select disabled><option>Goods</option><option selected>Service</option></select>
-            ${note('Goods/Service.', '货物/服务。')}
+            ${note('Select Goods or Service.', '选择货物或服务。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
             <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
-            ${note('B2C/D2C/B2B.', 'B2C/D2C/B2B。')}
+            ${note('Select the transaction mode, for example B2C, D2C, or B2B.', '选择交易方式，例如 B2C、D2C 或 B2B。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
@@ -8596,7 +8616,7 @@ function tradeAirTicketBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Order currency', '订单币种')} ${req}</label>
             <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
-            ${note('Language: ENG. Three-letter code per ISO 4217.', '语言要求：英文三字码（ISO 4217）。')}
+            ${note('The currency of the order. Use a 3-letter code, for example USD.', '订单币种。使用 3 位字母代码，例如 USD。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Payer name', '付款人姓名')} ${req}</label>
@@ -8632,12 +8652,12 @@ function tradeAirTicketBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Departure date', '出发日期')} ${req}</label>
             <input type="date" value="2026-08-12" readonly />
-            ${note('Departure date.', '出发日期。')}
+            ${note('The flight departure date.', '航班出发日期。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Flight number', '航班号')} ${req}</label>
             <input class="mono" value="MU583" readonly />
-            ${note('Flight number.', '航班号。')}
+            ${note('The flight number, for example MU583.', '航班号，例如 MU583。')}
           </div>
         </div>
       </div>
@@ -8649,17 +8669,17 @@ function tradeAirTicketBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Passenger first name', '乘客名字')} ${req}</label>
             <input value="Wei" readonly />
-            ${note('Given name (as shown on ID).', '证件上的名字（名）。')}
+            ${note('The passenger’s given name, as shown on their ID.', '乘客的名字（名），请与证件一致。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Passenger last name', '乘客姓氏')} ${req}</label>
             <input value="Zhang" readonly />
-            ${note('Surname (as shown on ID).', '证件上的姓氏。')}
+            ${note('The passenger’s surname, as shown on their ID.', '乘客的姓氏，请与证件一致。')}
           </div>
           <div class="field full">
             <label>${tradeFieldLabel('Passenger ID type', '乘客身份证件类型')} ${req}</label>
             <select disabled><option selected>Passport</option><option>ID Card</option></select>
-            ${note('Passport / ID Card.', '护照 / 身份证。')}
+            ${note('The ID type used for this passenger, for example passport or ID card.', '该乘客使用的证件类型，例如护照或身份证。')}
           </div>
         </div>
       </div>
@@ -8671,7 +8691,7 @@ function tradeAirTicketBlock() {
           <div class="field full">
             <label>${tradeFieldLabel('Ticket number', '电子客票号')} ${req}</label>
             <input class="mono" value="781-1234567890" readonly />
-            ${note('Electronic ticket number (required after ticketing).', '电子客票号（出票后必填）。')}
+            ${note('The electronic ticket number. Required after ticketing.', '电子客票号。出票后必填。')}
           </div>
         </div>
       </div>
@@ -8690,12 +8710,12 @@ function tradeAccommodationBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Business category', '贸易类型大类')} ${req}</label>
             <select disabled><option>Goods</option><option selected>Service</option></select>
-            ${note('Goods/Service.', '货物/服务。')}
+            ${note('Select Goods or Service.', '选择货物或服务。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
             <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
-            ${note('B2C/D2C/B2B.', 'B2C/D2C/B2B。')}
+            ${note('Select the transaction mode, for example B2C, D2C, or B2B.', '选择交易方式，例如 B2C、D2C 或 B2B。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Merchant order no.', '商户订单号')} ${req}</label>
@@ -8704,7 +8724,7 @@ function tradeAccommodationBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Order currency/feeType', '订单币种')} ${req}</label>
             <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
-            ${note('Language: ENG. Three-letter code per ISO 4217.', '语言要求：英文三字码（ISO 4217）。')}
+            ${note('The currency of the order. Use a 3-letter code, for example USD.', '订单币种。使用 3 位字母代码，例如 USD。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order amount/totalFee', '订单金额')} ${req}</label>
@@ -8713,12 +8733,12 @@ function tradeAccommodationBlock() {
           <div class="field">
             <label>${tradeFieldLabel('Order time/orderDate', '订单签约时间/发票时间')} ${req}</label>
             <input type="date" value="2026-07-15" readonly />
-            ${note('Signing date / invoice date.', '签约日期/发票日期。')}
+            ${note('The signing date or invoice date.', '签约日期或发票日期。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Payer name', '付款人姓名')} ${req}</label>
             <input value="Chen Wei" readonly />
-            ${note('Payer’s name: individual name when custType is INDIVIDUAL, company name when custType is COMPANY.', '付款人姓名：客户类型为个人时填写个人姓名，为公司时填写公司名称。')}
+            ${note('The name of the person or company that paid. Use the individual name for personal bookings, or the company name for business bookings.', '付款的个人或公司名称。个人预订请填个人姓名，企业预订请填公司名称。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Number of guests', '入住人数')} ${req}</label>
@@ -8917,7 +8937,7 @@ function tradeLogisticsBlock() {
           <div class="field">
             <label for="logistics-company-name">${tradeFieldLabel('Logistics company name', '物流公司名称')} ${req}</label>
             <input id="logistics-company-name" class="${companyInvalid?'invalid':''}" value="${w.logisticsCompany || ''}" oninput="if(state.wiz){state.wiz.logisticsCompany=this.value;state.wiz.logisticsCompanyAttempted=false}" />
-            ${note('Language: original language.', '语言要求：原文。')}
+            ${note('The logistics company name as shown on the shipping documents. Use the original language from those documents. Required when shipped.', '物流公司名称，请按运输单据上的原文填写。已发货时必填。')}
             ${companyInvalid?`<p class="field-error" style="display:block">${tradeFieldNote('Enter the logistics company name.', '请填写物流公司名称。')}</p>`:''}
           </div>
           <div class="field">
@@ -10688,17 +10708,16 @@ const CN_UI_REPLACEMENTS = [
   [/Publisher ID\/seller ID/g, '发布商账号标识'], [/Platform name/g, '广告平台名称'],
   [/Resource type\/advertising type/g, '广告资源类型/广告形式'], [/Resource name/g, '广告资源名称'], [/Resource URL/g, '广告资源链接'],
   [/Payee name/g, '境内持卡收款人中文名'], [/^\s*Payee\s*$/g, '收款人'], [/^\s*Service\s*$/g, '服务'],
-  [/Goods\/Service\./g, '货物/服务。'],
+  [/Goods\/Service\./g, '选择货物或服务。'],
   [/Advertisement \(code 228024\)\./g, '广告（编码 228024）。'],
-  [/YP: order ID \+ Product ID \+ Sub-order ID\./g, 'YP：订单号 + 产品号 + 子订单号。'],
-  [/Language: ENG\. Three-letter code per ISO 4217\. Currency of the revenue\./g, '语言要求：英文三字码（ISO 4217）。收款币种。'],
-  [/Overseas AD platform name\. Platform names can be inferred from order number prefixes\/patterns; otherwise, Payo must indicate the platform name in the data row\./g, '境外广告平台名称。可根据订单号前缀或规则推断；否则须在数据行中标明平台名称。'],
-  [/Publisher’s account identifier on the AD platform, used to identify the payer entity\./g, '广告平台上的发布商账号标识，用于识别付款主体。'],
-  [/Publisher's account identifier on the AD platform, used to identify the payer entity\./g, '广告平台上的发布商账号标识，用于识别付款主体。'],
-  [/Display name of the resource \(AD unit\), such as the app name or website name\./g, '广告资源（广告位）展示名称，如应用名称、网站名称。'],
-  [/The format how the advertisement is displayed\./g, '广告展示形式。'],
-  [/App Download URL \/ Website URL\./g, '应用下载链接 / 网站链接。'],
-  [/Language: Chinese\. Chinese name of the domestic cardholder payee\./g, '语言要求：中文。境内持卡收款人中文名。'],
+  [/The unique order number from the advertising platform\. Include the order ID, product ID, and sub-order ID\./g, '广告平台上的唯一订单号。请同时包含订单号、产品号和子订单号。'],
+  [/The currency of the advertising revenue\. Use a 3-letter code, for example USD\./g, '广告收入的币种。使用 3 位字母代码，例如 USD。'],
+  [/The overseas advertising platform name, such as Google Ads\. If we cannot tell the platform from the order number, include the platform name in the file\./g, '境外广告平台名称，例如 Google Ads。如无法从订单号判断平台，请在文件中写明平台名称。'],
+  [/The publisher or seller account ID on the advertising platform\. This identifies who paid\./g, '广告平台上的发布商或卖家账号 ID，用于识别付款方。'],
+  [/The name of the ad placement, such as the app or website name\./g, '广告位名称，例如应用名称或网站名称。'],
+  [/How the ad is displayed, for example Video or Banner\./g, '广告的展示形式，例如视频或横幅。'],
+  [/The app download URL or the website URL where the ad ran\./g, '应用下载链接，或广告投放网站的网址。'],
+  [/The Chinese name of the domestic cardholder who received the funds\. Enter this in Chinese\./g, '境内持卡收款人的中文姓名，请用中文填写。'],
   [/AI is extracting transaction and advertisement information\.?/g, '正在提取交易和广告信息。'],
   [/AI is extracting transaction and tourism information\.?/g, '正在提取交易和旅游信息。'],
   [/AI is extracting transaction and software information\.?/g, '正在提取交易和软件信息。'],
@@ -10708,8 +10727,8 @@ const CN_UI_REPLACEMENTS = [
   [/Hotel city/g, '酒店所在城市'], [/Check-in days/g, '入住天数'], [/Check-in date/g, '入住日期'],
   [/Number of guests/g, '入住人数'], [/Guest name/g, '入住人姓名'],
   [/Order currency\/feeType/g, '订单币种'], [/Order amount\/totalFee/g, '订单金额'], [/Order time\/orderDate/g, '订单签约时间/发票时间'],
-  [/Payer’s name: individual name when custType is INDIVIDUAL, company name when custType is COMPANY\./g, '付款人姓名：客户类型为个人时填写个人姓名，为公司时填写公司名称。'],
-  [/Signing date \/ invoice date\./g, '签约日期/发票日期。'],
+  [/The name of the person or company that paid\. Use the individual name for personal bookings, or the company name for business bookings\./g, '付款的个人或公司名称。个人预订请填个人姓名，企业预订请填公司名称。'],
+  [/Signing date \/ invoice date\./g, '签约日期或发票日期。'],
   [/Conditional:/g, '条件：'], [/^Conditional$/g, '条件必填'],
   [/Buyer'?s English Name\/Payer name/g, '买家名称'],
   [/Buyer's English name\/payer name/g, '买家名称'],
@@ -10717,22 +10736,22 @@ const CN_UI_REPLACEMENTS = [
   [/e-Commerce Platform name\/Business Website Name/g, '店铺网站名称'],
   [/PI\/CI upload/g, '发票合同上传'],
   [/Destination country/g, '收货国家或地区'],
-  [/Language: UI language\. User selects their category from DL\./g, '语言要求：界面语言。用户从下拉列表中选择类别。'],
-  [/Language: UI language\. Three-digit code\./g, '语言要求：界面语言。三位代码。'],
-  [/Language: UI language\./g, '语言要求：界面语言。'],
-  [/Language: Latin letter\. Payer name matches with buyer name\./g, '语言要求：拉丁字母。付款人姓名须与买家名称一致。'],
-  [/Language: ENG\. To parse from URL\./g, '语言要求：英文。从网址解析。'],
-  [/Unique order ID traceable to original platform\./g, '可追溯至原平台的唯一订单号。'],
-  [/Validate against PI\/CI\/contract\./g, '与形式发票/商业发票/合同核对。'],
+  [/Select the transaction mode for this order, for example B2B\./g, '选择此订单的交易方式，例如 B2B。'],
+  [/The currency of the order\. Use a 3-letter code, for example USD\./g, '订单币种。使用 3 位字母代码，例如 USD。'],
+  [/The country or region where the goods are delivered\./g, '货物送达的国家或地区。'],
+  [/The buyer or payer name\. It must match the name on the payment, and be written in Latin letters\./g, '买家或付款人名称。须与收款中的名称一致，并使用拉丁字母填写。'],
+  [/The marketplace or business website name, in English\. We may also read this from the URL\./g, '电商平台或业务网站名称，请用英文填写。系统也可能从网址中识别。'],
+  [/The unique order number from the original platform or contract, so we can trace the transaction\./g, '原平台或合同上的唯一订单号，便于追溯该笔交易。'],
+  [/The order amount\. It should match the amount on the PI, CI, or contract\./g, '订单金额。应与形式发票、商业发票或合同上的金额一致。'],
   [/Not UD, but we collect it for OCR\./g, '非申报数据，但会采集用于 OCR。'],
   [/Require 1\/max 6, when shipped\./g, '已发货时必填，需 1 个物流追踪号，最多 6 个。'],
-  [/Contract date\./g, '签约日期。'],
+  [/Contract date\./g, '合同或发票上的日期。'],
   [/^\s*Passport\s*$/g, '护照'], [/^\s*ID Card\s*$/g, '身份证'],
   [/Logistics information/g, '物流信息'], [/Shipped or not/g, '是否已发货?'], [/Has the order been shipped\?/g, '订单是否已发货？'], [/Select whether the order has been shipped to continue\./g, '请选择订单是否已发货后继续。'], [/Select a shipment status to continue\./g, '请选择发货状态后继续。'], [/Estimated shipping date/g, '人民币订单的预计发货时间'], [/Expected shipment date/g, '预计发货日期'], [/Enter the estimated shipping date before submitting\./g, '提交前请填写预计发货时间。'], [/Enter the expected shipment date before submitting\./g, '提交前请填写预计发货日期。'],
   [/^\s*Yes\s*$/g, '是'], [/^\s*No\s*$/g, '否'],
   [/Logistics company name/g, '物流公司名称'], [/Logistics tracking number/g, '物流追踪号'],
-  [/Language: Chinese\. Transcribe to Chinese\. Use "\|" between product names\./g, '语言要求：中文。转写为中文，多个产品名称之间用 “|” 分隔。'],
-  [/Language: original language\. Required when shipped\./g, '语言要求：原文。已发货时必填。'],
+  [/The product names in Chinese\. If there is more than one product, separate the names with "\|"\./g, '产品的中文名称。如有多个产品，请用 “|” 分隔。'],
+  [/The logistics company name as shown on the shipping documents\. Use the original language from those documents\. Required when shipped\./g, '物流公司名称，请按运输单据上的原文填写。已发货时必填。'],
   [/Required when shipped\. Enter 1 tracking number, up to 6\./g, '已发货时必填。请填写 1 个物流追踪号，最多 6 个。'],
   [/Required when not shipped\./g, '未发货时必填。'],
   [/Enter the logistics company name\./g, '请填写物流公司名称。'],
