@@ -3035,7 +3035,7 @@ const UPLOAD_METHODS = [
 
 const UPLOAD_HISTORY = [
   {
-    id:'uh1', uploadDate:'2026-07-28 14:32', fileName:'PI_Shenzhen_Global_July.pdf', fileType:'Trade documents', typeKey:'trade',
+    id:'uh1', uploadDate:'2026-07-28', fileName:'PI_Shenzhen_Global_July.pdf', fileDescription:'July PI for Shenzhen Global', fileType:'Trade documents', typeKey:'trade',
     status:'Processed', quotaAdded:350000, recordId:'1',
     message:'Trade documents submitted successfully.',
     tip:'Quota has been released for this order.',
@@ -3043,14 +3043,14 @@ const UPLOAD_HISTORY = [
     shipmentStatus:'Shipped', orderAmount:'USD 48,500.00', currency:'USD',
   },
   {
-    id:'uh2', uploadDate:'2026-07-28 10:15', fileName:'orders_export_2026_07.csv', fileType:'CSV from ERP', typeKey:'erp',
+    id:'uh2', uploadDate:'2026-07-28', fileName:'orders_export_2026_07.csv', fileDescription:'July 2026 ERP order export', fileType:'CSV from ERP', typeKey:'erp',
     status:'Processed', quotaAdded:348000, recordId:'erp-1',
     message:'ERP CSV processed successfully.',
     tip:'All records were mapped. Quota has been released based on accepted mapped rows.',
     totalRecords:48, mappedRecords:48, errors:0,
   },
   {
-    id:'uh3', uploadDate:'2026-07-22 16:48', fileName:'marketplace_etsy_sep.csv', fileType:'CSV from templates', typeKey:'template',
+    id:'uh3', uploadDate:'2026-07-22', fileName:'marketplace_etsy_sep.csv', fileDescription:'Etsy September marketplace orders', fileType:'CSV from templates', typeKey:'template',
     status:'Processed', quotaAdded:36000, recordId:'b2',
     marketplace:'Etsy', totalRows:78, acceptedRows:78, rejectedRows:0,
     message:'All rows accepted',
@@ -3058,7 +3058,7 @@ const UPLOAD_HISTORY = [
     canDownloadResult:true,
   },
   {
-    id:'uh4', uploadDate:'2026-07-18 09:05', fileName:'CI_Guangzhou_Apex_0603.pdf', fileType:'Trade documents', typeKey:'trade',
+    id:'uh4', uploadDate:'2026-07-18', fileName:'CI_Guangzhou_Apex_0603.pdf', fileDescription:'Guangzhou Apex June commercial invoice', fileType:'Trade documents', typeKey:'trade',
     status:'Processed', quotaAdded:525000, recordId:'3',
     message:'Trade documents submitted successfully.',
     tip:'This order is unshipped. Supplement logistics documents to complete verification.',
@@ -3066,14 +3066,14 @@ const UPLOAD_HISTORY = [
     shipmentStatus:'Unshipped', orderAmount:'USD 72,500.00', currency:'USD',
   },
   {
-    id:'uh5', uploadDate:'2026-07-15 11:20', fileName:'drop_ship_june_q2.csv', fileType:'CSV from ERP', typeKey:'erp',
+    id:'uh5', uploadDate:'2026-07-15', fileName:'drop_ship_june_q2.csv', fileDescription:'Q2 June drop shipping export', fileType:'CSV from ERP', typeKey:'erp',
     status:'Processed', quotaAdded:210000, recordId:'erp-2',
     message:'ERP CSV processed with minor mapping gaps.',
     tip:'3 rows could not be mapped. Download the file, fix those rows, and re-upload if you need the remaining quota.',
     totalRecords:32, mappedRecords:29, errors:3, needsReupload:true,
   },
   {
-    id:'uh6', uploadDate:'2026-07-10 13:40', fileName:'shopee_aug_template.csv', fileType:'CSV from templates', typeKey:'template',
+    id:'uh6', uploadDate:'2026-07-10', fileName:'shopee_aug_template.csv', fileDescription:'Shopee August template records', fileType:'CSV from templates', typeKey:'template',
     status:'Partially accepted', quotaAdded:22000, recordId:'b3',
     marketplace:'Shopee', totalRows:78, acceptedRows:66, rejectedRows:12,
     message:'66/78 rows accepted',
@@ -3081,14 +3081,14 @@ const UPLOAD_HISTORY = [
     canDownloadResult:true, needsReupload:true,
   },
   {
-    id:'uh7', uploadDate:'2026-06-30 08:12', fileName:'erp_bulk_2026_06.csv', fileType:'CSV from ERP', typeKey:'erp',
+    id:'uh7', uploadDate:'2026-06-30', fileName:'erp_bulk_2026_06.csv', fileDescription:'June 2026 ERP bulk export', fileType:'CSV from ERP', typeKey:'erp',
     status:'Failed', quotaAdded:0, recordId:'erp-3',
     message:'Upload failed — no records could be mapped.',
     tip:'This ERP CSV could not be processed. Fix required columns and re-upload to release quota.',
     totalRecords:16, mappedRecords:0, errors:16, needsReupload:true,
   },
   {
-    id:'uh8', uploadDate:'2026-06-28 15:55', fileName:'PO_Beijing_Nexus_0984.pdf', fileType:'Trade documents', typeKey:'trade',
+    id:'uh8', uploadDate:'2026-06-28', fileName:'PO_Beijing_Nexus_0984.pdf', fileDescription:'Beijing Nexus purchase order', fileType:'Trade documents', typeKey:'trade',
     status:'Processed', quotaAdded:1400000, recordId:'5',
     message:'Trade documents submitted successfully.',
     tip:'Quota for this order is fully used.',
@@ -3096,7 +3096,7 @@ const UPLOAD_HISTORY = [
     shipmentStatus:'Shipped', orderAmount:'USD 193,200.00', currency:'USD',
   },
   {
-    id:'uh9', uploadDate:'2026-06-05 10:00', fileName:'shein_template_aug.csv', fileType:'CSV from templates', typeKey:'template',
+    id:'uh9', uploadDate:'2026-06-05', fileName:'shein_template_aug.csv', fileDescription:'Shein August template records', fileType:'CSV from templates', typeKey:'template',
     status:'File issue', quotaAdded:0, recordId:'b4',
     marketplace:'Shein', totalRows:0, acceptedRows:0, rejectedRows:0,
     message:'Missing columns: Order ID, Quantity…',
@@ -3104,14 +3104,14 @@ const UPLOAD_HISTORY = [
     needsReupload:true,
   },
   {
-    id:'uh10', uploadDate:'2026-05-20 17:22', fileName:'orders_export_2026_05.csv', fileType:'CSV from ERP', typeKey:'erp',
+    id:'uh10', uploadDate:'2026-05-20', fileName:'orders_export_2026_05.csv', fileDescription:'May 2026 ERP order export', fileType:'CSV from ERP', typeKey:'erp',
     status:'Processing', quotaAdded:0, recordId:'erp-5', potentialQuota:128000,
     message:'File is being processed.',
     tip:'Processing usually completes within a few minutes. Refresh this page later to see the result.',
     totalRecords:11, mappedRecords:0, errors:0,
   },
   {
-    id:'uh11', uploadDate:'2026-07-25 09:18', fileName:'wayfair_jul_template.csv', fileType:'CSV from templates', typeKey:'template',
+    id:'uh11', uploadDate:'2026-07-25', fileName:'wayfair_jul_template.csv', fileDescription:'Wayfair July template records', fileType:'CSV from templates', typeKey:'template',
     status:'Under review', quotaAdded:0, recordId:'b1', potentialQuota:52000,
     marketplace:'Wayfair', totalRows:40, acceptedRows:0, rejectedRows:0,
     message:'Upload is under review.',
@@ -3231,6 +3231,7 @@ function resetWiz(kind) {
       marketplace:'', sellerId:'', validationAttempted:false, done:false,
       templateIssueRows:null, templateFixedRows:[], templateEditingRow:null,
       templateEditValue:'', templateEditError:'', templateTableEditing:false,
+      fileDescription:'', fileDescriptionAttempted:false,
     };
   }
   if (kind === 'trade') {
@@ -3253,11 +3254,14 @@ function resetWiz(kind) {
       logisticsTrackingAttempted: false,
       expectedShipDate: '',
       expectedShipDateAttempted: false,
+      fileDescription: '',
+      fileDescriptionAttempted: false,
     };
   }
   return {
     kind:'erp', step:2, dsState:'empty', skipLink:!LINK_PAYMENT_VISIBLE,
     linked:[], done:false, erpExample:false,
+    fileDescription:'', fileDescriptionAttempted:false,
     erpFlowVersion:'v2', erp2Stage:1,
     erp2HadUnrecognized:false, erp2SkippedConfirm:false, erp2ZeroMatchAlert:false, erpFileIssue:'', erp2SupplementState:'empty',
     erp2SupplementFileName:null, erp2SupplementError:false,
@@ -3504,10 +3508,11 @@ function uploadV2StepsForRoute(route,w) {
   if (route === 'template') return [{n:1,label:'Upload document'},{n:2,label:'Review'}];
   if (route === 'trade') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Review'}];
   if (route === 'erp') {
-    if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Review'}];
+    if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'File description'},{n:4,label:'Review'}];
     if (w && w.erpFlowVersion === 'v3') {
       const steps = [{n:1,label:'Upload document'},{n:2,label:'Confirm info'}];
       if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
+      steps.push({n:steps.length + 1,label:'File description'});
       steps.push({n:steps.length + 1,label:'Review'});
       return steps;
     }
@@ -3518,7 +3523,8 @@ function uploadV2StepsForRoute(route,w) {
     if (!(w && w.erp2SkippedConfirm)) steps.push({n:steps.length + 1,label:'Confirm info'});
     if (hasUnrecognized) steps.push({n:steps.length + 1,label:'Match remaining fields'});
     if (needsReplacement) steps.push({n:steps.length + 1,label:'Update and re-upload'});
-    steps.push({n:steps.length + 1,label:'Review'});
+    steps.push({n:steps.length + 1,label:'File description'});
+      steps.push({n:steps.length + 1,label:'Review'});
     return steps;
   }
   return [{n:1,label:'Upload document'}];
@@ -3531,15 +3537,17 @@ function uploadV2ERPDisplayStep(w) {
     if (stage <= 1) label = 'Upload document';
     else if (stage === 2) label = 'Confirm info';
     else if (stage === 3 && w.erp3NeedsReplacement) label = 'Update and re-upload';
+    else if (stage === 4) label = 'File description';
     else label = 'Review';
   } else if (w && w.erpFlowVersion === 'v1') {
-    label = w.step === 4 ? 'Review' : 'Confirm info';
+    label = w.step === 4 ? 'Review' : w.step === 5 ? 'File description' : 'Confirm info';
   } else {
     const stage = (w && w.erp2Stage) || 1;
     if (stage <= 1) label = 'Upload document';
     else if (stage === 2) label = 'Confirm info';
     else if (stage === 3) label = 'Match remaining fields';
     else if (stage === 4) label = 'Update and re-upload';
+    else if (stage === 5) label = 'File description';
     else label = 'Review';
   }
   const idx = steps.findIndex(step => step.label === label);
@@ -4033,8 +4041,81 @@ function deleteUploadedLogisticsFile() {
 function nowStamp() {
   const d = new Date();
   const p = n => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
 }
+const FILE_DESCRIPTION_MAX = 200;
+function formatUploadTime(value) {
+  return String(value || '').replace(/\s+\d{1,2}:\d{2}(:\d{2})?$/, '');
+}
+function fileDescriptionValue(w) {
+  return String(w && w.fileDescription || '').trim();
+}
+function fileDescriptionComplete(w) {
+  return !!fileDescriptionValue(w);
+}
+function setFileDescription(value) {
+  const w = state.wiz; if (!w) return;
+  w.fileDescription = String(value || '').slice(0, FILE_DESCRIPTION_MAX);
+  if (fileDescriptionValue(w)) w.fileDescriptionAttempted = false;
+}
+function ensureFileDescription(opts) {
+  const w = state.wiz;
+  if (!w) return false;
+  if (fileDescriptionComplete(w)) {
+    w.fileDescriptionAttempted = false;
+    return true;
+  }
+  w.fileDescriptionAttempted = true;
+  render();
+  requestAnimationFrame(() => {
+    const field = document.getElementById('file-description');
+    if (field) {
+      field.focus();
+      field.scrollIntoView({ behavior:'smooth', block:'center' });
+    }
+  });
+  if (opts && opts.toast) toast(opts.toast);
+  return false;
+}
+function fileDescriptionBlock(variant) {
+  const w = state.wiz || {};
+  const value = String(w.fileDescription || '');
+  const invalid = !!(w.fileDescriptionAttempted && !value.trim());
+  const req = '<span style="color:var(--destructive)">*</span>';
+  const note = variant === 'erp'
+    ? 'Add a short description so this file is easy to find in Upload History.'
+    : 'Describe this file so you can find it later in Upload History.';
+  return `<div class="review-card file-description-anchor">
+    <div class="review-card-h">${I.file} File description</div>
+    <div class="review-card-b">
+      <div class="field">
+        <label for="file-description">File description ${req}</label>
+        <input id="file-description" maxlength="${FILE_DESCRIPTION_MAX}" class="${invalid?'invalid':''}" value="${escapeHTML(value)}" placeholder="e.g. Shenzhen Global July invoices" oninput="setFileDescription(this.value)" />
+        <p class="field-note">${note}</p>
+        ${invalid?`<p class="field-error" style="display:block">Enter a file description.</p>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+function stepFileDescription() {
+  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
+    <div>
+      <h2 style="font-size:18px;font-weight:700">File description</h2>
+      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Add a short description before you review and submit.</p>
+    </div>
+    ${fileDescriptionBlock('erp')}
+  </div>`;
+}
+function uploadRecordDescription(r) {
+  return escapeHTML(String((r && (r.fileDescription || r.fileName)) || '—'));
+}
+function attemptERPDescriptionNext() {
+  if (!ensureFileDescription({ toast:'Enter a file description before continuing.' })) return;
+  state.wiz.step = 4;
+  render();
+}
+
+
 function draftTypeKey(w) {
   if (!w) return 'upload';
   if (w.uploadType) return w.uploadType;
@@ -4107,6 +4188,7 @@ function saveDraftAndExit() {
     kind: snap.kind,
     typeKey: draftTypeKey(snap),
     fileName: draftFileName(snap),
+    fileDescription: fileDescriptionValue(snap),
     fileType: draftFileType(draftTypeKey(snap), snap),
     uploadDate: nowStamp(),
     marketplace: snap.marketplace || '',
@@ -5283,6 +5365,7 @@ function templateNext() {
     render();
     return;
   }
+  if (!ensureFileDescription({ toast:'Enter a file description before continuing.' })) return;
   w.validationAttempted = false;
   w.templateStage = 2;
   render();
@@ -6367,7 +6450,7 @@ function attemptERPNext() {
     return;
   }
   w.mappingAttempted = false;
-  w.step = LINK_PAYMENT_VISIBLE ? 3 : 4;
+  w.step = LINK_PAYMENT_VISIBLE ? 3 : 5;
   render();
 }
 
@@ -6439,7 +6522,7 @@ function stepTemplateUpload() {
       onDelete: 'deleteUploadedTemplateFile()',
     });
   }
-  body += `${uploadBoxBlock('Template CSV', fileControl)}</div>`;
+  body += `${uploadBoxBlock('Template CSV', fileControl)}${fileDescriptionBlock()}</div>`;
   return body;
 }
 
@@ -6448,8 +6531,8 @@ function stepTemplateResult() {
 }
 function stepTemplateV2Review() {
   const w=state.wiz,category=(TEMPLATE_TYPES.find(type=>type.key===w.category)||{}).label||'—';
-  const details=[['File name',w.fileName||'template_transactions.csv'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[]),['File type','Template CSV']];
-  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} Uploaded file summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p class="${label==='File name'?'mono':''}">${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
+  const details=[['File type','Template CSV'],['File description',fileDescriptionValue(w)||'—'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[])];
+  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} Uploaded file summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p>${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
 }
 
 function viewWizardTemplate() {
@@ -7078,7 +7161,8 @@ function erp2Steps(w) {
   if (!w.erp2SkippedConfirm) steps.push({n:2,label:'Confirm info'});
   if (w.erp2HadUnrecognized || w.erp2ZeroMatchAlert) steps.push({n:3,label:'Match remaining fields'});
   if (stats.missing.length) steps.push({n:4,label:'Update and re-upload'});
-  steps.push({n:5,label:'Review'});
+  steps.push({n:5,label:'File description'});
+  steps.push({n:6,label:'Review'});
   return steps.map((step,index) => Object.assign({}, step, { displayN:index + 1 }));
 }
 function erp2Back() {
@@ -7090,8 +7174,10 @@ function erp2Back() {
   }
   const stats = getERPMappingStats(w);
   const hasMatchStep = !!(w.erp2HadUnrecognized || w.erp2ZeroMatchAlert);
-  if (w.erp2Stage === 3 && w.erp2SkippedConfirm) w.erp2Stage = 1;
+  if (w.erp2Stage === 6) w.erp2Stage = 5;
   else if (w.erp2Stage === 5 && !stats.missing.length) w.erp2Stage = hasMatchStep ? 3 : (w.erp2SkippedConfirm ? 1 : 2);
+  else if (w.erp2Stage === 5) w.erp2Stage = 4;
+  else if (w.erp2Stage === 3 && w.erp2SkippedConfirm) w.erp2Stage = 1;
   else if (w.erp2Stage === 4 && !hasMatchStep) w.erp2Stage = w.erp2SkippedConfirm ? 1 : 2;
   else {
     w.erp2Stage -= 1;
@@ -7140,7 +7226,11 @@ function erp2Next() {
     w.erp2Stage = getERPMappingStats(w).missing.length ? 4 : 5;
   }
   else if (w.erp2Stage === 4 && stats.valid && !getERP2SupplementStats(w).duplicateTargets.length) w.erp2Stage = 5;
-  else if (w.erp2Stage === 5 && stats.valid) { submitWizard(); return; }
+  else if (w.erp2Stage === 5) {
+    if (!ensureFileDescription({ toast:'Enter a file description before continuing.' })) return;
+    w.erp2Stage = 6;
+  }
+  else if (w.erp2Stage === 6 && stats.valid) { submitWizard(); return; }
   render();
 }
 function viewWizardERP2(w) {
@@ -7151,17 +7241,19 @@ function viewWizardERP2(w) {
   else if (stage === 2) body = stepERP2Confirm(w);
   else if (stage === 3) body = stepERP2Unrecognized(w);
   else if (stage === 4) body = stepERP2Missing(w);
+  else if (stage === 5) body = stepFileDescription();
   else body = stepERPReview();
   const zeroMatchBlocked = stage === 3 && w.erp2ZeroMatchAlert && !stats.unmapped.length;
   const canNext = stage === 1 ? w.dsState === 'mapped'
     : stage === 2 ? !erpMappingHasConflicts(stats)
       : stage === 3 ? (!zeroMatchBlocked && !erpMappingHasConflicts(stats))
         : stage === 4 ? stats.valid && !getERP2SupplementStats(w).duplicateTargets.length
-          : stats.valid;
+          : stage === 5 ? true
+            : stats.valid;
   const versionControl = stage === 1 ? erpVersionSelector() : '';
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('erp',w) : erp2Steps(w);
   const displayStep = w.uploadOriginVersion===2 ? uploadV2ERPDisplayStep(w) : stage;
-  const navigation = wizNavFooter('erp2Back()',stage===1?'Cancel':'Previous','erp2Next()',stage===5?'Submit':'Next',canNext);
+  const navigation = wizNavFooter('erp2Back()',stage===1?'Cancel':'Previous','erp2Next()',stage===6?'Submit':'Next',canNext);
   return wizShell({
     title:erpWizardTitle(w),
     sub:'Match the columns in your file to the fields we need.',
@@ -7308,7 +7400,8 @@ function stepERP3Missing(w) {
 function erp3Steps(w) {
   const steps = [{n:1,label:'Upload CSV'},{n:2,label:'Confirm info'}];
   if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
-  steps.push({n:w.erp3NeedsReplacement?4:3,label:'Review'});
+  steps.push({n:4,label:'File description'});
+  steps.push({n:5,label:'Review'});
   return steps.map((step,index) => Object.assign({}, step, { displayN:index + 1 }));
 }
 function erp3Back() {
@@ -7318,7 +7411,8 @@ function erp3Back() {
     else go('home');
     return;
   }
-  if (w.erp3Stage === 4 && !w.erp3NeedsReplacement) w.erp3Stage = 2;
+  if (w.erp3Stage === 5) w.erp3Stage = 4;
+  else if (w.erp3Stage === 4 && !w.erp3NeedsReplacement) w.erp3Stage = 2;
   else w.erp3Stage -= 1;
   render();
 }
@@ -7370,7 +7464,13 @@ function erp3Next() {
     render();
     return;
   }
-  if (w.erp3Stage === 4 && stats.valid) {
+  if (w.erp3Stage === 4) {
+    if (!ensureFileDescription({ toast:'Enter a file description before continuing.' })) return;
+    w.erp3Stage = 5;
+    render();
+    return;
+  }
+  if (w.erp3Stage === 5 && stats.valid) {
     submitWizard();
     return;
   }
@@ -7383,15 +7483,17 @@ function viewWizardERP3(w) {
   if (stage === 1) body = stepERP2Upload(w);
   else if (stage === 2) body = stepERP3Confirm(w);
   else if (stage === 3) body = stepERP3Missing(w);
+  else if (stage === 4) body = stepFileDescription();
   else body = stepERPReview();
   const canNext = stage === 1 ? w.dsState === 'mapped'
     : stage === 2 ? !erpMappingHasConflicts(stats)
       : stage === 3 ? stats.valid
-        : stats.valid;
+        : stage === 4 ? true
+          : stats.valid;
   const versionControl = stage === 1 ? erpVersionSelector() : '';
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('erp',w) : erp3Steps(w);
-  const displayStep = w.uploadOriginVersion===2 ? uploadV2ERPDisplayStep(w) : (stage <= 2 ? stage : (w.erp3NeedsReplacement ? stage : 3));
-  const navigation = wizNavFooter('erp3Back()', stage===1?'Cancel':'Previous', 'erp3Next()', stage===4?'Submit':'Next', canNext);
+  const displayStep = w.uploadOriginVersion===2 ? uploadV2ERPDisplayStep(w) : (stage <= 2 ? stage : (w.erp3NeedsReplacement ? stage : stage - 1));
+  const navigation = wizNavFooter('erp3Back()', stage===1?'Cancel':'Previous', 'erp3Next()', stage===5?'Submit':'Next', canNext);
   return wizShell({
     title:erpWizardTitle(w),
     sub:'Review every required field in one list, then complete anything that is still missing.',
@@ -7627,7 +7729,7 @@ function stepERPReview() {
     <div class="review-card">
       <div class="review-card-h">${I.file} Uploaded file summary</div>
       <div class="review-card-b"><div class="kv-grid">
-        ${[['File name',w.fileName||'drop_shipping_orders_Q3.csv'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['File type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['Upload date','2026-07-20'],['Records detected', DS_TX_PREVIEW.length+' transaction records']].map(([k,v])=>`<div><label>${k}</label><p>${escapeHTML(v)}</p></div>`).join('')}
+        ${[['File type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['File description',fileDescriptionValue(w)||'—'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['Upload date','2026-07-20'],['Records detected', DS_TX_PREVIEW.length+' transaction records']].map(([k,v])=>`<div><label>${k}</label><p>${escapeHTML(v)}</p></div>`).join('')}
       </div></div>
     </div>
     ${paymentLinkingActive?`<div class="review-card">
@@ -7660,38 +7762,49 @@ function viewWizardERP() {
       ? [
         {n:2,displayN:1,label:'Upload & map'},
         {n:3,displayN:2,label:'Link payment'},
-        {n:4,displayN:3,label:'Review'},
+        {n:5,displayN:3,label:'File description'},
+        {n:4,displayN:4,label:'Review'},
       ]
       : [
         {n:2,label:'Order information'},
         {n:3,label:'Link Payment'},
+        {n:5,label:'File description'},
         {n:4,label:'Review & Submit'},
       ])
     : (state.concept !== 2
       ? [
         {n:2,displayN:1,label:'Upload & map'},
-        {n:4,displayN:2,label:'Review'},
+        {n:5,displayN:2,label:'File description'},
+        {n:4,displayN:3,label:'Review'},
       ]
       : [
         {n:2,displayN:1,label:'Order information'},
-        {n:4,displayN:2,label:'Review & Submit'},
+        {n:5,displayN:2,label:'File description'},
+        {n:4,displayN:3,label:'Review & Submit'},
       ]);
   let body = '';
   if (w.step===2) body = `<div style="display:flex;flex-direction:column;gap:20px">${erpVersionSelector()}${stepERPInfo()}</div>`;
   else if (LINK_PAYMENT_VISIBLE && w.step===3) body = stepERPLink();
+  else if (w.step===5) body = stepFileDescription();
   else body = stepERPReview();
   const canNext = w.step===2 ? w.dsState==='mapped' && !erpMappingHasConflicts(getERPMappingStats(w)) : true;
   const back = w.step===2
     ? wizHomeBack(w)
-    : (!LINK_PAYMENT_VISIBLE && w.step===4 ? `state.wiz.step=2;render()` : `state.wiz.step=${w.step-1};render()`);
+    : w.step===5
+      ? (LINK_PAYMENT_VISIBLE ? `state.wiz.step=3;render()` : `state.wiz.step=2;render()`)
+      : w.step===4
+        ? `state.wiz.step=5;render()`
+        : `state.wiz.step=${w.step-1};render()`;
   const next = w.step===4
     ? `submitWizard()`
-    : w.step===2
-      ? `attemptERPNext()`
-      : `state.wiz.step=${w.step+1};render()`;
+    : w.step===5
+      ? `attemptERPDescriptionNext()`
+      : w.step===2
+        ? `attemptERPNext()`
+        : `state.wiz.step=5;render()`;
   const nextLabel = w.step===4 ? 'Submit' : 'Next';
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('erp',w) : steps;
-  const displayStep = w.uploadOriginVersion===2 ? (w.step===4?3:2) : w.step;
+  const displayStep = w.uploadOriginVersion===2 ? uploadV2ERPDisplayStep(w) : (w.step===2?1:w.step===3?2:w.step===5?(LINK_PAYMENT_VISIBLE?3:2):(LINK_PAYMENT_VISIBLE?4:3));
   const navigation = wizNavFooter(back, w.step===2?'Cancel':'Previous', next, nextLabel, canNext);
   return wizShell({
     title:erpWizardTitle(w),
@@ -8562,6 +8675,7 @@ function attemptTradeReview() {
       return;
     }
   }
+  if (!ensureFileDescription({ toast:'Enter a file description before continuing.' })) return;
   w.tradeStage = 2;
   w.step = 2;
   render();
@@ -8773,6 +8887,7 @@ function stepTradeInfo(hideHeading) {
         </div>`}
         ${(isGoods || w.source === 'international-logistics') ? tradeGoodsTable() : (w.source === 'advertisement' ? tradeAdvertisementBlock() : w.source === 'tourism' ? tradeTourismBlock() : w.source === 'software' ? tradeSoftwareBlock() : w.source === 'air-ticket' ? tradeAirTicketBlock() : w.source === 'accommodation' ? tradeAccommodationBlock() : tradeServiceDetailsBlock())}
         ${needsTradeLogistics(w) ? tradeLogisticsBlock() : ''}
+        ${fileDescriptionBlock()}
     </div>
     ${tradeDocumentPreviewModal()}
   </div>`;
@@ -8833,8 +8948,8 @@ function stepTradeReview() {
       <div class="review-card-b">
         <div class="kv-grid">
           <div><label>Business type</label><p>${srcLabel}</p></div>
-          <div><label>File name</label><p class="mono">${w.fileName || 'trade_document.pdf'}</p></div>
           <div><label>File type</label><p>Trade document</p></div>
+          <div><label>File description</label><p>${escapeHTML(fileDescriptionValue(w) || '—')}</p></div>
           <div><label>Transaction amount</label><p class="money-value">USD 48,500.00</p></div>
         </div>
       </div>
@@ -9598,7 +9713,7 @@ function viewUploadDetails() {
       <div class="focused-title-row">
         <div>
           <h1 style="font-size:28px;letter-spacing:-0.02em">Upload Details</h1>
-          <p class="mono" style="font-size:14px;margin-top:4px">${r.fileName}</p>
+          <p style="font-size:14px;margin-top:4px">${uploadRecordDescription(r)}</p>
         </div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end">
           ${headerActions}
@@ -9615,9 +9730,9 @@ function viewUploadDetails() {
       <div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">File Information</h3>
         <div class="details-grid" style="grid-template-columns:1fr 1fr">
-          <div class="read-field"><label>File name</label><p class="mono">${r.fileName}</p></div>
-          <div class="read-field"><label>Upload time</label><p class="mono">${r.uploadDate}</p></div>
           <div class="read-field"><label>File type</label><p>${r.typeKey==='erp'?'ERP CSV 2':r.fileType}</p></div>
+          <div class="read-field"><label>File description</label><p>${uploadRecordDescription(r)}</p></div>
+          <div class="read-field"><label>Upload time</label><p class="mono">${formatUploadTime(r.uploadDate)}</p></div>
           <div class="read-field"><label>Quota added</label><p class="money-value" style="font-weight:600">${r.quotaAdded?money(r.quotaAdded):'—'}</p></div>
         </div>
       </div>
@@ -9763,8 +9878,8 @@ function viewUploadHistory() {
           <div style="overflow-x:auto"><table class="data" style="min-width:920px">
             <thead><tr>
               <th>Upload time</th>
-              <th>File name</th>
               <th>File type</th>
+              <th>File description</th>
               <th>Status</th>
               <th>Quota added</th>
               <th>Action</th>
@@ -9772,17 +9887,17 @@ function viewUploadHistory() {
             <tbody>
               ${activeTab === 'drafts' ? drafts.map(d => `
               <tr class="draft-row">
-                <td class="mono" style="color:var(--muted-foreground);white-space:nowrap">${d.uploadDate}</td>
-                <td style="font-weight:500" class="mono">${d.fileName}</td>
+                <td class="mono" style="color:var(--muted-foreground);white-space:nowrap">${formatUploadTime(d.uploadDate)}</td>
                 <td>${d.fileType}</td>
+                <td style="font-weight:500">${uploadRecordDescription(d)}</td>
                 <td>${uploadHistoryStatus('Draft')}</td>
                 <td><span style="color:var(--switch)">—</span></td>
                 <td>${draftContinueBtn(d.id)}</td>
               </tr>`).join('') : UPLOAD_HISTORY.map(r => `
               <tr>
-                <td class="mono" style="color:var(--muted-foreground);white-space:nowrap">${r.uploadDate}</td>
-                <td style="font-weight:500" class="mono">${r.fileName}</td>
+                <td class="mono" style="color:var(--muted-foreground);white-space:nowrap">${formatUploadTime(r.uploadDate)}</td>
                 <td>${r.fileType}</td>
+                <td style="font-weight:500">${uploadRecordDescription(r)}</td>
                 <td>${uploadHistoryStatus(r.status)}</td>
                 <td>${r.quotaAdded
                   ? `<strong class="money-value">${money(r.quotaAdded)}</strong>`
