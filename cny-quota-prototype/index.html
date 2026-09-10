@@ -3041,9 +3041,9 @@ const UNSHIPPED_LIMIT = 1000000;
 
 /* Concept 2 — unified upload history & quota breakdown (derived from UPLOAD_HISTORY) */
 const UPLOAD_METHODS = [
-  { key:'trade', label:'Trade document', desc:'Such as an invoice, contract, purchase order, or customs document', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
-  { key:'template', label:'Transaction record using our template', desc:'A completed transaction record in CSV', ico:'upload', formats:'CSV · Max 50 MB' },
-  { key:'erp', label:'Transaction record exported from your business system', desc:'A CSV exported from your ERP, marketplace, accounting, or other business system', ico:'db', formats:'CSV · Max 50 MB' },
+  { key:'trade', label:'Trade document', desc:'Such as an invoice, contract, purchase order, or customs document. We’ll read the transaction details from your document.', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
+  { key:'template', label:'Transaction record using our template', desc:'A completed transaction record in CSV. Our template already has all the details we need, so it’s the quickest to process.', ico:'upload', formats:'CSV · Max 50 MB' },
+  { key:'erp', label:'Transaction record exported from your business system', desc:'A CSV exported from your ERP, marketplace, accounting, or other business system. We’ll match your column names to the details we need and let you review before continuing.', ico:'db', formats:'CSV · Max 50 MB' },
 ];
 
 const UPLOAD_HISTORY = [
@@ -4661,10 +4661,11 @@ function homeCardsConcept2() {
               <div class="action-body">
                 <p class="support-lead">You can upload:</p>
                 <ul class="support-list">
-                  <li>Trade documents – commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents</li>
-                  <li>Transaction records in CSV — exported from your ERP, marketplace, or other business systems, or prepared using our template (<button type="button" class="inline-link" style="text-decoration:none" onclick="state.templatePanel=true;render()">download template</button>)</li>
+                  <li>Trade documents, such as commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents</li>
+                  <li>Transaction records completed using our template</li>
+                  <li>Transaction records exported from your business system like ERP or your marketplace</li>
                 </ul>
-                <p class="support-note">Your transactions also need to be eligible for CNY settlement, and your documents need to include certain details. <button type="button" class="inline-link" style="text-decoration:none" onclick="openDocumentRequirements()">Check before you upload</button></p>
+                <p class="support-note"><button type="button" class="inline-link" style="text-decoration:none" onclick="openDocumentRequirements()">A few things to know</button> before you upload — eligible transactions, document details, and templates.</p>
               </div>
               <div class="card-footer">
                 <div class="cta-cluster">

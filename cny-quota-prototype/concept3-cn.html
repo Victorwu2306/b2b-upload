@@ -3050,9 +3050,9 @@ const UNSHIPPED_LIMIT = 1000000;
 
 /* Concept 2 — unified upload history & quota breakdown (derived from UPLOAD_HISTORY) */
 const UPLOAD_METHODS = [
-  { key:'trade', label:'Trade document', desc:'Such as an invoice, contract, purchase order, or customs document', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
-  { key:'template', label:'Transaction record using our template', desc:'A completed transaction record in CSV', ico:'upload', formats:'CSV · Max 50 MB' },
-  { key:'erp', label:'Transaction record exported from your business system', desc:'A CSV exported from your ERP, marketplace, accounting, or other business system', ico:'db', formats:'CSV · Max 50 MB' },
+  { key:'trade', label:'Trade document', desc:'Such as an invoice, contract, purchase order, or customs document. We’ll read the transaction details from your document.', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
+  { key:'template', label:'Transaction record using our template', desc:'A completed transaction record in CSV. Our template already has all the details we need, so it’s the quickest to process.', ico:'upload', formats:'CSV · Max 50 MB' },
+  { key:'erp', label:'Transaction record exported from your business system', desc:'A CSV exported from your ERP, marketplace, accounting, or other business system. We’ll match your column names to the details we need and let you review before continuing.', ico:'db', formats:'CSV · Max 50 MB' },
 ];
 
 const UPLOAD_HISTORY = [
@@ -4547,10 +4547,11 @@ function homeCardsConcept2() {
               <div class="action-body">
                 <p class="support-lead">You can upload:</p>
                 <ul class="support-list">
-                  <li>Trade documents – commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents</li>
-                  <li>Transaction records in CSV — exported from your ERP, marketplace, or other business systems, or prepared using our template (<button type="button" class="inline-link" style="text-decoration:none" onclick="state.templatePanel=true;render()">download template</button>)</li>
+                  <li>Trade documents, such as commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents</li>
+                  <li>Transaction records completed using our template</li>
+                  <li>Transaction records exported from your business system like ERP or your marketplace</li>
                 </ul>
-                <p class="support-note">Your transactions also need to be eligible for CNY settlement, and your documents need to include certain details. <button type="button" class="inline-link" style="text-decoration:none" onclick="openDocumentRequirements()">Check before you upload</button></p>
+                <p class="support-note"><button type="button" class="inline-link" style="text-decoration:none" onclick="openDocumentRequirements()">A few things to know</button> before you upload — eligible transactions, document details, and templates.</p>
               </div>
               <div class="card-footer">
                 <div class="cta-cluster">
@@ -10105,7 +10106,11 @@ const CN_UI_REPLACEMENTS = [
   [/<th>Detail<\/th>/g, '<th>字段</th>'],
   [/^Detail$/g, '字段'],
   [/Back to requirements on your documents/g, '返回单据要求'],
-  [/Transaction records in CSV — exported from your ERP, marketplace, or other business systems, or prepared using our template/g, 'CSV 格式交易记录 — 从 ERP、电商平台或其他业务系统导出，或使用标准模板填写'],
+  [/Trade documents, such as commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents/g, '贸易单据，例如商业发票或形式发票、采购订单、合同、运输及报关单据'],
+  [/Transaction records completed using our template/g, '使用模板填写完成的交易记录'],
+  [/Transaction records exported from your business system like ERP or your marketplace/g, '从 ERP 或电商平台等业务系统导出的交易记录'],
+  [/A few things to know/g, '上传前须知'],
+  [/before you upload — eligible transactions, document details, and templates\./g, ' — 符合条件的交易、单据信息和模板。'],
   [/Your transactions also need to be eligible for CNY settlement, and your documents need to include certain details\./g, '交易也需符合人民币结汇要求，单据需包含指定信息。'],
   [/Check before you upload/g, '上传前请核对'],
   [/To be eligible for CNY settlement, your transactions and your document details both need to qualify\./g, '交易和单据信息均符合要求，才能进行人民币结汇。'], [/Learn requirements/g, '查看要求'],
@@ -10434,8 +10439,13 @@ const CN_UI_REPLACEMENTS = [
   [/Update the file to include every missing required column, then upload it again\./g, '请补齐所有缺失的必填列，然后重新上传文件。'], [/Select the matching uploaded column, or replace the file with a corrected version\./g, '请选择对应的上传列，或替换为已修正的文件。'], [/Add item \(prototype\)/g, '添加商品（原型）'],
   [/Drag file here or /g, '将文件拖放到此处，或 '], [/^browse$/g, '浏览'], [/Supported file types:/g, '支持的文件类型：'], [/Maximum file size:/g, '文件大小上限：'],
   [/All file types supported/g, '支持所有文件类型'], [/Max 50MB/g, '最大 50MB'], [/Max 50 MB/g, '最大 50 MB'],
-  [/Transaction record using our template/g, '使用模板填写的交易记录'], [/A completed transaction record in CSV/g, '已完成的 CSV 交易记录'],
-  [/Transaction record exported from your business system/g, '从业务系统导出的交易记录'], [/A CSV exported from your ERP, marketplace, accounting, or other business system/g, '从 ERP、电商平台、财务或其他业务系统导出的 CSV'],
+  [/Transaction record using our template/g, '使用模板填写的交易记录'],
+  [/Such as an invoice, contract, purchase order, or customs document\. We’ll read the transaction details from your document\./g, '例如发票、合同、采购订单或报关单据。我们将从单据中读取交易信息。'],
+  [/A completed transaction record in CSV\. Our template already has all the details we need, so it’s the quickest to process\./g, '已完成的 CSV 交易记录。模板已包含我们所需的全部信息，处理速度最快。'],
+  [/A CSV exported from your ERP, marketplace, accounting, or other business system\. We’ll match your column names to the details we need and let you review before continuing\./g, '从 ERP、电商平台、财务或其他业务系统导出的 CSV。我们会将列名与所需信息对应，并在继续前供您核对。'],
+  [/A completed transaction record in CSV/g, '已完成的 CSV 交易记录'],
+  [/Transaction record exported from your business system/g, '从业务系统导出的交易记录'],
+  [/A CSV exported from your ERP, marketplace, accounting, or other business system/g, '从 ERP、电商平台、财务或其他业务系统导出的 CSV'],
   [/(\d+) uploads/g, '$1 次上传'], [/(\d+) drafts?/g, '$1 个草稿'], [/(\d+) pending/g, '$1 个待处理'], [/Potential /g, '预计 '], [/Est\. /g, '预计 '], [/ of /g, ' / '],
   [/(\d+) selected/g, '已选择 $1 项'], [/High/g, '高'], [/Medium/g, '中'], [/Available/g, '可用'],
   [/^([\s]*)Yes([\s]*)$/g, '$1是$2'], [/^([\s]*)No([\s]*)$/g, '$1否$2'], [/^([\s]*)Table([\s]*)$/g, '$1表格$2'], [/^([\s]*)Cards([\s]*)$/g, '$1卡片$2'],
