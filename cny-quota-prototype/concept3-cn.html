@@ -3613,8 +3613,8 @@ function detectUploadV2Route(category,extension,headers,fileName) {
   return {route:'',error:'This file format is not supported.'};
 }
 function uploadV2StepsForRoute(route,w) {
-  if (route === 'template') return [{n:1,label:'Upload document'},{n:2,label:'Review'}];
-  if (route === 'trade') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Review'}];
+  if (route === 'template') return [{n:1,label:'Upload document'},{n:2,label:'File description'},{n:3,label:'Review'}];
+  if (route === 'trade') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'File description'},{n:4,label:'Review'}];
   if (route === 'erp') {
     if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'File description'},{n:4,label:'Review'}];
     if (w && w.erpFlowVersion === 'v3') {
@@ -3882,7 +3882,6 @@ function routeUploadV2() {
 function uploadV2Next() {
   const w=state.wiz; if (!w || w.uploadVersion!==2) return;
   if (!w.category) { toast('Select a category before continuing.'); return; }
-  if (!ensureFileDescription({ toast:'Enter a file description before continuing.' })) return;
   routeUploadV2();
 }
 const SHOW_REQUIREMENTS_R1 = false;
@@ -5479,6 +5478,12 @@ function resetTemplateFile() {
 }
 function templateNext() {
   const w = state.wiz; if (!w) return;
+  if ((w.templateStage || 1) === 2) {
+    if (!ensureFileDescription({ toast:'Enter a file description before continuing.' })) return;
+    w.templateStage = 3;
+    render();
+    return;
+  }
   const issues = getTemplateUploadIssues(w);
   if (issues.length || w.csvState !== 'mapped') {
     w.validationAttempted = true;
@@ -5486,14 +5491,19 @@ function templateNext() {
     render();
     return;
   }
-  if (!ensureFileDescription({ toast:'Enter a file description before continuing.' })) return;
   w.validationAttempted = false;
   w.templateStage = 2;
   render();
 }
 function templateBack() {
   const w = state.wiz; if (!w) return;
-  if ((w.templateStage || 1) === 2) {
+  const stage = w.templateStage || 1;
+  if (stage === 3) {
+    w.templateStage = 2;
+    render();
+    return;
+  }
+  if (stage === 2) {
     if (w.uploadOriginVersion === 2) { returnToUploadSelect(); return; }
     w.templateStage = 1;
     render();
@@ -6765,7 +6775,7 @@ function stepTemplateUpload() {
       onDelete: 'deleteUploadedTemplateFile()',
     });
   }
-  body += `${uploadBoxBlock('Template CSV', fileControl)}${fileDescriptionBlock()}</div>`;
+  body += `${uploadBoxBlock('Template CSV', fileControl)}</div>`;
   return body;
 }
 
@@ -6783,21 +6793,25 @@ function viewWizardTemplate() {
   if (!state.wiz) state.wiz = w;
   if (w.done) return wizSuccess('template');
   const stage = w.templateStage || 1;
-  const steps = [{n:1,label:'Upload document'},{n:2,label:'Review'}];
+  const steps = [{n:1,label:'Upload document'},{n:2,label:'File description'},{n:3,label:'Review'}];
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('template',w) : steps;
   const displayStep = stage;
   const canContinue = w.csvState === 'mapped' && getTemplateUploadIssues(w).length === 0;
   const marketplaceOnly = isMarketplaceOnlyWizard(w);
+  const templateBody = stage === 1 ? stepTemplateUpload() : stage === 2 ? stepFileDescription() : stepTemplateV2Review();
+  const templateFooter = stage === 1
+      ? wizNavFooter(wizHomeBack(w), 'Cancel', 'templateNext()', 'Next', canContinue)
+      : stage === 2
+        ? wizNavFooter('templateBack()', 'Previous', 'templateNext()', 'Next', true)
+        : wizNavFooter('templateBack()', 'Previous', 'attemptTemplateSubmit()', 'Submit', canContinue);
   return wizShell({
     title: marketplaceOnly ? 'Upload transaction records' : 'Upload CSV from templates',
     sub: marketplaceOnly
       ? ''
       : 'Select a category and upload your file, then review the details before submitting.',
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
-    body:stage === 1 ? stepTemplateUpload() : stepTemplateV2Review(),
-    footer:stage === 1
-      ? wizNavFooter(wizHomeBack(w), 'Cancel', 'templateNext()', 'Next', canContinue)
-      : wizNavFooter('templateBack()','Previous','attemptTemplateSubmit()','Submit',canContinue)
+    body:templateBody,
+    footer:templateFooter
   }) + uploadV2SamplePicker(w);
 }
 
@@ -9074,9 +9088,15 @@ function attemptTradeReview() {
       return;
     }
   }
-  if (!ensureFileDescription({ toast:'Enter a file description before continuing.' })) return;
   w.tradeStage = 2;
   w.step = 2;
+  render();
+}
+function attemptTradeDescriptionNext() {
+  const w = state.wiz; if (!w) return;
+  if (!ensureFileDescription({ toast:'Enter a file description before continuing.' })) return;
+  w.tradeStage = 3;
+  w.step = 3;
   render();
 }
 function attemptTradeSubmit() {
@@ -9297,7 +9317,6 @@ function stepTradeInfo(hideHeading) {
         </div>`}
         ${(isGoods || w.source === 'international-logistics') ? tradeGoodsTable() : (w.source === 'advertisement' ? tradeAdvertisementBlock() : w.source === 'tourism' ? tradeTourismBlock() : w.source === 'software' ? tradeSoftwareBlock() : w.source === 'air-ticket' ? tradeAirTicketBlock() : w.source === 'accommodation' ? tradeAccommodationBlock() : tradeServiceDetailsBlock())}
         ${needsTradeLogistics(w) ? tradeLogisticsBlock() : ''}
-        ${fileDescriptionBlock()}
     </div>
     ${tradeDocumentPreviewModal()}
   </div>`;
@@ -9447,17 +9466,21 @@ function viewWizardTrade() {
     }, 0);
   }
   const canReview = !!w.source && w.uploadState === 'done' && tradeLogisticsComplete(w);
-  const steps = [{n:1,label:'Upload & complete'},{n:2,label:'Review'}];
+  const steps = [{n:1,label:'Upload & complete'},{n:2,label:'File description'},{n:3,label:'Review'}];
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('trade',w) : steps;
-  const displayStep = w.uploadOriginVersion===2 ? (stage===1?2:3) : stage;
+  const displayStep = w.uploadOriginVersion===2 ? (stage===1?2:stage===2?3:4) : stage;
+  const tradeBody = stage === 1 ? stepTradeDynamic() : stage === 2 ? stepFileDescription() : stepTradeReview();
+  const tradeFooter = stage === 1
+      ? wizNavFooter(wizHomeBack(w), 'Cancel', 'attemptTradeReview()', 'Next', canReview)
+      : stage === 2
+        ? wizNavFooter("state.wiz.tradeStage=1;state.wiz.step=1;render()", 'Previous', 'attemptTradeDescriptionNext()', 'Next', true)
+        : wizNavFooter("state.wiz.tradeStage=2;state.wiz.step=2;render()", 'Previous', 'attemptTradeSubmit()', 'Submit', true);
   return wizShell({
     title:'Upload trade documents',
     sub:'Complete the document details, review the submission summary, and submit.',
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
-    body:stage === 1 ? stepTradeDynamic() : stepTradeReview(),
-    footer:stage === 1
-      ? wizNavFooter(wizHomeBack(w), 'Cancel', 'attemptTradeReview()', 'Review', canReview)
-      : wizNavFooter("state.wiz.tradeStage=1;state.wiz.step=1;render()", 'Previous', 'attemptTradeSubmit()', 'Submit', true)
+    body:tradeBody,
+    footer:tradeFooter
   });
 }
 
@@ -10200,7 +10223,6 @@ function uploadV2Body(w) {
     ${w.category==='marketplace'?`<div class="field"><label>Select the marketplace <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.marketplace?'':'placeholder'}" onchange="setUploadV2Marketplace(this.value)"><option value="">Select a marketplace</option>${MARKETPLACE_UPLOAD_OPTIONS.map(name=>`<option value="${name}" ${w.marketplace===name?'selected':''}>${name}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Choose the marketplace associated with these transaction records.</p></div>`:''}
     ${uploadV2NeedsSellerId(w)?`<div class="field"><label>Seller ID <span style="color:var(--destructive)">*</span></label><input maxlength="100" value="${escapeHTML(w.sellerId)}" placeholder="Enter your ${w.marketplace} Seller ID" oninput="setUploadV2SellerId(this.value)" /><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Required to associate this upload with the correct store.</p></div>`:''}</div>
     ${uploadBoxBlock('Upload file', fileContent)}
-    ${fileDescriptionBlock()}
   </div>`;
 }
 function viewWizardUpload() {
