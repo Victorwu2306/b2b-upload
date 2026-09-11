@@ -3400,6 +3400,8 @@ function uploadV2ContextFrom(w) {
     v2RequestId:Number(source.v2RequestId)||0,
     v2PickerOpen:false,
     erpScenario:source.erpScenario || '', v2UseCase:source.v2UseCase || '', v2UseCaseTitle:source.v2UseCaseTitle || '',
+    fileDescription: (w && w.fileDescription) || source.fileDescription || '',
+    fileDescriptionAttempted: !!(w && w.fileDescriptionAttempted) || !!source.fileDescriptionAttempted,
   };
 }
 function createUploadV2State(context, allowedTypes) {
@@ -3407,7 +3409,7 @@ function createUploadV2State(context, allowedTypes) {
     kind:'upload', uploadVersion:2, v2Stage:1, category:'',
     v2FileState:'empty', fileName:null, fileExtension:'', fileSize:0,
     csvHeaders:[], detectedRoute:'', detectedLabel:'', routeError:'', uploadType:null,
-    marketplace:'', sellerId:'', v2RequestId:0, v2PickerOpen:false, erpScenario:'', v2UseCase:'', v2UseCaseTitle:'',
+    marketplace:'', sellerId:'', v2RequestId:0, v2PickerOpen:false, erpScenario:'', v2UseCase:'', v2UseCaseTitle:'', fileDescription:'', fileDescriptionAttempted:false,
   }, context || {});
   if(!TEMPLATE_TYPES.some(type=>type.key===w.category))w.category='';
   if(w.category!=='marketplace'){w.marketplace='';w.sellerId='';}
@@ -3857,20 +3859,20 @@ function routeUploadV2() {
   const context=uploadV2ContextFrom(current), draftId=current.draftId;
   let next;
   if (current.detectedRoute==='template' || isUploadV2TemplateFileName(current.fileName)) {
-    next=resetWiz('template'); attachUnifiedOrigin(next,2,context);
+    next=resetWiz('template'); attachUnifiedOrigin(next,2,context); next.fileDescription=fileDescriptionValue(current); next.fileDescriptionAttempted=!!current.fileDescriptionAttempted;
     Object.assign(next,{uploadType:'template',entryCategory:current.category,category:current.category,marketplace:current.marketplace||'',sellerId:current.sellerId||'',fileName:current.fileName,csvState:'mapped',templateStage:2});
     if (draftId) next.draftId=draftId;
     state.wiz=next; state.view='wizard-template'; render();
     return;
   }
   if (current.detectedRoute==='trade') {
-    next=resetWiz('trade'); attachUnifiedOrigin(next,2,context);
+    next=resetWiz('trade'); attachUnifiedOrigin(next,2,context); next.fileDescription=fileDescriptionValue(current); next.fileDescriptionAttempted=!!current.fileDescriptionAttempted;
     Object.assign(next,{uploadType:'trade',entryCategory:current.category,source:current.category,fileName:current.fileName,uploadState:'uploaded'});
     if (draftId) next.draftId=draftId;
     state.wiz=next; state.view='wizard-trade'; render(); return;
   }
   if(current.detectedRoute!=='erp'){current.v2FileState='error';current.routeError='We couldn’t determine the correct processing flow.';current.uploadType=null;render();return;}
-  next=resetWiz('erp'); attachUnifiedOrigin(next,2,context);
+  next=resetWiz('erp'); attachUnifiedOrigin(next,2,context); next.fileDescription=fileDescriptionValue(current); next.fileDescriptionAttempted=!!current.fileDescriptionAttempted;
   Object.assign(next,{uploadType:'erp',entryCategory:current.category,marketplace:current.marketplace||'',sellerId:current.sellerId||'',fileName:current.fileName,erpScenario:current.erpScenario||'all-matched',v2UseCase:current.v2UseCase||'',v2UseCaseTitle:current.v2UseCaseTitle||'',erpPartialSampleFileName:current.v2UseCase==='partial-missing'?(current.fileName||''):'',erpPartialReuploadCount:0});
   if (draftId) next.draftId=draftId;
   state.wiz=next; state.view='wizard-erp'; simulateErp(current.fileName);
@@ -3878,6 +3880,7 @@ function routeUploadV2() {
 function uploadV2Next() {
   const w=state.wiz; if (!w || w.uploadVersion!==2) return;
   if (!w.category) { toast('Select a category before continuing.'); return; }
+  if (!ensureFileDescription({ toast:'Enter a file description before continuing.' })) return;
   routeUploadV2();
 }
 const SHOW_REQUIREMENTS_R1 = false;
@@ -10253,6 +10256,7 @@ function uploadV2Body(w) {
     ${w.category==='marketplace'?`<div class="field"><label>Select the marketplace <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.marketplace?'':'placeholder'}" onchange="setUploadV2Marketplace(this.value)"><option value="">Select a marketplace</option>${MARKETPLACE_UPLOAD_OPTIONS.map(name=>`<option value="${name}" ${w.marketplace===name?'selected':''}>${name}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Choose the marketplace associated with these transaction records.</p></div>`:''}
     ${uploadV2NeedsSellerId(w)?`<div class="field"><label>Seller ID <span style="color:var(--destructive)">*</span></label><input maxlength="100" value="${escapeHTML(w.sellerId)}" placeholder="Enter your ${w.marketplace} Seller ID" oninput="setUploadV2SellerId(this.value)" /><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Required to associate this upload with the correct store.</p></div>`:''}</div>
     ${uploadBoxBlock('Upload file', fileContent)}
+    ${fileDescriptionBlock()}
   </div>`;
 }
 function viewWizardUpload() {

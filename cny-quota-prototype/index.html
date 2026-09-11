@@ -3397,6 +3397,8 @@ function uploadV2ContextFrom(w) {
     v2RequestId:Number(source.v2RequestId) || 0,
     v2PickerOpen:false,
     erpScenario:source.erpScenario || '', v2UseCase:source.v2UseCase || '', v2UseCaseTitle:source.v2UseCaseTitle || '',
+    fileDescription: (w && w.fileDescription) || source.fileDescription || '',
+    fileDescriptionAttempted: !!(w && w.fileDescriptionAttempted) || !!source.fileDescriptionAttempted,
   };
 }
 function createUploadV2State(context, allowedTypes) {
@@ -3404,7 +3406,7 @@ function createUploadV2State(context, allowedTypes) {
     kind:'upload', uploadVersion:2, v2Stage:1, category:'',
     v2FileState:'empty', fileName:null, fileExtension:'', fileSize:0,
     csvHeaders:[], detectedRoute:'', detectedLabel:'', routeError:'', uploadType:null,
-    marketplace:'', sellerId:'', v2RequestId:0, v2PickerOpen:false, erpScenario:'', v2UseCase:'', v2UseCaseTitle:'',
+    marketplace:'', sellerId:'', v2RequestId:0, v2PickerOpen:false, erpScenario:'', v2UseCase:'', v2UseCaseTitle:'', fileDescription:'', fileDescriptionAttempted:false,
   }, context || {});
   if (!TEMPLATE_TYPES.some(type=>type.key===w.category)) w.category = '';
   if (w.category !== 'marketplace') { w.marketplace = ''; w.sellerId = ''; }
@@ -3938,7 +3940,7 @@ function routeUploadV2() {
   let next;
   if (current.detectedRoute === 'template' || isUploadV2TemplateFileName(current.fileName)) {
     next = resetWiz('template');
-    attachUnifiedOrigin(next,2,context);
+    attachUnifiedOrigin(next,2,context); next.fileDescription=fileDescriptionValue(current); next.fileDescriptionAttempted=!!current.fileDescriptionAttempted;
     next.uploadType = 'template';
     next.entryCategory = current.category;
     next.category = current.category;
@@ -3955,7 +3957,7 @@ function routeUploadV2() {
   }
   if (current.detectedRoute === 'trade') {
     next = resetWiz('trade');
-    attachUnifiedOrigin(next,2,context);
+    attachUnifiedOrigin(next,2,context); next.fileDescription=fileDescriptionValue(current); next.fileDescriptionAttempted=!!current.fileDescriptionAttempted;
     next.uploadType = 'trade';
     next.entryCategory = current.category;
     next.source = current.category;
@@ -3975,7 +3977,7 @@ function routeUploadV2() {
     return;
   }
   next = resetWiz('erp');
-  attachUnifiedOrigin(next,2,context);
+  attachUnifiedOrigin(next,2,context); next.fileDescription=fileDescriptionValue(current); next.fileDescriptionAttempted=!!current.fileDescriptionAttempted;
   next.uploadType = 'erp';
   next.entryCategory = current.category;
   next.marketplace = current.marketplace || '';
@@ -3994,6 +3996,7 @@ function routeUploadV2() {
 function uploadV2Next() {
   const w = state.wiz; if (!w || w.uploadVersion !== 2) return;
   if (!w.category) { toast('Select a category before continuing.'); return; }
+  if (!ensureFileDescription({ toast:'Enter a file description before continuing.' })) return;
   routeUploadV2();
 }
 const SHOW_REQUIREMENTS_R1 = false;
@@ -10441,6 +10444,7 @@ function uploadV2Body(w) {
       </div>`:''}
     </div>
     ${uploadBoxBlock('Upload file', fileContent)}
+    ${fileDescriptionBlock()}
   </div>`;
 }
 function viewWizardUpload() {
