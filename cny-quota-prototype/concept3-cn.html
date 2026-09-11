@@ -336,7 +336,7 @@ a { color: inherit; }
   flex-shrink:0;
 }
 .upload-helper .helper-sub {
-  font-size:13px; color:var(--muted-foreground); line-height:1.45;
+  font-size:14px; color:var(--foreground); line-height:1.45;
   flex:1 1 220px; min-width:0;
 }
 .upload-helper .helper-actions {
@@ -1398,7 +1398,9 @@ table.data.req-h-table tr:hover td { background:transparent; }
 .req-r2-panel-head { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
 .req-r2-panel-head-stack { flex-direction:column; align-items:flex-start; gap:8px; }
 .req-r2-type-name { font-size:14px; font-weight:600; line-height:20px; margin:0; }
-.req-r2-type-desc { color:var(--muted-foreground); font-size:12px; line-height:18px; }
+.req-r2-type-desc { color:var(--muted-foreground); font-size:12px; line-height:18px; margin:0; }
+.req-r2-download { font-size:14px; font-weight:700; line-height:20px; }
+.req-r2-download svg { width:18px; height:18px; }
 .req-v-table-wrap { border:1px solid var(--border); border-radius:8px; overflow:hidden; background:#fff; }
 table.data.req-v-table { width:100%; min-width:0; table-layout:fixed; font-size:12px; }
 table.data.req-v-table th,
@@ -2201,6 +2203,7 @@ body.concept-3 {
 .concept-3 .history-link,
 .concept-3 .inline-link,
 .concept-3 .btn-link { color:var(--primary); font-weight:600; }
+.concept-3 .btn-link.req-r2-download { font-size:14px; font-weight:700; }
 .concept-3 .chip { border-radius:999px; }
 .concept-3 .table-card {
   border-color:var(--border); border-radius:12px; box-shadow:none; background:#fff;
@@ -2820,9 +2823,10 @@ function setRequirementsVersion(version) {
   }
   render();
 }
-function setRequirementsTab(key) {
-  state.requirementsTab = key;
-  if (state.templatePanel) state.templateType = key;
+function setRequirementsTab(key, tabKey) {
+  const stateKey = tabKey || 'requirementsTab';
+  state[stateKey] = key;
+  if (state.templatePanel && stateKey === 'requirementsTab') state.templateType = key;
   render();
 }
 function tradeFieldNoteHtml(en, cn) {
@@ -2841,6 +2845,22 @@ function openDocumentRequirements() {
   state.supportedMarketplacesPanel = false;
   state.supportedTx = false;
   state.view = 'document-requirements';
+  render();
+}
+function openHomepage2MarketplaceSupport() {
+  state.goodsRequirementsPanel = false;
+  state.homepage2MarketplaceSupport = true;
+  render();
+}
+function openGoodsTradeRequirementsPanel() {
+  state.homepage2MarketplaceSupport = false;
+  state.goodsRequirementsPanel = true;
+  render();
+}
+function openMarketplaceFillGuide() {
+  state.templateGuide = false;
+  state.templatePanel = false;
+  state.marketplaceGuide = true;
   render();
 }
 function toggleSupportedTxType(key) {
@@ -2902,21 +2922,20 @@ function requiredDetailsVerticalTable(fields) {
 }
 function requiredDetailsTabs(options) {
   const showDownload = !!(options && options.showDownload);
-  const types = DOCUMENT_REQUIREMENT_TYPES;
-  const activeKey = types.some(type => type.key === state.requirementsTab) ? state.requirementsTab : ((types[0] && types[0].key) || 'marketplace');
+  const exclude = new Set((options && options.excludeKeys) || []);
+  const types = DOCUMENT_REQUIREMENT_TYPES.filter(type => !exclude.has(type.key));
+  const tabKey = (options && options.tabKey) || 'requirementsTab';
+  const current = state[tabKey];
+  const activeKey = types.some(type => type.key === current) ? current : ((types[0] && types[0].key) || 'marketplace');
   const active = types.find(type => type.key === activeKey) || types[0];
   if (!active) return '';
-  const head = showDownload
-    ? `<div class="req-r2-panel-head req-r2-panel-head-stack">
-        <p class="req-r2-type-name">${active.label}</p>
-        <button type="button" class="btn-link" onclick="downloadRequirementTemplate('${active.key}')">${I.download} Download template</button>
-      </div>`
-    : `<div class="req-r2-panel-head">
+  const head = `<div class="req-r2-panel-head">
         <p class="req-r2-type-desc">${active.desc}</p>
+        ${showDownload ? `<button type="button" class="btn-link req-r2-download" onclick="downloadRequirementTemplate('${active.key}')">${I.download} Download template</button>` : ''}
       </div>`;
   return `<div class="req-r2">
     <div class="req-r2-tabs" role="tablist" aria-label="${tradeFieldLabel('Business type', '业务类型')}">
-      ${types.map(type => `<button type="button" role="tab" class="req-r2-tab ${type.key===activeKey?'on':''}" aria-selected="${type.key===activeKey?'true':'false'}" onclick="setRequirementsTab('${type.key}')">${type.label}</button>`).join('')}
+      ${types.map(type => `<button type="button" role="tab" class="req-r2-tab ${type.key===activeKey?'on':''}" aria-selected="${type.key===activeKey?'true':'false'}" onclick="setRequirementsTab('${type.key}', '${tabKey}')">${type.label}</button>`).join('')}
     </div>
     <div class="req-r2-panel" role="tabpanel" aria-label="${active.label}">
       ${head}
@@ -3297,6 +3316,9 @@ const state = {
   supportedMarketplacesPanel: false,
   marketplaceResources: false,
   homepage2MarketplaceSupport: false,
+  goodsRequirementsPanel: false,
+  goodsRequirementsTab: 'goods',
+  marketplaceGuide: false,
   templateType: 'marketplace',
   templateMenuOpen: false,
   erpExample: false,
@@ -3905,6 +3927,7 @@ function setConcept(n) {
   state.supportedMarketplacesPanel = false;
   state.marketplaceResources = false;
   state.homepage2MarketplaceSupport = false;
+  state.goodsRequirementsPanel = false;
   render();
 }
 
@@ -3984,6 +4007,7 @@ function setHomepageVersion(n) {
   state.supportedMarketplacesPanel = false;
   state.marketplaceResources = false;
   state.homepage2MarketplaceSupport = false;
+  state.goodsRequirementsPanel = false;
   syncPrototypeHash();
   render();
 }
@@ -4035,11 +4059,13 @@ function go(view, recordId) {
     state.templatePanel = false;
     state.templateMenuOpen = false;
     state.templateGuide = false;
+    state.marketplaceGuide = false;
     state.erpGuide = false;
     state.supportedTx = false;
     state.supportedMarketplacesPanel = false;
     state.marketplaceResources = false;
     state.homepage2MarketplaceSupport = false;
+  state.goodsRequirementsPanel = false;
   }
   if (view !== 'details' && view !== 'erp-details' && view !== 'upload-details') {
     state.detailReturn = null;
@@ -4822,11 +4848,11 @@ function homeCardsHomepage2() {
     <article class="action-card home-pair-card homepage2-card">
       <div class="homepage2-card-head">
         <h3>Marketplace sales</h3>
-        <p class="desc">We offer 2 ways for you to provide transactions to us.<br><button type="button" class="inline-link homepage2-support-link" onclick="state.homepage2MarketplaceSupport=true;render()">View supported marketplaces</button></p>
+        <p class="desc">Choose the matching method for the platform you sell on.</p>
       </div>
       <div class="homepage2-split">
         <section class="homepage2-pane connect">
-          <h4>Connect stores</h4>
+          <h4>Amazon, Shopify, and Walmart</h4>
           <p>After you connect a store, your quota increases automatically when the store receives a new payment.</p>
           <div class="store-plain-list">
             <div class="store-plain-row">
@@ -4852,11 +4878,11 @@ function homeCardsHomepage2() {
           </div>
         </section>
         <section class="homepage2-pane upload">
-          <h4>Upload transaction records</h4>
-          <p>Use this option for your stores not on Amazon, Shopify, or Walmart. <button type="button" class="inline-link" onclick="openTemplateDownloadPanel('marketplace')">Download our template</button> and upload records manually.</p>
+          <h4>Other marketplaces</h4>
+          <p>Download the template, then complete the transaction records manually. Quota increases based on the transaction amounts. <button type="button" class="inline-link homepage2-support-link" onclick="openHomepage2MarketplaceSupport()">View supported marketplaces</button></p>
           <div class="card-footer">
             <div class="cta-cluster">
-              <button type="button" class="btn btn-gradient" onclick="startMarketplaceTemplateWizard()">Upload record</button>
+              <button type="button" class="btn btn-gradient" onclick="startMarketplaceTemplateWizard()">Upload transaction records</button>
             </div>
           </div>
         </section>
@@ -4866,7 +4892,7 @@ function homeCardsHomepage2() {
     <article class="action-card home-pair-card homepage2-card">
       <div class="homepage2-card-head">
         <h3>Goods or service trading</h3>
-        <p class="desc">Upload trade documents or CSV transaction records. We increase your quota based on the transaction amounts.</p>
+        <p class="desc">Upload trade documents or transaction records. We increase your quota based on the transaction amounts.</p>
       </div>
       <div class="homepage2-docs">
         <div class="homepage2-doc-items">
@@ -4875,8 +4901,8 @@ function homeCardsHomepage2() {
             <p>Commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents.</p>
           </div>
           <div>
-            <strong>CSV transaction records</strong>
-            <p>You can use our template, or export them from your business platforms like ERP. <button type="button" class="inline-link" onclick="openDocumentRequirements()">View requirements</button></p>
+            <strong>Transaction records (CSV format)</strong>
+            <p>You can use our template, or export them from your business platforms like ERP. <button type="button" class="inline-link" onclick="openGoodsTradeRequirementsPanel()">View requirements</button></p>
           </div>
         </div>
         <div class="card-footer">
@@ -4928,6 +4954,7 @@ function viewHome() {
     ${erpGuidePanel()}
     ${marketplaceResourcesPanel()}
     ${homepage2MarketplaceSupportPanel()}
+    ${goodsTradeRequirementsPanel()}
   </div>`;
 }
 
@@ -5013,6 +5040,7 @@ function openTemplateDownloadPanel(typeKey) {
   state.requirementsTab = key;
   state.templateMenuOpen = false;
   state.templateGuide = false;
+  state.marketplaceGuide = false;
   state.templatePanel = true;
   render();
 }
@@ -5041,7 +5069,6 @@ function templateFillGuidePanel() {
           ${showBack ? `<button type="button" aria-label="Back to template download" onclick="state.templateGuide=false;render()">${I.chevronL}</button>` : ''}
           <div>
             <h3>Download and complete the template</h3>
-            <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;font-weight:400">Prepare your template correctly before uploading</p>
           </div>
         </div>
         <button type="button" onclick="state.templateGuide=false;state.templatePanel=false;state.templateMenuOpen=false;render()">${I.x}</button>
@@ -5064,6 +5091,47 @@ function templateFillGuidePanel() {
             Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12.50.
           </p>
           ${requiredDetailsTabs({ showDownload: true })}
+        </section>
+      </div>
+    </div>
+  </div>`;
+}
+
+function marketplaceFillGuidePanel() {
+  if (!state.marketplaceGuide) return '';
+  const marketplace = DOCUMENT_REQUIREMENT_TYPES.find(type => type.key === 'marketplace') || {
+    key: 'marketplace',
+    label: 'Marketplace',
+    desc: 'SHEIN.COM, TikTok Shop, Wayfair, and other marketplaces',
+  };
+  return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.marketplaceGuide=false;render()}">
+    <div class="drawer fill-guide">
+      <div class="drawer-h">
+        <h3>Download and complete the template</h3>
+        <button type="button" onclick="state.marketplaceGuide=false;render()">${I.x}</button>
+      </div>
+      <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:24px">
+        <section>
+          <h4 style="font-size:14px;font-weight:600;margin:0 0 10px">Tips before you begin</h4>
+          <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px;font-size:13px;color:var(--muted-foreground);line-height:1.5">
+            <li>Check that your marketplace is in the list of supported marketplaces.</li>
+            <li>Download and save a copy of the template with a name that describes your store, for example <span class="mono">MyStore.csv</span>.</li>
+            <li>Save the file in <span class="mono">.csv</span> format, keep it under 10 MB, and use English letters and digits in the file name.</li>
+            <li>Do not change or delete the column headers.</li>
+          </ul>
+        </section>
+
+        <section style="display:flex;flex-direction:column;gap:14px">
+          <h4 style="font-size:14px;font-weight:600;margin:0">Download and complete the transaction information</h4>
+          ${uiAlertHTML({ tone:'info', content:'Complete one row for each item in an order. If the same item is sold at different prices, combine it into one row and use the average unit price.' })}
+          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
+            Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12.50.
+          </p>
+          <div class="req-r2-panel-head">
+            <p class="req-r2-type-desc">${marketplace.desc}</p>
+            <button type="button" class="btn-link req-r2-download" onclick="downloadRequirementTemplate('marketplace')">${I.download} Download template</button>
+          </div>
+          ${requiredDetailsVerticalTable(documentRequiredDetails('marketplace'))}
         </section>
       </div>
     </div>
@@ -5211,6 +5279,39 @@ function homepage2MarketplaceSupportPanel() {
                 </div>
               </div>`).join('')}
           </div>
+        </section>
+      </div>
+    </div>
+  </div>`;
+}
+
+function goodsTradeRequirementsPanel() {
+  if (!state.goodsRequirementsPanel) return '';
+  const eligibleTags = [
+    'Physical goods',
+    'Accommodation',
+    'Advertisement',
+    'Air tickets',
+    'International logistics',
+    'Software',
+    'Tourism',
+  ];
+  return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.goodsRequirementsPanel=false;render()}">
+    <div class="drawer fill-guide">
+      <div class="drawer-h">
+        <h3>Upload document requirements</h3>
+        <button type="button" onclick="state.goodsRequirementsPanel=false;render()">${I.x}</button>
+      </div>
+      <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:24px">
+        <section>
+          <p style="font-size:14px;font-weight:600;margin-bottom:12px">Eligible settlement transaction types</p>
+          <div class="eligible-services">
+            ${eligibleTags.map(label => `<span>${label}</span>`).join('')}
+          </div>
+        </section>
+        <section>
+          <p style="font-size:14px;font-weight:600;margin-bottom:12px">Information your documents need to include</p>
+          ${requiredDetailsTabs({ excludeKeys: ['marketplace'], tabKey: 'goodsRequirementsTab' })}
         </section>
       </div>
     </div>
@@ -6755,6 +6856,12 @@ function stepTemplateUpload() {
       <h2 style="font-size:20px;font-weight:700">${heading}</h2>
       ${subcopy ? `<p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">${subcopy}</p>` : ''}
     </div>
+    ${marketplaceOnly ? `<div class="upload-helper">
+      <span class="helper-sub">Download and prepare the standard CSV template before uploading.</span>
+      <div class="helper-actions">
+        <button type="button" class="btn-link" onclick="openMarketplaceFillGuide()">${I.download} Download and complete the template</button>
+      </div>
+    </div>` : ''}
     ${templateCategoryFields(w)}`;
   let fileControl = '';
   if (w.csvState==='empty') {
@@ -6812,7 +6919,7 @@ function viewWizardTemplate() {
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body:templateBody,
     footer:templateFooter
-  }) + uploadV2SamplePicker(w);
+  }) + uploadV2SamplePicker(w) + marketplaceFillGuidePanel();
 }
 
 function erpExampleModal() {
@@ -6982,10 +7089,10 @@ function erp2FileSummary(w, stats) {
 }
 function mapTableHead() {
   return `<div class="map-head">
-    <div class="map-col-field"><div class="map-head-copy"><strong>Column required</strong></div></div>
+    <div class="map-col-field"><div class="map-head-copy"><strong>System required column</strong></div></div>
     <div class="map-col-arrow" aria-hidden="true"></div>
-    <div class="map-col-file"><div class="map-head-copy"><strong>Column in your file</strong></div></div>
-    <div class="map-col-sample"><div class="map-head-copy"><strong>Sample value in your file</strong></div></div>
+    <div class="map-col-file"><div class="map-head-copy"><strong>Column in the uploaded file</strong></div></div>
+    <div class="map-col-sample"><div class="map-head-copy"><strong>Sample value in the uploaded file</strong></div></div>
   </div>`;
 }
 function mapSampleCell(value) {
@@ -7275,14 +7382,7 @@ function erpUnmatchedDetailsIntro(count) {
 }
 function erpMatchedColumnsIntro(matchedCount, totalCount) {
   return `<div class="erp-match-intro">
-    <section>
-      <h3>What we did</h3>
-      <p>To declare your transactions for CNY settlement, we need specific details from your file. Column names vary between business systems, so we matched yours to the required details — ${matchedCount} of the ${totalCount} are matched.</p>
-    </section>
-    <section>
-      <h3>What you need to do</h3>
-      <p>Review the matches below. If a detail is matched to the wrong column, select the correct column from your file.</p>
-    </section>
+    <p>${matchedCount} columns in your file were identified as the required system details. The table below lists the matches. Please confirm and complete them.</p>
   </div>`;
 }
 function stepERP2Confirm(w) {
@@ -10111,7 +10211,7 @@ function viewUploadDetails() {
         </div>
         <div class="details-table-wrap" style="margin-top:16px">
           <table class="data">
-            <thead><tr>${['Column required','Column in your file','Sample value in your file'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+            <thead><tr>${['System required column','Column in the uploaded file','Sample value in the uploaded file'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
             <tbody>${erpFieldMappings.map(([source,target,method,sample])=>`<tr>
               <td>
                 <div style="font-weight:700">${erpRequiredLabel(target)}</div>
@@ -10562,11 +10662,12 @@ const CN_UI_REPLACEMENTS = [
   [/Unrecognized(?=<)/g, '无法识别'],
   [/Check the columns we matched/g, '核对已匹配的列'], [/Confirm the processing results/g, '确认处理结果'],
   [/What we did/g, '我们已完成'], [/What you need to do/g, '您需要做的'],
+  [/(\d+) columns in your file were identified as the required system details\. The table below lists the matches\. Please confirm and complete them\./g, '您文件中的 $1 列信息已被识别为系统所需信息，如下表格中列出了对应关系，请确认并完善。'],
   [/To declare your transactions for CNY settlement, we need specific details from your file\. Column names vary between business systems, so we matched yours to the required details — (\d+) of the (\d+) are matched\./g, '为进行人民币结汇申报，我们需要从文件中获取指定信息。各业务系统的列名可能不同，因此我们已将您的列与所需信息匹配 — 目前 $2 项中已匹配 $1 项。'],
   [/Review the matches below\. If a detail is matched to the wrong column, select the correct column from your file\./g, '请核对下方匹配结果。如某项信息对应到了错误的列，请从文件中选择正确的列。'],
   [/We identified (\d+) columns as what we require\. Modify the result if needed\./g, '已识别 $1 个所需字段，可按需修改。'],
   [/Unmapped column(?!s)/g, '未匹配列'], [/^Sample$/g, '示例'],
-  [/Fields we need/g, '所需字段'], [/Field we need/g, '所需字段'], [/Column required/g, '所需列'], [/Column in your file/g, '文件中的列'], [/Sample value in your file/g, '文件中的示例值'], [/Still required — (\d+) left/g, '仍需补充 — 还剩 $1 个'],
+  [/Fields we need/g, '所需字段'], [/Field we need/g, '所需字段'], [/System required column/g, '系统所需列'], [/Column required/g, '所需列'], [/Column in the uploaded file/g, '上传文件中的列'], [/Column in your file/g, '文件中的列'], [/Sample value in the uploaded file/g, '上传文件中的示例值'], [/Sample value in your file/g, '文件中的示例值'], [/Still required — (\d+) left/g, '仍需补充 — 还剩 $1 个'],
   [/Info we ask for/g, '所需信息'], [/What we find in your document/g, '单据中已识别的信息'],
   [/Match the columns in your file to the fields we need\./g, '请将文件中的列与所需字段对应。'],
   [/Confirm processing results, manually verify available columns, and complete any remaining required fields\./g, '确认处理结果，手动核对可用字段，并补充剩余必填信息。'],
@@ -10588,6 +10689,7 @@ const CN_UI_REPLACEMENTS = [
   [/You can use our template, or export them from your business platforms like ERP\./g, '可使用标准模板，也可从 ERP 等业务系统导出。'],
   [/ERP CSV files/g, 'ERP 文件'],
   [/CSV transaction records/g, 'CSV 交易记录'],
+  [/Transaction records \(CSV format\)/g, '交易记录（CSV 格式）'],
   [/Select a business type to enable document upload\./g, '选择业务类型后才能上传单据。'],
   [/Business-to-business trade documents — Goods and Service\. Upload documents to release CNY quota per transaction\./g, '企业间货物或服务贸易单据。上传后可按交易释放人民币额度。'],
   [/Track quota from uploaded trade documents and take action when needed\./g, '查看贸易单据带来的额度，并在需要时处理。'], [/Document List/g, '单据列表'], [/Quota from this channel/g, '此渠道带来的额度'], [/Unshipped Settlement Quota/g, '未发货结算额度'], [/Releasable quota/g, '可释放额度'],
@@ -10642,11 +10744,11 @@ const CN_UI_REPLACEMENTS = [
   [/Pool quota/g, '额度明细'], [/All balances/g, '全部余额'],
   [/Connect a marketplace once, and eligible payments can increase your quota automatically\./g, '绑定电商平台后，符合条件的收款可自动提高额度。'],
   [/After you connect a store, your quota increases automatically when the store receives a new payment\./g, '绑定店铺后，当店铺收到新收款时，额度会自动提高。'],
-  [/Amazon, Shopify, and Walmart payments/g, 'Amazon、Shopify、Walmart 收款'], [/Connect Stores/g, '绑定店铺'], [/Connect stores/g, '绑定店铺'], [/Connect store/g, '绑定店铺'], [/Connect a Store/g, '绑定店铺'],
+  [/Amazon, Shopify, and Walmart payments/g, 'Amazon、Shopify、Walmart 收款'], [/Amazon, Shopify, and Walmart/g, '亚马逊、Shopify和沃尔玛'], [/Connect Stores/g, '绑定店铺'], [/Connect stores/g, '绑定店铺'], [/Connect store/g, '绑定店铺'], [/Connect a Store/g, '绑定店铺'],
   [/(\d+) stores connected/g, '已绑定 $1 家店铺'], [/(\d+) connected/g, '已绑定 $1 家'], [/Not connected/g, '未绑定'], [/(\d+) to connect/g, '可绑定 $1 家'], [/No stores connected yet/g, '尚未绑定店铺'],
   [/Choose your e-commerce platform/g, '选择电商平台'], [/Creative Marketplace/g, '创意商品平台'], [/Social Commerce/g, '社交电商'],
   [/Other platform and trade payments/g, '其他平台收款、外贸收款'], [/Goods or service trading/g, '货物或服务贸易'], [/Upload transaction documents, and we’ll increase your quota based on the transaction amounts\./g, '上传交易材料，额度将按交易金额提高。'],
-  [/Upload trade documents or CSV transaction records\. We increase your quota based on the transaction amounts\./g, '上传贸易单据或 CSV 交易记录。额度将按交易金额提高。'],
+  [/Upload trade documents or transaction records\. We increase your quota based on the transaction amounts\./g, '上传贸易单据或交易记录。额度将按交易金额提高。'],
   [/You can upload:/g, '可上传：'],
   [/What was your transaction for\?/g, '收款来源'],
   [/Next step/g, '下一步'],
@@ -10755,12 +10857,14 @@ const CN_UI_REPLACEMENTS = [
   [/Marketplace template & supported marketplaces/g, '电商平台模板与支持列表'], [/Upload marketplace records or check how each marketplace is supported\./g, '上传电商平台交易记录，或查看各平台的支持方式。'], [/Upload marketplace CSV/g, '上传电商平台 CSV'],
   [/Download the standard marketplace template, add your transaction records, then upload the completed file\./g, '下载标准电商平台模板，添加交易记录后上传。'], [/Choose the relevant path based on how your marketplace is supported\./g, '请按电商平台的支持方式选择对应路径。'],
   [/Choose one of two ways to add marketplace transaction records and increase your quota\./g, '任选一种方式添加电商平台交易记录并提高额度。'],
+  [/Choose the matching method for the platform you sell on\./g, '按照您销售的平台选择对应的方式。'],
+  [/Download the template, then complete the transaction records manually\. Quota increases based on the transaction amounts\./g, '下载模板后手动填写交易记录。额度将按交易金额提高。'],
   [/We offer 2 ways for you to provide transactions to us\./g, '可通过以下 2 种方式提交交易记录。'],
   [/This allows us to automatically receive your store data\./g, '绑定后即可自动获取店铺数据。'], [/Connect these marketplaces to increase quota automatically from eligible payments\./g, '绑定这些电商平台后，符合条件的收款可自动提高额度。'],
   [/ERP CSV files – transaction records exported from your ERP for automated field mapping\./g, 'ERP 文件：从 ERP 导出的交易记录，用于自动识别字段。'],
   [/Use this option if you can’t connect your marketplace\. /g, '无法绑定电商平台时，可'], [/Use this option for your stores not on Amazon, Shopify, or Walmart\. /g, '适用于非 Amazon、Shopify、Walmart 店铺，可'], [/Download our template/g, '下载模板'], [/ and upload records manually\./g, '并手动上传交易记录。'],
   [/Connect a store/g, '绑定店铺'],
-  [/Upload transaction records/g, '上传交易记录'], [/Connect a marketplace/g, '绑定电商平台'],
+  [/Upload transaction records/g, '上传交易记录'], [/Other marketplaces/g, '其他电商平台'], [/Connect a marketplace/g, '绑定电商平台'],
   [/Automatic quota increase/g, '自动提高额度'], [/Eligible payments from these marketplaces can update your quota automatically\./g, '这些电商平台的符合条件收款，可自动更新额度。'], [/Upload using the marketplace template/g, '使用电商平台模板上传'],
   [/Use the marketplace CSV template for transaction records from these marketplaces\./g, '这些电商平台的交易记录请使用电商平台 CSV 模板。'], [/Marketplace sales/g, '电商平台销售'], [/Marketplace transactions/g, '电商平台交易'], [/Goods trading/g, '货物贸易'], [/Foreign trade/g, '外贸'], [/Physical goods/g, '货物'], [/Services/g, '服务'],
   [/Transaction types that can increase your CNY quota/g, '可提高人民币额度的交易类型'], [/Marketplace transactions that can increase your CNY quota/g, '可提高人民币额度的电商平台交易'],
