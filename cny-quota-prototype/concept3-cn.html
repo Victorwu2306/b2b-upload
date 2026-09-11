@@ -6135,12 +6135,6 @@ function applyERPCorrectedUpload(w, outcome) {
 }
 function retryERPCorrectedUpload() {
   const w = state.wiz; if (!w) return;
-  restoreERPPreReplacementState(w);
-  w.erp2ReplacementState = 'empty';
-  w.erp3ReplacementState = 'empty';
-  w.erp2ReplacementOutcome = '';
-  w.erp2ReplacementFileName = null;
-  w.mappingAttempted = false;
   openERPCorrectedFilePicker();
 }
 function erpFileColumnCode(sourceOrName) {
@@ -6244,21 +6238,14 @@ function erpReplacementNewColumnsSection(w) {
     return `<div class="mapping-c2-success">${I.check}<div><strong>New columns mapped</strong><p>The corrected file replaced the previous upload. Existing mappings were reused, and the new columns were mapped.</p></div></div>
       ${table}`;
   }
-  return `<div class="erp2-missing-card">
-        <div class="erp2-missing-card-h">
-          <h3>${cannotMatch ? 'These new columns still cannot be matched' : 'Unable to recognize the new columns'}</h3>
-          <p>${cannotMatch
-            ? 'None of the new file columns can be matched to the required fields. Re-upload a file that uses recognizable headers.'
-            : 'The updated file includes the added columns, but we could not match them automatically. Select the correct column for each field, or re-upload if none of them match.'}</p>
-          <div class="erp2-required-headers">${(unmapped.length ? unmapped : newHeaders).map(name=>`<span>${erpRequiredLabel(name)}</span>`).join('')}</div>
-        </div>
-      </div>
-      ${uiAlertHTML({
+  const chips = `<div class="erp2-required-headers">${(unmapped.length ? unmapped : newHeaders).map(name=>`<span>${erpRequiredLabel(name)}</span>`).join('')}</div>`;
+  return `${uiAlertHTML({
         tone:'error',
-        title: cannotMatch ? 'Re-upload a file with recognizable headers' : 'If you cannot match these columns, re-upload the file',
+        title: cannotMatch ? 'These new columns still cannot be matched' : 'Unable to recognize the new columns',
         content: cannotMatch
-          ? 'The new headers are still unrecognized. Upload a corrected CSV that uses the required column names.'
-          : 'Choose a matching file column below. If none of the headers correspond to this field, re-upload a corrected file.',
+          ? 'None of the new file columns can be matched to the required fields. Re-upload a file that uses recognizable headers.'
+          : 'The updated file includes the added columns, but we could not match them automatically. Choose a matching file column below. If none of the headers correspond to this field, re-upload a corrected file.',
+        extra: chips,
         action:'Re-upload file',
         actionOnclick:'retryERPCorrectedUpload()',
       })}
@@ -6436,13 +6423,14 @@ function uiAlertHTML(opts) {
   const icon = o.icon || icons[tone] || I.info;
   const title = o.title ? `<h3 class="alert-title">${o.title}</h3>` : '';
   const content = o.content ? `<p class="alert-content">${o.content}</p>` : '';
+  const extra = o.extra || '';
   const action = o.action
     ? `<button type="button" class="alert-action" onclick="${o.actionOnclick || ''}">${o.action}</button>`
     : '';
   const dismiss = o.dismissOnclick
     ? `<button type="button" class="alert-dismiss" aria-label="Dismiss" onclick="${o.dismissOnclick}">${I.x}</button>`
     : '';
-  return `<div class="alert ${toneClass}" role="status"><span class="alert-icon" aria-hidden="true">${icon}</span><div class="alert-body">${title}${content}</div>${action}${dismiss}</div>`;
+  return `<div class="alert ${toneClass}" role="status"><span class="alert-icon" aria-hidden="true">${icon}</span><div class="alert-body">${title}${content}${extra}</div>${action}${dismiss}</div>`;
 }
 function erpZeroMatchAlertHTML(opts) {
   const o = opts || {};
@@ -7398,7 +7386,7 @@ function simulateERP2CorrectedUpload(outcome) {
 function stepERP2Missing(w) {
   const stats = getERPMappingStats(w);
   const missingNames = stats.missing.map(field => field.name);
-  if (w.erp2ReplacementOutcome && w.erp2ReplacementState !== 'processing') return erpReplacementResultHTML(w);
+  if (w.erp2ReplacementOutcome) return erpReplacementResultHTML(w);
   if (!missingNames.length) {
     return `<div class="erp2-stage">
       <div class="erp2-stage-head"><h2>Update and re-upload</h2><p>Check whether the file still needs any required system fields.</p></div>
@@ -7660,7 +7648,7 @@ function stepERP3Confirm(w) {
 function stepERP3Missing(w) {
   const stats = getERPMappingStats(w);
   const missingNames = stats.missing.map(field => field.name);
-  if (w.erp2ReplacementOutcome && w.erp3ReplacementState !== 'processing') return erpReplacementResultHTML(w);
+  if (w.erp2ReplacementOutcome) return erpReplacementResultHTML(w);
   if (!missingNames.length) {
     return `<div class="erp2-stage">
       <div class="erp2-stage-head"><h2>Update and re-upload</h2><p>The missing fields have been added to the corrected file.</p></div>
@@ -10884,6 +10872,7 @@ const CN_UI_REPLACEMENTS = [
   [/Unable to recognize the new columns/g, '无法识别新增列'],
   [/These new columns still cannot be matched/g, '新增列仍无法匹配'],
   [/The updated file includes the added columns, but we could not match them automatically\. Select the correct column for each field, or re-upload if none of them match\./g, '更新后的文件包含新增列，但未能自动匹配。请为每个字段选择对应列；若均不匹配，请重新上传。'],
+  [/The updated file includes the added columns, but we could not match them automatically\. Choose a matching file column below\. If none of the headers correspond to this field, re-upload a corrected file\./g, '更新后的文件包含新增列，但未能自动匹配。请在下方选择对应的文件列。如果这些表头都不对应此字段，请重新上传修正文件。'],
   [/The updated file includes the added columns, but we could not match them automatically\. Select the correct column for each field\./g, '更新后的文件包含新增列，但未能自动匹配。请为每个字段选择对应列。'],
   [/None of the new file columns can be matched to the required fields\. Re-upload a file that uses recognizable headers\./g, '新增文件列无法匹配到必填字段。请重新上传表头可识别的文件。'],
   [/If you cannot match these columns, re-upload the file/g, '如果无法匹配这些列，请重新上传文件'],
