@@ -7381,16 +7381,16 @@ function simulateERP2CorrectedUpload(outcome) {
   setTimeout(() => {
     if (state.wiz !== w) return;
     applyERPCorrectedUpload(w, outcome);
-    w.erp2ReplacementState = 'done';
+    w.erp2ReplacementState = getERPMappingStats(w).missing.length ? 'empty' : 'done';
     snapshotERPReplacementUnrecognized(w);
     render();
   }, 1200);
 }
 
 function stepERP2Missing(w) {
-  if (w.erp2ReplacementState === 'done') return erpReplacementResultHTML(w);
   const stats = getERPMappingStats(w);
   const missingNames = stats.missing.map(field => field.name);
+  if (w.erp2ReplacementState === 'done' && !missingNames.length) return erpReplacementResultHTML(w);
   if (!missingNames.length) {
     return `<div class="erp2-stage">
       <div class="erp2-stage-head"><h2>Update and re-upload</h2><p>Check whether the file still needs any required system fields.</p></div>
@@ -7629,7 +7629,7 @@ function simulateERP3CorrectedUpload(outcome) {
   setTimeout(() => {
     if (state.wiz !== w) return;
     applyERPCorrectedUpload(w, outcome);
-    w.erp3ReplacementState = 'done';
+    w.erp3ReplacementState = getERPMappingStats(w).missing.length ? 'empty' : 'done';
     w.mappingAttempted = false;
     snapshotERPReplacementUnrecognized(w);
     render();
@@ -7650,9 +7650,9 @@ function stepERP3Confirm(w) {
   </div>`;
 }
 function stepERP3Missing(w) {
-  if (w.erp3ReplacementState === 'done') return erpReplacementResultHTML(w);
   const stats = getERPMappingStats(w);
   const missingNames = stats.missing.map(field => field.name);
+  if (w.erp3ReplacementState === 'done' && !missingNames.length) return erpReplacementResultHTML(w);
   if (!missingNames.length) {
     return `<div class="erp2-stage">
       <div class="erp2-stage-head"><h2>Update and re-upload</h2><p>The missing fields have been added to the corrected file.</p></div>
