@@ -2840,7 +2840,6 @@ function requiredDetailsAccordions() {
           <small>${type.desc}</small>
         </button>
         <div class="req-type-head-actions">
-          <button type="button" class="btn-link req-type-download" onclick="downloadRequirementTemplate('${type.key}')">${I.download} Download template</button>
           <button type="button" class="req-type-chevron" aria-expanded="${isOpen?'true':'false'}" aria-label="${isOpen?'Collapse':'Expand'} ${type.label}" onclick="toggleSupportedTxType('${type.key}')">${I.chevron}</button>
         </div>
       </div>
@@ -2879,7 +2878,6 @@ function requiredDetailsTabs() {
     <div class="req-r2-panel" role="tabpanel" aria-label="${active.label}">
       <div class="req-r2-panel-head">
         <p class="req-r2-type-desc">${active.desc}</p>
-        <button type="button" class="btn-link req-type-download" onclick="downloadRequirementTemplate('${active.key}')">${I.download} Download template</button>
       </div>
       ${requiredDetailsVerticalTable(documentRequiredDetails(active.key))}
     </div>
@@ -5266,12 +5264,9 @@ function viewDocumentRequirements() {
               </div>
             </div>
             <div class="eligible-type">
-              <p class="eligible-type-label">Goods trading</p>
-              <p class="eligible-type-copy">B2B purchases or sales of physical goods supported by trade documents.</p>
-            </div>
-            <div class="eligible-type">
-              <p class="eligible-type-label">Services</p>
+              <p class="eligible-type-label">Foreign trade</p>
               <div class="eligible-type-copy eligible-services">
+                <span>Physical goods</span>
                 <span>Accommodation</span>
                 <span>Advertisement</span>
                 <span>Air tickets</span>
@@ -5284,7 +5279,7 @@ function viewDocumentRequirements() {
         </section>
         <section>
           <div class="req-version-row">
-            <p>Required details in your documents</p>
+            <p>Information your documents need to include</p>
             ${SHOW_REQUIREMENTS_R1 ? `<div class="erp-version-switch" role="group" aria-label="Requirements layout">
               <button type="button" class="mono ${state.requirementsVersion!=='r2'?'on':''}" onclick="setRequirementsVersion('r1')">R1</button>
               <button type="button" class="mono ${state.requirementsVersion==='r2'?'on':''}" onclick="setRequirementsVersion('r2')">R2</button>
@@ -10448,7 +10443,7 @@ const CN_UI_REPLACEMENTS = [
   [/Upload document requirements/g, '上传材料要求'],
   [/Eligible settlement transaction types/g, '支持结汇的交易类型'],
   [/The following transaction types may be used to increase your quota:/g, '以下交易类型可用于提升额度：'],
-  [/Required details in your documents/g, '单据必填信息'],
+  [/Information your documents need to include/g, '材料需包含的信息'],
   [/Requirements layout/g, '单据要求布局'],
   [/Field name/g, '字段名称'],
   [/Unique invoice or contract identifier/g, '发票或合同的唯一标识'], [/Company purchasing the software/g, '采购软件的公司'],
@@ -10552,7 +10547,7 @@ const CN_UI_REPLACEMENTS = [
   [/Connect a store/g, '绑定店铺'],
   [/Upload transaction records/g, '上传交易记录'], [/Connect a marketplace/g, '绑定电商平台'],
   [/Automatic quota increase/g, '自动提高额度'], [/Eligible payments from these marketplaces can update your quota automatically\./g, '这些电商平台的符合条件收款，可自动更新额度。'], [/Upload using the marketplace template/g, '使用电商平台模板上传'],
-  [/Use the marketplace CSV template for transaction records from these marketplaces\./g, '这些电商平台的交易记录请使用电商平台 CSV 模板。'], [/Marketplace sales/g, '电商平台销售'], [/Marketplace transactions/g, '电商平台交易'], [/Goods trading/g, '货物贸易'], [/Services/g, '服务'],
+  [/Use the marketplace CSV template for transaction records from these marketplaces\./g, '这些电商平台的交易记录请使用电商平台 CSV 模板。'], [/Marketplace sales/g, '电商平台销售'], [/Marketplace transactions/g, '电商平台交易'], [/Goods trading/g, '货物贸易'], [/Foreign trade/g, '外贸'], [/Physical goods/g, '货物'], [/Services/g, '服务'],
   [/Transaction types that can increase your CNY quota/g, '可提高人民币额度的交易类型'], [/Marketplace transactions that can increase your CNY quota/g, '可提高人民币额度的电商平台交易'],
   [/Uploaded successfully/g, '上传成功'], [/Your trade documents have been submitted and the corresponding CNY quota has been released\./g, '贸易单据已提交，对应人民币额度已释放。'], [/Your file has been submitted and the corresponding CNY quota has been released\./g, '文件已提交，对应人民币额度已释放。'],
   [/View upload history/g, '查看上传历史'], [/Upload another file/g, '再上传一个文件'], [/Select a transaction category before choosing a file\./g, '请先选择交易类别，再选择文件。'], [/Select a category and upload your file, then review the details before submitting\./g, '选择类别并上传文件，然后在提交前核对详情。'], [/Select the transaction category/g, '选择交易类别'], [/Select a category/g, '选择类别'],

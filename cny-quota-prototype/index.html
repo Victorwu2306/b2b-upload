@@ -2856,7 +2856,6 @@ function requiredDetailsAccordions() {
           <small>${type.desc}</small>
         </button>
         <div class="req-type-head-actions">
-          <button type="button" class="btn-link req-type-download" onclick="downloadRequirementTemplate('${type.key}')">${I.download} Download template</button>
           <button type="button" class="req-type-chevron" aria-expanded="${isOpen?'true':'false'}" aria-label="${isOpen?'Collapse':'Expand'} ${type.label}" onclick="toggleSupportedTxType('${type.key}')">${I.chevron}</button>
         </div>
       </div>
@@ -2895,7 +2894,6 @@ function requiredDetailsTabs() {
     <div class="req-r2-panel" role="tabpanel" aria-label="${active.label}">
       <div class="req-r2-panel-head">
         <p class="req-r2-type-desc">${active.desc}</p>
-        <button type="button" class="btn-link req-type-download" onclick="downloadRequirementTemplate('${active.key}')">${I.download} Download template</button>
       </div>
       ${requiredDetailsVerticalTable(documentRequiredDetails(active.key))}
     </div>
@@ -5344,12 +5342,9 @@ function viewDocumentRequirements() {
               </div>
             </div>
             <div class="eligible-type">
-              <p class="eligible-type-label">Goods trading</p>
-              <p class="eligible-type-copy">B2B purchases or sales of physical goods supported by trade documents.</p>
-            </div>
-            <div class="eligible-type">
-              <p class="eligible-type-label">Services</p>
+              <p class="eligible-type-label">Foreign trade</p>
               <div class="eligible-type-copy eligible-services">
+                <span>Physical goods</span>
                 <span>Accommodation</span>
                 <span>Advertisement</span>
                 <span>Air tickets</span>
@@ -5362,7 +5357,7 @@ function viewDocumentRequirements() {
         </section>
         <section>
           <div class="req-version-row">
-            <p>Required details in your documents</p>
+            <p>Information your documents need to include</p>
             ${SHOW_REQUIREMENTS_R1 ? `<div class="erp-version-switch" role="group" aria-label="Requirements layout">
               <button type="button" class="mono ${state.requirementsVersion!=='r2'?'on':''}" onclick="setRequirementsVersion('r1')">R1</button>
               <button type="button" class="mono ${state.requirementsVersion==='r2'?'on':''}" onclick="setRequirementsVersion('r2')">R2</button>
