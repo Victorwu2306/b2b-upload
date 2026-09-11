@@ -5125,52 +5125,25 @@ function templateFillGuidePanel() {
         </div>
         <button type="button" onclick="state.templateGuide=false;state.templatePanel=false;state.templateMenuOpen=false;render()">${I.x}</button>
       </div>
-      <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
-        <details open style="border:1px solid var(--border);border-radius:8px;background:#fff;overflow:hidden">
-          <summary style="cursor:pointer;padding:14px 16px;font-size:14px;font-weight:600;background:var(--muted)">Tips before you begin</summary>
-          <div style="padding:14px 18px">
-            <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px;font-size:13px;color:var(--muted-foreground);line-height:1.5">
-              <li>Check that your marketplace is in the list of supported marketplaces.</li>
-              <li>Download and save a copy of the template with a name that describes your store, for example <span class="mono">MyStore.csv</span>.</li>
-              <li>Save the file in <span class="mono">.csv</span> format, keep it under 10 MB, and use English letters and digits in the file name.</li>
-              <li>Do not change or delete the column headers.</li>
-            </ul>
-          </div>
-        </details>
+      <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:24px">
+        <section>
+          <h4 style="font-size:14px;font-weight:600;margin:0 0 10px">Tips before you begin</h4>
+          <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px;font-size:13px;color:var(--muted-foreground);line-height:1.5">
+            <li>Check that your marketplace is in the list of supported marketplaces.</li>
+            <li>Download and save a copy of the template with a name that describes your store, for example <span class="mono">MyStore.csv</span>.</li>
+            <li>Save the file in <span class="mono">.csv</span> format, keep it under 10 MB, and use English letters and digits in the file name.</li>
+            <li>Do not change or delete the column headers.</li>
+          </ul>
+        </section>
 
-        <details open style="border:1px solid var(--border);border-radius:8px;background:#fff;overflow:hidden">
-          <summary style="cursor:pointer;padding:14px 16px;font-size:14px;font-weight:600;background:var(--muted)">Download and complete the transaction information</summary>
-          <div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px">
-            ${uiAlertHTML({ tone:'info', content:'Complete one row for each item in an order. If the same item is sold at different prices, combine it into one row and use the average unit price.' })}
-            <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
-              Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12.50.
-            </p>
-            ${requiredDetailsTabs({ showDownload: true })}
-          </div>
-        </details>
-
-        <details open style="border:1px solid var(--border);border-radius:8px;background:#fff;overflow:hidden">
-          <summary style="cursor:pointer;padding:14px 16px;font-size:14px;font-weight:600;background:var(--muted)">File sample</summary>
-          <div style="padding:14px 16px;overflow-x:auto">
-            <table class="data" style="min-width:760px;font-size:11px">
-              <thead><tr><th>Store name</th><th>Order ID</th><th>Order date</th><th>Item name</th><th>Quantity</th><th>Price</th><th>Currency</th></tr></thead>
-              <tbody><tr><td>MyStore</td><td class="mono">ORD-10245</td><td class="mono">2024-02-27</td><td>Item 1</td><td class="mono">2</td><td class="mono">12.50</td><td class="mono">USD</td></tr></tbody>
-            </table>
-          </div>
-        </details>
-
-        <details open style="border:1px solid var(--border);border-radius:8px;background:#fff;overflow:hidden">
-          <summary style="cursor:pointer;padding:14px 16px;font-size:14px;font-weight:600;background:var(--muted)">Finishing up</summary>
-          <div style="padding:14px 18px;display:flex;flex-direction:column;gap:10px">
-            <p style="font-size:13px;font-weight:600">Review and save the data file:</p>
-            <ol style="margin:0;padding-left:18px;font-size:13px;color:var(--muted-foreground);line-height:1.6">
-              <li>Save the file as <span class="mono">.csv</span>.</li>
-              <li>Keep the file size under 10 MB.</li>
-            </ol>
-            <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">After submission, we’ll validate the file and notify you when processing is complete. You can then download the submission results.</p>
-            <button type="button" class="btn-link" style="width:fit-content;font-size:13px" onclick="toast('Opening FAQ…')">Have questions? Read our FAQ.</button>
-          </div>
-        </details>
+        <section style="display:flex;flex-direction:column;gap:14px">
+          <h4 style="font-size:14px;font-weight:600;margin:0">Download and complete the transaction information</h4>
+          ${uiAlertHTML({ tone:'info', content:'Complete one row for each item in an order. If the same item is sold at different prices, combine it into one row and use the average unit price.' })}
+          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
+            Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12.50.
+          </p>
+          ${requiredDetailsTabs({ showDownload: true })}
+        </section>
       </div>
     </div>
   </div>`;
