@@ -3311,7 +3311,8 @@ function resetWiz(kind) {
     mappingAttempted:false, mappingCache:null, cachedMatches:0,
     restoredMappings:0, isReplacement:false, erpFileVersion:'incomplete',
     mappingExpanded:false, erpReplaceOpen:false, missingResolvedManually:false,
-    erpScenario:'recoverable-missing', lastManualMapping:null,
+    erpScenario:'all-matched', lastManualMapping:null,
+    erpPartialReuploadCount:0, erpPartialSampleFileName:'', erpCorrectedPickName:'',
     manualSelections:{}, manualResolutionFields:['buyer_name','currency'],
   };
 }
@@ -3713,9 +3714,7 @@ function applyChildSampleFile(profileId) {
   if (!sample) return;
   w.v2PickerOpen = false;
   w.fileName = sample.name;
-  w.erpScenario = sample.scenario || '';
-  w.v2UseCase = sample.useCase ? sample.useCase.id : '';
-  w.v2UseCaseTitle = sample.useCase ? sample.useCase.title : '';
+  applySampleUseCaseState(w, sample);
   if (w.kind === 'template') {
     w.templateIssueRows = null;
     w.templateFixedRows = [];
@@ -3743,6 +3742,36 @@ function uploadV2UseCaseFileName(baseName, suffix) {
 function uploadV2HeadersForScenario(scenario) {
   return getERPScenarioSources(scenario).map(source => source.colName);
 }
+function visibleSampleUseCases() {
+  return UPLOAD_V2_USE_CASES.filter(useCase => useCase.id === 'full-match' || useCase.id === 'partial-missing');
+}
+function visibleERPScenarios() {
+  return ERP_SCENARIOS.filter(option => option.value === 'all-matched' || option.value === 'replace-required');
+}
+function sampleUseCaseById(id) {
+  return UPLOAD_V2_USE_CASES.find(useCase => useCase.id === id) || null;
+}
+function applySampleUseCaseState(w, sample) {
+  if (!w) return;
+  const useCase = sample && sample.useCase;
+  w.erpScenario = (sample && sample.scenario) || w.erpScenario || '';
+  w.v2UseCase = useCase ? useCase.id : (w.v2UseCase || '');
+  w.v2UseCaseTitle = useCase ? useCase.title : (w.v2UseCaseTitle || '');
+  if (useCase && useCase.id === 'partial-missing') {
+    w.erpPartialSampleFileName = sample.name || w.erpPartialSampleFileName || '';
+    if (w.erpPartialReuploadCount == null) w.erpPartialReuploadCount = 0;
+  }
+}
+function erpCorrectedPickerUseCase(w) {
+  const count = Number(w && w.erpPartialReuploadCount) || 0;
+  return sampleUseCaseById(count < 2 ? 'partial-missing' : 'full-match');
+}
+function erpCorrectedSampleName(w, useCase) {
+  if (useCase && useCase.id === 'partial-missing' && w && w.erpPartialSampleFileName) return w.erpPartialSampleFileName;
+  const sample = uploadV2SampleFiles(samplePickerCategory(w)).find(file => file.group === 'erp' && file.useCase && file.useCase.id === (useCase && useCase.id));
+  if (sample) return sample.name;
+  return useCase && useCase.id === 'full-match' ? 'erp_all_columns_matched.csv' : 'erp_multiple_missing.csv';
+}
 function uploadV2SampleFiles(category) {
   const categoryLabel = (TEMPLATE_TYPES.find(type => type.key === category) || {}).label || category;
   const categorySlug = category || 'transaction';
@@ -3756,7 +3785,7 @@ function uploadV2SampleFiles(category) {
       route:'trade', label:'Trade document', detail:'PDF document', useCase:null,
     });
   }
-  UPLOAD_V2_USE_CASES.forEach(useCase => {
+  visibleSampleUseCases().forEach(useCase => {
     files.push({
       id:'template:' + useCase.id, group:'template',
       name:uploadV2UseCaseFileName(`${categorySlug}_transaction_template.csv`, useCase.suffix),
@@ -3791,6 +3820,7 @@ function simulateUploadV2File(profileId) {
     erpScenario:sample.scenario || '', v2UseCase:sample.useCase ? sample.useCase.id : '',
     v2UseCaseTitle:sample.useCase ? sample.useCase.title : '',
   });
+  applySampleUseCaseState(w, sample);
   render();
   setTimeout(() => {
     if (state.wiz !== w || w.v2RequestId !== requestId || w.category !== selectedCategory) return;
@@ -3893,6 +3923,8 @@ function routeUploadV2() {
   next.erpScenario = current.erpScenario || 'all-matched';
   next.v2UseCase = current.v2UseCase || '';
   next.v2UseCaseTitle = current.v2UseCaseTitle || '';
+  next.erpPartialSampleFileName = current.v2UseCase === 'partial-missing' ? (current.fileName || '') : '';
+  next.erpPartialReuploadCount = 0;
   if (draftId) next.draftId = draftId;
   state.wiz = next;
   state.view = 'wizard-erp';
@@ -6054,13 +6086,13 @@ function erpScenarioControl() {
       <span>Simulates different ERP header-matching results.</span>
     </div>
     <select onchange="setERPScenario(this.value)">
-      ${ERP_SCENARIOS.map(option => `<option value="${option.value}" ${w.erpScenario===option.value?'selected':''}>${option.label}</option>`).join('')}
+      ${visibleERPScenarios().map(option => `<option value="${option.value}" ${w.erpScenario===option.value?'selected':''}>${option.label}</option>`).join('')}
     </select>
   </div>`;
 }
 function getERPSources(w) {
   if (w && Array.isArray(w.erpReplacementSources) && w.erpReplacementSources.length) return w.erpReplacementSources;
-  return getERPScenarioSources((w && w.erpScenario) || 'recoverable-missing');
+  return getERPScenarioSources((w && w.erpScenario) || 'all-matched');
 }
 function erpUnrecognizedExtraForField(name, index) {
   const field = ERP_REQUIRED_FIELDS.find(item => item.name === name) || {};
@@ -6121,9 +6153,7 @@ function applyERPCorrectedUpload(w, outcome) {
   });
   let nextSources;
   if (outcome === 'unrecognized') {
-    const extras = missingFields.map((name, index) => erpUnrecognizedExtraForField(name, previousSources.length + index));
-    extras.forEach(extra => { nextMappings[extra.id] = ''; });
-    nextSources = reindexERPSources(previousSources.concat(extras));
+    nextSources = reindexERPSources(previousSources);
   } else {
     const sources = previousSources.slice();
     missingFields.forEach(name => {
@@ -6142,7 +6172,7 @@ function applyERPCorrectedUpload(w, outcome) {
   w.erpReplacementSources = nextSources;
   w.mappings = nextMappings;
   syncFieldSourcesFromMappings(w);
-  w.fileName = outcome === 'unrecognized' ? 'erp_missing_columns_unrecognized.csv' : 'erp_missing_columns_corrected.csv';
+  w.fileName = w.erpCorrectedPickName || (outcome === 'unrecognized' ? 'erp_missing_columns_unrecognized.csv' : 'erp_missing_columns_corrected.csv');
   w.erp2PreviousFileName = previousFileName;
   w.erp2ReplacementFileName = w.fileName;
   w.erp2ReusedMappings = Object.values(cachedByColumn).filter(Boolean).length;
@@ -6213,25 +6243,30 @@ function closeERPCorrectedFilePicker() {
 }
 function chooseERPCorrectedFile(outcome) {
   const w = state.wiz; if (!w) return;
+  const useCase = erpCorrectedPickerUseCase(w);
+  w.erpCorrectedPickName = erpCorrectedSampleName(w, useCase);
   w.erpCorrectedPickerOpen = false;
+  if (outcome === 'unrecognized') w.erpPartialReuploadCount = (Number(w.erpPartialReuploadCount) || 0) + 1;
   if (w.erpFlowVersion === 'v3') simulateERP3CorrectedUpload(outcome);
   else if (w.erpFlowVersion === 'v1') simulateErp(null, outcome);
   else simulateERP2CorrectedUpload(outcome);
 }
 function erpCorrectedFilePicker(w) {
   if (!w || !w.erpCorrectedPickerOpen) return '';
-  const names = formatMissingFieldsList(w.erp2NewHeaders || []);
+  const useCase = erpCorrectedPickerUseCase(w);
+  const outcome = useCase && useCase.id === 'full-match' ? 'mapped' : 'unrecognized';
+  const fileName = erpCorrectedSampleName(w, useCase);
+  const icon = outcome === 'mapped' ? I.check : I.alert;
+  const meta = useCase
+    ? `<p class="sample-use-case"><span class="sample-use-case-tag ${useCase.tone}">${useCase.title}</span> ${useCase.detail}</p>`
+    : '';
   return `<div class="modal-backdrop open" style="align-items:center" onclick="if(event.target===this)closeERPCorrectedFilePicker()">
-    <div class="modal" style="width:560px;max-width:92vw">
+    <div class="modal" style="width:640px;max-width:92vw">
       <div class="modal-h"><div><h3>Choose a sample file</h3><p>Simulate a corrected CSV after adding the missing columns.</p></div><button type="button" onclick="closeERPCorrectedFilePicker()">${I.x}</button></div>
       <div class="modal-b" style="display:flex;flex-direction:column;gap:10px">
-        <button type="button" class="source-card" style="text-align:left;width:100%;flex-direction:row;align-items:flex-start;padding:14px" onclick="chooseERPCorrectedFile('mapped')">
-          <div class="ico" style="margin-bottom:0;flex:0 0 40px">${I.check}</div>
-          <div style="min-width:0"><strong class="mono">erp_missing_columns_corrected.csv</strong><p style="font-size:12px;color:var(--muted-foreground);margin-top:3px">New columns mapped${names?` · ${names} recognized automatically`:''}</p></div>
-        </button>
-        <button type="button" class="source-card" style="text-align:left;width:100%;flex-direction:row;align-items:flex-start;padding:14px" onclick="chooseERPCorrectedFile('unrecognized')">
-          <div class="ico" style="margin-bottom:0;flex:0 0 40px">${I.alert}</div>
-          <div style="min-width:0"><strong class="mono">erp_missing_columns_unrecognized.csv</strong><p style="font-size:12px;color:var(--muted-foreground);margin-top:3px">Unable to recognize new columns${names?` · ${names} still need matching`:''}</p></div>
+        <button type="button" class="source-card" style="text-align:left;width:100%;flex-direction:row;align-items:flex-start;padding:14px" onclick="chooseERPCorrectedFile('${outcome}')">
+          <div class="ico" style="margin-bottom:0;flex:0 0 40px">${icon}</div>
+          <div style="min-width:0"><strong class="mono">${escapeHTML(fileName)}</strong>${meta}</div>
         </button>
       </div>
     </div>
@@ -6384,7 +6419,10 @@ function reuploadERPFileFresh() {
   w.erp2SkippedConfirm = false;
   w.erp2ZeroMatchAlert = false;
   w.fileName = null;
-  w.erpScenario = w.erpScenario || 'recoverable-missing';
+  w.erpScenario = w.erpScenario || 'all-matched';
+  w.erpPartialReuploadCount = 0;
+  w.erpPartialSampleFileName = '';
+  w.erpCorrectedPickName = '';
   w.mappings = {};
   w.fieldSources = {};
   w.mappingAttempted = false;
