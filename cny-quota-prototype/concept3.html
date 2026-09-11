@@ -6225,7 +6225,7 @@ function erpReplacementNewColumnsSection(w) {
         </div>
       </div>
       ${uiAlertHTML({
-        tone:'warning',
+        tone:'error',
         title: cannotMatch ? 'Re-upload a file with recognizable headers' : 'If you cannot match these columns, re-upload the file',
         content: cannotMatch
           ? 'The new headers are still unrecognized. Upload a corrected CSV that uses the required column names.'
@@ -6422,7 +6422,7 @@ function erpZeroMatchAlertHTML(opts) {
     ? 'None of the columns could be matched automatically. Match them manually below, or re-upload a file with recognizable headers.'
     : 'None of the columns could be recognized or matched. Re-upload a CSV that includes the required headers.';
   return uiAlertHTML({
-    tone: 'warning',
+    tone: 'error',
     title: 'We couldn’t recognize the headers in your file',
     content: body,
     action: canMatch ? '' : 'Re-upload file',
@@ -6432,7 +6432,7 @@ function erpZeroMatchAlertHTML(opts) {
 function erpFileIssueAlertHTML(issue) {
   const empty = issue === 'empty';
   return uiAlertHTML({
-    tone: 'warning',
+    tone: 'error',
     title: empty ? 'This CSV file is empty' : 'This CSV file has headers only',
     content: empty
       ? 'We couldn’t find any headers or data rows. Upload a CSV that includes a header row and transaction data.'
@@ -7298,7 +7298,7 @@ function stepERP2Confirm(w) {
       ${erpMatchedColumnsIntro(identifiedTargetNames.length, ERP_REQUIRED_FIELDS.length)}
       ${identifiedTargetNames.length
         ? erp2TargetMappingTable(identifiedTargetNames, stats.sources, w.mappings, 'updateERP2TargetMapping', false)
-        : uiAlertHTML({ tone:'info', content: emptyHint })}
+        : uiAlertHTML({ tone: w.erpScenario === 'no-match-unrecognized' ? 'error' : 'info', content: emptyHint })}
     </div>
   </div>`;
 }
@@ -7393,7 +7393,7 @@ function stepERP2Missing(w) {
         <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
       </div>
       <div class="erp2-supplement-body">
-        ${uiAlertHTML({ tone:'info', content:'To continue, add the missing column and complete the required information in your file, then upload the updated file again.' })}
+        ${uiAlertHTML({ tone:'error', content:'To continue, add the missing column and complete the required information in your file, then upload the updated file again.' })}
         ${w.erp2ReplacementState === 'processing' ? busyUploadBox('Analyzing the corrected file and reusing previous mappings…') : emptyUploadBox({
             meta: 'CSV · Max 50 MB',
             hint: `Include all original columns plus the ${formatMissingFieldsList(missingNames)} columns.`,
@@ -9944,7 +9944,7 @@ function viewTradeRecordDetails(ctx, backView, backLabel) {
   const fromHistory = backView === 'upload-history';
   const alertHtml = fromHistory && upload && (upload.message || upload.tip)
     ? uiAlertHTML({
-        tone: (upload.status === 'Failed' || upload.status === 'File issue' || upload.status === 'Partially accepted') ? 'warning' : 'info',
+        tone: (upload.status === 'Failed' || upload.status === 'File issue' || upload.status === 'Partially accepted') ? 'error' : 'info',
         title: upload.message || '',
         content: upload.tip || '',
         action: (ctx.unshipped && ctx.recordId) ? 'Supplement Logistics' : '',
@@ -10114,7 +10114,7 @@ function viewUploadDetails() {
         <h3 style="font-size:15px;font-weight:600;margin-bottom:4px">Corrected ERP CSV</h3>
         <p style="font-size:12px;color:var(--muted-foreground);margin-bottom:16px">When required headers are missing, upload a complete corrected file to replace the original. Existing automatic and manual mappings are reused.</p>
         ${needsReupload ? `
-          ${uiAlertHTML({ tone:'warning', title:'Corrected full file required', content:'Add the missing headers to the original document and upload the complete corrected CSV.' })}` : `
+          ${uiAlertHTML({ tone:'error', title:'Corrected full file required', content:'Add the missing headers to the original document and upload the complete corrected CSV.' })}` : `
           ${uploadedFileCard({
             fileName: 'erp_missing_columns_corrected.csv',
             onView: "openUploadedFilePreview('history','erp_missing_columns_corrected.csv')",
@@ -10152,7 +10152,7 @@ function viewUploadDetails() {
     </div>
     <div class="focused-body"><div class="focused-inner" style="max-width:860px;display:flex;flex-direction:column;gap:16px">
       ${(r.message || r.tip) ? uiAlertHTML({
-        tone: isWarn ? 'warning' : 'info',
+        tone: isWarn ? 'error' : 'info',
         title: r.message || '',
         content: r.tip || '',
       }) : ''}
