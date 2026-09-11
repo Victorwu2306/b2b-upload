@@ -6719,7 +6719,7 @@ function templateCategoryFields(w) {
     ${categoryField}
 
     ${w.category === 'marketplace' ? (w.uploadOriginVersion===2 ? `<div class="field"><label>Marketplace</label><div style="height:var(--control-height);display:flex;align-items:center;padding:0 12px;border:1px solid var(--border);border-radius:var(--control-radius);background:var(--muted);font-weight:500">${w.marketplace||'—'}</div></div>` : `<div class="field">
-      <label>Which marketplace are you uploading data from? <span style="color:var(--destructive)">*</span></label>
+      <label>Marketplace where the payment was received <span style="color:var(--destructive)">*</span></label>
       <div class="business-type-select-wrap">
         <select class="business-type-select ${w.marketplace?'':'placeholder'} ${issues.includes('marketplace')?'invalid':''}" onchange="setTemplateMarketplace(this.value)">
           <option value="">Select a marketplace</option>
@@ -6746,10 +6746,10 @@ function stepTemplateUpload() {
   const marketplaceOnly = isMarketplaceOnlyWizard(w);
   const canChooseFile = !!w.category && (w.category !== 'marketplace' || !!w.marketplace);
   const selectedCategory = TEMPLATE_TYPES.find(type => type.key === w.category);
-  const heading = fromUploadV2 ? 'Review Upload V2 details' : (marketplaceOnly ? 'Upload marketplace CSV' : 'Upload completed transaction records');
+  const heading = fromUploadV2 ? 'Review Upload V2 details' : (marketplaceOnly ? 'Upload transaction records' : 'Upload completed transaction records');
   const subcopy = fromUploadV2
     ? 'The category and marketplace association were completed before upload.'
-    : (marketplaceOnly ? 'Select a marketplace, then upload the completed CSV template.' : '');
+    : '';
   let body = `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
     <div>
       <h2 style="font-size:20px;font-weight:700">${heading}</h2>
@@ -6799,9 +6799,9 @@ function viewWizardTemplate() {
   const canContinue = w.csvState === 'mapped' && getTemplateUploadIssues(w).length === 0;
   const marketplaceOnly = isMarketplaceOnlyWizard(w);
   return wizShell({
-    title: marketplaceOnly ? 'Upload marketplace CSV' : 'Upload CSV from templates',
+    title: marketplaceOnly ? 'Upload transaction records' : 'Upload CSV from templates',
     sub: marketplaceOnly
-      ? 'Select a marketplace and upload your file, then review the details before submitting.'
+      ? ''
       : 'Select a category and upload your file, then review the details before submitting.',
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body:stage === 1 ? stepTemplateUpload() : stepTemplateV2Review(),

@@ -6765,7 +6765,7 @@ function templateCategoryFields(w) {
     ${categoryField}
 
     ${w.category === 'marketplace' ? (w.uploadOriginVersion===2 ? `<div class="field"><label>Marketplace</label><div style="height:var(--control-height);display:flex;align-items:center;padding:0 12px;border:1px solid var(--border);border-radius:var(--control-radius);background:var(--muted);font-weight:500">${w.marketplace||'—'}</div></div>` : `<div class="field">
-      <label>Which marketplace are you uploading data from? <span style="color:var(--destructive)">*</span></label>
+      <label>Marketplace where the payment was received <span style="color:var(--destructive)">*</span></label>
       <div class="business-type-select-wrap">
         <select class="business-type-select ${w.marketplace?'':'placeholder'} ${issues.includes('marketplace')?'invalid':''}" onchange="setTemplateMarketplace(this.value)">
           <option value="">Select a marketplace</option>
@@ -6792,10 +6792,10 @@ function stepTemplateUpload() {
   const marketplaceOnly = isMarketplaceOnlyWizard(w);
   const canChooseFile = !!w.category && (w.category !== 'marketplace' || !!w.marketplace);
   const selectedCategory = TEMPLATE_TYPES.find(type => type.key === w.category);
-  const heading = fromUploadV2 ? 'Review Upload V2 details' : (marketplaceOnly ? 'Upload marketplace CSV' : 'Upload completed transaction records');
+  const heading = fromUploadV2 ? 'Review Upload V2 details' : (marketplaceOnly ? 'Upload transaction records' : 'Upload completed transaction records');
   const subcopy = fromUploadV2
     ? 'The category and marketplace association were completed before upload.'
-    : (marketplaceOnly ? 'Select a marketplace, then upload the completed CSV template.' : '');
+    : '';
   let body = `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
     <div>
       <h2 style="font-size:20px;font-weight:700">${heading}</h2>
@@ -6845,9 +6845,9 @@ function viewWizardTemplate() {
   const canContinue = w.csvState === 'mapped' && getTemplateUploadIssues(w).length === 0;
   const marketplaceOnly = isMarketplaceOnlyWizard(w);
   return wizShell({
-    title: marketplaceOnly ? 'Upload marketplace CSV' : 'Upload CSV from templates',
+    title: marketplaceOnly ? 'Upload transaction records' : 'Upload CSV from templates',
     sub: marketplaceOnly
-      ? 'Select a marketplace and upload your file, then review the details before submitting.'
+      ? ''
       : 'Select a category and upload your file, then review the details before submitting.',
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body:stage === 1 ? stepTemplateUpload() : stepTemplateV2Review(),
@@ -10801,7 +10801,7 @@ const CN_UI_REPLACEMENTS = [
   [/Transaction types that can increase your CNY quota/g, '可提高人民币额度的交易类型'], [/Marketplace transactions that can increase your CNY quota/g, '可提高人民币额度的电商平台交易'],
   [/Uploaded successfully/g, '上传成功'], [/Your trade documents have been submitted and the corresponding CNY quota has been released\./g, '贸易单据已提交，对应人民币额度已释放。'], [/Your file has been submitted and the corresponding CNY quota has been released\./g, '文件已提交，对应人民币额度已释放。'],
   [/View upload history/g, '查看上传历史'], [/Upload another file/g, '上传其他文件'], [/Select a transaction category before choosing a file\./g, '请先选择交易类别，再选择文件。'], [/Select a category and upload your file, then review the details before submitting\./g, '选择类别并上传文件，然后在提交前核对详情。'], [/Select the transaction category/g, '选择交易类别'], [/Select a category/g, '选择类别'],
-  [/Choose the same category used when downloading and completing the template\./g, '请选择下载和填写模板时使用的同一类别。'], [/Select a transaction category\./g, '请选择交易类别。'], [/Which marketplace are you uploading data from\?/g, '上传的是哪个电商平台的数据？'], [/Select a marketplace/g, '选择电商平台'],
+  [/Choose the same category used when downloading and completing the template\./g, '请选择下载和填写模板时使用的同一类别。'], [/Select a transaction category\./g, '请选择交易类别。'], [/Marketplace where the payment was received/g, '收款所在的电商平台'], [/Select a marketplace/g, '选择电商平台'],
   [/Select the marketplace represented by the transaction rows in this file\./g, '请选择文件中交易记录所属的电商平台。'], [/Seller ID/g, '卖家 ID'], [/Required to associate this .* file with the correct store\./g, '用于将文件绑定到正确店铺。'],
   [/Upload marketplace CSV/g, '上传电商平台 CSV'], [/Select a marketplace and upload your file, then review the details before submitting\./g, '选择电商平台并上传文件，然后在提交前核对详情。'], [/Select a marketplace, then upload the completed CSV template\./g, '选择电商平台，然后上传填写好的 CSV 模板。'], [/Select a marketplace, upload a file, and continue with the matching processing flow\./g, '选择电商平台、上传文件，然后进入对应处理流程。'], [/Select a marketplace to enable file upload\./g, '请先选择电商平台，再上传文件。'], [/Complete the required marketplace information before continuing\./g, '请先填写必填的电商平台信息，再继续。'],
   [/Upload completed transaction records/g, '上传填写完的交易记录'], [/Upload exported transaction records/g, '上传导出的交易记录'], [/Upload transaction CSV/g, '上传交易 CSV'], [/Template CSV/g, '模板 CSV'],
