@@ -1096,6 +1096,32 @@ table.data tr:hover td { background: var(--muted); }
 .field input.invalid, .field select.invalid {
   border-color:var(--destructive); box-shadow:0 0 0 2px rgba(211,47,47,.08);
 }
+.field.trade-ocr-miss {
+  padding: 12px;
+  margin: -4px;
+  border-radius: 8px;
+  background: #FFF8EB;
+  border: 1px solid #F5D9A8;
+}
+.field.trade-ocr-miss > label { color: #B54708; font-weight: 600; }
+.field.trade-ocr-miss input,
+.field.trade-ocr-miss select {
+  border-color: #DC6803;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(201,107,0,.12);
+}
+.field.trade-ocr-miss input:focus,
+.field.trade-ocr-miss select:focus {
+  border-color: #DC6803;
+  box-shadow: 0 0 0 2px rgba(201,107,0,.22);
+}
+.trade-ocr-hint {
+  margin: 0;
+  color: #B54708;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .field-note { font-size:12px; color:var(--muted-foreground); line-height:1.45; }
 .field-note-conditional { color:#B54708; }
 .detail-with-chip { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
@@ -3319,6 +3345,8 @@ function resetWiz(kind) {
       expectedShipDateAttempted: false,
       fileDescription: '',
       fileDescriptionAttempted: false,
+      tradeOcr: {},
+      tradeOcrAttempted: false,
     };
   }
   return {
@@ -8255,6 +8283,7 @@ function startTradeParsing() {
   w.tradeStage = 1;
   w.analysisScheduled = false;
   w.uploadState = 'processing';
+  resetTradeOcr(w);
   render();
   setTimeout(() => {
     if (state.wiz !== w) return;
@@ -8280,6 +8309,7 @@ function replaceTradeFile() {
   w.docPage = 1;
   w.tradePreviewOpen = false;
   w.analysisScheduled = false;
+  resetTradeOcr(w);
   render();
 }
 function setTradeSource(value) {
@@ -8299,6 +8329,7 @@ function setTradeSource(value) {
     w.analysisScheduled = false;
   }
   w.source = value || null;
+  resetTradeOcr(w);
   render();
 }
 
@@ -8376,6 +8407,99 @@ function updateTradeGoodUnit(id, unit) {
   item.unit = unit;
 }
 
+
+function resetTradeOcr(w) {
+  if (!w) return;
+  w.tradeOcr = {};
+  w.tradeOcrAttempted = false;
+}
+function ensureTradeOcr(w) {
+  if (!w) return {};
+  if (!w.tradeOcr || typeof w.tradeOcr !== 'object') w.tradeOcr = {};
+  return w.tradeOcr;
+}
+function tradeOcrMissKeys(source) {
+  if (source === 'advertisement') return ['adPlatformName', 'adResourceUrl', 'adPublisherId'];
+  if (source === 'tourism') return ['businessUrl', 'platformName', 'tourismCity'];
+  if (source === 'software') return ['businessUrl', 'softwareIdentifier', 'softwareProvider'];
+  if (source === 'air-ticket') return ['businessUrl', 'flightNumber', 'ticketNumber'];
+  if (source === 'accommodation') return ['businessUrl', 'hotelName', 'hotelCity'];
+  if (source === 'goods' || source === 'international-logistics') return ['platformName', 'businessUrl', 'productNameCN'];
+  return ['buyerType', 'companyUrl', 'serviceDescription'];
+}
+function tradeOcrIncomplete(w) {
+  const ocr = ensureTradeOcr(w);
+  return tradeOcrMissKeys(w && w.source).filter(function(key) {
+    return !String(ocr[key] || '').trim();
+  });
+}
+function setTradeOcrField(key, value) {
+  const w = state.wiz; if (!w) return;
+  ensureTradeOcr(w)[key] = value;
+  const empty = !String(value || '').trim();
+  const wrap = document.getElementById('trade-ocr-' + key);
+  if (wrap) {
+    wrap.classList.toggle('trade-ocr-miss', empty);
+    const control = wrap.querySelector('input, select');
+    if (control) control.classList.toggle('invalid', !!(empty && w.tradeOcrAttempted));
+    const chip = wrap.querySelector('.trade-ocr-chip');
+    const hint = wrap.querySelector('.trade-ocr-hint');
+    const note = wrap.querySelector('.trade-ocr-note');
+    if (chip) chip.hidden = !empty;
+    if (hint) hint.hidden = !empty;
+    if (note) note.hidden = empty;
+  }
+  const banner = document.getElementById('trade-ocr-alert');
+  if (banner) banner.style.display = tradeOcrIncomplete(w).length ? '' : 'none';
+}
+function tradeOcrFieldHTML(opts) {
+  const w = state.wiz || {};
+  const key = opts.key;
+  const value = String(ensureTradeOcr(w)[key] || '');
+  const empty = !value.trim();
+  const attempted = !!w.tradeOcrAttempted;
+  const req = opts.required === false ? '' : '<span style="color:var(--destructive)">*</span>';
+  const extraClass = opts.extraClass || '';
+  const invalidClass = empty && attempted ? 'invalid' : '';
+  const chip = `<span class="chip chip-amber trade-ocr-chip"${empty?'':' hidden'}>${tradeFieldLabel('Unrecognized', '无法识别')}</span>`;
+  const hint = `<p class="trade-ocr-hint"${empty?'':' hidden'}>${tradeFieldNote('We couldn’t read this from your document. Please fill it in.', '系统未能从单据中识别此字段，请手动填写。')}</p>`;
+  const note = opts.note ? `<div class="trade-ocr-note"${empty?' hidden':''}>${opts.note}</div>` : '';
+  const control = opts.options
+    ? `<select id="trade-ocr-input-${key}" class="${extraClass} ${invalidClass}" onchange="setTradeOcrField('${key}',this.value)">
+        <option value="">${opts.selectPlaceholder || tradeFieldLabel('Select an option', '请选择')}</option>
+        ${opts.options.map(opt => `<option value="${escapeHTML(opt.value)}" ${value===opt.value?'selected':''}>${opt.label}</option>`).join('')}
+      </select>`
+    : `<input id="trade-ocr-input-${key}" class="${extraClass} ${invalidClass}" type="${opts.type || 'text'}" value="${escapeHTML(value)}" placeholder="${escapeHTML(opts.placeholder || '')}" oninput="setTradeOcrField('${key}',this.value)" />`;
+  return `<div class="field${opts.full?' full':''}${empty?' trade-ocr-miss':''}" id="trade-ocr-${key}">
+    <label>${opts.label} ${req} ${chip}</label>
+    ${control}
+    ${hint}
+    ${note}
+  </div>`;
+}
+function tradeOcrAlertHTML() {
+  const missing = tradeOcrIncomplete(state.wiz || {});
+  return `<div id="trade-ocr-alert"${missing.length?'':' style="display:none"'}>${uiAlertHTML({
+    tone:'warning',
+    title: tradeFieldLabel('Some fields could not be recognized', '部分字段无法识别'),
+    content: tradeFieldNote('We prefilled the details we could read. Please fill in the highlighted fields before continuing.', '系统已根据单据预填可识别信息。请先填写高亮标注的字段后再继续。'),
+  })}</div>`;
+}
+function ensureTradeOcrFilled() {
+  const w = state.wiz; if (!w) return true;
+  const missing = tradeOcrIncomplete(w);
+  if (!missing.length) return true;
+  w.tradeOcrAttempted = true;
+  render();
+  requestAnimationFrame(function() {
+    const field = document.getElementById('trade-ocr-' + missing[0]);
+    if (field) field.scrollIntoView({ behavior:'smooth', block:'center' });
+    const input = document.getElementById('trade-ocr-input-' + missing[0]);
+    if (input) input.focus();
+  });
+  return false;
+}
+
 function tradeGoodsTable() {
   const w = state.wiz;
   const req = '<span style="color:var(--destructive)">*</span>';
@@ -8383,7 +8507,6 @@ function tradeGoodsTable() {
     return tradeFieldNoteHtml(en, cn);
   };
   const items = (w.goods && w.goods.length ? w.goods : TRADE_GOODS);
-  const productName = items.map(function(r) { return r.nameCN; }).join('|');
   const productQty = items.reduce(function(sum, r) { return sum + (parseFloat(r.qty) || 0); }, 0).toLocaleString('en-US');
   const isLogistics = w.source === 'international-logistics';
   return `<div class="review-card">
@@ -8433,15 +8556,18 @@ function tradeGoodsTable() {
             <input value="48,500.00" readonly />
             ${note('The order amount. It should match the amount on the PI, CI, or contract.', '订单金额。应与形式发票、商业发票或合同上的金额一致。')}
           </div>
-          <div class="field">
-            <label>${tradeFieldLabel('E-commerce platform name/business website name', '店铺网站名称')} ${req}</label>
-            <input value="Amazon" readonly />
-            ${note('The marketplace or business website name, in English. We may also read this from the URL.', '电商平台或业务网站名称，请用英文填写。系统也可能从网址中识别。')}
-          </div>
-          <div class="field">
-            <label>${tradeFieldLabel('Business URL', '业务/店铺链接')} ${req}</label>
-            <input value="https://www.amazon.com" readonly />
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'platformName',
+            label: tradeFieldLabel('E-commerce platform name/business website name', '店铺网站名称'),
+            placeholder: 'Amazon',
+            note: note('The marketplace or business website name, in English. We may also read this from the URL.', '电商平台或业务网站名称，请用英文填写。系统也可能从网址中识别。'),
+          })}
+          ${tradeOcrFieldHTML({
+            key:'businessUrl',
+            label: tradeFieldLabel('Business URL', '业务/店铺链接'),
+            type: 'url',
+            placeholder: 'https://',
+          })}
         </div>
       </div>
     </div>
@@ -8449,11 +8575,13 @@ function tradeGoodsTable() {
       <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.package} ${tradeFieldLabel('Goods information', '货物信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
-          <div class="field full">
-            <label>${tradeFieldLabel('Product name', '产品中文名称')} ${req}</label>
-            <input value="${productName}" readonly />
-            ${note('The product names in Chinese. If there is more than one product, separate the names with "|".', '产品的中文名称。如有多个产品，请用 “|” 分隔。')}
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'productNameCN',
+            full: true,
+            label: tradeFieldLabel('Product name', '产品中文名称'),
+            placeholder: tradeFieldNote('e.g. 电子元件|包装材料', '例如 电子元件|包装材料'),
+            note: note('The product names in Chinese. If there is more than one product, separate the names with "|".', '产品的中文名称。如有多个产品，请用 “|” 分隔。'),
+          })}
           <div class="field">
             <label>${tradeFieldLabel('Product quantity', '产品数量')} ${req}</label>
             <input class="mono" value="${productQty}" readonly />
@@ -8474,7 +8602,12 @@ function tradeServiceDetailsBlock() {
       <div class="field-grid">
         <div class="field"><label>Business type</label><input value="${type.label}" readonly /></div>
         <div class="field"><label>Service period</label><input value="Jul 2026 – Jun 2027" readonly /></div>
-        <div class="field full"><label>Service description</label><input value="${type.desc}" readonly /></div>
+        ${tradeOcrFieldHTML({
+          key:'serviceDescription',
+          full: true,
+          label: 'Service description',
+          placeholder: type.desc,
+        })}
         <div class="field"><label>Quantity</label><input value="1" readonly /></div>
         <div class="field"><label>Service amount</label><input value="USD 48,500.00" readonly /></div>
       </div>
@@ -8540,14 +8673,18 @@ function tradeAdvertisementBlock() {
             <label>Display times/product quantity ${req}</label>
             <input class="mono" value="1,250,000" readonly />
           </div>
-          <div class="field">
-            <label>Platform name ${req}</label>
-            <input value="Google Ads" readonly />
-          </div>
-          <div class="field full">
-            <label>Publisher ID/seller ID ${req}</label>
-            <input class="mono" value="pub-482910573" readonly />
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'adPlatformName',
+            label: 'Platform name',
+            placeholder: 'Google Ads',
+          })}
+          ${tradeOcrFieldHTML({
+            key:'adPublisherId',
+            full: true,
+            extraClass: 'mono',
+            label: 'Publisher ID/seller ID',
+            placeholder: 'pub-482910573',
+          })}
         </div>
       </div>
     </div>
@@ -8563,10 +8700,13 @@ function tradeAdvertisementBlock() {
             <label>Resource type/advertising type ${req}</label>
             <input value="Video" readonly />
           </div>
-          <div class="field full">
-            <label>Resource URL ${req}</label>
-            <input type="url" value="https://youtube.com" readonly />
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'adResourceUrl',
+            full: true,
+            type: 'url',
+            label: 'Resource URL',
+            placeholder: 'https://',
+          })}
         </div>
       </div>
     </div>
@@ -8629,20 +8769,24 @@ function tradeTourismBlock() {
             <label>${tradeFieldLabel('Payer name', '付款人姓名')} ${req}</label>
             <input value="Chen Wei" readonly />
           </div>
-          <div class="field">
-            <label>${tradeFieldLabel('Business URL', '业务网址')} ${req}</label>
-            <input type="url" value="https://www.booking.com" readonly />
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'businessUrl',
+            type: 'url',
+            label: tradeFieldLabel('Business URL', '业务网址'),
+            placeholder: 'https://',
+          })}
           <div class="field">
             <label>${tradeFieldLabel('Number of guests', '游客人数')} ${req}</label>
             <input class="mono" value="2" readonly />
             ${note('The total number of travelers on this booking.', '此预订覆盖的游客总人数。')}
           </div>
-          <div class="field full">
-            <label>${tradeFieldLabel('Platform name', '平台名称')} ${req}</label>
-            <input value="Booking.com" readonly />
-            ${note('The official name of the overseas travel platform, in its original language, for example Booking.com.', '境外旅游平台的官方名称，请按原文填写，例如 Booking.com。')}
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'platformName',
+            full: true,
+            label: tradeFieldLabel('Platform name', '平台名称'),
+            placeholder: 'Booking.com',
+            note: note('The official name of the overseas travel platform, in its original language, for example Booking.com.', '境外旅游平台的官方名称，请按原文填写，例如 Booking.com。'),
+          })}
         </div>
       </div>
     </div>
@@ -8660,10 +8804,11 @@ function tradeTourismBlock() {
             <input class="mono" value="2" readonly />
             ${note('The number of units purchased.', '购买的数量。')}
           </div>
-          <div class="field">
-            <label>${tradeFieldLabel('Tourism city', '旅游城市')} ${req}</label>
-            <input value="Tokyo" readonly />
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'tourismCity',
+            label: tradeFieldLabel('Tourism city', '旅游城市'),
+            placeholder: 'Tokyo',
+          })}
           <div class="field full">
             <label>${tradeFieldLabel('Service name', '服务名称')} ${req}</label>
             <input value="7-day Japan business travel package" readonly />
@@ -8752,10 +8897,12 @@ function tradeSoftwareBlock() {
             <label>${tradeFieldLabel('Software category', '软件类别')} ${req}</label>
             <input value="Productivity" readonly />
           </div>
-          <div class="field">
-            <label>${tradeFieldLabel('Software identifier', '软件标识符')} ${req}</label>
-            <input class="mono" value="com.adobe.creativecloud" readonly />
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'softwareIdentifier',
+            extraClass: 'mono',
+            label: tradeFieldLabel('Software identifier', '软件标识符'),
+            placeholder: 'com.example.app',
+          })}
           <div class="field full">
             <label>${tradeFieldLabel('Software name', '软件名称')} ${req}</label>
             <input value="Adobe Creative Cloud" readonly />
@@ -8775,10 +8922,13 @@ function tradeSoftwareBlock() {
       <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.link} ${tradeFieldLabel('Sales channel', '销售渠道')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
-          <div class="field full">
-            <label>${tradeFieldLabel('Business URL', '业务网址')} ${req}</label>
-            <input type="url" value="https://www.adobe.com" readonly />
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'businessUrl',
+            full: true,
+            type: 'url',
+            label: tradeFieldLabel('Business URL', '业务网址'),
+            placeholder: 'https://',
+          })}
         </div>
       </div>
     </div>
@@ -8786,11 +8936,13 @@ function tradeSoftwareBlock() {
       <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.store} ${tradeFieldLabel('Provider info', '提供方信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
-          <div class="field full">
-            <label>${tradeFieldLabel('Software provider', '软件提供方')} ${req}</label>
-            <input value="Adobe Inc." readonly />
-            ${note('The developer or publisher name as shown on the app store or software listing.', '应用商店或软件列表上显示的开发者或发行方名称。')}
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'softwareProvider',
+            full: true,
+            label: tradeFieldLabel('Software provider', '软件提供方'),
+            placeholder: 'Adobe Inc.',
+            note: note('The developer or publisher name as shown on the app store or software listing.', '应用商店或软件列表上显示的开发者或发行方名称。'),
+          })}
         </div>
       </div>
     </div>`;
@@ -8848,10 +9000,13 @@ function tradeAirTicketBlock() {
             <label>${tradeFieldLabel('Product quantity', '产品数量')} ${req}</label>
             <input class="mono" value="1" readonly />
           </div>
-          <div class="field full">
-            <label>${tradeFieldLabel('Business URL', '业务网址')} ${req}</label>
-            <input type="url" value="https://www.ceair.com" readonly />
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'businessUrl',
+            full: true,
+            type: 'url',
+            label: tradeFieldLabel('Business URL', '业务网址'),
+            placeholder: 'https://',
+          })}
         </div>
       </div>
     </div>
@@ -8872,11 +9027,13 @@ function tradeAirTicketBlock() {
             <input type="date" value="2026-08-12" readonly />
             ${note('The flight departure date.', '航班出发日期。')}
           </div>
-          <div class="field">
-            <label>${tradeFieldLabel('Flight number', '航班号')} ${req}</label>
-            <input class="mono" value="MU583" readonly />
-            ${note('The flight number, for example MU583.', '航班号，例如 MU583。')}
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'flightNumber',
+            extraClass: 'mono',
+            label: tradeFieldLabel('Flight number', '航班号'),
+            placeholder: 'MU583',
+            note: note('The flight number, for example MU583.', '航班号，例如 MU583。'),
+          })}
         </div>
       </div>
     </div>
@@ -8906,11 +9063,14 @@ function tradeAirTicketBlock() {
       <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.clipboard} ${tradeFieldLabel('Ticket info', '客票信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
-          <div class="field full">
-            <label>${tradeFieldLabel('Ticket number', '电子客票号')} ${req}</label>
-            <input class="mono" value="781-1234567890" readonly />
-            ${note('The electronic ticket number. Required after ticketing.', '电子客票号。出票后必填。')}
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'ticketNumber',
+            full: true,
+            extraClass: 'mono',
+            label: tradeFieldLabel('Ticket number', '电子客票号'),
+            placeholder: '781-1234567890',
+            note: note('The electronic ticket number. Required after ticketing.', '电子客票号。出票后必填。'),
+          })}
         </div>
       </div>
     </div>`;
@@ -8966,10 +9126,13 @@ function tradeAccommodationBlock() {
             <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
             <input value="Accommodation" readonly />
           </div>
-          <div class="field full">
-            <label>${tradeFieldLabel('Business URL', '业务网址')} ${req}</label>
-            <input type="url" value="https://www.hyatt.com" readonly />
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'businessUrl',
+            full: true,
+            type: 'url',
+            label: tradeFieldLabel('Business URL', '业务网址'),
+            placeholder: 'https://',
+          })}
         </div>
       </div>
     </div>
@@ -8977,14 +9140,16 @@ function tradeAccommodationBlock() {
       <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.store} ${tradeFieldLabel('Accommodation info', '住宿信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
-          <div class="field">
-            <label>${tradeFieldLabel('Hotel city', '酒店所在城市')} ${req}</label>
-            <input value="Shenzhen" readonly />
-          </div>
-          <div class="field">
-            <label>${tradeFieldLabel('Hotel name', '酒店名称')} ${req}</label>
-            <input value="Park Hyatt Shenzhen" readonly />
-          </div>
+          ${tradeOcrFieldHTML({
+            key:'hotelCity',
+            label: tradeFieldLabel('Hotel city', '酒店所在城市'),
+            placeholder: 'Shenzhen',
+          })}
+          ${tradeOcrFieldHTML({
+            key:'hotelName',
+            label: tradeFieldLabel('Hotel name', '酒店名称'),
+            placeholder: 'Park Hyatt Shenzhen',
+          })}
           <div class="field">
             <label>${tradeFieldLabel('Check-in date', '入住日期')} ${req}</label>
             <input type="date" value="2026-08-12" readonly />
@@ -9075,6 +9240,7 @@ function setExpectedShipmentDate(value) {
 }
 function attemptTradeReview() {
   const w = state.wiz; if (!w) return;
+  if (!ensureTradeOcrFilled()) return;
   if (needsTradeLogistics(w) && w.shipped === 'no' && !w.expectedShipDate) {
     w.expectedShipDateAttempted = true;
     render();
@@ -9290,6 +9456,7 @@ function stepTradeInfo(hideHeading) {
       </div>
     </div>
     <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">Confirm the following details we prefilled based on your document.</p>
+    ${tradeOcrAlertHTML()}
     <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
         ${(w.source === 'advertisement' || w.source === 'tourism' || w.source === 'software' || w.source === 'air-ticket' || w.source === 'accommodation' || w.source === 'goods' || w.source === 'international-logistics') ? '' : `<div class="review-card">
           <div class="review-card-h" style="justify-content:space-between">
@@ -9303,8 +9470,18 @@ function stepTradeInfo(hideHeading) {
                 <div style="display:flex;gap:8px"><input value="48,500.00" readonly style="flex:1" /><select disabled style="width:96px"><option>USD</option></select></div>
               </div>
               <div class="field"><label>Receiving country / region</label><select disabled><option>China (CN)</option></select></div>
-              <div class="field"><label>Buyer type</label><select disabled><option>Corporate</option></select></div>
-              <div class="field"><label>Company URL</label><input placeholder="https://example.com" /></div>
+              ${tradeOcrFieldHTML({
+                key:'buyerType',
+                label: 'Buyer type',
+                selectPlaceholder: tradeFieldLabel('Select buyer type', '请选择买家类型'),
+                options: [{value:'Corporate', label:'Corporate'}, {value:'Individual', label:'Individual'}],
+              })}
+              ${tradeOcrFieldHTML({
+                key:'companyUrl',
+                type: 'url',
+                label: 'Company URL',
+                placeholder: 'https://example.com',
+              })}
               <div class="field full"><label>Buyer name</label><input value="Shenzhen Global Trade Co., Ltd." readonly /></div>
             </div>
           </div>
