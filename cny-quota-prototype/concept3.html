@@ -3086,9 +3086,9 @@ const UNSHIPPED_LIMIT = 1000000;
 
 /* Concept 2 — unified upload history & quota breakdown (derived from UPLOAD_HISTORY) */
 const UPLOAD_METHODS = [
-  { key:'trade', label:'Trade document', desc:'Such as an invoice, contract, purchase order, or customs document. We’ll read the transaction details from your document.', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
-  { key:'template', label:'Transaction record using our template', desc:'A CSV file completed using our template. Because the template already includes all required information, fully completed files are processed the fastest.', ico:'upload', formats:'CSV · Max 50 MB' },
-  { key:'erp', label:'Transaction record exported from your business system', desc:'A CSV exported from your ERP, marketplace, accounting, or other business system. We’ll match your column names to the details we need and let you review before continuing.', ico:'db', formats:'CSV · Max 50 MB' },
+  { key:'trade', label:'Trade document', desc:'We’ll automatically identify transaction information from the document.', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
+  { key:'template', label:'Transaction record using our template', desc:'Once completed as required, the upload process will finish quickly.', ico:'upload', formats:'CSV · Max 50 MB' },
+  { key:'erp', label:'Transaction record exported from your business system', desc:'We’ll match each column header to the information the system needs, to identify the contents.', ico:'db', formats:'CSV · Max 50 MB' },
 ];
 
 const UPLOAD_HISTORY = [
@@ -4863,7 +4863,7 @@ function viewHome() {
                   <button type="button" class="home-section-history" onclick="go('upload-history')">View upload history</button>
                 </div>`
               : `<h2 class="section-title home-quota-title">Increase CNY settlement quota</h2>`}
-            <p class="section-sub">Your quota is calculated from the transaction details you submit. Choose how to submit them based on your payment source. If you have more than one source, you can submit each separately.</p>
+            <p class="section-sub">Your quota is calculated from all submitted transaction details. Choose how you will submit transaction information based on the payment source. If you have more than one source, you can submit each separately.</p>
           </div>
 
           ${state.concept!==1
@@ -6743,14 +6743,14 @@ function stepTemplateUpload() {
   const marketplaceOnly = isMarketplaceOnlyWizard(w);
   const canChooseFile = !!w.category && (w.category !== 'marketplace' || !!w.marketplace);
   const selectedCategory = TEMPLATE_TYPES.find(type => type.key === w.category);
-  const heading = fromUploadV2 ? 'Review Upload V2 details' : (marketplaceOnly ? 'Upload marketplace CSV' : 'Upload transaction CSV');
+  const heading = fromUploadV2 ? 'Review Upload V2 details' : (marketplaceOnly ? 'Upload marketplace CSV' : 'Upload completed transaction records');
   const subcopy = fromUploadV2
     ? 'The category and marketplace association were completed before upload.'
-    : (marketplaceOnly ? 'Select a marketplace, then upload the completed CSV template.' : 'Choose the transaction category, then upload the completed CSV template.');
+    : (marketplaceOnly ? 'Select a marketplace, then upload the completed CSV template.' : '');
   let body = `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
     <div>
       <h2 style="font-size:20px;font-weight:700">${heading}</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">${subcopy}</p>
+      ${subcopy ? `<p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">${subcopy}</p>` : ''}
     </div>
     ${templateCategoryFields(w)}`;
   let fileControl = '';
@@ -7239,8 +7239,7 @@ function stepERP2Upload(w) {
   if (w.dsState === 'issue') {
     return `<div class="erp2-stage">${erpScenarioControl()}
       <div class="erp2-stage-head">
-        <h2>Upload ERP CSV</h2>
-        <p>Upload your ERP export. We’ll identify the file headers before you review them step by step.</p>
+        <h2>Upload exported transaction records</h2>
       </div>
       ${uploadBoxBlock('Uploaded file', uploadedFileCard({
         fileName: erpDisplayedFileName(w) || (w.erpFileIssue === 'empty' ? 'erp_empty.csv' : 'erp_header_only.csv'),
@@ -7251,15 +7250,10 @@ function stepERP2Upload(w) {
   }
   return `<div class="erp2-stage">${erpScenarioControl()}
     <div class="erp2-stage-head">
-      <h2>Upload ERP CSV</h2>
-      <p>Upload your ERP export. We’ll identify the file headers before you review them step by step.</p>
+      <h2>Upload exported transaction records</h2>
     </div>
     ${w.dsState === 'mapped' ? `${erp2FileSummary(w, stats)}
       ${uiAlertHTML({ tone:'info', content:'Your file has already been analyzed. Continue to review the identified columns.' })}` : `
-      <div class="upload-prepare">
-        <h3 class="upload-prepare-title">How to prepare your ERP CSV file</h3>
-        <p class="upload-prepare-body">CSV · Max 50 MB · Keep the original header row.</p>
-      </div>
       ${emptyUploadBox({
         title: 'Upload ERP CSV',
         meta: 'CSV · Max 50 MB',

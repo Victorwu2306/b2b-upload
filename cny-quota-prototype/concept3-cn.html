@@ -3107,9 +3107,9 @@ const UNSHIPPED_LIMIT = 1000000;
 
 /* Concept 2 — unified upload history & quota breakdown (derived from UPLOAD_HISTORY) */
 const UPLOAD_METHODS = [
-  { key:'trade', label:'Trade document', desc:'Such as an invoice, contract, purchase order, or customs document. We’ll read the transaction details from your document.', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
-  { key:'template', label:'Transaction record using our template', desc:'A CSV file completed using our template. Because the template already includes all required information, fully completed files are processed the fastest.', ico:'upload', formats:'CSV · Max 50 MB' },
-  { key:'erp', label:'Transaction record exported from your business system', desc:'A CSV exported from your ERP, marketplace, accounting, or other business system. We’ll match your column names to the details we need and let you review before continuing.', ico:'db', formats:'CSV · Max 50 MB' },
+  { key:'trade', label:'Trade document', desc:'We’ll automatically identify transaction information from the document.', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
+  { key:'template', label:'Transaction record using our template', desc:'Once completed as required, the upload process will finish quickly.', ico:'upload', formats:'CSV · Max 50 MB' },
+  { key:'erp', label:'Transaction record exported from your business system', desc:'We’ll match each column header to the information the system needs, to identify the contents.', ico:'db', formats:'CSV · Max 50 MB' },
 ];
 
 const UPLOAD_HISTORY = [
@@ -4909,7 +4909,7 @@ function viewHome() {
                   <button type="button" class="home-section-history" onclick="go('upload-history')">View upload history</button>
                 </div>`
               : `<h2 class="section-title home-quota-title">Increase CNY settlement quota</h2>`}
-            <p class="section-sub">Your quota is calculated from the transaction details you submit. Choose how to submit them based on your payment source. If you have more than one source, you can submit each separately.</p>
+            <p class="section-sub">Your quota is calculated from all submitted transaction details. Choose how you will submit transaction information based on the payment source. If you have more than one source, you can submit each separately.</p>
           </div>
 
           ${state.concept!==1
@@ -6789,14 +6789,14 @@ function stepTemplateUpload() {
   const marketplaceOnly = isMarketplaceOnlyWizard(w);
   const canChooseFile = !!w.category && (w.category !== 'marketplace' || !!w.marketplace);
   const selectedCategory = TEMPLATE_TYPES.find(type => type.key === w.category);
-  const heading = fromUploadV2 ? 'Review Upload V2 details' : (marketplaceOnly ? 'Upload marketplace CSV' : 'Upload transaction CSV');
+  const heading = fromUploadV2 ? 'Review Upload V2 details' : (marketplaceOnly ? 'Upload marketplace CSV' : 'Upload completed transaction records');
   const subcopy = fromUploadV2
     ? 'The category and marketplace association were completed before upload.'
-    : (marketplaceOnly ? 'Select a marketplace, then upload the completed CSV template.' : 'Choose the transaction category, then upload the completed CSV template.');
+    : (marketplaceOnly ? 'Select a marketplace, then upload the completed CSV template.' : '');
   let body = `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
     <div>
       <h2 style="font-size:20px;font-weight:700">${heading}</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">${subcopy}</p>
+      ${subcopy ? `<p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">${subcopy}</p>` : ''}
     </div>
     ${templateCategoryFields(w)}`;
   let fileControl = '';
@@ -7285,8 +7285,7 @@ function stepERP2Upload(w) {
   if (w.dsState === 'issue') {
     return `<div class="erp2-stage">${erpScenarioControl()}
       <div class="erp2-stage-head">
-        <h2>Upload ERP CSV</h2>
-        <p>Upload your ERP export. We’ll identify the file headers before you review them step by step.</p>
+        <h2>Upload exported transaction records</h2>
       </div>
       ${uploadBoxBlock('Uploaded file', uploadedFileCard({
         fileName: erpDisplayedFileName(w) || (w.erpFileIssue === 'empty' ? 'erp_empty.csv' : 'erp_header_only.csv'),
@@ -7297,15 +7296,10 @@ function stepERP2Upload(w) {
   }
   return `<div class="erp2-stage">${erpScenarioControl()}
     <div class="erp2-stage-head">
-      <h2>Upload ERP CSV</h2>
-      <p>Upload your ERP export. We’ll identify the file headers before you review them step by step.</p>
+      <h2>Upload exported transaction records</h2>
     </div>
     ${w.dsState === 'mapped' ? `${erp2FileSummary(w, stats)}
       ${uiAlertHTML({ tone:'info', content:'Your file has already been analyzed. Continue to review the identified columns.' })}` : `
-      <div class="upload-prepare">
-        <h3 class="upload-prepare-title">How to prepare your ERP CSV file</h3>
-        <p class="upload-prepare-body">CSV · Max 50 MB · Keep the original header row.</p>
-      </div>
       ${emptyUploadBox({
         title: 'Upload ERP CSV',
         meta: 'CSV · Max 50 MB',
@@ -10557,7 +10551,7 @@ const CN_UI_REPLACEMENTS = [
   [/Back to template download/g, '返回模板下载'],
   [/Simulates different ERP header-matching results\./g, '模拟不同的 ERP 表头识别结果。'],
   [/Upload transaction documents, and we’ll increase your quota based on the transaction amounts\./g, '上传交易材料，额度将按交易金额提高。'],
-  [/Back to CNY quota management/g, '返回人民币结汇额度管理'], [/Return to CNY quota management/g, '返回人民币结汇额度管理'], [/CNY quota management/g, '人民币结汇额度管理'], [/Increase CNY settlement quota/g, '提升结汇额度'], [/Your quota is calculated from the transaction details you submit\. Choose how to submit them based on your payment source\. If you have more than one source, you can submit each separately\./g, '额度根据您提交的交易信息计算。请根据您的收款来源，选择提交交易信息的方式。有多种来源时，可分别提交。'],
+  [/Back to CNY quota management/g, '返回人民币结汇额度管理'], [/Return to CNY quota management/g, '返回人民币结汇额度管理'], [/CNY quota management/g, '人民币结汇额度管理'], [/Increase CNY settlement quota/g, '提升结汇额度'], [/Your quota is calculated from all submitted transaction details\. Choose how you will submit transaction information based on the payment source\. If you have more than one source, you can submit each separately\./g, '额度根据提交的所有交易信息计算。请根据收款来源，选择您将提交交易信息的方式。有多种来源时，可分别提交。'],
   [/Review and submit/g, '确认信息'],
   [/SHEIN\.COM, TikTok Shop, Wayfair, and other marketplaces/g, 'SHEIN.COM、TikTok Shop、Wayfair 等电商平台'],
   [/Physical products, including retail, wholesale, and drop shipping/g, '实体商品，包括零售、批发和代发货'],
@@ -10806,7 +10800,7 @@ const CN_UI_REPLACEMENTS = [
   [/Choose the same category used when downloading and completing the template\./g, '请选择下载和填写模板时使用的同一类别。'], [/Select a transaction category\./g, '请选择交易类别。'], [/Which marketplace are you uploading data from\?/g, '上传的是哪个电商平台的数据？'], [/Select a marketplace/g, '选择电商平台'],
   [/Select the marketplace represented by the transaction rows in this file\./g, '请选择文件中交易记录所属的电商平台。'], [/Seller ID/g, '卖家 ID'], [/Required to associate this .* file with the correct store\./g, '用于将文件绑定到正确店铺。'],
   [/Upload marketplace CSV/g, '上传电商平台 CSV'], [/Select a marketplace and upload your file, then review the details before submitting\./g, '选择电商平台并上传文件，然后在提交前核对详情。'], [/Select a marketplace, then upload the completed CSV template\./g, '选择电商平台，然后上传填写好的 CSV 模板。'], [/Select a marketplace, upload a file, and continue with the matching processing flow\./g, '选择电商平台、上传文件，然后进入对应处理流程。'], [/Select a marketplace to enable file upload\./g, '请先选择电商平台，再上传文件。'], [/Complete the required marketplace information before continuing\./g, '请先填写必填的电商平台信息，再继续。'],
-  [/Upload transaction CSV/g, '上传交易 CSV'], [/Choose the transaction category, then upload the completed CSV template\./g, '选择交易类别，然后上传填写好的 CSV 模板。'], [/Template CSV/g, '模板 CSV'],
+  [/Upload completed transaction records/g, '上传填写完的交易记录'], [/Upload exported transaction records/g, '上传导出的交易记录'], [/Upload transaction CSV/g, '上传交易 CSV'], [/Template CSV/g, '模板 CSV'],
   [/Complete the required category information to enable file upload\./g, '请先填写必填的类别信息，再上传文件。'], [/Complete the required category information before continuing\./g, '请先填写必填的类别信息，再继续。'], [/Upload a CSV file before continuing\./g, '请先上传 CSV 文件，再继续。'],
   [/Parsing CSV file…/g, '正在解析 CSV 文件…'], [/Validating rows and transaction data/g, '正在校验交易记录和数据'],
   [/Uploaded · (\d+) rows ·/g, '已上传 · $1 行 ·'], [/Uploaded · /g, '已上传 · '], [/Uploaded · CSV parsed ·/g, '已上传 · CSV 已解析 ·'], [/rows detected/g, '行已识别'],
@@ -11128,9 +11122,9 @@ const CN_UI_REPLACEMENTS = [
   [/Drag file here or /g, '将文件拖放到此处，或 '], [/^browse$/g, '浏览'], [/Supported file types:/g, '支持的文件类型：'], [/Maximum file size:/g, '文件大小上限：'],
   [/All file types supported/g, '支持所有文件类型'], [/Max 50MB/g, '最大 50MB'], [/Max 50 MB/g, '最大 50 MB'],
   [/Transaction record using our template/g, '使用模板填写的交易记录'],
-  [/Such as an invoice, contract, purchase order, or customs document\. We’ll read the transaction details from your document\./g, '例如发票、合同、采购订单或报关单据。我们将从单据中读取交易信息。'],
-  [/A CSV file completed using our template\. Because the template already includes all required information, fully completed files are processed the fastest\./g, '按照模板填写完成的 CSV 格式文件。由于模板已包含所有必要信息，所以完整填写后系统的处理速度最快。'],
-  [/A CSV exported from your ERP, marketplace, accounting, or other business system\. We’ll match your column names to the details we need and let you review before continuing\./g, '从 ERP、电商平台、财务或其他业务系统导出的 CSV。我们会将列名与所需信息对应，并在继续前供您核对。'],
+  [/We’ll automatically identify transaction information from the document\./g, '我们将从单据中自动识别交易信息'],
+  [/Once completed as required, the upload process will finish quickly\./g, '按要求完整填写后，上传流程将快速完成'],
+  [/We’ll match each column header to the information the system needs, to identify the contents\./g, '我们会将每列标题和系统所需信息对应，以识别内容'],
   [/A completed transaction record in CSV/g, '已完成的 CSV 交易记录'],
   [/Transaction record exported from your business system/g, '从业务系统导出的交易记录'],
   [/A CSV exported from your ERP, marketplace, accounting, or other business system/g, '从 ERP、电商平台、财务或其他业务系统导出的 CSV'],
