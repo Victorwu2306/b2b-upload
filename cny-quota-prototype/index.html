@@ -3253,9 +3253,27 @@ const state = {
   templateMenuOpen: false,
   erpExample: false,
   wiz: null, // { kind:'upload'|'template'|'erp'|'trade', ... }
+  lockedFlow: null,
   uploadId: null,
   drafts: [],
 };
+
+const FINAL_FLOWS = {
+  'final-flow-1': { homepage: 1, upload: 1, erp: 'v3' },
+  'final-flow-2': { homepage: 2, upload: 2, erp: 'v2' },
+};
+const FINAL_FLOW_HASHES = {
+  'final-flow-1': 'final-flow-1',
+  'flow-1': 'final-flow-1',
+  'final-flow-2': 'final-flow-2',
+  'flow-2': 'final-flow-2',
+};
+function lockedFlowConfig() {
+  return FINAL_FLOWS[state.lockedFlow] || null;
+}
+function lockedFlowIdFromHash(hash) {
+  return FINAL_FLOW_HASHES[String(hash || '').toLowerCase()] || null;
+}
 
 function resetWiz(kind) {
   if (kind === 'template') {
@@ -3295,7 +3313,7 @@ function resetWiz(kind) {
     kind:'erp', step:2, dsState:'empty', skipLink:!LINK_PAYMENT_VISIBLE,
     linked:[], done:false, erpExample:false,
     fileDescription:'', fileDescriptionAttempted:false,
-    erpFlowVersion:'v2', erp2Stage:1,
+    erpFlowVersion:(lockedFlowConfig()&&lockedFlowConfig().erp)||'v2', erp2Stage:1,
     erp2HadUnrecognized:false, erp2SkippedConfirm:false, erp2ZeroMatchAlert:false, erpFileIssue:'', erp2SupplementState:'empty',
     erp2SupplementFileName:null, erp2SupplementError:false,
     erp2SupplementedFields:[], erp2IdentifiedSourceIds:[], erp2IdentifiedTargetNames:[],
@@ -3402,6 +3420,7 @@ function startERPWizard(fromUnified) {
   const v2Context = fromUnified ? uploadV2ContextFrom(current) : null;
   state.erpGuide = false;
   state.wiz = resetWiz('erp');
+  if (lockedFlowConfig()) state.wiz.erpFlowVersion = lockedFlowConfig().erp;
   if (fromUnified) { attachUnifiedOrigin(state.wiz,originVersion,v2Context); state.wiz.uploadType = 'erp'; }
   if (allowedTypes) state.wiz.allowedTypes = allowedTypes.slice();
   if (allowedCategories) state.wiz.allowedCategories = allowedCategories.slice();
@@ -3450,7 +3469,7 @@ function startUploadWizard(keepType, allowedTypes, allowedCategories) {
   const draftId = keepType && current && current.draftId;
   const originVersion = keepType && current
     ? (current.uploadOriginVersion || current.uploadVersion || (current.uploadV2Context ? 2 : (current.fromUnified ? 1 : 2)))
-    : 2;
+    : ((lockedFlowConfig() && lockedFlowConfig().upload) || 2);
   const context = Object.assign({}, uploadV2ContextFrom(current) || {});
   if (categories) context.allowedCategories = categories;
   if (originVersion === 2) {
@@ -3501,6 +3520,7 @@ function continueUnifiedUpload() {
 }
 const UPLOAD_V2_DOCUMENT_EXTENSIONS = ['pdf','jpg','jpeg','png','tiff','tif','doc','docx'];
 function setUploadFlowVersion(version) {
+  if (lockedFlowConfig()) return;
   const current = state.wiz || {};
   const allowed = current.allowedTypes;
   const draftId = current.draftId;
@@ -3941,6 +3961,7 @@ const SHOW_CONCEPT_1 = false;
 const SHOW_CONCEPT_2 = false;
 const SHOW_ERP_CSV_V1 = false;
 function setConcept(n) {
+  if (lockedFlowConfig()) return;
   if (n === 1 && !SHOW_CONCEPT_1) n = 3;
   if (n === 2 && !SHOW_CONCEPT_2) n = 3;
   state.concept = n;
@@ -3962,17 +3983,33 @@ function homepageHash(version) {
 }
 function applyPrototypeRoute() {
   const hash = String(location.hash || '').replace(/^#/, '').toLowerCase();
+  const lockedId = lockedFlowIdFromHash(hash);
+  if (lockedId) {
+    state.lockedFlow = lockedId;
+    state.concept = 3;
+    state.homepageVersion = FINAL_FLOWS[lockedId].homepage;
+    if (state.view === 'home' || !state.view) state.view = 'home';
+    return 'home';
+  }
+  state.lockedFlow = null;
   if (hash === 'homepage-1' || hash === 'home-1' || hash === 'hp1') state.homepageVersion = 1;
   else if (hash === 'homepage-2' || hash === 'home-2' || hash === 'hp2') state.homepageVersion = 2;
   state.concept = 3;
   if (state.view === 'home' || !state.view) state.view = 'home';
+  return 'home';
 }
 function syncPrototypeHash() {
+  if (state.lockedFlow && FINAL_FLOWS[state.lockedFlow]) {
+    const next = '#' + state.lockedFlow;
+    if (location.hash !== next) history.replaceState(null, '', next);
+    return;
+  }
   if (state.concept !== 3) return;
   const next = homepageHash(state.homepageVersion);
   if (location.hash !== next) history.replaceState(null, '', next);
 }
 function setHomepageVersion(n) {
+  if (lockedFlowConfig()) return;
   state.homepageVersion = n === 1 ? 1 : 2;
   state.view = 'home';
   state.wiz = null;
@@ -6041,6 +6078,7 @@ function setERPScenario(value) {
   render();
 }
 function setERPFlowVersion(version) {
+  if (lockedFlowConfig()) return;
   const current = state.wiz;
   if (!SHOW_ERP_CSV_V1 && version === 'v1') version = 'v2';
   if (!current || current.erpFlowVersion === version || current.dsState === 'processing') return;
@@ -6055,6 +6093,7 @@ function setERPFlowVersion(version) {
   render();
 }
 function erpVersionSelector() {
+  if (lockedFlowConfig()) return '';
   const w = state.wiz;
   if (!SHOW_ERP_CSV_V1 && w.erpFlowVersion === 'v1') w.erpFlowVersion = 'v2';
   const locked = w.dsState !== 'empty';
@@ -10128,6 +10167,7 @@ function viewUploadDetails() {
 }
 
 function uploadFlowVersionSelector(w) {
+  if (lockedFlowConfig()) return '';
   const version = w && w.uploadVersion === 1 ? 1 : 2;
   return `<div class="erp-version-card">
     <div class="erp-version-copy">
