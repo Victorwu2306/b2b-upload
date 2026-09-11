@@ -6874,8 +6874,8 @@ function stepTemplateV2Review() {
   const w = state.wiz;
   const category = (TEMPLATE_TYPES.find(type=>type.key===w.category)||{}).label || '—';
   const details = [
-    ['File name',w.fileName||'template_transactions.csv'],
     ['File type','Template CSV'],
+    ['File name',w.fileName||'template_transactions.csv'],
     ['File description',fileDescriptionValue(w)||'—'],
     ['Category',category],
     ...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),
@@ -8104,7 +8104,7 @@ function stepERPReview() {
     <div class="review-card">
       <div class="review-card-h">${I.file} Uploaded file summary</div>
       <div class="review-card-b"><div class="kv-grid">
-        ${[['File name',erpDisplayedFileName(w)||(isERP2?'erp_export.csv':'erp_export.xlsx')],['File type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['File description',fileDescriptionValue(w)||'—'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['Upload date','2026-07-20'],['Records detected', DS_TX_PREVIEW.length+' transaction records']].map(([k,v])=>`<div><label>${k}</label><p${k==='File name'?' class="mono"':''}>${escapeHTML(v)}</p></div>`).join('')}
+        ${[['File type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['File name',erpDisplayedFileName(w)||(isERP2?'erp_export.csv':'erp_export.xlsx')],['File description',fileDescriptionValue(w)||'—'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['Upload date','2026-07-20'],['Records detected', DS_TX_PREVIEW.length+' transaction records']].map(([k,v])=>`<div><label>${k}</label><p${k==='File name'?' class="mono"':''}>${escapeHTML(v)}</p></div>`).join('')}
       </div></div>
     </div>
     ${paymentLinkingActive?`<div class="review-card">
@@ -9323,8 +9323,8 @@ function stepTradeReview() {
       <div class="review-card-b">
         <div class="kv-grid">
           <div><label>Business type</label><p>${srcLabel}</p></div>
-          <div><label>File name</label><p class="mono">${escapeHTML(w.fileName || 'trade_document.pdf')}</p></div>
           <div><label>File type</label><p>Trade document</p></div>
+          <div><label>File name</label><p class="mono">${escapeHTML(w.fileName || 'trade_document.pdf')}</p></div>
           <div><label>File description</label><p>${escapeHTML(fileDescriptionValue(w) || '—')}</p></div>
           <div><label>Transaction amount</label><p class="money-value">USD 48,500.00</p></div>
         </div>
@@ -9935,8 +9935,8 @@ function viewTradeRecordDetails(ctx, backView, backLabel) {
       ${upload ? `<div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">File Information</h3>
         <div class="details-grid" style="grid-template-columns:1fr 1fr">
-          <div class="read-field"><label>File name</label><p class="mono">${escapeHTML(ctx.fileName)}</p></div>
           <div class="read-field"><label>File type</label><p>${escapeHTML(ctx.fileType || 'Trade documents')}</p></div>
+          <div class="read-field"><label>File name</label><p class="mono">${escapeHTML(ctx.fileName)}</p></div>
           <div class="read-field"><label>File description</label><p>${escapeHTML(uploadRecordDescription(upload))}</p></div>
           <div class="read-field"><label>Upload time</label><p class="mono">${formatUploadTime(ctx.uploadDate)}</p></div>
         </div>
@@ -10115,8 +10115,8 @@ function viewUploadDetails() {
       <div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">File Information</h3>
         <div class="details-grid" style="grid-template-columns:1fr 1fr">
-          <div class="read-field"><label>File name</label><p class="mono">${escapeHTML(r.fileName || '—')}</p></div>
           <div class="read-field"><label>File type</label><p>${r.typeKey==='erp'?'ERP CSV 2':r.fileType}</p></div>
+          <div class="read-field"><label>File name</label><p class="mono">${escapeHTML(r.fileName || '—')}</p></div>
           <div class="read-field"><label>File description</label><p>${uploadRecordDescription(r)}</p></div>
           <div class="read-field"><label>Upload time</label><p class="mono">${formatUploadTime(r.uploadDate)}</p></div>
           <div class="read-field"><label>Quota added</label><p class="money-value" style="font-weight:600">${r.quotaAdded?money(r.quotaAdded):'—'}</p></div>
@@ -10322,8 +10322,8 @@ function viewUploadHistory() {
           <div style="overflow-x:auto"><table class="data" style="min-width:1120px">
             <thead><tr>
               <th>Upload time</th>
-              <th>File name</th>
               <th>File type</th>
+              <th>File name</th>
               <th>File description</th>
               <th>Status</th>
               <th>Quota added</th>
@@ -10333,8 +10333,8 @@ function viewUploadHistory() {
               ${activeTab === 'drafts' ? drafts.map(d => `
               <tr class="draft-row">
                 <td class="mono" style="color:var(--muted-foreground);white-space:nowrap">${formatUploadTime(d.uploadDate)}</td>
-                <td class="mono">${escapeHTML(d.fileName || '—')}</td>
                 <td>${d.fileType}</td>
+                <td class="mono">${escapeHTML(d.fileName || '—')}</td>
                 <td style="font-weight:500">${uploadRecordDescription(d)}</td>
                 <td>${uploadHistoryStatus('Draft')}</td>
                 <td><span style="color:var(--switch)">—</span></td>
@@ -10342,8 +10342,8 @@ function viewUploadHistory() {
               </tr>`).join('') : UPLOAD_HISTORY.map(r => `
               <tr>
                 <td class="mono" style="color:var(--muted-foreground);white-space:nowrap">${formatUploadTime(r.uploadDate)}</td>
-                <td class="mono">${escapeHTML(r.fileName || '—')}</td>
                 <td>${r.fileType}</td>
+                <td class="mono">${escapeHTML(r.fileName || '—')}</td>
                 <td style="font-weight:500">${uploadRecordDescription(r)}</td>
                 <td>${uploadHistoryStatus(r.status)}</td>
                 <td>${r.quotaAdded
