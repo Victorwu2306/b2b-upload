@@ -324,6 +324,7 @@ a { color: inherit; }
   .upload-quota-primary { border-right:0; border-bottom:1px solid var(--border); }
 }
 .upload-type-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.upload-type-page-title { font-size:24px; line-height:32px; font-weight:600; margin:0; }
 @media (max-width:1100px) { .upload-type-grid { grid-template-columns:1fr; } }
 .upload-helper {
   display:flex; align-items:center; flex-wrap:wrap; gap:10px 14px;
@@ -4760,8 +4761,8 @@ function homeCardsConcept1() {
 function homeCardsConcept2() {
   return `<div class="grid-2">
             <article class="action-card home-pair-card">
-              <h3>Connect stores you’re selling on</h3>
-              <p class="desc">When you get a new payment to your store, we increase your quota automatically.</p>
+              <h3>Amazon, Shopify, and Walmart payments</h3>
+              <p class="desc">After you connect a store, your quota increases automatically when the store receives a new payment.</p>
               <div class="action-body">
                 <div class="store-plain-list">
                   <div class="store-plain-row">
@@ -4792,8 +4793,8 @@ function homeCardsConcept2() {
             </article>
 
             <article class="action-card home-pair-card">
-              <h3>Upload your transaction documents</h3>
-              <p class="desc">We’ll increase your quota based on the transaction amounts.</p>
+              <h3>Other platform and trade payments</h3>
+              <p class="desc">Upload transaction documents, and we’ll increase your quota based on the transaction amounts.</p>
               <div class="action-body">
                 <p class="support-lead">You can upload:</p>
                 <ul class="support-list">
@@ -4801,12 +4802,12 @@ function homeCardsConcept2() {
                   <li>Transaction records completed using our template</li>
                   <li>Transaction records exported from your business system like ERP or your marketplace</li>
                 </ul>
-                <p class="support-note"><button type="button" class="inline-link" style="text-decoration:none" onclick="openDocumentRequirements()">A few things to know</button> before you upload — eligible transactions, document details, and templates.</p>
+                <p class="support-note">Before you upload, be sure to read <button type="button" class="inline-link" style="text-decoration:none" onclick="openDocumentRequirements()">the supported settlement transaction types and document requirements</button>.</p>
               </div>
               <div class="card-footer">
                 <div class="cta-cluster">
                   <button type="button" class="history-link" onclick="go('upload-history')">View upload history</button>
-                  <button type="button" class="btn btn-gradient" onclick="startUploadWizard()">Upload document</button>
+                  <button type="button" class="btn btn-gradient" onclick="startUploadWizard()">Upload transaction documents</button>
                 </div>
               </div>
             </article>
@@ -4823,7 +4824,7 @@ function homeCardsHomepage2() {
       <div class="homepage2-split">
         <section class="homepage2-pane connect">
           <h4>Connect stores</h4>
-          <p>When you get a new payment to your store, we increase your quota automatically.</p>
+          <p>After you connect a store, your quota increases automatically when the store receives a new payment.</p>
           <div class="store-plain-list">
             <div class="store-plain-row">
               <div class="platform-logo" style="color:#FF9900;font-style:italic;font-family:serif;border:none">a</div>
@@ -4877,7 +4878,7 @@ function homeCardsHomepage2() {
         </div>
         <div class="card-footer">
           <div class="cta-cluster">
-            <button type="button" class="btn btn-gradient" onclick="startDocumentUploadWizard()">Upload document</button>
+            <button type="button" class="btn btn-gradient" onclick="startDocumentUploadWizard()">Upload transaction documents</button>
           </div>
         </div>
       </div>
@@ -4905,10 +4906,11 @@ function viewHome() {
           <div class="home-section-head">
             ${state.concept!==1 && state.homepageVersion===2
               ? `<div class="home-section-sub-row">
-                  <h2 class="section-title home-quota-title">Increase your quota based on your transactions</h2>
+                  <h2 class="section-title home-quota-title">Increase CNY settlement quota</h2>
                   <button type="button" class="home-section-history" onclick="go('upload-history')">View upload history</button>
                 </div>`
-              : `<h2 class="section-title home-quota-title">Choose a way to increase your quota</h2>`}
+              : `<h2 class="section-title home-quota-title">Increase CNY settlement quota</h2>`}
+            <p class="section-sub">Choose how to submit transaction details based on the payment source. If you have more than one source, you can submit each separately.</p>
           </div>
 
           ${state.concept!==1
@@ -5323,14 +5325,14 @@ function viewDocumentRequirements() {
   return `<div class="view active">
     ${sidebar()}
     <div class="main">
-      ${topbar(['Manage','CNY quota management','Requirements on your documents'])}
+      ${topbar(['Manage','CNY quota management','Upload document requirements'])}
       <div class="page-head">
         <button class="back-ico" onclick="go('home')" aria-label="Back to CNY quota management">${I.back}</button>
-        <h1>Requirements on your documents</h1>
+        <h1>Upload document requirements</h1>
       </div>
       <div class="content">
         <section>
-          <p style="font-size:14px;font-weight:600;margin-bottom:2px">Eligible transaction types</p>
+          <p style="font-size:14px;font-weight:600;margin-bottom:2px">Eligible settlement transaction types</p>
           <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:12px">The following transaction types may be used to increase your quota:</p>
           <div class="eligible-types">
             <div class="eligible-type">
@@ -10239,10 +10241,8 @@ function viewWizardUpload() {
     </div>`;
   }
   const body = `<div style="display:flex;flex-direction:column;gap:20px">
+    <h2 class="upload-type-page-title">Choose the type of your transaction document</h2>
     ${uploadFlowVersionSelector(w)}
-    <div>
-      <h2 style="font-size:20px;font-weight:700">What would you like to upload?</h2>
-    </div>
     <div class="upload-type-grid" style="grid-template-columns:repeat(${methods.length},minmax(0,1fr))">
       ${methods.map(m => `
         <button type="button" class="source-card ${w.uploadType===m.key?'selected':''}" onclick="state.wiz.uploadType='${m.key}';render()" style="text-align:left">

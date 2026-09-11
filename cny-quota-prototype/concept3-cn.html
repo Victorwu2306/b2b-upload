@@ -319,6 +319,7 @@ a { color: inherit; }
   .upload-quota-primary { border-right:0; border-bottom:1px solid var(--border); }
 }
 .upload-type-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.upload-type-page-title { font-size:24px; line-height:32px; font-weight:600; margin:0; }
 @media (max-width:1100px) { .upload-type-grid { grid-template-columns:1fr; } }
 .upload-helper {
   display:flex; align-items:center; flex-wrap:wrap; gap:10px 14px;
@@ -4682,8 +4683,8 @@ function homeCardsConcept1() {
 function homeCardsConcept2() {
   return `<div class="grid-2">
             <article class="action-card home-pair-card">
-              <h3>Connect stores you’re selling on</h3>
-              <p class="desc">When you get a new payment to your store, we increase your quota automatically.</p>
+              <h3>Amazon, Shopify, and Walmart payments</h3>
+              <p class="desc">After you connect a store, your quota increases automatically when the store receives a new payment.</p>
               <div class="action-body">
                 <div class="store-plain-list">
                   <div class="store-plain-row">
@@ -4714,8 +4715,8 @@ function homeCardsConcept2() {
             </article>
 
             <article class="action-card home-pair-card">
-              <h3>Upload your transaction documents</h3>
-              <p class="desc">We’ll increase your quota based on the transaction amounts.</p>
+              <h3>Other platform and trade payments</h3>
+              <p class="desc">Upload transaction documents, and we’ll increase your quota based on the transaction amounts.</p>
               <div class="action-body">
                 <p class="support-lead">You can upload:</p>
                 <ul class="support-list">
@@ -4723,12 +4724,12 @@ function homeCardsConcept2() {
                   <li>Transaction records completed using our template</li>
                   <li>Transaction records exported from your business system like ERP or your marketplace</li>
                 </ul>
-                <p class="support-note"><button type="button" class="inline-link" style="text-decoration:none" onclick="openDocumentRequirements()">A few things to know</button> before you upload — eligible transactions, document details, and templates.</p>
+                <p class="support-note">Before you upload, be sure to read <button type="button" class="inline-link" style="text-decoration:none" onclick="openDocumentRequirements()">the supported settlement transaction types and document requirements</button>.</p>
               </div>
               <div class="card-footer">
                 <div class="cta-cluster">
                   <button type="button" class="history-link" onclick="go('upload-history')">View upload history</button>
-                  <button type="button" class="btn btn-gradient" onclick="startUploadWizard()">Upload document</button>
+                  <button type="button" class="btn btn-gradient" onclick="startUploadWizard()">Upload transaction documents</button>
                 </div>
               </div>
             </article>
@@ -4745,7 +4746,7 @@ function homeCardsHomepage2() {
       <div class="homepage2-split">
         <section class="homepage2-pane connect">
           <h4>Connect stores</h4>
-          <p>When you get a new payment to your store, we increase your quota automatically.</p>
+          <p>After you connect a store, your quota increases automatically when the store receives a new payment.</p>
           <div class="store-plain-list">
             <div class="store-plain-row">
               <div class="platform-logo" style="color:#FF9900;font-style:italic;font-family:serif;border:none">a</div>
@@ -4799,7 +4800,7 @@ function homeCardsHomepage2() {
         </div>
         <div class="card-footer">
           <div class="cta-cluster">
-            <button type="button" class="btn btn-gradient" onclick="startDocumentUploadWizard()">Upload document</button>
+            <button type="button" class="btn btn-gradient" onclick="startDocumentUploadWizard()">Upload transaction documents</button>
           </div>
         </div>
       </div>
@@ -4827,10 +4828,11 @@ function viewHome() {
           <div class="home-section-head">
             ${state.concept!==1 && state.homepageVersion===2
               ? `<div class="home-section-sub-row">
-                  <h2 class="section-title home-quota-title">Increase your quota based on your transactions</h2>
+                  <h2 class="section-title home-quota-title">Increase CNY settlement quota</h2>
                   <button type="button" class="home-section-history" onclick="go('upload-history')">View upload history</button>
                 </div>`
-              : `<h2 class="section-title home-quota-title">Choose a way to increase your quota</h2>`}
+              : `<h2 class="section-title home-quota-title">Increase CNY settlement quota</h2>`}
+            <p class="section-sub">Choose how to submit transaction details based on the payment source. If you have more than one source, you can submit each separately.</p>
           </div>
 
           ${state.concept!==1
@@ -5245,14 +5247,14 @@ function viewDocumentRequirements() {
   return `<div class="view active">
     ${sidebar()}
     <div class="main">
-      ${topbar(['Manage','CNY quota management','Requirements on your documents'])}
+      ${topbar(['Manage','CNY quota management','Upload document requirements'])}
       <div class="page-head">
         <button class="back-ico" onclick="go('home')" aria-label="Back to CNY quota management">${I.back}</button>
-        <h1>Requirements on your documents</h1>
+        <h1>Upload document requirements</h1>
       </div>
       <div class="content">
         <section>
-          <p style="font-size:14px;font-weight:600;margin-bottom:2px">Eligible transaction types</p>
+          <p style="font-size:14px;font-weight:600;margin-bottom:2px">Eligible settlement transaction types</p>
           <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:12px">The following transaction types may be used to increase your quota:</p>
           <div class="eligible-types">
             <div class="eligible-type">
@@ -10050,10 +10052,8 @@ function viewWizardUpload() {
     </div>`;
   }
   const body = `<div style="display:flex;flex-direction:column;gap:20px">
+    <h2 class="upload-type-page-title">Choose the type of your transaction document</h2>
     ${uploadFlowVersionSelector(w)}
-    <div>
-      <h2 style="font-size:20px;font-weight:700">What would you like to upload?</h2>
-    </div>
     <div class="upload-type-grid" style="grid-template-columns:repeat(${methods.length},minmax(0,1fr))">
       ${methods.map(m => `
         <button type="button" class="source-card ${w.uploadType===m.key?'selected':''}" onclick="state.wiz.uploadType='${m.key}';render()" style="text-align:left">
@@ -10314,8 +10314,8 @@ const CN_UI_REPLACEMENTS = [
   [/Upload history views/g, '上传历史视图'],
   [/Back to template download/g, '返回模板下载'],
   [/Simulates different ERP header-matching results\./g, '模拟不同的 ERP 表头识别结果。'],
-  [/We'll\ increase\ your\ quota\ based\ on\ the\ transaction\ amounts\./g, '额度将按交易金额提高。'],
-  [/Back to CNY quota management/g, '返回人民币结汇额度管理'], [/Return to CNY quota management/g, '返回人民币结汇额度管理'], [/CNY quota management/g, '人民币结汇额度管理'], [/Increase your quota based on your transactions/g, '根据交易提升额度'], [/Choose a way to increase your quota/g, '选择提升额度的方式'],
+  [/Upload transaction documents, and we’ll increase your quota based on the transaction amounts\./g, '上传交易材料，额度将按交易金额提高。'],
+  [/Back to CNY quota management/g, '返回人民币结汇额度管理'], [/Return to CNY quota management/g, '返回人民币结汇额度管理'], [/CNY quota management/g, '人民币结汇额度管理'], [/Increase CNY settlement quota/g, '提升结汇额度'], [/Choose how to submit transaction details based on the payment source\. If you have more than one source, you can submit each separately\./g, '根据收款来源选择提交交易信息的方式。有多种收款来源时，可分别提交。'],
   [/Review and submit/g, '检查'],
   [/SHEIN\.COM, TikTok Shop, Wayfair, and other marketplaces/g, 'SHEIN.COM、TikTok Shop、Wayfair 等电商平台'],
   [/Physical products, including retail, wholesale, and drop shipping/g, '实体商品，包括零售、批发和代发货'],
@@ -10383,7 +10383,7 @@ const CN_UI_REPLACEMENTS = [
   [/Track quota from uploaded trade documents and take action when needed\./g, '查看贸易单据带来的额度，并在需要时处理。'], [/Document List/g, '单据列表'], [/Quota from this channel/g, '此渠道带来的额度'], [/Unshipped Settlement Quota/g, '未发货结算额度'], [/Releasable quota/g, '可释放额度'],
   [/Such as an invoice, contract, purchase order, or customs document/g, '例如发票、合同、采购订单或报关单据'], [/Trade document file/g, '贸易单据文件'], [/Trade document/g, '贸易单据'],
   [/The templates we provide are/g, '模板为'], [/Upload the completed CSV using the same column headers\./g, '请保留原表头，并上传填写好的 CSV。'],
-  [/B2B purchases or sales of physical goods supported by trade documents\./g, '通过贸易单据证明的 B2B 实体商品采购或销售。'], [/Supported transactions/g, '支持的交易类型'], [/supported transactions/g, '支持的交易类型'], [/View supported marketplaces/g, '查看支持的电商平台'],
+  [/B2B purchases or sales of physical goods supported by trade documents\./g, '通过贸易单据证明的 B2B 实体商品采购或销售。'], [/Supported transactions/g, '支持结汇的交易类型'], [/supported transactions/g, '支持结汇的交易类型'], [/View supported marketplaces/g, '查看支持的电商平台'],
   [/Marketplace template & supported marketplaces/g, '电商平台模板与支持列表'], [/Check the result file for the exchange rate/g, '请在结果文件中查看汇率'], [/Check the/g, '请先查看'], [/before proceeding\./g, '，再继续。'],
   [/Select a business type/g, '选择业务类型'], [/Choose the category that best describes the transaction in your document\./g, '请选择最符合单据中交易的类别。'],
   [/Do you have the required info in your uploaded file\?/g, '上传的文件中是否包含必填信息？'], [/Tell us which column in your file matches the required info\. If no column matches, add the required columns and upload it again\./g, '请选择文件中对应必填信息的列。如没有对应列，请补充必填列后重新上传。'],
@@ -10431,11 +10431,11 @@ const CN_UI_REPLACEMENTS = [
   [/Unshipped quota usage/g, '未发货额度使用情况'],
   [/Pool quota/g, '额度明细'], [/All balances/g, '全部余额'],
   [/Connect a marketplace once, and eligible payments can increase your quota automatically\./g, '绑定电商平台后，符合条件的收款可自动提高额度。'],
-  [/When you get a new payment to your store, we increase your quota automatically\./g, '店铺收到新收款后，额度会自动提高。'],
-  [/Connect stores you’re selling on/g, '绑定正在使用的店铺'], [/Connect Stores/g, '绑定店铺'], [/Connect stores/g, '绑定店铺'], [/Connect store/g, '绑定店铺'], [/Connect a Store/g, '绑定店铺'],
+  [/After you connect a store, your quota increases automatically when the store receives a new payment\./g, '绑定店铺后，当店铺收到新收款时，额度会自动提高。'],
+  [/Amazon, Shopify, and Walmart payments/g, 'Amazon、Shopify、Walmart 收款'], [/Connect Stores/g, '绑定店铺'], [/Connect stores/g, '绑定店铺'], [/Connect store/g, '绑定店铺'], [/Connect a Store/g, '绑定店铺'],
   [/(\d+) stores connected/g, '已绑定 $1 家店铺'], [/(\d+) connected/g, '已绑定 $1 家'], [/Not connected/g, '未绑定'], [/(\d+) to connect/g, '可绑定 $1 家'], [/No stores connected yet/g, '尚未绑定店铺'],
   [/Choose your e-commerce platform/g, '选择电商平台'], [/Creative Marketplace/g, '创意商品平台'], [/Social Commerce/g, '社交电商'],
-  [/Upload your transaction documents/g, '上传交易材料'], [/Goods or service trading/g, '货物或服务贸易'], [/We’ll increase your quota based on the transaction amounts\./g, '额度将按交易金额提高。'],
+  [/Other platform and trade payments/g, '其他平台收款、外贸收款'], [/Goods or service trading/g, '货物或服务贸易'], [/Upload transaction documents, and we’ll increase your quota based on the transaction amounts\./g, '上传交易材料，额度将按交易金额提高。'],
   [/Upload trade documents or CSV transaction records\. We increase your quota based on the transaction amounts\./g, '上传贸易单据或 CSV 交易记录。额度将按交易金额提高。'],
   [/You can upload:/g, '可上传：'],
   [/What was your transaction for\?/g, '此交易来自什么业务？'],
@@ -10445,8 +10445,8 @@ const CN_UI_REPLACEMENTS = [
   [/ and complete this file\./g, '并完成该文件。'],
   [/^Click $/g, '点击'],
   [/ to upload your file\./g, '，以上传文件。'],
-  [/Requirements on your documents/g, '单据要求'],
-  [/Eligible transaction types/g, '支持的交易类型'],
+  [/Upload document requirements/g, '上传材料要求'],
+  [/Eligible settlement transaction types/g, '支持结汇的交易类型'],
   [/The following transaction types may be used to increase your quota:/g, '以下交易类型可用于提升额度：'],
   [/Required details in your documents/g, '单据必填信息'],
   [/Requirements layout/g, '单据要求布局'],
@@ -10487,19 +10487,19 @@ const CN_UI_REPLACEMENTS = [
 
   [/<th>Detail<\/th>/g, '<th>字段</th>'],
   [/^Detail$/g, '字段'],
-  [/Back to requirements on your documents/g, '返回单据要求'],
+  [/Back to upload document requirements/g, '返回上传材料要求'],
   [/Trade documents, such as commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents/g, '贸易单据，例如商业发票或形式发票、采购订单、合同、运输及报关单据'],
   [/Transaction records completed using our template/g, '使用模板填写完成的交易记录'],
   [/Transaction records exported from your business system like ERP or your marketplace/g, '从 ERP 或电商平台等业务系统导出的交易记录'],
-  [/A few things to know/g, '上传前须知'],
-  [/before you upload — eligible transactions, document details, and templates\./g, '：符合条件的交易、单据信息和模板。'],
+  [/Before you upload, be sure to read /g, '上传前，请务必阅读'],
+  [/the supported settlement transaction types and document requirements/g, '支持结汇的交易类型和材料要求'],
   [/Your transactions also need to be eligible for CNY settlement, and your documents need to include certain details\./g, '交易也需符合人民币结汇要求，单据需包含指定信息。'],
   [/Check before you upload/g, '上传前请核对'],
   [/To be eligible for CNY settlement, your transactions and your document details both need to qualify\./g, '交易和单据信息均符合要求，才能进行人民币结汇。'], [/Learn requirements/g, '查看要求'],
   [/We support:/g, '支持以下材料：'],
   [/Trade documents – commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents/g, '贸易单据：商业发票或形式发票、采购订单、合同、运输及报关单据'],
   [/CSV transaction records – exported from your business platform like ERP, or prepared using our template/g, 'CSV 交易记录：从 ERP 等业务平台导出，或使用标准模板填写'],
-  [/Check the supported transactions before proceeding\./g, '请先查看支持的交易类型，再继续。'],
+  [/Check the supported transactions before proceeding\./g, '请先查看支持结汇的交易类型，再继续。'],
   [/Upload invoices, purchase orders, contracts, shipping, or customs documents\./g, '上传发票、采购订单、合同、运输或报关单据。'],
   [/Use a standard template to upload marketplace or business transaction records\./g, '使用标准模板上传电商平台或业务交易记录。'],
   [/Upload transaction records exported from your ERP for automated field mapping\./g, '上传从 ERP 导出的交易记录，系统会自动识别字段。'],
@@ -10832,6 +10832,8 @@ const CN_UI_REPLACEMENTS = [
   [/logistics records extracted by AI\. Review and edit if needed\./g, '条物流记录已自动提取。请核对并按需修改。'], [/Logistics Method/g, '物流方式'], [/Shipment Date/g, '发货日期'], [/Related Item/g, '相关商品'], [/Submit logistics documents/g, '提交物流材料'],
   [/Draft saved\. You can continue it from the upload list\./g, '草稿已保存。可从上传列表继续。'], [/Untitled trade document/g, '未命名贸易单据'], [/Untitled template CSV/g, '未命名模板 CSV'], [/Untitled ERP CSV/g, '未命名 ERP 文件'], [/Untitled upload/g, '未命名上传'],
   [/What would you like to upload\?/g, '您想上传什么？'],
+  [/Choose the type of your transaction document/g, '选择您交易材料的类型'],
+  [/^Upload transaction documents$/g, '上传交易材料'],
   [/The uploaded file is not ready for analysis\. Click Previous to return to the upload step\./g, '已上传文件尚未分析。请点击“上一步”返回上传步骤。'],
   [/No auto-match · some headers can be mapped \(re-upload required\)/g, '未能自动匹配 · 部分表头可手动对应（需重新上传）'],
   [/No headers recognized \(re-upload required\)/g, '未能识别表头（需重新上传）'],
