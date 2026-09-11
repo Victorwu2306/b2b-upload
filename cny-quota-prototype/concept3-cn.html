@@ -10049,7 +10049,7 @@ function uploadV2OptionsIntro() {
     <p class="support-lead">You may upload:</p>
     <ul class="support-list">
       <li>Trade documents, and the system will identify transaction information from the document</li>
-      <li>Please in advance <button type="button" class="inline-link" onclick="state.templateGuide=true;render()">download the template and complete it as required</button></li>
+      <li>Transaction records completed using our template (CSV format), please in advance <button type="button" class="inline-link" onclick="state.templateGuide=true;render()">download the template and complete it as required</button></li>
       <li>Transaction records exported from your business system (CSV format), and the system matches column headers to the required details to identify the table contents</li>
     </ul>
   </section>`;
@@ -10090,7 +10090,6 @@ function viewWizardUpload() {
   let helper = '';
   if (w.uploadType === 'template') {
     helper = `<div class="upload-helper">
-      <span class="helper-label">Before uploading</span>
       <span class="helper-sub">Download and prepare the standard CSV template before uploading.</span>
       <div class="helper-actions">
         <button type="button" class="btn-link" onclick="openTemplateDownloadPanel()">${I.download} Download template</button>
@@ -10403,7 +10402,7 @@ const CN_UI_REPLACEMENTS = [
   [/Complete upload details/g, '补充上传信息'], [/Review the selected category and complete any required marketplace information\./g, '请确认所选类别，并补充所需的电商平台信息。'],
   [/Review Upload V2 details/g, '查看 Upload V2 信息'], [/The category and marketplace association were completed before upload\./g, '交易类别及电商平台信息已在上传前完成。'],
   [/Confirm the uploaded CSV information, then submit\./g, '提交前，请确认单据信息。'], [/Confirm the details of your document before submitting\./g, '提交前，请确认单据信息。'],
-  [/Upload your document/g, '上传交易材料'], [/You may upload:/g, '您可上传：'], [/Trade documents, and the system will identify transaction information from the document/g, '贸易单据，系统将从单据中识别交易信息'], [/Please in advance /g, '请提前'], [/download the template and complete it as required/g, '下载模板并按要求填写'], [/Transaction records exported from your business system \(CSV format\), and the system matches column headers to the required details to identify the table contents/g, '从业务系统导出的交易记录（CSV格式），系统会将列标题和所需信息对应来识别表格内容'], [/Upload transaction document/g, '上传交易单据'],
+  [/Upload your document/g, '上传交易材料'], [/You may upload:/g, '您可上传：'], [/Trade documents, and the system will identify transaction information from the document/g, '贸易单据，系统将从单据中识别交易信息'], [/Transaction records completed using our template \(CSV format\), please in advance /g, '使用模板填写的交易记录（CSV格式），请提前'], [/download the template and complete it as required/g, '下载模板并按要求填写'], [/Transaction records exported from your business system \(CSV format\), and the system matches column headers to the required details to identify the table contents/g, '从业务系统导出的交易记录（CSV格式），系统会将列标题和所需信息对应来识别表格内容'], [/Upload transaction document/g, '上传交易单据'],
   [/Complete trade info/g, '完善贸易信息'], [/Complete the trade info below/g, '完善下方贸易信息'], [/Confirm the following details we prefilled based on your document\./g, '确认以下根据单据预填的信息。'],
   [/Check the columns we matched/g, '核对已匹配的列'], [/Confirm the processing results/g, '确认处理结果'],
   [/What we did/g, '我们已完成'], [/What you need to do/g, '您需要做的'],
