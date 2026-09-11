@@ -6226,7 +6226,8 @@ function erpSelectPlaceholderOption(hasSelection, missing) {
 }
 function erpReplacementNeedsManualMatch(w) {
   if (!w || !w.erp2ReplacementOutcome) return false;
-  return getERPReplacementUnmappedFields(w).length > 0;
+  if (getERPReplacementUnmappedFields(w).length > 0) return true;
+  return erpMappingHasConflicts(getERPMappingStats(w));
 }
 function openERPCorrectedFilePicker() {
   const w = state.wiz; if (!w) return;
@@ -6281,7 +6282,7 @@ function erpReplacementNewColumnsSection(w) {
   const noneSelected = newHeaders.filter(name => w.erp2NoneSelections && w.erp2NoneSelections[name]);
   const matchable = erpUnrecognizedFileColumns(w, stats.sources.filter(source => !source.unmappable), null);
   const cannotMatch = needsMatch && (!matchable.length || noneSelected.length > 0);
-  const table = erp2TargetMappingTable(newHeaders, stats.sources, w.mappings, 'updateERP2TargetMapping', needsMatch);
+  const table = erp2TargetMappingTable(newHeaders, stats.sources, w.mappings, 'updateERP2TargetMapping', true);
   if (!needsMatch) {
     return `<div class="mapping-c2-success">${I.check}<div><strong>New columns mapped</strong><p>The corrected file replaced the previous upload. Existing mappings were reused, and the new columns were mapped.</p></div></div>
       ${table}`;
@@ -7211,7 +7212,7 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
     ${uniqueTargets.map((targetName, index) => {
       const field = ERP_REQUIRED_FIELDS.find(item => item.name === targetName);
       const selectedSource = erp2TargetSource(targetName, availableSources, mappings);
-      const noneSelected = !!(manualStage && state.wiz && state.wiz.erp2NoneSelections && state.wiz.erp2NoneSelections[targetName]);
+      const noneSelected = !!(state.wiz && state.wiz.erp2NoneSelections && state.wiz.erp2NoneSelections[targetName]);
       const replacementReview = !!(manualStage && state.wiz && state.wiz.erp2ReplacementOutcome);
       const otherTargets = selectedSource ? targetsUsingSource(state.wiz, selectedSource.id, mappings).filter(name => name !== targetName) : [];
       const conflict = otherTargets.length > 0;
@@ -7229,10 +7230,11 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
       const columnSources = manualStage
         ? erpUnrecognizedFileColumns(state.wiz, availableSources, selectedSource)
         : availableSources;
+      const showNoneOfAbove = !!(manualStage || conflict);
       const selectHTML = `<select class="${(showError||conflict)?'invalid':''}" aria-label="Choose an uploaded file column for ${targetName}" onchange="${updater}('${targetName}',this.value)">
               ${erpSelectPlaceholderOption(!!selectedSource || noneSelected)}
               ${erpFileColumnOptions(targetName, columnSources, mappings, selectedSource)}
-              ${manualStage?erpNoneOfAboveOption(noneSelected):''}
+              ${showNoneOfAbove?erpNoneOfAboveOption(noneSelected):''}
             </select>`;
       return `<div class="map-row ${rowState}${showError?' needs-selection':''}${conflict?' needs-selection':''}">
         <div class="system-required">
