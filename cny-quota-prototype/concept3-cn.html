@@ -3069,7 +3069,7 @@ const UNSHIPPED_LIMIT = 1000000;
 /* Concept 2 — unified upload history & quota breakdown (derived from UPLOAD_HISTORY) */
 const UPLOAD_METHODS = [
   { key:'trade', label:'Trade document', desc:'Such as an invoice, contract, purchase order, or customs document. We’ll read the transaction details from your document.', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
-  { key:'template', label:'Transaction record using our template', desc:'A completed transaction record in CSV. Our template already has all the details we need, so it’s the quickest to process.', ico:'upload', formats:'CSV · Max 50 MB' },
+  { key:'template', label:'Transaction record using our template', desc:'A CSV file completed using our template. Because the template already includes all required information, fully completed files are processed the fastest.', ico:'upload', formats:'CSV · Max 50 MB' },
   { key:'erp', label:'Transaction record exported from your business system', desc:'A CSV exported from your ERP, marketplace, accounting, or other business system. We’ll match your column names to the details we need and let you review before continuing.', ico:'db', formats:'CSV · Max 50 MB' },
 ];
 
@@ -4922,7 +4922,7 @@ function viewTradeOrders() {
 
 /* ─── Template / ERP panels & wizards ──────────────────── */
 function templateDownloadPanel() {
-  if (!state.templatePanel) return '';
+  if (!state.templatePanel) return templateFillGuidePanel();
   const selected = TEMPLATE_TYPES.find(t => t.key === state.templateType) || TEMPLATE_TYPES[0];
   return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.templatePanel=false;state.templateMenuOpen=false;state.templateGuide=false;render()}">
     <div class="drawer wide">
@@ -6748,8 +6748,8 @@ function stepTemplateResult() {
 }
 function stepTemplateV2Review() {
   const w=state.wiz,category=(TEMPLATE_TYPES.find(type=>type.key===w.category)||{}).label||'—';
-  const details=[['File type','Template CSV'],['File name',w.fileName||'template_transactions.csv'],['File description',fileDescriptionValue(w)||'—'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[])];
-  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} Uploaded file summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p${label==='File name'?' class="mono"':''}>${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
+  const details=[['File type','Template CSV'],['File name',w.fileName||'template_transactions.csv'],['File description',fileDescriptionValue(w)||'—'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[]),['Transaction total','USD 48,500.00']];
+  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} File information summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p${label==='File name'?' class="mono"':label==='Transaction total'?' class="money-value"':''}>${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
 }
 
 function viewWizardTemplate() {
@@ -7968,9 +7968,9 @@ function stepERPReview() {
       <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p>
     </div>
     <div class="review-card">
-      <div class="review-card-h">${I.file} Uploaded file summary</div>
+      <div class="review-card-h">${I.file} File information summary</div>
       <div class="review-card-b"><div class="kv-grid">
-        ${[['File type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['File name',erpDisplayedFileName(w)||(isERP2?'erp_export.csv':'erp_export.xlsx')],['File description',fileDescriptionValue(w)||'—'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['Upload date','2026-07-20'],['Records detected', DS_TX_PREVIEW.length+' transaction records']].map(([k,v])=>`<div><label>${k}</label><p${k==='File name'?' class="mono"':''}>${escapeHTML(v)}</p></div>`).join('')}
+        ${[['File type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['File name',erpDisplayedFileName(w)||(isERP2?'erp_export.csv':'erp_export.xlsx')],['File description',fileDescriptionValue(w)||'—'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['Upload date','2026-07-20'],['Records detected', DS_TX_PREVIEW.length+' transaction records'],['Transaction total','USD 48,500.00']].map(([k,v])=>`<div><label>${k}</label><p${k==='File name'?' class="mono"':k==='Transaction total'?' class="money-value"':''}>${escapeHTML(v)}</p></div>`).join('')}
       </div></div>
     </div>
     ${paymentLinkingActive?`<div class="review-card">
@@ -9185,7 +9185,7 @@ function stepTradeReview() {
       <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p>
     </div>
     <div class="review-card">
-      <div class="review-card-h">${I.file} Uploaded file summary</div>
+      <div class="review-card-h">${I.file} File information summary</div>
       <div class="review-card-b">
         <div class="kv-grid">
           <div><label>Business type</label><p>${srcLabel}</p></div>
@@ -10037,7 +10037,16 @@ function viewWizardUpload() {
     ? UPLOAD_METHODS.filter(method => w.allowedTypes.includes(method.key))
     : UPLOAD_METHODS;
   let helper = '';
-  if (SHOW_UPLOAD_BEFORE_HELPER && w.uploadType === 'erp') {
+  if (w.uploadType === 'template') {
+    helper = `<div class="upload-helper">
+      <span class="helper-label">Before uploading</span>
+      <span class="helper-sub">Download and prepare the standard CSV template before uploading.</span>
+      <div class="helper-actions">
+        <button type="button" class="btn-link" onclick="state.templatePanel=true;render()">${I.download} Download template</button>
+        <button type="button" class="btn-link" onclick="state.templateGuide=true;render()">${I.file} How to fill in the transaction record file</button>
+      </div>
+    </div>`;
+  } else if (SHOW_UPLOAD_BEFORE_HELPER && w.uploadType === 'erp') {
     helper = `<div class="upload-helper">
       <span class="helper-label">Before uploading</span>
       <span class="helper-sub">Review required columns for a successful ERP mapping.</span>
@@ -10311,7 +10320,7 @@ const CN_UI_REPLACEMENTS = [
   [/Simulates different ERP header-matching results\./g, '模拟不同的 ERP 表头识别结果。'],
   [/Upload transaction documents, and we’ll increase your quota based on the transaction amounts\./g, '上传交易材料，额度将按交易金额提高。'],
   [/Back to CNY quota management/g, '返回人民币结汇额度管理'], [/Return to CNY quota management/g, '返回人民币结汇额度管理'], [/CNY quota management/g, '人民币结汇额度管理'], [/Increase CNY settlement quota/g, '提升结汇额度'], [/Your quota is calculated from the transaction details you submit\. Choose how to submit them based on your payment source\. If you have more than one source, you can submit each separately\./g, '额度根据您提交的交易信息计算。请根据您的收款来源，选择提交交易信息的方式。有多种来源时，可分别提交。'],
-  [/Review and submit/g, '检查'],
+  [/Review and submit/g, '确认信息'],
   [/SHEIN\.COM, TikTok Shop, Wayfair, and other marketplaces/g, 'SHEIN.COM、TikTok Shop、Wayfair 等电商平台'],
   [/Physical products, including retail, wholesale, and drop shipping/g, '实体商品，包括零售、批发和代发货'],
   [/Software licenses, SaaS subscriptions, and digital product fees/g, '软件许可、SaaS 订阅和数字产品费用'],
@@ -10323,7 +10332,7 @@ const CN_UI_REPLACEMENTS = [
   [/Tour packages, destination services, and related travel fees/g, '旅游套餐、目的地服务及相关旅行费用'],
   [/Switch page version/g, '切换页面版本'], [/Upload V1/g, '上传 V1'], [/Upload V2/g, '上传 V2'], [/Upload V2 starts with a category and routes the file automatically\./g, 'Upload V2 先选择交易类别，再自动识别并分流文件。'], [/Upload flow version/g, '上传流程版本'],
   [/Select a category and upload/g, '上传材料'], [/Choose a transaction category, then upload a related file on this page\./g, ''],
-  [/^Upload document$/g, '上传材料'], [/^Confirm info$/g, '确认信息'], [/^Match remaining fields$/g, '匹配剩余字段'], [/^Identify other details$/g, '确认其他信息'], [/^Update and re-upload$/g, '更新并重新上传'], [/^Resubmit$/g, '重新提交'], [/^Review$/g, '检查'],
+  [/^Upload document$/g, '上传材料'], [/^Confirm info$/g, '确认信息'], [/^Match remaining fields$/g, '匹配剩余字段'], [/^Identify other details$/g, '确认其他信息'], [/^Update and re-upload$/g, '更新并重新上传'], [/^Resubmit$/g, '重新提交'], [/^Review$/g, '确认信息'],
   [/Process & review/g, '确认信息'], [/Choose a sample file/g, '选择模拟文件'], [/This prototype simulates file selection and processing\./g, '此原型将模拟文件选择和处理。'],
   [/All columns are recognized and mapped automatically/g, '系统可识别并精准匹配所有列'],
   [/Some headers are unrecognized, but you can map them all manually/g, '系统未能识别部分表头，但可通过手动匹配全部补全'],
@@ -10336,7 +10345,7 @@ const CN_UI_REPLACEMENTS = [
   [/PDF document/g, 'PDF 单据'], [/standard template/g, '标准模板'], [/ERP transaction export/g, 'ERP 交易导出文件'], [/Select a category to enable upload\./g, '选择类别后即可上传。'], [/Select a category before uploading\./g, '请先选择类别再上传。'],
   [/Select the marketplace/g, '选择电商平台'], [/Choose the marketplace associated with these transaction records\./g, '请选择这些交易记录所属的电商平台。'], [/Complete the category details to enable upload\./g, '请先补充类别相关信息，再上传文件。'],
   [/Select a marketplace before uploading\./g, '请先选择电商平台再上传。'], [/Enter the Seller ID for (.+) before uploading\./g, '请先填写 $1 的卖家 ID 再上传。'], [/Required to associate this upload with the correct store\./g, '用于将本次上传绑定到正确店铺。'],
-  [/Select the transaction category/g, '选择业务类型'], [/Select the business type/g, '选择业务类型'], [/What was this transaction for\?/g, '此交易来自什么业务？'], [/Choose the category that best describes the records or document you will upload\./g, '请选择最符合待上传记录或单据的类别。'], [/The selected category determines which processing and validation flow is used\./g, ''],
+  [/Select the transaction category/g, '选择业务类型'], [/Select the business type/g, '选择业务类型'], [/What was this transaction for\?/g, '收款来源'], [/Choose the category that best describes the records or document you will upload\./g, '请选择最符合待上传记录或单据的类别。'], [/The selected category determines which processing and validation flow is used\./g, ''],
   [/Select category/g, '选择类别'], [/Select a category, upload a file, and continue with the matching processing flow\./g, '选择类别并上传文件后，进入对应的处理流程。'],
   [/Transaction category/g, '交易类别'], [/Selected in Upload V2\. Return to Upload V2 to change the category\./g, '已在 Upload V2 中选择。如需更改类别，请返回 Upload V2。'], [/Return to Upload V2 to change the category\./g, '如需更改类别，请返回 Upload V2。'], [/Selected in Upload V2\./g, '已在 Upload V2 中选择。'],
   [/Back to Upload V2/g, '返回 Upload V2'], [/Back to upload options/g, '返回上传选项'],
@@ -10433,7 +10442,7 @@ const CN_UI_REPLACEMENTS = [
   [/Other platform and trade payments/g, '其他平台收款、外贸收款'], [/Goods or service trading/g, '货物或服务贸易'], [/Upload transaction documents, and we’ll increase your quota based on the transaction amounts\./g, '上传交易材料，额度将按交易金额提高。'],
   [/Upload trade documents or CSV transaction records\. We increase your quota based on the transaction amounts\./g, '上传贸易单据或 CSV 交易记录。额度将按交易金额提高。'],
   [/You can upload:/g, '可上传：'],
-  [/What was your transaction for\?/g, '此交易来自什么业务？'],
+  [/What was your transaction for\?/g, '收款来源'],
   [/Next step/g, '下一步'],
   [/下一步 step/g, '下一步'],
   [/^Check $/g, '查看'],
@@ -10550,7 +10559,7 @@ const CN_UI_REPLACEMENTS = [
   [/Use the marketplace CSV template for transaction records from these marketplaces\./g, '这些电商平台的交易记录请使用电商平台 CSV 模板。'], [/Marketplace sales/g, '电商平台销售'], [/Marketplace transactions/g, '电商平台交易'], [/Goods trading/g, '货物贸易'], [/Foreign trade/g, '外贸'], [/Physical goods/g, '货物'], [/Services/g, '服务'],
   [/Transaction types that can increase your CNY quota/g, '可提高人民币额度的交易类型'], [/Marketplace transactions that can increase your CNY quota/g, '可提高人民币额度的电商平台交易'],
   [/Uploaded successfully/g, '上传成功'], [/Your trade documents have been submitted and the corresponding CNY quota has been released\./g, '贸易单据已提交，对应人民币额度已释放。'], [/Your file has been submitted and the corresponding CNY quota has been released\./g, '文件已提交，对应人民币额度已释放。'],
-  [/View upload history/g, '查看上传历史'], [/Upload another file/g, '再上传一个文件'], [/Select a transaction category before choosing a file\./g, '请先选择交易类别，再选择文件。'], [/Select a category and upload your file, then review the details before submitting\./g, '选择类别并上传文件，然后在提交前核对详情。'], [/Select the transaction category/g, '选择交易类别'], [/Select a category/g, '选择类别'],
+  [/View upload history/g, '查看上传历史'], [/Upload another file/g, '上传其他文件'], [/Select a transaction category before choosing a file\./g, '请先选择交易类别，再选择文件。'], [/Select a category and upload your file, then review the details before submitting\./g, '选择类别并上传文件，然后在提交前核对详情。'], [/Select the transaction category/g, '选择交易类别'], [/Select a category/g, '选择类别'],
   [/Choose the same category used when downloading and completing the template\./g, '请选择下载和填写模板时使用的同一类别。'], [/Select a transaction category\./g, '请选择交易类别。'], [/Which marketplace are you uploading data from\?/g, '上传的是哪个电商平台的数据？'], [/Select a marketplace/g, '选择电商平台'],
   [/Select the marketplace represented by the transaction rows in this file\./g, '请选择文件中交易记录所属的电商平台。'], [/Seller ID/g, '卖家 ID'], [/Required to associate this .* file with the correct store\./g, '用于将文件绑定到正确店铺。'],
   [/Upload marketplace CSV/g, '上传电商平台 CSV'], [/Select a marketplace and upload your file, then review the details before submitting\./g, '选择电商平台并上传文件，然后在提交前核对详情。'], [/Select a marketplace, then upload the completed CSV template\./g, '选择电商平台，然后上传填写好的 CSV 模板。'], [/Select a marketplace, upload a file, and continue with the matching processing flow\./g, '选择电商平台、上传文件，然后进入对应处理流程。'], [/Select a marketplace to enable file upload\./g, '请先选择电商平台，再上传文件。'], [/Complete the required marketplace information before continuing\./g, '请先填写必填的电商平台信息，再继续。'],
@@ -10709,11 +10718,11 @@ const CN_UI_REPLACEMENTS = [
   [/Field mapping results/g, '核对结果'], [/Resolve issues from top to bottom, then review all successful mappings\./g, '请从上到下处理问题，再检查已完成的列。'], [/Changes are saved automatically/g, '更改会自动保存'],
   [/Your file columns/g, '文件列'], [/Source columns and sample values/g, '来源列和示例值'], [/System field \(target\)/g, '系统字段（目标）'], [/Choose where each column maps/g, '选择每列对应的系统字段'], [/Required target/g, '必填目标'],
   [/Map useful columns or leave them unmapped/g, '可为需要的列选择对应字段，也可暂不处理'], [/No unmapped file columns\./g, '没有待处理的文件列。'], [/Review or change any mapping/g, '检查或更改对应关系'], [/Select a target field/g, '选择目标字段'], [/Matched by AI/g, '系统已识别'],
-  [/Review and submit/g, '检查'], [/Confirm the details of your document before submitting\./g, '提交前，请确认单据信息。'], [/Review the uploaded records and field mapping before submitting\./g, '提交前，请核对上传记录和字段对应情况。'],
+  [/Review and submit/g, '确认信息'], [/Confirm the details of your document before submitting\./g, '提交前，请确认单据信息。'], [/Review the uploaded records and field mapping before submitting\./g, '提交前，请核对上传记录和字段对应情况。'],
   [/Review & Submit/g, '检查并提交'], [/Review & submit/g, '检查并提交'],
   [/Original file processing summary/g, '原文件处理结果汇总'], [/Supplementary file processing summary/g, '补充文件处理结果汇总'],
   [/Headers detected/g, '识别到的表头'], [/Headers matched/g, '已对应表头'], [/Processing status/g, '处理状态'], [/All supplementary headers matched/g, '补充文件表头已全部对应'], [/Review required/g, '需要核对'], [/(\d+) columns/g, '$1 个表头'],
-  [/Uploaded file summary/g, '上传文件汇总'], [/File name/g, '文件名'], [/File type/g, '文件类型'],
+  [/File information summary/g, '文件信息摘要'], [/File name/g, '文件名'], [/File type/g, '文件类型'],
   [/Enter a file description before continuing\./g, '请先填写文件描述后再继续。'], [/Enter a file description\./g, '请填写文件描述。'],
   [/Describe this file so you can find it later in Upload History\./g, '填写文件描述，便于之后在上传历史中查找。'],
   [/Add a short description so this file is easy to find in Upload History\./g, '填写简短描述，便于之后在上传历史中查找。'],
@@ -10732,7 +10741,7 @@ const CN_UI_REPLACEMENTS = [
   [/Upload trade document/g, '上传贸易单据'], [/Uploaded · Analysis starts automatically/g, '已上传 · 将自动开始分析'], [/Preparing the document for automatic analysis…/g, '正在准备自动分析单据…'], [/Analyzing document…/g, '正在分析单据…'],
   [/Choose the business type/g, '选择业务类型'], [/This helps us extract the correct transaction information\./g, '便于准确提取交易信息。'], [/Upload the document/g, '上传材料'], [/The file is analyzed automatically, and extracted fields appear below on this page\./g, '文件会自动分析，提取结果将显示在本页下方。'],
   [/Review the extracted information/g, '检查提取的信息'], [/Confirm or complete the details, then submit directly\./g, '确认或补充信息后即可提交。'], [/Confirm or complete the details, then continue to review\./g, '确认或补充信息后，进入提交前检查。'], [/Choose a business type, upload a document, review the extracted details, and submit\./g, '选择业务类型、上传单据，核对提取信息后提交。'],
-  [/Complete the document details, review the submission summary, and submit\./g, '补充单据信息，检查提交汇总后提交。'], [/^Review$/g, '检查'],
+  [/Complete the document details, review the submission summary, and submit\./g, '补充单据信息，检查提交汇总后提交。'], [/^Review$/g, '确认信息'],
   [/Upload & complete/g, '上传并补充信息'], [/Review the submission information before submitting\./g, '提交前，请检查提交信息。'],
   [/Confirm the business type, uploaded file, and quota increase before submitting\./g, '提交前，请确认业务类型、已上传文件，以及本文件可增加的额度。'],
   [/Submission summary/g, '提交汇总'], [/Business type/g, '业务类型'], [/Edit details/g, '修改信息'], [/Uploaded file/g, '已上传文件'], [/View document/g, '查看单据'],
@@ -10742,7 +10751,7 @@ const CN_UI_REPLACEMENTS = [
   [/Document preview/g, '单据预览'],
   [/This prototype shows a preview of the uploaded file\. In production, the original document would open here\./g, '此为已上传文件的预览。正式环境将打开原始文件。'],
   [/Upload PI\/CI/g, '上传发票/合同'],
-  [/Transaction amount/g, '交易金额'], [/Calculated from the eligible transaction amount in the uploaded file\. Subject to final verification\./g, '按已上传文件中的合格交易金额计算，以最终校验结果为准。'],
+  [/Transaction total/g, '交易总额'], [/Transaction amount/g, '交易金额'], [/Calculated from the eligible transaction amount in the uploaded file\. Subject to final verification\./g, '按已上传文件中的合格交易金额计算，以最终校验结果为准。'],
   [/Submitting will add the eligible quota and save this document to upload history\./g, '提交后将增加合格额度，并将此单据保存至上传历史。'],
   [/Source document/g, '原始单据'], [/Preview the uploaded document\./g, '预览已上传单据。'], [/Review the uploaded document\./g, '请核对已上传单据。'], [/Document Preview & Extracted Information/g, '单据预览与提取信息'], [/Preview available/g, '可预览'], [/Enlarge preview/g, '放大预览'],
   [/The following details were auto-filled from the document\. Review them and complete any missing fields\./g, '以下信息已从单据自动填写。请核对并补充缺失内容。'], [/Contract information/g, '合同信息'], [/Order date/g, '订单日期'], [/Order amount/g, '订单金额'], [/Receiving country \/ region/g, '收货国家/地区'], [/Buyer type/g, '买方类型'], [/Corporate/g, '企业'], [/Company URL/g, '公司网址'],
@@ -10877,7 +10886,7 @@ const CN_UI_REPLACEMENTS = [
   [/All file types supported/g, '支持所有文件类型'], [/Max 50MB/g, '最大 50MB'], [/Max 50 MB/g, '最大 50 MB'],
   [/Transaction record using our template/g, '使用模板填写的交易记录'],
   [/Such as an invoice, contract, purchase order, or customs document\. We’ll read the transaction details from your document\./g, '例如发票、合同、采购订单或报关单据。我们将从单据中读取交易信息。'],
-  [/A completed transaction record in CSV\. Our template already has all the details we need, so it’s the quickest to process\./g, '已完成的 CSV 交易记录。模板已包含我们所需的全部信息，处理速度最快。'],
+  [/A CSV file completed using our template\. Because the template already includes all required information, fully completed files are processed the fastest\./g, '按照模板填写完成的 CSV 格式文件。由于模板已包含所有必要信息，所以完整填写后系统的处理速度最快。'],
   [/A CSV exported from your ERP, marketplace, accounting, or other business system\. We’ll match your column names to the details we need and let you review before continuing\./g, '从 ERP、电商平台、财务或其他业务系统导出的 CSV。我们会将列名与所需信息对应，并在继续前供您核对。'],
   [/A completed transaction record in CSV/g, '已完成的 CSV 交易记录'],
   [/Transaction record exported from your business system/g, '从业务系统导出的交易记录'],
