@@ -1399,15 +1399,15 @@ table.data.req-h-table tr:hover td { background:transparent; }
 .req-r2-panel-head-stack { flex-direction:column; align-items:flex-start; gap:8px; }
 .req-r2-type-name { font-size:14px; font-weight:600; line-height:20px; margin:0; }
 .req-r2-type-desc { color:var(--muted-foreground); font-size:12px; line-height:18px; }
-.req-v-table-wrap { border:1px solid var(--border); border-radius:8px; overflow:auto; background:#fff; }
-table.data.req-v-table { width:100%; table-layout:fixed; font-size:12px; }
+.req-v-table-wrap { border:1px solid var(--border); border-radius:8px; overflow:hidden; background:#fff; }
+table.data.req-v-table { width:100%; min-width:0; table-layout:fixed; font-size:12px; }
 table.data.req-v-table th,
 table.data.req-v-table td {
-  padding:10px 12px; vertical-align:middle; text-align:left;
-  border-bottom:1px solid #f2f2f2; white-space:normal; overflow-wrap:break-word; line-height:1.45;
+  padding:8px 10px; vertical-align:top; text-align:left;
+  border-bottom:1px solid #f2f2f2; white-space:normal; overflow-wrap:anywhere; word-break:break-word; line-height:1.45;
 }
-table.data.req-v-table col.req-v-field { width:24%; }
-table.data.req-v-table col.req-v-desc { width:48%; }
+table.data.req-v-table col.req-v-field { width:20%; }
+table.data.req-v-table col.req-v-desc { width:52%; }
 table.data.req-v-table col.req-v-lang { width:16%; }
 table.data.req-v-table col.req-v-example { width:28%; }
 table.data.req-v-table thead th { background:#f7f3ff; color:#252526; font-size:12px; font-weight:600; }
@@ -1977,6 +1977,7 @@ table.data.req-v-table .detail-with-chip { flex-direction:column; align-items:fl
 .kv-grid p { font-size:14px; font-weight:500; }
 .drawer.wide { width:520px; }
 .drawer.extra-wide { width:720px; }
+.drawer.fill-guide { width:840px; }
 .file-ok {
   border:1px solid var(--border); border-radius:8px; padding:16px 20px;
   background:#fff; display:flex; align-items:center; justify-content:space-between; gap:16px;
@@ -2218,7 +2219,7 @@ body.concept-3 {
 }
 .concept-3 table.data.req-v-table th,
 .concept-3 table.data.req-v-table td {
-  padding:10px 12px; vertical-align:middle; white-space:normal; overflow-wrap:break-word; font-size:12px;
+  padding:8px 10px; vertical-align:top; white-space:normal; overflow-wrap:anywhere; word-break:break-word; font-size:12px;
 }
 .concept-3 .table-footer { padding:16px; background:#fff; }
 .concept-3 .filters { gap:16px; }
@@ -2381,6 +2382,7 @@ body.concept-3 {
 .concept-3 .drawer { width:548px; box-shadow:-8px 0 24px rgba(28,28,46,.12); }
 .concept-3 .drawer.wide { width:548px; }
 .concept-3 .drawer.extra-wide { width:720px; }
+.concept-3 .drawer.fill-guide { width:840px; }
 .concept-3 .drawer-h { padding:24px; }
 .concept-3 .drawer-h h3 { font-size:20px; line-height:26px; }
 .concept-3 .drawer-b { background:#fff; }
@@ -5032,28 +5034,14 @@ function templateDownloadPanel() {
 
 function templateFillGuidePanel() {
   if (!state.templateGuide) return '';
-  const fields = [
-    ['Store name', 'The name of your store on the ecommerce marketplace.'],
-    ['Store URL', 'The URL of your store on the marketplace.'],
-    ['Order ID', 'The order number in the marketplace.'],
-    ['Order date', 'Use YYYYMMDD or YYYY-MM-DD, including leading zeros. The date must be within the past 365 days.'],
-    ['Item ID', 'The goods item number in the marketplace.'],
-    ['Item name', 'The goods item name in the marketplace.'],
-    ['SKU', 'The stock keeping unit identifier.'],
-    ['Category', 'The category of the goods.'],
-    ['Quantity', 'The number of units in the order. Use digits only, for example 1500, not 1,500.'],
-    ['Price', 'The unit price. The total price of all units must be less than the equivalent of USD 50,000. Use digits only.'],
-    ['Currency', 'Use the 3-letter currency code, for example USD, EUR, or GBP.'],
-    ['Logistics company (optional)', 'The name of the logistics company that delivered the order.'],
-    ['Logistics number (optional)', 'The tracking number from the logistics provider.'],
-  ];
+  const showBack = !!state.templatePanel;
   return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.templateGuide=false;state.templatePanel=false;state.templateMenuOpen=false;render()}">
-    <div class="drawer wide">
+    <div class="drawer fill-guide">
       <div class="drawer-h">
         <div style="display:flex;align-items:flex-start;gap:10px;min-width:0">
-          <button type="button" aria-label="Back to template download" onclick="state.templateGuide=false;render()">${I.chevronL}</button>
+          ${showBack ? `<button type="button" aria-label="Back to template download" onclick="state.templateGuide=false;render()">${I.chevronL}</button>` : ''}
           <div>
-            <h3>How to fill in the transaction record file</h3>
+            <h3>Download and complete the template</h3>
             <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;font-weight:400">Prepare your template correctly before uploading</p>
           </div>
         </div>
@@ -5066,27 +5054,20 @@ function templateFillGuidePanel() {
             <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px;font-size:13px;color:var(--muted-foreground);line-height:1.5">
               <li>Check that your marketplace is in the list of supported marketplaces.</li>
               <li>Download and save a copy of the template with a name that describes your store, for example <span class="mono">MyStore.csv</span>.</li>
-              <li>Save the file in <span class="mono">.csv</span> format using English letters and digits.</li>
+              <li>Save the file in <span class="mono">.csv</span> format, keep it under 10 MB, and use English letters and digits in the file name.</li>
               <li>Do not change or delete the column headers.</li>
             </ul>
           </div>
         </details>
 
         <details open style="border:1px solid var(--border);border-radius:8px;background:#fff;overflow:hidden">
-          <summary style="cursor:pointer;padding:14px 16px;font-size:14px;font-weight:600;background:var(--muted)">Filling in the file with your transaction info</summary>
+          <summary style="cursor:pointer;padding:14px 16px;font-size:14px;font-weight:600;background:var(--muted)">Download and complete the transaction information</summary>
           <div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px">
             ${uiAlertHTML({ tone:'info', content:'Complete one row for each item in an order. If the same item is sold at different prices, combine it into one row and use the average unit price.' })}
             <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
               Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12.50.
             </p>
-            <p style="font-size:13px;font-weight:600">Template fields</p>
-            <div style="display:flex;flex-direction:column;border:1px solid var(--border);border-radius:8px;overflow:hidden">
-              ${fields.map(([name,desc],i) => `
-                <div style="padding:10px 12px;${i?'border-top:1px solid var(--border);':''}">
-                  <p style="font-size:12px;font-weight:600;margin-bottom:2px">${name}</p>
-                  <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">${desc}</p>
-                </div>`).join('')}
-            </div>
+            ${requiredDetailsTabs({ showDownload: true })}
           </div>
         </details>
 
@@ -10280,8 +10261,7 @@ function viewWizardUpload() {
     helper = `<div class="upload-helper">
       <span class="helper-sub">Download and prepare the standard CSV template before uploading.</span>
       <div class="helper-actions">
-        <button type="button" class="btn-link" onclick="openTemplateDownloadPanel()">${I.download} Download template</button>
-        <button type="button" class="btn-link" onclick="state.templateGuide=true;render()">${I.file} How to fill in the transaction record file</button>
+        <button type="button" class="btn-link" onclick="state.templateGuide=true;render()">${I.download} Download and complete the template</button>
       </div>
     </div>`;
   } else if (SHOW_UPLOAD_BEFORE_HELPER && w.uploadType === 'erp') {
@@ -10538,7 +10518,7 @@ const CN_UI_REPLACEMENTS = [
   [/Sales Contract · Service Agreement · PI · CI · PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB/g, '销售合同 · 服务协议 · PI · CI · PDF、JPG、PNG、TIFF、DOC、DOCX · 最大 50MB'],
   [/Shipping receipt · Tracking document · Logistics invoice · PDF, JPG, PNG/g, '发货凭证 · 物流跟踪文件 · 物流发票 · PDF、JPG、PNG'],
   [/Save the file in /g, '将文件保存为 '],
-  [/ format using English letters and digits\./g, ' 格式，文件名使用英文字母和数字。'],
+  [/ format, keep it under 10 MB, and use English letters and digits in the file name\./g, ' 格式，大小不超过 10 MB，文件名使用英文字母和数字。'],
   [/Save the file as /g, '将文件另存为 '],
   [/Upload contracts, invoices, PI, or CI\. AI will extract the transaction information after you continue\./g, '上传合同、发票、PI 或 CI。继续后系统将自动提取交易信息。'],
   [/Upload sales contracts, PI, or CI\. The file will be analyzed after you click Next\./g, '上传销售合同、PI 或 CI。点击“下一步”后将分析文件。'],
@@ -10772,10 +10752,10 @@ const CN_UI_REPLACEMENTS = [
   [/Software licenses, SaaS subscriptions, and digital product fees/g, '软件许可、SaaS 订阅和数字产品费用'], [/Cross-border freight, logistics, and shipping service fees/g, '跨境货运、物流和运输服务费'],
   [/Online and offline advertising, media buying, and campaign fees/g, '线上及线下广告、媒体投放和活动费用'], [/Telecom, messaging, and other communication service charges/g, '电信、消息及其他通信服务费用'],
   [/Business travel airfare and related airline booking fees/g, '商务旅行机票及相关预订费用'], [/Hotel stays and lodging expenses for business travel/g, '商务旅行的酒店及住宿费用'], [/Tour packages, destination services, and related travel fees/g, '旅游套餐、目的地服务及相关费用'],
-  [/How to fill in the transaction record template/g, '如何填写交易记录模板'], [/How to fill in the transaction record file/g, '如何填写交易记录文件'], [/Prepare your template correctly before uploading/g, '上传前请按要求准备模板'], [/Tips before you begin/g, '开始前须知'],
+  [/How to fill in the transaction record template/g, '如何填写交易记录模板'], [/Download and complete the template/g, '下载并填写模板'], [/How to fill in the transaction record file/g, '如何填写交易记录文件'], [/Prepare your template correctly before uploading/g, '上传前请按要求准备模板'], [/Tips before you begin/g, '开始前须知'],
   [/Check that your marketplace is in the list of supported marketplaces\./g, '请确认所用电商平台在支持列表中。'], [/Download and save a copy of the template with a name that describes your store, for example/g, '下载并保存模板副本，文件名应能说明店铺，例如'],
-  [/Save the file in \.csv format using English letters and digits\./g, '将文件保存为 .csv 格式，文件名使用英文字母和数字。'], [/Do not change or delete the column headers\./g, '请勿修改或删除表头。'],
-  [/Filling in the file with your transaction info/g, '填写交易信息'], [/Complete one row for each item in an order\. If the same item is sold at different prices, combine it into one row and use the average unit price\./g, '订单中的每件商品填写一行。同一商品如有不同售价，请合并为一行并填写平均单价。'],
+  [/Save the file in \.csv format, keep it under 10 MB, and use English letters and digits in the file name\./g, '将文件保存为 .csv 格式，大小不超过 10 MB，文件名使用英文字母和数字。'], [/Do not change or delete the column headers\./g, '请勿修改或删除表头。'],
+  [/Download and complete the transaction information/g, '下载并填写交易信息'], [/Complete one row for each item in an order\. If the same item is sold at different prices, combine it into one row and use the average unit price\./g, '订单中的每件商品填写一行。同一商品如有不同售价，请合并为一行并填写平均单价。'],
   [/Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12\.50\./g, '示例：商品 1 分别以 USD 10 和 USD 15 售出一次，请填写一行，数量为 2，单价为 USD 12.50。'],
   [/Template fields/g, '模板字段'], [/Store name/g, '店铺名称'], [/The name of your store on the ecommerce marketplace\./g, '店铺在电商平台上的名称。'], [/Store URL/g, '店铺网址'], [/The URL of your store on the marketplace\./g, '店铺在电商平台上的网址。'],
   [/Order ID/g, '订单编号'], [/The order number in the marketplace\./g, '电商平台中的订单号。'], [/Order date/g, '订单日期'], [/Use YYYYMMDD or YYYY-MM-DD, including leading zeros\. The date must be within the past 365 days\./g, '使用 YYYYMMDD 或 YYYY-MM-DD 格式，保留开头的 0。日期必须在过去 365 天内。'],
