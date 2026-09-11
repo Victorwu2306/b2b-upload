@@ -591,6 +591,7 @@ tr.draft-row td { background: rgba(91,59,232,.03); }
   font-size: 14px; color: var(--foreground); line-height: 1.45;
 }
 .support-list li { padding-left: 2px; }
+.upload-options .support-list { margin-bottom: 0; }
 .support-note { font-size: 14px; color: var(--foreground); line-height: 1.45; }
 .support-note .inline-link { text-decoration: none; }
 .inline-link {
@@ -9956,6 +9957,16 @@ function uploadFlowVersionSelector(w) {
     </div>
   </div>`;
 }
+function uploadV2OptionsIntro() {
+  return `<section class="upload-options">
+    <p class="support-lead">You may upload:</p>
+    <ul class="support-list">
+      <li>Trade documents, and the system will identify transaction information from the document</li>
+      <li>Transaction records completed using our template (CSV format), and fully completed tables are processed quickly</li>
+      <li>Transaction records exported from your business system (CSV format), and the system matches column headers to the required details to identify the table contents</li>
+    </ul>
+  </section>`;
+}
 function uploadV2Body(w) {
   const selected=TEMPLATE_TYPES.find(type=>type.key===w.category);
   const marketplaceOnly=isMarketplaceOnlyWizard(w);
@@ -9967,7 +9978,8 @@ function uploadV2Body(w) {
   else fileContent=emptyUploadBox({title:'Upload transaction document',meta:'PDF, JPG, PNG, TIFF, DOC, DOCX, CSV · Max 50 MB',hint:canUpload?'':'Complete the category details to enable upload.',disabled:!canUpload,onClick:'openUploadV2SamplePicker()',buttonLabel:'Choose file',zoneAttr:'data-upload-v2-zone',buttonAttr:'data-upload-v2-button'});
   return `<div style="display:flex;flex-direction:column;gap:20px">
     ${uploadFlowVersionSelector(w)}
-    <div><h2 style="font-size:20px;font-weight:700">${marketplaceOnly?'Upload marketplace CSV':'Upload your document'}</h2>${marketplaceOnly?'':`<p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">It can be a trade document, a transaction record created using our template, or a transaction record exported from your business system.</p>`}</div>
+    <div><h2 style="font-size:20px;font-weight:700">${marketplaceOnly?'Upload marketplace CSV':'Upload your document'}</h2></div>
+    ${marketplaceOnly?'':uploadV2OptionsIntro()}
     <div class="template-upload-fields">${marketplaceOnly?'':`<div class="field"><label>What was this transaction for? <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.category?'':'placeholder'}" onchange="setUploadV2Category(this.value)"><option value="">Select a category</option>${wizardCategoryOptions(w).map(type=>`<option value="${type.key}" ${w.category===type.key?'selected':''}>${type.label}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div>${selected?`<p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">${selected.desc}</p>`:''}</div>`}
     ${w.category==='marketplace'?`<div class="field"><label>Select the marketplace <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.marketplace?'':'placeholder'}" onchange="setUploadV2Marketplace(this.value)"><option value="">Select a marketplace</option>${MARKETPLACE_UPLOAD_OPTIONS.map(name=>`<option value="${name}" ${w.marketplace===name?'selected':''}>${name}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Choose the marketplace associated with these transaction records.</p></div>`:''}
     ${uploadV2NeedsSellerId(w)?`<div class="field"><label>Seller ID <span style="color:var(--destructive)">*</span></label><input maxlength="100" value="${escapeHTML(w.sellerId)}" placeholder="Enter your ${w.marketplace} Seller ID" oninput="setUploadV2SellerId(this.value)" /><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Required to associate this upload with the correct store.</p></div>`:''}</div>

@@ -591,6 +591,7 @@ tr.draft-row td { background: rgba(91,59,232,.03); }
   font-size: 14px; color: var(--foreground); line-height: 1.45;
 }
 .support-list li { padding-left: 2px; }
+.upload-options .support-list { margin-bottom: 0; }
 .support-note { font-size: 14px; color: var(--foreground); line-height: 1.45; }
 .support-note .inline-link { text-decoration: none; }
 .inline-link {
@@ -10004,6 +10005,16 @@ function uploadFlowVersionSelector(w) {
     </div>
   </div>`;
 }
+function uploadV2OptionsIntro() {
+  return `<section class="upload-options">
+    <p class="support-lead">You may upload:</p>
+    <ul class="support-list">
+      <li>Trade documents, and the system will identify transaction information from the document</li>
+      <li>Transaction records completed using our template (CSV format), and fully completed tables are processed quickly</li>
+      <li>Transaction records exported from your business system (CSV format), and the system matches column headers to the required details to identify the table contents</li>
+    </ul>
+  </section>`;
+}
 function uploadV2Body(w) {
   const selected=TEMPLATE_TYPES.find(type=>type.key===w.category);
   const marketplaceOnly=isMarketplaceOnlyWizard(w);
@@ -10015,7 +10026,8 @@ function uploadV2Body(w) {
   else fileContent=emptyUploadBox({title:'Upload transaction document',meta:'PDF, JPG, PNG, TIFF, DOC, DOCX, CSV · Max 50 MB',hint:canUpload?'':'Complete the category details to enable upload.',disabled:!canUpload,onClick:'openUploadV2SamplePicker()',buttonLabel:'Choose file',zoneAttr:'data-upload-v2-zone',buttonAttr:'data-upload-v2-button'});
   return `<div style="display:flex;flex-direction:column;gap:20px">
     ${uploadFlowVersionSelector(w)}
-    <div><h2 style="font-size:20px;font-weight:700">${marketplaceOnly?'Upload marketplace CSV':'Upload your document'}</h2>${marketplaceOnly?'':`<p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">It can be a trade document, a transaction record created using our template, or a transaction record exported from your business system.</p>`}</div>
+    <div><h2 style="font-size:20px;font-weight:700">${marketplaceOnly?'Upload marketplace CSV':'Upload your document'}</h2></div>
+    ${marketplaceOnly?'':uploadV2OptionsIntro()}
     <div class="template-upload-fields">${marketplaceOnly?'':`<div class="field"><label>What was this transaction for? <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.category?'':'placeholder'}" onchange="setUploadV2Category(this.value)"><option value="">Select a category</option>${wizardCategoryOptions(w).map(type=>`<option value="${type.key}" ${w.category===type.key?'selected':''}>${type.label}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div>${selected?`<p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">${selected.desc}</p>`:''}</div>`}
     ${w.category==='marketplace'?`<div class="field"><label>Select the marketplace <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.marketplace?'':'placeholder'}" onchange="setUploadV2Marketplace(this.value)"><option value="">Select a marketplace</option>${MARKETPLACE_UPLOAD_OPTIONS.map(name=>`<option value="${name}" ${w.marketplace===name?'selected':''}>${name}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Choose the marketplace associated with these transaction records.</p></div>`:''}
     ${uploadV2NeedsSellerId(w)?`<div class="field"><label>Seller ID <span style="color:var(--destructive)">*</span></label><input maxlength="100" value="${escapeHTML(w.sellerId)}" placeholder="Enter your ${w.marketplace} Seller ID" oninput="setUploadV2SellerId(this.value)" /><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Required to associate this upload with the correct store.</p></div>`:''}</div>
@@ -10352,7 +10364,7 @@ const CN_UI_REPLACEMENTS = [
   [/Complete upload details/g, '补充上传信息'], [/Review the selected category and complete any required marketplace information\./g, '请确认所选类别，并补充所需的电商平台信息。'],
   [/Review Upload V2 details/g, '查看 Upload V2 信息'], [/The category and marketplace association were completed before upload\./g, '交易类别及电商平台信息已在上传前完成。'],
   [/Confirm the uploaded CSV information, then submit\./g, '提交前，请确认单据信息。'], [/Confirm the details of your document before submitting\./g, '提交前，请确认单据信息。'],
-  [/Upload your document/g, '上传材料'], [/It can be a trade document, a transaction record created using our template, or a transaction record exported from your business system\./g, '可以是贸易单据、使用模板填写完成的交易记录，或从业务系统导出的交易记录。'], [/Upload transaction document/g, '上传交易单据'],
+  [/Upload your document/g, '上传交易材料'], [/You may upload:/g, '您可上传：'], [/Trade documents, and the system will identify transaction information from the document/g, '贸易单据，系统将从单据中识别交易信息'], [/Transaction records completed using our template \(CSV format\), and fully completed tables are processed quickly/g, '使用模板填写的交易记录（CSV格式），系统将快速处理填写完整的表格'], [/Transaction records exported from your business system \(CSV format\), and the system matches column headers to the required details to identify the table contents/g, '从业务系统导出的交易记录（CSV格式），系统会将列标题和所需信息对应来识别表格内容'], [/Upload transaction document/g, '上传交易单据'],
   [/Complete trade info/g, '完善贸易信息'], [/Complete the trade info below/g, '完善下方贸易信息'], [/Confirm the following details we prefilled based on your document\./g, '确认以下根据单据预填的信息。'],
   [/Check the columns we matched/g, '核对已匹配的列'], [/Confirm the processing results/g, '确认处理结果'],
   [/What we did/g, '我们已完成'], [/What you need to do/g, '您需要做的'],
@@ -10875,7 +10887,7 @@ const CN_UI_REPLACEMENTS = [
   [/Shipped or not/g, '是否已发货'], [/Destination country/g, '收货国家或地区'],
   [/Order currency\/feeType/g, '订单币种'], [/Order amount\/totalFee/g, '订单金额'], [/Order time\/orderDate/g, '订单时间'],
   [/Collapse /g, '收起 '], [/Expand /g, '展开 '], [/ template…/g, '模板…'],
-  [/Download and prepare the standard CSV template before uploading\./g, '上传前请下载并填写标准 CSV 模板。'], [/ERP CSV requirements/g, 'ERP 文件要求'],
+  [/Download and prepare the standard CSV template before uploading\./g, '上传前，请下载并填写 CSV 模板。'], [/ERP CSV requirements/g, 'ERP 文件要求'],
   [/Upload transaction records/g, '上传交易记录'], [/Select a trade document or an ERP export to begin\./g, '选择贸易单据或 ERP 导出文件后开始。'], [/Select trade documents, a template CSV, or an ERP export to begin\./g, '选择贸易单据、模板 CSV 或 ERP 导出文件后开始。'],
   [/Select file type/g, '选择文件类型'], [/Upload & review/g, '上传并检查'], [/Confirm Selection/g, '确认选择'], [/Confirm/g, '确认'], [/Previous/g, '上一步'], [/Next/g, '下一步'], [/Submit/g, '提交'], [/Cancel/g, '取消'], [/Replace/g, '替换'], [/Upload file/g, '上传文件'],
   [/Download/g, '下载'], [/View/g, '查看'], [/Search\.\.\./g, '搜索…'], [/Status/g, '状态'], [/Action/g, '操作'], [/Source/g, '来源'], [/Amount/g, '金额'], [/Result/g, '结果'], [/Total/g, '总额'], [/Used/g, '已用'], [/Remaining/g, '剩余'], [/Available/g, '可用'],
