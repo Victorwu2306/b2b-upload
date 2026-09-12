@@ -1758,8 +1758,14 @@ table.data.req-v-table .detail-with-chip { flex-direction:column; align-items:fl
 .erp-none-option { color:#B54708; font-style:italic; font-weight:600; background:#FFF8EB; }
 .erp3-corrected-card { border:1px solid #FECDCA; border-radius:10px; overflow:hidden; background:#fff; }
 .erp3-corrected-card-h { padding:18px 20px; background:#FFF8F7; border-bottom:1px solid #FECDCA; }
-.erp3-corrected-card-h h3 { color:#B42318; font-size:16px; line-height:24px; }
+.erp3-corrected-card-h h3 { color:#B42318; font-size:16px; line-height:28px; }
 .erp3-corrected-card-h p { margin-top:4px; color:#7A271A; font-size:12px; line-height:18px; }
+.erp-missing-chip {
+  display:inline-flex; align-items:center; padding:1px 8px; margin:0 4px;
+  border:1px solid #FECDCA; border-radius:6px; background:#fff;
+  color:#B42318 !important; font-family:var(--font-sans) !important; font-size:12px !important; font-weight:600 !important;
+  line-height:20px !important; vertical-align:middle; white-space:nowrap;
+}
 .erp3-corrected-body { padding:20px; display:flex; flex-direction:column; gap:16px; }
 .erp-file-select-row { display:contents; }
 .map-sample {
@@ -1938,7 +1944,7 @@ table.data.req-v-table .detail-with-chip { flex-direction:column; align-items:fl
 }
 .erp2-missing-card { border:1px solid #FECDCA; border-radius:10px; overflow:hidden; background:#fff; }
 .erp2-missing-card-h { padding:18px 20px; background:#FFF8F7; border-bottom:1px solid #FECDCA; }
-.erp2-missing-card-h h3 { color:#B42318; font-size:16px; line-height:24px; }
+.erp2-missing-card-h h3 { color:#B42318; font-size:16px; line-height:28px; }
 .erp2-missing-card-h p { margin-top:4px; color:#7A271A; font-size:12px; line-height:18px; }
 .erp2-required-headers {
   display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;
@@ -2801,7 +2807,7 @@ function requiredDetailParts(field) {
 }
 function requiredDetailLabelHtml(field) {
   const parts = requiredDetailParts(field);
-  const chip = parts.when ? `<span class="chip chip-amber">${tradeFieldLabel('Conditional', '条件必填')}</span>` : '';
+  const chip = parts.when ? `<span class="chip chip-amber">${tradeFieldLabel('Conditional', '符合条件时必填')}</span>` : '';
   return `<div class="detail-with-chip"><span style="color:var(--primary);font-weight:600">${requiredDetailLabel(field)}</span>${chip}</div>`;
 }
 function requiredDetailDescriptionHtml(field, includeLanguage) {
@@ -2910,7 +2916,7 @@ function requiredDetailsVerticalTable(fields) {
   return `<div class="req-v-table-wrap"><table class="data req-v-table">
     <colgroup><col class="req-v-field"><col class="req-v-desc"><col class="req-v-example"></colgroup>
     <thead><tr>
-      <th>${tradeFieldLabel('Field name', '字段名称')}</th>
+      <th>${tradeFieldLabel('Field name', '信息')}</th>
       <th>${tradeFieldLabel('Description', '说明')}</th>
       <th>${tradeFieldLabel('Example', '示例')}</th>
     </tr></thead>
@@ -2995,6 +3001,48 @@ function formatEnglishList(items) {
 }
 function formatMissingFieldsList(names) {
   return formatEnglishList((names || []).map(formatSentenceFieldLabel));
+}
+function missingFieldChipHTML(name) {
+  return `<span class="erp-missing-chip">${erpRequiredLabel(name)}</span>`;
+}
+function joinMissingFieldChipsHTML(names) {
+  const chips = (names || []).map(missingFieldChipHTML);
+  if (!chips.length) return '';
+  const andJoin = usesChineseCopy() ? '和' : ' and ';
+  const listJoin = usesChineseCopy() ? '、' : ', ';
+  if (chips.length === 1) return chips[0];
+  if (chips.length === 2) return chips[0] + andJoin + chips[1];
+  return chips.slice(0, -1).join(listJoin) + andJoin + chips[chips.length - 1];
+}
+function fileMissingDetailsTitleHTML(names) {
+  const joined = joinMissingFieldChipsHTML(names);
+  return usesChineseCopy() ? `文件中缺少${joined}相关信息` : `The file is missing ${joined} details`;
+}
+function fileStillMissingDetailsTitleHTML(names) {
+  const joined = joinMissingFieldChipsHTML(names);
+  return usesChineseCopy() ? `文件仍缺少${joined}相关信息` : `The file is still missing ${joined} details`;
+}
+function addMissingColumnsReuploadCopy(count) {
+  return usesChineseCopy()
+    ? `请在原文件中，添加这${count}列信息，再重新上传补充完整的文件。`
+    : `Please add these ${count} columns to the original file, then re-upload the complete file.`;
+}
+function missingDetailsStillNotFoundTitle() {
+  return usesChineseCopy() ? '缺失信息在文件中仍未找到' : 'The missing details were still not found in the file';
+}
+function erpMissingFieldsReuploadCardHTML(missingNames, isProcessing) {
+  return `<div class="erp3-corrected-card">
+    <div class="erp3-corrected-card-h">
+      <h3>${fileMissingDetailsTitleHTML(missingNames)}</h3>
+      <p>${addMissingColumnsReuploadCopy(missingNames.length)}</p>
+    </div>
+    <div class="erp3-corrected-body">
+      ${isProcessing ? busyUploadBox('Analyzing the corrected file and reusing previous mappings…') : emptyUploadBox({
+        meta: 'CSV · Max 50 MB',
+        onClick: 'openERPCorrectedFilePicker()',
+      })}
+    </div>
+  </div>`;
 }
 const ERP_MAP_SOURCES = [
   { id:'s1', index:1, colName:'order_id', sample:'ERP-2026-001', ai:true },
@@ -3618,7 +3666,7 @@ function uploadV2StepsForRoute(route,w) {
   if (route === 'erp') {
     if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'File description'},{n:4,label:'Review'}];
     if (w && w.erpFlowVersion === 'v3') {
-      const steps = [{n:1,label:'Upload document'},{n:2,label:'Confirm info'}];
+      const steps = [{n:1,label:'Upload document'},{n:2,label:'Confirm the processing results'}];
       if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
       steps.push({n:steps.length + 1,label:'File description'});
       steps.push({n:steps.length + 1,label:'Review'});
@@ -3628,11 +3676,11 @@ function uploadV2StepsForRoute(route,w) {
     const hasUnrecognized = !!(w && (w.erp2HadUnrecognized || w.erp2ZeroMatchAlert));
     const needsReplacement = !!(stats && (stats.missing.length || (w && (w.erp2ReplacementState === 'done' || w.erp2ReplacementOutcome))));
     const steps = [{n:1,label:'Upload document'}];
-    if (!(w && w.erp2SkippedConfirm)) steps.push({n:steps.length + 1,label:'Confirm info'});
-    if (hasUnrecognized) steps.push({n:steps.length + 1,label:'Match remaining fields'});
+    if (!(w && w.erp2SkippedConfirm)) steps.push({n:steps.length + 1,label:'Confirm usable information'});
+    if (hasUnrecognized) steps.push({n:steps.length + 1,label:'Confirm missing information'});
     if (needsReplacement) steps.push({n:steps.length + 1,label:'Update and re-upload'});
     steps.push({n:steps.length + 1,label:'File description'});
-      steps.push({n:steps.length + 1,label:'Review'});
+    steps.push({n:steps.length + 1,label:'Review'});
     return steps;
   }
   return [{n:1,label:'Upload document'}];
@@ -3643,7 +3691,7 @@ function uploadV2ERPDisplayStep(w) {
   if (w && w.erpFlowVersion === 'v3') {
     const stage = w.erp3Stage || 1;
     if (stage <= 1) label = 'Upload document';
-    else if (stage === 2) label = 'Confirm info';
+    else if (stage === 2) label = 'Confirm the processing results';
     else if (stage === 3 && w.erp3NeedsReplacement) label = 'Update and re-upload';
     else if (stage === 4) label = 'File description';
     else label = 'Review';
@@ -3652,8 +3700,8 @@ function uploadV2ERPDisplayStep(w) {
   } else {
     const stage = (w && w.erp2Stage) || 1;
     if (stage <= 1) label = 'Upload document';
-    else if (stage === 2) label = 'Confirm info';
-    else if (stage === 3) label = 'Match remaining fields';
+    else if (stage === 2) label = 'Confirm usable information';
+    else if (stage === 3) label = 'Confirm missing information';
     else if (stage === 4) label = 'Update and re-upload';
     else if (stage === 5) label = 'File description';
     else label = 'Review';
@@ -3701,15 +3749,15 @@ function applyChildSampleFile(profileId) {
   w.fileName = sample.name;
   applySampleUseCaseState(w, sample);
   if (w.kind === 'template') {
-    w.templateIssueRows = null;
-    w.templateFixedRows = [];
-    w.templateEditingRow = null;
-    w.templateEditValue = '';
-    w.templateEditError = '';
-    w.templateTableEditing = false;
-    w.csvState = 'processing';
-    render();
-    setTimeout(() => { if (state.wiz !== w) return; w.csvState = 'mapped'; render(); }, 1800);
+      w.templateIssueRows = null;
+      w.templateFixedRows = [];
+      w.templateEditingRow = null;
+      w.templateEditValue = '';
+      w.templateEditError = '';
+      w.templateTableEditing = false;
+      w.csvState = 'processing';
+      render();
+      setTimeout(() => { if (state.wiz !== w) return; w.csvState = 'mapped'; render(); }, 1800);
     return;
   }
   if (w.kind === 'erp') {
@@ -5030,40 +5078,33 @@ function templateFillGuidePanel() {
       <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:24px">
         <section>
           <h4 style="font-size:14px;font-weight:600;margin:0 0 10px">Tips before you begin</h4>
-          <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px;font-size:13px;color:var(--muted-foreground);line-height:1.5">
-            <li>Check that your marketplace is in the list of supported marketplaces.</li>
-            <li>Download and save a copy of the template with a name that describes your store, for example <span class="mono">MyStore.csv</span>.</li>
+            <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px;font-size:13px;color:var(--muted-foreground);line-height:1.5">
+              <li>Check that your marketplace is in the list of supported marketplaces.</li>
+              <li>Download and save a copy of the template with a name that describes your store, for example <span class="mono">MyStore.csv</span>.</li>
             <li>Save the file in <span class="mono">.csv</span> format, keep it under 10 MB, and use English letters and digits in the file name.</li>
-            <li>Do not change or delete the column headers.</li>
-          </ul>
+              <li>Do not change or delete the column headers.</li>
+            </ul>
         </section>
 
         <section style="display:flex;flex-direction:column;gap:14px">
           <h4 style="font-size:14px;font-weight:600;margin:0">Download and complete the transaction information</h4>
-          ${uiAlertHTML({ tone:'info', content:'Complete one row for each item in an order. If the same item is sold at different prices, combine it into one row and use the average unit price.' })}
-          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
-            Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12.50.
-          </p>
+          ${uiAlertHTML({ tone:'info', content:'Complete one row for each item in an order. If the same item is sold at different prices, combine it into one row and use the average unit price.<br>Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12.50.' })}
+          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5;margin:0">Select a template based on your business type</p>
           ${requiredDetailsTabs({ showDownload: true })}
         </section>
-      </div>
-    </div>
+            </div>
+            </div>
   </div>`;
 }
 
 function marketplaceFillGuidePanel() {
   if (!state.marketplaceGuide) return '';
-  const marketplace = DOCUMENT_REQUIREMENT_TYPES.find(type => type.key === 'marketplace') || {
-    key: 'marketplace',
-    label: 'Marketplace',
-    desc: 'SHEIN.COM, TikTok Shop, Wayfair, and other marketplaces',
-  };
   return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.marketplaceGuide=false;render()}">
     <div class="drawer fill-guide">
       <div class="drawer-h">
         <h3>Download and complete the template</h3>
         <button type="button" onclick="state.marketplaceGuide=false;render()">${I.x}</button>
-      </div>
+          </div>
       <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:24px">
         <section>
           <h4 style="font-size:14px;font-weight:600;margin:0 0 10px">Tips before you begin</h4>
@@ -5076,15 +5117,11 @@ function marketplaceFillGuidePanel() {
         </section>
 
         <section style="display:flex;flex-direction:column;gap:14px">
-          <h4 style="font-size:14px;font-weight:600;margin:0">Download and complete the transaction information</h4>
-          ${uiAlertHTML({ tone:'info', content:'Complete one row for each item in an order. If the same item is sold at different prices, combine it into one row and use the average unit price.' })}
-          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
-            Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12.50.
-          </p>
           <div class="req-r2-panel-head">
-            <p class="req-r2-type-desc">${marketplace.desc}</p>
+            <h4 class="req-r2-type-name">Download and complete the transaction information</h4>
             <button type="button" class="btn-link req-r2-download" onclick="downloadRequirementTemplate('marketplace')">${I.download} Download template</button>
           </div>
+          ${uiAlertHTML({ tone:'info', content:'Complete one row for each item in an order. If the same item is sold at different prices, combine it into one row and use the average unit price.<br>Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12.50.' })}
           ${requiredDetailsVerticalTable(documentRequiredDetails('marketplace'))}
         </section>
       </div>
@@ -5243,11 +5280,11 @@ function goodsTradeRequirementsPanel() {
   if (!state.goodsRequirementsPanel) return '';
   const eligibleTags = [
     'Physical goods',
-    'Accommodation',
+    'Software',
+    'International logistics',
     'Advertisement',
     'Air tickets',
-    'International logistics',
-    'Software',
+    'Accommodation',
     'Tourism',
   ];
   return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.goodsRequirementsPanel=false;render()}">
@@ -5257,18 +5294,18 @@ function goodsTradeRequirementsPanel() {
         <button type="button" onclick="state.goodsRequirementsPanel=false;render()">${I.x}</button>
       </div>
       <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:24px">
-        <section>
+    <section>
           <p style="font-size:14px;font-weight:600;margin-bottom:12px">Eligible settlement transaction types</p>
           <div class="eligible-services">
             ${eligibleTags.map(label => `<span>${label}</span>`).join('')}
-          </div>
+        </div>
         </section>
         <section>
           <p style="font-size:14px;font-weight:600;margin-bottom:12px">Information your documents need to include</p>
           ${requiredDetailsTabs({ excludeKeys: ['marketplace'], tabKey: 'goodsRequirementsTab' })}
         </section>
-      </div>
-    </div>
+        </div>
+        </div>
   </div>`;
 }
 
@@ -5284,38 +5321,38 @@ function supportedMarketplacesPanel() {
         <div>
           <h3>Supported marketplaces</h3>
           <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;font-weight:400">Marketplace transactions that can increase your CNY quota</p>
-        </div>
+      </div>
         <button type="button" onclick="state.supportedMarketplacesPanel=false;render()">${I.x}</button>
       </div>
       <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:20px">
-        <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
-          We support transactions from these marketplaces to increase your quota.
-        </p>
-        <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-          <p style="font-size:14px;font-weight:600;margin-bottom:4px">Automatic quota increase</p>
-          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:14px">
-            Your quota increases automatically when you receive payments to these stores. You don’t need to upload documents or connect stores.
-          </p>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px 20px">
-            ${automaticMarketplaces.map(name => `<div style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--foreground)"><span style="color:var(--success)">${I.check}</span>${name}</div>`).join('')}
-          </div>
-        </div>
-        <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:#fff">
-          <p style="font-size:14px;font-weight:600;margin-bottom:6px">Upload documents required</p>
+    <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
+      We support transactions from these marketplaces to increase your quota.
+    </p>
+    <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
+      <p style="font-size:14px;font-weight:600;margin-bottom:4px">Automatic quota increase</p>
+      <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:14px">
+        Your quota increases automatically when you receive payments to these stores. You don’t need to upload documents or connect stores.
+      </p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px 20px">
+        ${automaticMarketplaces.map(name => `<div style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--foreground)"><span style="color:var(--success)">${I.check}</span>${name}</div>`).join('')}
+      </div>
+    </div>
+    <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:#fff">
+      <p style="font-size:14px;font-weight:600;margin-bottom:6px">Upload documents required</p>
           <div style="margin-bottom:16px">${uiAlertHTML({ tone:'info', content:'<strong>Amazon, Walmart, and Shopify:</strong> You can manually upload documents for these stores, but connecting them lets us automatically increase quota with your new payments.' })}</div>
-          <div style="display:flex;flex-direction:column;gap:12px">
-            ${Object.entries(MARKETPLACE_UPLOAD_GROUPS).map(([letter,names]) => `
-              <div style="display:grid;grid-template-columns:24px 1fr;gap:10px">
-                <strong style="font-size:13px;color:var(--primary)">${letter}</strong>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;font-size:13px;color:var(--foreground)">
-                  ${names.map(name => `<span>${name}</span>`).join('')}
-                </div>
-              </div>`).join('')}
+      <div style="display:flex;flex-direction:column;gap:12px">
+        ${Object.entries(MARKETPLACE_UPLOAD_GROUPS).map(([letter,names]) => `
+          <div style="display:grid;grid-template-columns:24px 1fr;gap:10px">
+            <strong style="font-size:13px;color:var(--primary)">${letter}</strong>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;font-size:13px;color:var(--foreground)">
+              ${names.map(name => `<span>${name}</span>`).join('')}
+            </div>
+          </div>`).join('')}
           </div>
         </div>
       </div>
-    </div>
-  </div>`;
+      </div>
+    </div>`;
 }
 
 function viewDocumentRequirements() {
@@ -5327,7 +5364,7 @@ function viewDocumentRequirements() {
       <div class="page-head">
         <button class="back-ico" onclick="go('home')" aria-label="Back to CNY quota management">${I.back}</button>
         <h1>Upload document requirements</h1>
-      </div>
+          </div>
       <div class="content">
         <section>
           <p style="font-size:14px;font-weight:600;margin-bottom:2px">Eligible settlement transaction types</p>
@@ -5339,20 +5376,20 @@ function viewDocumentRequirements() {
                 <button type="button" class="btn-link" onclick="state.supportedMarketplacesPanel=true;render()">
                   View supported marketplaces ${I.chevronR}
                 </button>
-              </div>
-            </div>
+        </div>
+      </div>
             <div class="eligible-type">
               <p class="eligible-type-label">Foreign trade</p>
               <div class="eligible-type-copy eligible-services">
                 <span>Physical goods</span>
-                <span>Accommodation</span>
+                <span>Software</span>
+                <span>International logistics</span>
                 <span>Advertisement</span>
                 <span>Air tickets</span>
-                <span>International logistics</span>
-                <span>Software</span>
+                <span>Accommodation</span>
                 <span>Tourism</span>
-              </div>
-            </div>
+      </div>
+    </div>
           </div>
         </section>
         <section>
@@ -6276,14 +6313,11 @@ function erpReplacementNewColumnsSection(w) {
     return `<div class="mapping-c2-success">${I.check}<div><strong>New columns mapped</strong><p>The corrected file replaced the previous upload. Existing mappings were reused, and the new columns were mapped.</p></div></div>
       ${table}`;
   }
-  const chips = `<div class="erp2-required-headers">${(unmapped.length ? unmapped : newHeaders).map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>`;
+  const remainingNames = unmapped.length ? unmapped : newHeaders;
   return `${uiAlertHTML({
         tone:'error',
-        title: cannotMatch ? 'These new columns still cannot be matched' : 'Unable to recognize the new columns',
-        content: cannotMatch
-          ? 'None of the new file columns can be matched to the required fields. Re-upload a file that uses recognizable headers.'
-          : 'The updated file includes the added columns, but we could not match them automatically. Choose a matching file column below. If none of the headers correspond to this field, re-upload a corrected file.',
-        extra: chips,
+        title: cannotMatch ? fileStillMissingDetailsTitleHTML(remainingNames) : missingDetailsStillNotFoundTitle(),
+        content: addMissingColumnsReuploadCopy(remainingNames.length),
         action:'Re-upload file',
         actionOnclick:'retryERPCorrectedUpload()',
       })}
@@ -6589,9 +6623,9 @@ function simulateErp(incomingFileName, outcome) {
   w.erpResultRows = null;
   w.erpTableEditing = false;
   if (!w.isReplacement) {
-    const scenarioFileName = getERPScenarioFileName(w.erpScenario);
-    w.fileName = typeof incomingFileName === 'string' && incomingFileName
-      ? incomingFileName
+  const scenarioFileName = getERPScenarioFileName(w.erpScenario);
+  w.fileName = typeof incomingFileName === 'string' && incomingFileName
+    ? incomingFileName
       : (w.erpFlowVersion !== 'v1' ? scenarioFileName.replace(/\.xlsx$/i,'.csv') : scenarioFileName);
   }
   w.dsState = 'processing'; render();
@@ -6661,19 +6695,19 @@ function simulateErp(incomingFileName, outcome) {
         w.erp2ReplacementState = 'done';
         w.erp2Stage = 4;
       } else {
-        w.erp2SupplementState = 'empty';
-        w.erp2SupplementFileName = null;
-        w.erp2SupplementError = false;
-        w.erp2SupplementedFields = [];
-        w.erp2SupplementSources = [];
-        w.erp2SupplementTargetNames = [];
-        w.erp2SupplementMaps = {};
-        w.erp2ReplacementState = 'empty';
-        w.erp2ReplacementFileName = null;
-        w.erp2PreviousFileName = null;
-        w.erp2ReusedMappings = 0;
-        w.erp2NewHeaders = [];
-        w.erp2NoneSelections = {};
+      w.erp2SupplementState = 'empty';
+      w.erp2SupplementFileName = null;
+      w.erp2SupplementError = false;
+      w.erp2SupplementedFields = [];
+      w.erp2SupplementSources = [];
+      w.erp2SupplementTargetNames = [];
+      w.erp2SupplementMaps = {};
+      w.erp2ReplacementState = 'empty';
+      w.erp2ReplacementFileName = null;
+      w.erp2PreviousFileName = null;
+      w.erp2ReusedMappings = 0;
+      w.erp2NewHeaders = [];
+      w.erp2NoneSelections = {};
         const zeroMatch = !(w.erp2IdentifiedTargetNames && w.erp2IdentifiedTargetNames.length);
         if (zeroMatch) {
           const stats = getERPMappingStats(w);
@@ -6695,9 +6729,9 @@ function simulateErp(incomingFileName, outcome) {
         w.erp3ReplacementState = 'done';
         w.erp3Stage = 3;
       } else {
-        w.erp3Stage = 2;
-        w.erp3NeedsReplacement = false;
-        w.erp3ReplacementState = 'empty';
+      w.erp3Stage = 2;
+      w.erp3NeedsReplacement = false;
+      w.erp3ReplacementState = 'empty';
       }
     }
     render();
@@ -6733,7 +6767,7 @@ function attemptERPNext() {
     toast('Select a matching column for each new field, or re-upload a file with recognizable headers.');
     render();
     requestAnimationFrame(() => {
-      const target = document.querySelector('.map-row.needs-selection, .erp2-missing-card');
+      const target = document.querySelector('.map-row.needs-selection, .erp3-corrected-card, .erp2-missing-card, .alert-error');
       if (target) target.scrollIntoView({ behavior:'smooth', block:'center' });
     });
     return;
@@ -6774,7 +6808,7 @@ function templateCategoryFields(w) {
     ${categoryField}
 
     ${w.category === 'marketplace' ? (w.uploadOriginVersion===2 ? `<div class="field"><label>Marketplace</label><div style="height:var(--control-height);display:flex;align-items:center;padding:0 12px;border:1px solid var(--border);border-radius:var(--control-radius);background:var(--muted);font-weight:500">${w.marketplace||'—'}</div></div>` : `<div class="field">
-      <label>Marketplace where the payment was received <span style="color:var(--destructive)">*</span></label>
+      <label>Marketplace these transaction records belong to <span style="color:var(--destructive)">*</span></label>
       <div class="business-type-select-wrap">
         <select class="business-type-select ${w.marketplace?'':'placeholder'} ${issues.includes('marketplace')?'invalid':''}" onchange="setTemplateMarketplace(this.value)">
           <option value="">Select a marketplace</option>
@@ -6782,7 +6816,6 @@ function templateCategoryFields(w) {
         </select>
         <span class="business-type-chevron" aria-hidden="true">${I.chevron}</span>
       </div>
-      <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Select the marketplace represented by the transaction rows in this file.</p>
       ${issues.includes('marketplace')?`<div class="field-error">${I.alert}<span>Select a marketplace before continuing.</span></div>`:''}
     </div>`) : ''}
 
@@ -6845,8 +6878,8 @@ function stepTemplateResult() {
 }
 function stepTemplateV2Review() {
   const w=state.wiz,category=(TEMPLATE_TYPES.find(type=>type.key===w.category)||{}).label||'—';
-  const details=[['File type','Template CSV'],['File name',w.fileName||'template_transactions.csv'],['File description',fileDescriptionValue(w)||'—'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[]),['Transaction total','USD 48,500.00']];
-  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} File information summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p${label==='File name'?' class="mono"':label==='Transaction total'?' class="money-value"':''}>${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
+  const details=[['File type','Template CSV'],['File name',w.fileName||'template_transactions.csv'],['File description',fileDescriptionValue(w)||'—'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[]),['Records detected', DS_TX_PREVIEW.length+' transaction records']];
+  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} File information summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p${label==='File name'?' class="mono"':''}>${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
 }
 
 function viewWizardTemplate() {
@@ -7076,11 +7109,11 @@ function mappingControlHTML(controlHTML, iconKind, iconLabel, extraHTML) {
   return `<div class="map-col-arrow"><span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span></div>
     <div class="uploaded-choice">
       <div class="uploaded-choice-control">
-        ${controlHTML}
-        ${mappingStatusIconHTML(iconKind, iconLabel)}
-      </div>
-      ${extraHTML || ''}
-    </div>`;
+      ${controlHTML}
+      ${mappingStatusIconHTML(iconKind, iconLabel)}
+    </div>
+    ${extraHTML || ''}
+  </div>`;
 }
 function erp2StaticMapRow(source, w) {
   const target = (w.mappings && w.mappings[source.id]) || '';
@@ -7334,9 +7367,17 @@ function erpUnmatchedDetailsIntro(count) {
   const plural = count !== 1;
   return `The other ${count} detail${plural?'s':''} ${plural?'are':'is'} required too, but we couldn't find ${plural?'them':'it'} in your file. Select the matching column for each one, or "None of the above" if your file doesn't have it.`;
 }
+function erpMissingInFileTableIntro(count) {
+  return `Another ${count} required settlement columns could not be found in your file. If the file contains related information, select the matching column headers.`;
+}
 function erpMatchedColumnsIntro(matchedCount, totalCount) {
   return `<div class="erp-match-intro">
-    <p>${matchedCount} columns in your file were identified as the required system details. The table below lists the matches. Please confirm and complete them.</p>
+    <p>${matchedCount} columns in your file can be used for settlement. The table below maps the required settlement details to these ${matchedCount} columns in your file. Please confirm each one.</p>
+  </div>`;
+}
+function erp3MatchedColumnsIntro(matchedCount, missingCount) {
+  return `<div class="erp-match-intro">
+    <p>${matchedCount} columns in your file can be used for settlement, and ${missingCount} required columns are missing. The table below maps every settlement detail to a column in your file. Please confirm each one.</p>
   </div>`;
 }
 function stepERP2Confirm(w) {
@@ -7349,7 +7390,7 @@ function stepERP2Confirm(w) {
     : 'Review the file, then match any columns you recognize in the next step.';
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
-      <h2>Check the columns we matched</h2>
+      <h2>Confirm the usable information in your file</h2>
     </div>
     ${erp2FileSummary(w, stats)}
     <div>
@@ -7397,13 +7438,14 @@ function stepERP2Unrecognized(w) {
   }
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
-      <h2>${zeroMatchAlert ? 'Match columns manually' : 'Do you have these details in your file?'}</h2>
-      <p>${zeroMatchAlert
-        ? 'No columns were matched automatically. Select the matching column for each required detail, or re-upload a corrected file.'
-        : erpUnmatchedDetailsIntro(resolutionNames.length)}</p>
+      <h2>${zeroMatchAlert ? 'Match columns manually' : 'Confirm the missing information in your file'}</h2>
+      ${zeroMatchAlert
+        ? `<p>No columns were matched automatically. Select the matching column for each required detail, or re-upload a corrected file.</p>`
+        : ''}
     </div>
     ${erp2FileSummary(w, stats)}
     ${zeroMatchAlert ? erpZeroMatchAlertHTML({ canMatch:true }) : ''}
+    ${zeroMatchAlert ? '' : `<div class="erp-match-intro"><p>${erpMissingInFileTableIntro(resolutionNames.length)}</p></div>`}
     ${erp2TargetMappingTable(resolutionNames, stats.sources, w.mappings, 'updateERP2TargetMapping', true)}
   </div>`;
 }
@@ -7442,31 +7484,19 @@ function stepERP2Missing(w) {
   }
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
-      <h2>Update and re-upload</h2>
+      <h2>Add the missing fields and re-upload</h2>
+      <p>These required fields are still missing. Fill in the new columns and upload the complete file.</p>
     </div>
     ${erp2FileSummary(w, stats)}
-    <div class="erp2-missing-card">
-      <div class="erp2-missing-card-h">
-        <h3>${missingNames.length === 1 ? 'This detail is missing:' : 'These details are missing:'}</h3>
-        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
-      </div>
-      <div class="erp2-supplement-body">
-        ${uiAlertHTML({ tone:'error', content:'To continue, add the missing column and complete the required information in your file, then upload the updated file again.' })}
-        ${w.erp2ReplacementState === 'processing' ? busyUploadBox('Analyzing the corrected file and reusing previous mappings…') : emptyUploadBox({
-            meta: 'CSV · Max 50 MB',
-            hint: `Include all original columns plus the ${formatMissingFieldsList(missingNames)} columns.`,
-            onClick: 'openERPCorrectedFilePicker()',
-          })}
-      </div>
-    </div>
+    ${erpMissingFieldsReuploadCardHTML(missingNames, w.erp2ReplacementState === 'processing')}
   </div>`;
 }
 
 function erp2Steps(w) {
   const stats = getERPMappingStats(w);
   const steps = [{n:1,label:'Upload CSV'}];
-  if (!w.erp2SkippedConfirm) steps.push({n:2,label:'Confirm info'});
-  if (w.erp2HadUnrecognized || w.erp2ZeroMatchAlert) steps.push({n:3,label:'Match remaining fields'});
+  if (!w.erp2SkippedConfirm) steps.push({n:2,label:'Confirm usable information'});
+  if (w.erp2HadUnrecognized || w.erp2ZeroMatchAlert) steps.push({n:3,label:'Confirm missing information'});
   if (stats.missing.length || w.erp2ReplacementState === 'done' || w.erp2ReplacementOutcome) steps.push({n:4,label:'Update and re-upload'});
   steps.push({n:5,label:'File description'});
   steps.push({n:6,label:'Review'});
@@ -7546,7 +7576,7 @@ function erp2Next() {
         : 'Update the file to include every missing required column, then upload it again.');
       render();
       requestAnimationFrame(() => {
-        const target = document.querySelector('.map-row.needs-selection, .erp2-missing-card');
+        const target = document.querySelector('.map-row.needs-selection, .erp3-corrected-card, .erp2-missing-card, .alert-error');
         if (target) target.scrollIntoView({ behavior:'smooth', block:'center' });
       });
       return;
@@ -7576,7 +7606,7 @@ function viewWizardERP2(w) {
       : stage === 3 ? (!zeroMatchBlocked && !erpMappingHasConflicts(stats))
         : stage === 4 ? stats.valid && erpReplacementFieldsComplete(w) && !getERP2SupplementStats(w).duplicateTargets.length
           : stage === 5 ? true
-            : stats.valid;
+          : stats.valid;
   const versionControl = stage === 1 ? erpVersionSelector() : '';
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('erp',w) : erp2Steps(w);
   const displayStep = w.uploadOriginVersion===2 ? uploadV2ERPDisplayStep(w) : stage;
@@ -7620,7 +7650,6 @@ function erp3StatusHint(status, attempted) {
 function erp3TargetMappingTable(w) {
   const stats = getERPMappingStats(w);
   const rows = getERP3FieldRows(w);
-  const mappedCount = rows.filter(row => row.source && row.status !== 'conflict').length;
   const availableSources = stats.sources.filter(source => !source.unmappable);
   return `<div class="map-table erp2-target-map erp3-map">
     ${mapTableHead()}
@@ -7652,8 +7681,7 @@ function erp3TargetMappingTable(w) {
         ${mapSampleCell(selectedSource ? selectedSource.sample : '')}
       </div>`;
     }).join('')}
-  </div>
-  <p style="font-size:12px;color:var(--muted-foreground);margin-top:10px">${mappedCount} of ${ERP_REQUIRED_FIELDS.length} required fields are mapped.</p>`;
+  </div>`;
 }
 function simulateERP3CorrectedUpload(outcome) {
   const w = state.wiz; if (!w || w.erpFlowVersion !== 'v3') { render(); return; }
@@ -7679,10 +7707,10 @@ function stepERP3Confirm(w) {
   const mappedCount = rows.filter(row => row.source && row.status !== 'conflict').length;
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
-      <h2>Check the columns we matched</h2>
+      <h2>Confirm the usable information in your file</h2>
     </div>
     ${erp2FileSummary(w, stats)}
-    ${erpMatchedColumnsIntro(mappedCount, ERP_REQUIRED_FIELDS.length)}
+    ${erp3MatchedColumnsIntro(mappedCount, Math.max(0, ERP_REQUIRED_FIELDS.length - mappedCount))}
     ${erp3TargetMappingTable(w)}
   </div>`;
 }
@@ -7707,25 +7735,12 @@ function stepERP3Missing(w) {
       <p>These required fields are still missing. Fill in the new columns and upload the complete file.</p>
     </div>
     ${erp2FileSummary(w, stats)}
-    <div class="erp3-corrected-card">
-      <div class="erp3-corrected-card-h">
-        <h3>Details about the ${formatMissingFieldsList(missingNames)} are missing</h3>
-        <p>All original headers have been renamed to the fields we need, and the missing headers have already been added. You only need to fill in the corresponding data.</p>
-        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${formatFieldLabel(name)}</span>`).join('')}</div>
-      </div>
-      <div class="erp3-corrected-body">
-        ${w.erp3ReplacementState === 'processing' ? busyUploadBox('Analyzing the corrected file and reusing previous mappings…') : emptyUploadBox({
-            meta: 'CSV · Max 50 MB',
-            hint: `Include every required header and the missing ${formatMissingFieldsList(missingNames)} data.`,
-            onClick: 'openERPCorrectedFilePicker()',
-          })}
-      </div>
-    </div>
+    ${erpMissingFieldsReuploadCardHTML(missingNames, w.erp3ReplacementState === 'processing')}
   </div>`;
 }
 
 function erp3Steps(w) {
-  const steps = [{n:1,label:'Upload CSV'},{n:2,label:'Confirm info'}];
+  const steps = [{n:1,label:'Upload CSV'},{n:2,label:'Confirm the processing results'}];
   if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
   steps.push({n:4,label:'File description'});
   steps.push({n:5,label:'Review'});
@@ -7818,7 +7833,7 @@ function viewWizardERP3(w) {
     : stage === 2 ? !erpMappingHasConflicts(stats)
       : stage === 3 ? stats.valid && erpReplacementFieldsComplete(w)
         : stage === 4 ? true
-          : stats.valid;
+        : stats.valid;
   const versionControl = stage === 1 ? erpVersionSelector() : '';
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('erp',w) : erp3Steps(w);
   const displayStep = w.uploadOriginVersion===2 ? uploadV2ERPDisplayStep(w) : (stage <= 2 ? stage : (w.erp3NeedsReplacement ? stage : stage - 1));
@@ -8058,7 +8073,7 @@ function stepERPReview() {
     <div class="review-card">
       <div class="review-card-h">${I.file} File information summary</div>
       <div class="review-card-b"><div class="kv-grid">
-        ${[['File type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['File name',erpDisplayedFileName(w)||(isERP2?'erp_export.csv':'erp_export.xlsx')],['File description',fileDescriptionValue(w)||'—'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['Upload date','2026-07-20'],['Records detected', DS_TX_PREVIEW.length+' transaction records'],['Transaction total','USD 48,500.00']].map(([k,v])=>`<div><label>${k}</label><p${k==='File name'?' class="mono"':k==='Transaction total'?' class="money-value"':''}>${escapeHTML(v)}</p></div>`).join('')}
+        ${[['File type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['File name',erpDisplayedFileName(w)||(isERP2?'erp_export.csv':'erp_export.xlsx')],['File description',fileDescriptionValue(w)||'—'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['Upload date','2026-07-20'],['Records detected', DS_TX_PREVIEW.length+' transaction records']].map(([k,v])=>`<div><label>${k}</label><p${k==='File name'?' class="mono"':''}>${escapeHTML(v)}</p></div>`).join('')}
       </div></div>
     </div>
     ${paymentLinkingActive?`<div class="review-card">
@@ -8128,8 +8143,8 @@ function viewWizardERP() {
     ? `submitWizard()`
     : w.step===5
       ? `attemptERPDescriptionNext()`
-      : w.step===2
-        ? `attemptERPNext()`
+    : w.step===2
+      ? `attemptERPNext()`
         : `state.wiz.step=5;render()`;
   const nextLabel = w.step===4 ? 'Submit' : 'Next';
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('erp',w) : steps;
@@ -8216,7 +8231,7 @@ function tradeBusinessTypeField(opts) {
   const compact = !!(opts && opts.compact);
   if (w.uploadOriginVersion === 2) {
     return `<div class="field" style="width:100%">
-      <label style="font-size:14px;font-weight:600;color:var(--foreground);margin-bottom:8px">Business type</label>
+      ${compact ? '' : `<label style="font-size:14px;font-weight:600;color:var(--foreground);margin-bottom:8px">Business type</label>`}
       <div style="height:var(--control-height);display:flex;align-items:center;padding:0 12px;border:1px solid var(--border);border-radius:var(--control-radius);background:var(--muted);font-weight:500">${selected?selected.label:'—'}</div>
       <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin-top:8px">${compact ? 'Return to Upload V2 to change the category.' : 'Selected in Upload V2. Return to Upload V2 to change the category.'}</p>
     </div>`;
@@ -8224,16 +8239,16 @@ function tradeBusinessTypeField(opts) {
   const emptyHint = compact ? '' : 'Choose the category that best describes the transaction in your document.';
   const hint = selected ? selected.desc : emptyHint;
   return `<div class="field" style="width:100%">
-    <label style="font-size:14px;font-weight:600;color:var(--foreground);margin-bottom:8px">
-      Select your business type <span style="color:var(--destructive)">*</span>
-    </label>
-    <div class="business-type-select-wrap">
-      <select class="business-type-select ${w.source?'':'placeholder'}" aria-label="Select your business type" onchange="setTradeSource(this.value)">
-        <option value="">Select a business type</option>
-        ${TRADE_SOURCES.map(type => `<option value="${type.key}" ${w.source===type.key?'selected':''}>${type.label}</option>`).join('')}
-      </select>
-      <span class="business-type-chevron" aria-hidden="true">${I.chevron}</span>
-    </div>
+    ${compact ? '' : `<label style="font-size:14px;font-weight:600;color:var(--foreground);margin-bottom:8px">
+        Select your business type <span style="color:var(--destructive)">*</span>
+    </label>`}
+      <div class="business-type-select-wrap">
+        <select class="business-type-select ${w.source?'':'placeholder'}" aria-label="Select your business type" onchange="setTradeSource(this.value)">
+          <option value="">Select a business type</option>
+          ${TRADE_SOURCES.map(type => `<option value="${type.key}" ${w.source===type.key?'selected':''}>${type.label}</option>`).join('')}
+        </select>
+        <span class="business-type-chevron" aria-hidden="true">${I.chevron}</span>
+      </div>
     ${hint ? `<p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin-top:8px">${hint}</p>` : ''}
   </div>`;
 }
@@ -8319,10 +8334,8 @@ function setTradeOcrField(key, value) {
     wrap.classList.toggle('trade-ocr-miss', empty);
     const control = wrap.querySelector('input, select');
     if (control) control.classList.toggle('invalid', !!(empty && w.tradeOcrAttempted));
-    const chip = wrap.querySelector('.trade-ocr-chip');
     const hint = wrap.querySelector('.trade-ocr-hint');
     const note = wrap.querySelector('.trade-ocr-note');
-    if (chip) chip.hidden = !empty;
     if (hint) hint.hidden = !empty;
     if (note) note.hidden = empty;
   }
@@ -8338,7 +8351,6 @@ function tradeOcrFieldHTML(opts) {
   const req = opts.required === false ? '' : '<span style="color:var(--destructive)">*</span>';
   const extraClass = opts.extraClass || '';
   const invalidClass = empty && attempted ? 'invalid' : '';
-  const chip = `<span class="chip chip-amber trade-ocr-chip"${empty?'':' hidden'}>${tradeFieldLabel('Unrecognized', '无法识别')}</span>`;
   const hint = `<p class="trade-ocr-hint"${empty?'':' hidden'}>${tradeFieldNote('We couldn’t read this from your document. Please fill it in.', '系统未能从单据中识别此字段，请手动填写。')}</p>`;
   const note = opts.note ? `<div class="trade-ocr-note"${empty?' hidden':''}>${opts.note}</div>` : '';
   const control = opts.options
@@ -8348,7 +8360,7 @@ function tradeOcrFieldHTML(opts) {
       </select>`
     : `<input id="trade-ocr-input-${key}" class="${extraClass} ${invalidClass}" type="${opts.type || 'text'}" value="${escapeHTML(value)}" placeholder="${escapeHTML(opts.placeholder || '')}" oninput="setTradeOcrField('${key}',this.value)" />`;
   return `<div class="field${opts.full?' full':''}${empty?' trade-ocr-miss':''}" id="trade-ocr-${key}">
-    <label>${opts.label} ${req} ${chip}</label>
+    <label>${opts.label} ${req}</label>
     ${control}
     ${hint}
     ${note}
@@ -8358,8 +8370,8 @@ function tradeOcrAlertHTML() {
   const missing = tradeOcrIncomplete(state.wiz || {});
   return `<div id="trade-ocr-alert"${missing.length?'':' style="display:none"'}>${uiAlertHTML({
     tone:'warning',
-    title: tradeFieldLabel('Some fields could not be recognized', '部分字段无法识别'),
-    content: tradeFieldNote('We prefilled the details we could read. Please fill in the highlighted fields before continuing.', '系统已根据单据预填可识别信息。请先填写高亮标注的字段后再继续。'),
+    title: tradeFieldLabel('Complete the following transaction details', '完善以下交易信息'),
+    content: tradeFieldNote('We prefilled some details from your document. Please confirm them.', '系统已根据单据预填部分信息，请确认。'),
   })}</div>`;
 }
 function ensureTradeOcrFilled() {
@@ -8489,7 +8501,7 @@ function tradeServiceDetailsBlock() {
         <div class="field"><label>Service amount</label><input value="USD 48,500.00" readonly /></div>
       </div>
     </div>
-  </div>`;
+    </div>`;
 }
 
 function tradeAdvertisementBlock() {
@@ -8505,7 +8517,7 @@ function tradeAdvertisementBlock() {
           <div class="field">
             <label>Business subcategory/transaction mode ${req}</label>
             <select disabled><option>B2C</option><option>D2C</option><option selected>B2B</option></select>
-          </div>
+              </div>
           <div class="field">
             <label>Trade type ${req}</label>
             <input value="Advertisement" readonly />
@@ -8596,9 +8608,9 @@ function tradeAdvertisementBlock() {
             <input value="张伟" readonly />
             ${tradeFieldNoteHtml('The Chinese name of the domestic cardholder who received the funds. Enter this in Chinese.', '境内持卡收款人的中文姓名，请用中文填写。')}
           </div>
-        </div>
-      </div>
-    </div>`;
+            </div>
+          </div>
+        </div>`;
 }
 
 function tradeTourismBlock() {
@@ -8731,7 +8743,7 @@ function tradeSoftwareBlock() {
             <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
             <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
             ${note('Select the transaction mode, for example B2C, D2C, or B2B.', '选择交易方式，例如 B2C、D2C 或 B2B。')}
-          </div>
+    </div>
           <div class="field">
             <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
             <input value="Software" readonly />
@@ -8821,8 +8833,8 @@ function tradeSoftwareBlock() {
             note: note('The developer or publisher name as shown on the app store or software listing.', '应用商店或软件列表上显示的开发者或发行方名称。'),
           })}
         </div>
-      </div>
-    </div>`;
+    </div>
+  </div>`;
 }
 
 function tradeAirTicketBlock() {
@@ -8838,7 +8850,7 @@ function tradeAirTicketBlock() {
             <label>${tradeFieldLabel('Business category', '贸易类型大类')} ${req}</label>
             <select disabled><option>Goods</option><option selected>Service</option></select>
             ${note('Select Goods or Service.', '选择货物或服务。')}
-          </div>
+    </div>
           <div class="field">
             <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
             <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
@@ -8889,8 +8901,8 @@ function tradeAirTicketBlock() {
     </div>
     <div class="review-card">
       <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.store} ${tradeFieldLabel('Flight info', '航班信息')}</span></div>
-      <div class="review-card-b">
-        <div class="field-grid">
+    <div class="review-card-b">
+      <div class="field-grid">
           <div class="field">
             <label>${tradeFieldLabel('Flight departure country', '航班出发地')} ${req}</label>
             <input value="China" readonly />
@@ -9057,9 +9069,9 @@ function tradeAccommodationBlock() {
             <label>${tradeFieldLabel('Product quantity', '产品数量')} ${req}</label>
             <input class="mono" value="1" readonly />
           </div>
-        </div>
       </div>
-    </div>`;
+    </div>
+  </div>`;
 }
 
 function renderTradeLogisticsAnchored() {
@@ -9206,12 +9218,12 @@ function tradeLogisticsBlock() {
             <input id="logistics-company-name" class="${companyInvalid?'invalid':''}" value="${w.logisticsCompany || ''}" oninput="if(state.wiz){state.wiz.logisticsCompany=this.value;state.wiz.logisticsCompanyAttempted=false}" />
             ${note('The logistics company name as shown on the shipping documents. Use the original language from those documents. Required when shipped.', '物流公司名称，请按运输单据上的原文填写。已发货时必填。')}
             ${companyInvalid?`<p class="field-error" style="display:block">${tradeFieldNote('Enter the logistics company name.', '请填写物流公司名称。')}</p>`:''}
-          </div>
+        </div>
           <div class="field">
             <label for="logistics-tracking-number">${tradeFieldLabel('Logistics tracking number', '物流追踪号')} ${req}</label>
             <input id="logistics-tracking-number" class="mono ${trackingInvalid?'invalid':''}" value="${w.logisticsTrackingNumber || ''}" oninput="if(state.wiz){state.wiz.logisticsTrackingNumber=this.value;state.wiz.logisticsTrackingAttempted=false}" />
             ${trackingInvalid?`<p class="field-error" style="display:block">${tradeFieldNote('Enter 1 tracking number, up to 6.', '请填写 1 个物流追踪号，最多 6 个。')}</p>`:''}
-          </div>
+              </div>
         </div>` : ''}
     </div>
   </div>`;
@@ -9469,7 +9481,7 @@ function stepTradeDynamic() {
           onDelete: 'deleteUploadedTradeFile()',
         })}
         ${uiAlertHTML({ tone:'info', content:'Preparing the document for automatic analysis…' })}
-      </div>`;
+    </div>`;
   } else if (w.uploadState === 'processing') {
     fileBlock = busyUploadBox('Analyzing document…', extractCopy);
   } else {
@@ -9485,7 +9497,7 @@ function stepTradeDynamic() {
       <section class="trade-stage">
         <div class="trade-stage-head">
           <span class="trade-stage-number">1</span>
-          <div><h3>${fromUploadV2?'Business type':'Choose the business type'}</h3><p>${fromUploadV2?'Selected in Upload V2.':'This helps us extract the correct transaction information.'}</p></div>
+          <div><h3>${fromUploadV2?'Business type':'Choose the transaction business type'}</h3>${fromUploadV2?'<p>Selected in Upload V2.</p>':''}</div>
         </div>
         ${tradeBusinessTypeField({ compact: true })}
       </section>
@@ -9531,7 +9543,7 @@ function viewWizardTrade() {
         : wizNavFooter("state.wiz.tradeStage=2;state.wiz.step=2;render()", 'Previous', 'attemptTradeSubmit()', 'Submit', true);
   return wizShell({
     title:'Upload trade documents',
-    sub:'Complete the document details, review the submission summary, and submit.',
+    sub:'',
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body:tradeBody,
     footer:tradeFooter
@@ -10057,10 +10069,10 @@ function viewTradeRecordDetails(ctx, backView, backLabel) {
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">${tradeFieldLabel('Order information', '订单信息')}</h3>
         ${detailsFieldGrid(tradeOrderReadRows(ctx))}
       </div>
-      <div class="card card-lg">
+        <div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">${tradeFieldLabel('Goods information', '货物信息')}</h3>
         ${detailsFieldGrid([[tradeFieldLabel('Product name', '产品中文名称'), goods.productName], [tradeFieldLabel('Product quantity', '产品数量'), goods.productQty]], 2)}
-      </div>
+          </div>
       <div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">${tradeFieldLabel('Logistics information', '物流信息')}</h3>
         ${detailsFieldGrid(logisticsRows, ctx.unshipped ? 2 : 3)}
@@ -10257,7 +10269,7 @@ function uploadV2OptionsIntro() {
     <ul class="support-list">
       <li>Trade documents, and the system will identify transaction information from the document</li>
       <li>Transaction records completed using our template (CSV format), please in advance <button type="button" class="inline-link" onclick="state.templateGuide=true;render()">download the template and complete it as required</button></li>
-      <li>Transaction records exported from your business system (CSV format), and the system matches column headers to the required details to identify the table contents</li>
+      <li>Transaction records exported from your business system (CSV format). The system will identify the details required for settlement from the file</li>
     </ul>
   </section>`;
 }
@@ -10275,7 +10287,7 @@ function uploadV2Body(w) {
     <div><h2 style="font-size:20px;font-weight:700">${marketplaceOnly?'Upload marketplace CSV':'Upload your document'}</h2></div>
     ${marketplaceOnly?'':uploadV2OptionsIntro()}
     <div class="template-upload-fields">${marketplaceOnly?'':`<div class="field"><label>What was this transaction for? <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.category?'':'placeholder'}" onchange="setUploadV2Category(this.value)"><option value="">Select a category</option>${wizardCategoryOptions(w).map(type=>`<option value="${type.key}" ${w.category===type.key?'selected':''}>${type.label}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div>${selected?`<p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">${selected.desc}</p>`:''}</div>`}
-    ${w.category==='marketplace'?`<div class="field"><label>Select the marketplace <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.marketplace?'':'placeholder'}" onchange="setUploadV2Marketplace(this.value)"><option value="">Select a marketplace</option>${MARKETPLACE_UPLOAD_OPTIONS.map(name=>`<option value="${name}" ${w.marketplace===name?'selected':''}>${name}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Choose the marketplace associated with these transaction records.</p></div>`:''}
+    ${w.category==='marketplace'?`<div class="field"><label>Marketplace these transaction records belong to <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.marketplace?'':'placeholder'}" onchange="setUploadV2Marketplace(this.value)"><option value="">Select a marketplace</option>${MARKETPLACE_UPLOAD_OPTIONS.map(name=>`<option value="${name}" ${w.marketplace===name?'selected':''}>${name}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div></div>`:''}
     ${uploadV2NeedsSellerId(w)?`<div class="field"><label>Seller ID <span style="color:var(--destructive)">*</span></label><input maxlength="100" value="${escapeHTML(w.sellerId)}" placeholder="Enter your ${w.marketplace} Seller ID" oninput="setUploadV2SellerId(this.value)" /><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Required to associate this upload with the correct store.</p></div>`:''}</div>
     ${uploadBoxBlock('Upload file', fileContent)}
   </div>`;

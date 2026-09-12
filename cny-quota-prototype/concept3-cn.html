@@ -1758,8 +1758,14 @@ table.data.req-v-table .detail-with-chip { flex-direction:column; align-items:fl
 .erp-none-option { color:#B54708; font-style:italic; font-weight:600; background:#FFF8EB; }
 .erp3-corrected-card { border:1px solid #FECDCA; border-radius:10px; overflow:hidden; background:#fff; }
 .erp3-corrected-card-h { padding:18px 20px; background:#FFF8F7; border-bottom:1px solid #FECDCA; }
-.erp3-corrected-card-h h3 { color:#B42318; font-size:16px; line-height:24px; }
+.erp3-corrected-card-h h3 { color:#B42318; font-size:16px; line-height:28px; }
 .erp3-corrected-card-h p { margin-top:4px; color:#7A271A; font-size:12px; line-height:18px; }
+.erp-missing-chip {
+  display:inline-flex; align-items:center; padding:1px 8px; margin:0 4px;
+  border:1px solid #FECDCA; border-radius:6px; background:#fff;
+  color:#B42318 !important; font-family:var(--font-sans) !important; font-size:12px !important; font-weight:600 !important;
+  line-height:20px !important; vertical-align:middle; white-space:nowrap;
+}
 .erp3-corrected-body { padding:20px; display:flex; flex-direction:column; gap:16px; }
 .erp-file-select-row { display:contents; }
 .map-sample {
@@ -1938,7 +1944,7 @@ table.data.req-v-table .detail-with-chip { flex-direction:column; align-items:fl
 }
 .erp2-missing-card { border:1px solid #FECDCA; border-radius:10px; overflow:hidden; background:#fff; }
 .erp2-missing-card-h { padding:18px 20px; background:#FFF8F7; border-bottom:1px solid #FECDCA; }
-.erp2-missing-card-h h3 { color:#B42318; font-size:16px; line-height:24px; }
+.erp2-missing-card-h h3 { color:#B42318; font-size:16px; line-height:28px; }
 .erp2-missing-card-h p { margin-top:4px; color:#7A271A; font-size:12px; line-height:18px; }
 .erp2-required-headers {
   display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;
@@ -2798,7 +2804,7 @@ function requiredDetailParts(field) {
 }
 function requiredDetailLabelHtml(field) {
   const parts = requiredDetailParts(field);
-  const chip = parts.when ? `<span class="chip chip-amber">${tradeFieldLabel('Conditional', '条件必填')}</span>` : '';
+  const chip = parts.when ? `<span class="chip chip-amber">${tradeFieldLabel('Conditional', '符合条件时必填')}</span>` : '';
   return `<div class="detail-with-chip"><span style="color:var(--primary);font-weight:600">${requiredDetailLabel(field)}</span>${chip}</div>`;
 }
 function requiredDetailDescriptionHtml(field, includeLanguage) {
@@ -2907,7 +2913,7 @@ function requiredDetailsVerticalTable(fields) {
   return `<div class="req-v-table-wrap"><table class="data req-v-table">
     <colgroup><col class="req-v-field"><col class="req-v-desc"><col class="req-v-example"></colgroup>
     <thead><tr>
-      <th>${tradeFieldLabel('Field name', '字段名称')}</th>
+      <th>${tradeFieldLabel('Field name', '信息')}</th>
       <th>${tradeFieldLabel('Description', '说明')}</th>
       <th>${tradeFieldLabel('Example', '示例')}</th>
     </tr></thead>
@@ -2984,13 +2990,24 @@ function erpRequiredLabel(name) {
   return cn || formatFieldLabel(name);
 }
 const CN_FILE_COLUMN_LABELS = {
-  sku_code:'SKU 代码', qty:'数量', price_per_unit:'单价', ccy:'币种', total:'总金额',
-  order_date:'订单日期', type:'类型', customer_name:'客户名称', invoice_currency:'发票币种',
-  payment_terms:'付款条件', ref_no:'参考号', memo:'备注', col_a:'列 A', flag:'标记', misc_note:'内部备注',
+  order_id:'订单号', supplier_name:'供应商名称', buyer_name:'买方名称',
+  sku:'产品 SKU', sku_code:'SKU 代码', quantity:'数量', qty:'数量',
+  unit_price:'单价', price_per_unit:'单价', currency:'币种', ccy:'币种',
+  total_amount:'总金额', total:'总金额', transaction_date:'交易日期', order_date:'订单日期',
+  trade_type:'贸易类型', type:'类型',
+  customer_name:'客户名称', invoice_currency:'发票币种', payment_terms:'付款条件',
+  ref_no:'参考号', memo:'备注', col_a:'列 A', flag:'标记', misc_note:'内部备注',
+  ref_code:'参考代码', vendor_label:'供应商标签', party_label:'交易方名称',
+  item_ref:'商品编号', units_raw:'数量', amt_raw:'金额', fx_unit:'币种',
+  sum_val:'总金额', dt_raw:'日期', cat_raw:'类别',
 };
 function fileColumnLabel(name) {
-  if (CN_FILE_COLUMN_LABELS[name]) return CN_FILE_COLUMN_LABELS[name];
-  return String(name || '');
+  const key = String(name || '');
+  if (!key) return '';
+  if (CN_FILE_COLUMN_LABELS[key]) return CN_FILE_COLUMN_LABELS[key];
+  const field = ERP_REQUIRED_FIELDS.find(item => item.name === key);
+  if (field && field.labelCN) return field.labelCN;
+  return key;
 }
 function formatChineseList(items) {
   const list = (items || []).filter(Boolean);
@@ -3016,6 +3033,48 @@ function formatEnglishList(items) {
 }
 function formatMissingFieldsList(names) {
   return formatChineseList((names || []).map(erpRequiredLabel));
+}
+function missingFieldChipHTML(name) {
+  return `<span class="erp-missing-chip">${erpRequiredLabel(name)}</span>`;
+}
+function joinMissingFieldChipsHTML(names) {
+  const chips = (names || []).map(missingFieldChipHTML);
+  if (!chips.length) return '';
+  const andJoin = usesChineseCopy() ? '和' : ' and ';
+  const listJoin = usesChineseCopy() ? '、' : ', ';
+  if (chips.length === 1) return chips[0];
+  if (chips.length === 2) return chips[0] + andJoin + chips[1];
+  return chips.slice(0, -1).join(listJoin) + andJoin + chips[chips.length - 1];
+}
+function fileMissingDetailsTitleHTML(names) {
+  const joined = joinMissingFieldChipsHTML(names);
+  return usesChineseCopy() ? `文件中缺少${joined}相关信息` : `The file is missing ${joined} details`;
+}
+function fileStillMissingDetailsTitleHTML(names) {
+  const joined = joinMissingFieldChipsHTML(names);
+  return usesChineseCopy() ? `文件仍缺少${joined}相关信息` : `The file is still missing ${joined} details`;
+}
+function addMissingColumnsReuploadCopy(count) {
+  return usesChineseCopy()
+    ? `请在原文件中，添加这${count}列信息，再重新上传补充完整的文件。`
+    : `Please add these ${count} columns to the original file, then re-upload the complete file.`;
+}
+function missingDetailsStillNotFoundTitle() {
+  return usesChineseCopy() ? '缺失信息在文件中仍未找到' : 'The missing details were still not found in the file';
+}
+function erpMissingFieldsReuploadCardHTML(missingNames, isProcessing) {
+  return `<div class="erp3-corrected-card">
+    <div class="erp3-corrected-card-h">
+      <h3>${fileMissingDetailsTitleHTML(missingNames)}</h3>
+      <p>${addMissingColumnsReuploadCopy(missingNames.length)}</p>
+    </div>
+    <div class="erp3-corrected-body">
+      ${isProcessing ? busyUploadBox('Analyzing the corrected file and reusing previous mappings…') : emptyUploadBox({
+        meta: 'CSV · Max 50 MB',
+        onClick: 'openERPCorrectedFilePicker()',
+      })}
+    </div>
+  </div>`;
 }
 const ERP_MAP_SOURCES = [
   { id:'s1', index:1, colName:'order_id', sample:'ERP-2026-001', ai:true },
@@ -3640,7 +3699,7 @@ function uploadV2StepsForRoute(route,w) {
   if (route === 'erp') {
     if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'File description'},{n:4,label:'Review'}];
     if (w && w.erpFlowVersion === 'v3') {
-      const steps = [{n:1,label:'Upload document'},{n:2,label:'Confirm info'}];
+      const steps = [{n:1,label:'Upload document'},{n:2,label:'Confirm the processing results'}];
       if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
       steps.push({n:steps.length + 1,label:'File description'});
       steps.push({n:steps.length + 1,label:'Review'});
@@ -3650,11 +3709,11 @@ function uploadV2StepsForRoute(route,w) {
     const hasUnrecognized = !!(w && (w.erp2HadUnrecognized || w.erp2ZeroMatchAlert));
     const needsReplacement = !!(stats && (stats.missing.length || (w && (w.erp2ReplacementState === 'done' || w.erp2ReplacementOutcome))));
     const steps = [{n:1,label:'Upload document'}];
-    if (!(w && w.erp2SkippedConfirm)) steps.push({n:steps.length + 1,label:'Confirm info'});
-    if (hasUnrecognized) steps.push({n:steps.length + 1,label:'Match remaining fields'});
+    if (!(w && w.erp2SkippedConfirm)) steps.push({n:steps.length + 1,label:'Confirm usable information'});
+    if (hasUnrecognized) steps.push({n:steps.length + 1,label:'Confirm missing information'});
     if (needsReplacement) steps.push({n:steps.length + 1,label:'Update and re-upload'});
     steps.push({n:steps.length + 1,label:'File description'});
-      steps.push({n:steps.length + 1,label:'Review'});
+    steps.push({n:steps.length + 1,label:'Review'});
     return steps;
   }
   return [{n:1,label:'Upload document'}];
@@ -3665,7 +3724,7 @@ function uploadV2ERPDisplayStep(w) {
   if (w && w.erpFlowVersion === 'v3') {
     const stage = w.erp3Stage || 1;
     if (stage <= 1) label = 'Upload document';
-    else if (stage === 2) label = 'Confirm info';
+    else if (stage === 2) label = 'Confirm the processing results';
     else if (stage === 3 && w.erp3NeedsReplacement) label = 'Update and re-upload';
     else if (stage === 4) label = 'File description';
     else label = 'Review';
@@ -3674,8 +3733,8 @@ function uploadV2ERPDisplayStep(w) {
   } else {
     const stage = (w && w.erp2Stage) || 1;
     if (stage <= 1) label = 'Upload document';
-    else if (stage === 2) label = 'Confirm info';
-    else if (stage === 3) label = 'Match remaining fields';
+    else if (stage === 2) label = 'Confirm usable information';
+    else if (stage === 3) label = 'Confirm missing information';
     else if (stage === 4) label = 'Update and re-upload';
     else if (stage === 5) label = 'File description';
     else label = 'Review';
@@ -3723,15 +3782,15 @@ function applyChildSampleFile(profileId) {
   w.fileName = sample.name;
   applySampleUseCaseState(w, sample);
   if (w.kind === 'template') {
-    w.templateIssueRows = null;
-    w.templateFixedRows = [];
-    w.templateEditingRow = null;
-    w.templateEditValue = '';
-    w.templateEditError = '';
-    w.templateTableEditing = false;
-    w.csvState = 'processing';
-    render();
-    setTimeout(() => { if (state.wiz !== w) return; w.csvState = 'mapped'; render(); }, 1800);
+      w.templateIssueRows = null;
+      w.templateFixedRows = [];
+      w.templateEditingRow = null;
+      w.templateEditValue = '';
+      w.templateEditError = '';
+      w.templateTableEditing = false;
+      w.csvState = 'processing';
+      render();
+      setTimeout(() => { if (state.wiz !== w) return; w.csvState = 'mapped'; render(); }, 1800);
     return;
   }
   if (w.kind === 'erp') {
@@ -5076,40 +5135,33 @@ function templateFillGuidePanel() {
       <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:24px">
         <section>
           <h4 style="font-size:14px;font-weight:600;margin:0 0 10px">Tips before you begin</h4>
-          <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px;font-size:13px;color:var(--muted-foreground);line-height:1.5">
-            <li>Check that your marketplace is in the list of supported marketplaces.</li>
-            <li>Download and save a copy of the template with a name that describes your store, for example <span class="mono">MyStore.csv</span>.</li>
+            <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px;font-size:13px;color:var(--muted-foreground);line-height:1.5">
+              <li>Check that your marketplace is in the list of supported marketplaces.</li>
+              <li>Download and save a copy of the template with a name that describes your store, for example <span class="mono">MyStore.csv</span>.</li>
             <li>Save the file in <span class="mono">.csv</span> format, keep it under 10 MB, and use English letters and digits in the file name.</li>
-            <li>Do not change or delete the column headers.</li>
-          </ul>
+              <li>Do not change or delete the column headers.</li>
+            </ul>
         </section>
 
         <section style="display:flex;flex-direction:column;gap:14px">
           <h4 style="font-size:14px;font-weight:600;margin:0">Download and complete the transaction information</h4>
-          ${uiAlertHTML({ tone:'info', content:'Complete one row for each item in an order. If the same item is sold at different prices, combine it into one row and use the average unit price.' })}
-          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
-            Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12.50.
-          </p>
+          ${uiAlertHTML({ tone:'info', content:'Complete one row for each item in an order. If the same item is sold at different prices, combine it into one row and use the average unit price.<br>Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12.50.' })}
+          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5;margin:0">Select a template based on your business type</p>
           ${requiredDetailsTabs({ showDownload: true })}
         </section>
-      </div>
-    </div>
+            </div>
+            </div>
   </div>`;
 }
 
 function marketplaceFillGuidePanel() {
   if (!state.marketplaceGuide) return '';
-  const marketplace = DOCUMENT_REQUIREMENT_TYPES.find(type => type.key === 'marketplace') || {
-    key: 'marketplace',
-    label: 'Marketplace',
-    desc: 'SHEIN.COM, TikTok Shop, Wayfair, and other marketplaces',
-  };
   return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.marketplaceGuide=false;render()}">
     <div class="drawer fill-guide">
       <div class="drawer-h">
         <h3>Download and complete the template</h3>
         <button type="button" onclick="state.marketplaceGuide=false;render()">${I.x}</button>
-      </div>
+          </div>
       <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:24px">
         <section>
           <h4 style="font-size:14px;font-weight:600;margin:0 0 10px">Tips before you begin</h4>
@@ -5122,15 +5174,11 @@ function marketplaceFillGuidePanel() {
         </section>
 
         <section style="display:flex;flex-direction:column;gap:14px">
-          <h4 style="font-size:14px;font-weight:600;margin:0">Download and complete the transaction information</h4>
-          ${uiAlertHTML({ tone:'info', content:'Complete one row for each item in an order. If the same item is sold at different prices, combine it into one row and use the average unit price.' })}
-          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
-            Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12.50.
-          </p>
           <div class="req-r2-panel-head">
-            <p class="req-r2-type-desc">${marketplace.desc}</p>
+            <h4 class="req-r2-type-name">Download and complete the transaction information</h4>
             <button type="button" class="btn-link req-r2-download" onclick="downloadRequirementTemplate('marketplace')">${I.download} Download template</button>
           </div>
+          ${uiAlertHTML({ tone:'info', content:'Complete one row for each item in an order. If the same item is sold at different prices, combine it into one row and use the average unit price.<br>Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12.50.' })}
           ${requiredDetailsVerticalTable(documentRequiredDetails('marketplace'))}
         </section>
       </div>
@@ -5289,11 +5337,11 @@ function goodsTradeRequirementsPanel() {
   if (!state.goodsRequirementsPanel) return '';
   const eligibleTags = [
     'Physical goods',
-    'Accommodation',
+    'Software',
+    'International logistics',
     'Advertisement',
     'Air tickets',
-    'International logistics',
-    'Software',
+    'Accommodation',
     'Tourism',
   ];
   return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.goodsRequirementsPanel=false;render()}">
@@ -5303,18 +5351,18 @@ function goodsTradeRequirementsPanel() {
         <button type="button" onclick="state.goodsRequirementsPanel=false;render()">${I.x}</button>
       </div>
       <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:24px">
-        <section>
+    <section>
           <p style="font-size:14px;font-weight:600;margin-bottom:12px">Eligible settlement transaction types</p>
           <div class="eligible-services">
             ${eligibleTags.map(label => `<span>${label}</span>`).join('')}
-          </div>
+        </div>
         </section>
         <section>
           <p style="font-size:14px;font-weight:600;margin-bottom:12px">Information your documents need to include</p>
           ${requiredDetailsTabs({ excludeKeys: ['marketplace'], tabKey: 'goodsRequirementsTab' })}
         </section>
-      </div>
-    </div>
+        </div>
+        </div>
   </div>`;
 }
 
@@ -5330,38 +5378,38 @@ function supportedMarketplacesPanel() {
         <div>
           <h3>Supported marketplaces</h3>
           <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;font-weight:400">Marketplace transactions that can increase your CNY quota</p>
-        </div>
+      </div>
         <button type="button" onclick="state.supportedMarketplacesPanel=false;render()">${I.x}</button>
       </div>
       <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:20px">
-        <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
-          We support transactions from these marketplaces to increase your quota.
-        </p>
-        <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-          <p style="font-size:14px;font-weight:600;margin-bottom:4px">Automatic quota increase</p>
-          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:14px">
-            Your quota increases automatically when you receive payments to these stores. You don’t need to upload documents or connect stores.
-          </p>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px 20px">
-            ${automaticMarketplaces.map(name => `<div style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--foreground)"><span style="color:var(--success)">${I.check}</span>${name}</div>`).join('')}
-          </div>
-        </div>
-        <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:#fff">
-          <p style="font-size:14px;font-weight:600;margin-bottom:6px">Upload documents required</p>
+    <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
+      We support transactions from these marketplaces to increase your quota.
+    </p>
+    <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
+      <p style="font-size:14px;font-weight:600;margin-bottom:4px">Automatic quota increase</p>
+      <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:14px">
+        Your quota increases automatically when you receive payments to these stores. You don’t need to upload documents or connect stores.
+      </p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px 20px">
+        ${automaticMarketplaces.map(name => `<div style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--foreground)"><span style="color:var(--success)">${I.check}</span>${name}</div>`).join('')}
+      </div>
+    </div>
+    <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:#fff">
+      <p style="font-size:14px;font-weight:600;margin-bottom:6px">Upload documents required</p>
           <div style="margin-bottom:16px">${uiAlertHTML({ tone:'info', content:'<strong>Amazon, Walmart, and Shopify:</strong> You can manually upload documents for these stores, but connecting them lets us automatically increase quota with your new payments.' })}</div>
-          <div style="display:flex;flex-direction:column;gap:12px">
-            ${Object.entries(MARKETPLACE_UPLOAD_GROUPS).map(([letter,names]) => `
-              <div style="display:grid;grid-template-columns:24px 1fr;gap:10px">
-                <strong style="font-size:13px;color:var(--primary)">${letter}</strong>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;font-size:13px;color:var(--foreground)">
-                  ${names.map(name => `<span>${name}</span>`).join('')}
-                </div>
-              </div>`).join('')}
+      <div style="display:flex;flex-direction:column;gap:12px">
+        ${Object.entries(MARKETPLACE_UPLOAD_GROUPS).map(([letter,names]) => `
+          <div style="display:grid;grid-template-columns:24px 1fr;gap:10px">
+            <strong style="font-size:13px;color:var(--primary)">${letter}</strong>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;font-size:13px;color:var(--foreground)">
+              ${names.map(name => `<span>${name}</span>`).join('')}
+            </div>
+          </div>`).join('')}
           </div>
         </div>
       </div>
-    </div>
-  </div>`;
+      </div>
+    </div>`;
 }
 
 function viewDocumentRequirements() {
@@ -5373,7 +5421,7 @@ function viewDocumentRequirements() {
       <div class="page-head">
         <button class="back-ico" onclick="go('home')" aria-label="Back to CNY quota management">${I.back}</button>
         <h1>Upload document requirements</h1>
-      </div>
+          </div>
       <div class="content">
         <section>
           <p style="font-size:14px;font-weight:600;margin-bottom:2px">Eligible settlement transaction types</p>
@@ -5385,20 +5433,20 @@ function viewDocumentRequirements() {
                 <button type="button" class="btn-link" onclick="state.supportedMarketplacesPanel=true;render()">
                   View supported marketplaces ${I.chevronR}
                 </button>
-              </div>
-            </div>
+        </div>
+      </div>
             <div class="eligible-type">
               <p class="eligible-type-label">Foreign trade</p>
               <div class="eligible-type-copy eligible-services">
                 <span>Physical goods</span>
-                <span>Accommodation</span>
+                <span>Software</span>
+                <span>International logistics</span>
                 <span>Advertisement</span>
                 <span>Air tickets</span>
-                <span>International logistics</span>
-                <span>Software</span>
+                <span>Accommodation</span>
                 <span>Tourism</span>
-              </div>
-            </div>
+      </div>
+    </div>
           </div>
         </section>
         <section>
@@ -6322,14 +6370,11 @@ function erpReplacementNewColumnsSection(w) {
     return `<div class="mapping-c2-success">${I.check}<div><strong>New columns mapped</strong><p>The corrected file replaced the previous upload. Existing mappings were reused, and the new columns were mapped.</p></div></div>
       ${table}`;
   }
-  const chips = `<div class="erp2-required-headers">${(unmapped.length ? unmapped : newHeaders).map(name=>`<span>${erpRequiredLabel(name)}</span>`).join('')}</div>`;
+  const remainingNames = unmapped.length ? unmapped : newHeaders;
   return `${uiAlertHTML({
         tone:'error',
-        title: cannotMatch ? 'These new columns still cannot be matched' : 'Unable to recognize the new columns',
-        content: cannotMatch
-          ? 'None of the new file columns can be matched to the required fields. Re-upload a file that uses recognizable headers.'
-          : 'The updated file includes the added columns, but we could not match them automatically. Choose a matching file column below. If none of the headers correspond to this field, re-upload a corrected file.',
-        extra: chips,
+        title: cannotMatch ? fileStillMissingDetailsTitleHTML(remainingNames) : missingDetailsStillNotFoundTitle(),
+        content: addMissingColumnsReuploadCopy(remainingNames.length),
         action:'Re-upload file',
         actionOnclick:'retryERPCorrectedUpload()',
       })}
@@ -6635,9 +6680,9 @@ function simulateErp(incomingFileName, outcome) {
   w.erpResultRows = null;
   w.erpTableEditing = false;
   if (!w.isReplacement) {
-    const scenarioFileName = getERPScenarioFileName(w.erpScenario);
-    w.fileName = typeof incomingFileName === 'string' && incomingFileName
-      ? incomingFileName
+  const scenarioFileName = getERPScenarioFileName(w.erpScenario);
+  w.fileName = typeof incomingFileName === 'string' && incomingFileName
+    ? incomingFileName
       : (w.erpFlowVersion !== 'v1' ? scenarioFileName.replace(/\.xlsx$/i,'.csv') : scenarioFileName);
   }
   w.dsState = 'processing'; render();
@@ -6707,19 +6752,19 @@ function simulateErp(incomingFileName, outcome) {
         w.erp2ReplacementState = 'done';
         w.erp2Stage = 4;
       } else {
-        w.erp2SupplementState = 'empty';
-        w.erp2SupplementFileName = null;
-        w.erp2SupplementError = false;
-        w.erp2SupplementedFields = [];
-        w.erp2SupplementSources = [];
-        w.erp2SupplementTargetNames = [];
-        w.erp2SupplementMaps = {};
-        w.erp2ReplacementState = 'empty';
-        w.erp2ReplacementFileName = null;
-        w.erp2PreviousFileName = null;
-        w.erp2ReusedMappings = 0;
-        w.erp2NewHeaders = [];
-        w.erp2NoneSelections = {};
+      w.erp2SupplementState = 'empty';
+      w.erp2SupplementFileName = null;
+      w.erp2SupplementError = false;
+      w.erp2SupplementedFields = [];
+      w.erp2SupplementSources = [];
+      w.erp2SupplementTargetNames = [];
+      w.erp2SupplementMaps = {};
+      w.erp2ReplacementState = 'empty';
+      w.erp2ReplacementFileName = null;
+      w.erp2PreviousFileName = null;
+      w.erp2ReusedMappings = 0;
+      w.erp2NewHeaders = [];
+      w.erp2NoneSelections = {};
         const zeroMatch = !(w.erp2IdentifiedTargetNames && w.erp2IdentifiedTargetNames.length);
         if (zeroMatch) {
           const stats = getERPMappingStats(w);
@@ -6741,9 +6786,9 @@ function simulateErp(incomingFileName, outcome) {
         w.erp3ReplacementState = 'done';
         w.erp3Stage = 3;
       } else {
-        w.erp3Stage = 2;
-        w.erp3NeedsReplacement = false;
-        w.erp3ReplacementState = 'empty';
+      w.erp3Stage = 2;
+      w.erp3NeedsReplacement = false;
+      w.erp3ReplacementState = 'empty';
       }
     }
     render();
@@ -6779,7 +6824,7 @@ function attemptERPNext() {
     toast('Select a matching column for each new field, or re-upload a file with recognizable headers.');
     render();
     requestAnimationFrame(() => {
-      const target = document.querySelector('.map-row.needs-selection, .erp2-missing-card');
+      const target = document.querySelector('.map-row.needs-selection, .erp3-corrected-card, .erp2-missing-card, .alert-error');
       if (target) target.scrollIntoView({ behavior:'smooth', block:'center' });
     });
     return;
@@ -6820,7 +6865,7 @@ function templateCategoryFields(w) {
     ${categoryField}
 
     ${w.category === 'marketplace' ? (w.uploadOriginVersion===2 ? `<div class="field"><label>Marketplace</label><div style="height:var(--control-height);display:flex;align-items:center;padding:0 12px;border:1px solid var(--border);border-radius:var(--control-radius);background:var(--muted);font-weight:500">${w.marketplace||'—'}</div></div>` : `<div class="field">
-      <label>Marketplace where the payment was received <span style="color:var(--destructive)">*</span></label>
+      <label>Marketplace these transaction records belong to <span style="color:var(--destructive)">*</span></label>
       <div class="business-type-select-wrap">
         <select class="business-type-select ${w.marketplace?'':'placeholder'} ${issues.includes('marketplace')?'invalid':''}" onchange="setTemplateMarketplace(this.value)">
           <option value="">Select a marketplace</option>
@@ -6828,7 +6873,6 @@ function templateCategoryFields(w) {
         </select>
         <span class="business-type-chevron" aria-hidden="true">${I.chevron}</span>
       </div>
-      <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Select the marketplace represented by the transaction rows in this file.</p>
       ${issues.includes('marketplace')?`<div class="field-error">${I.alert}<span>Select a marketplace before continuing.</span></div>`:''}
     </div>`) : ''}
 
@@ -6891,8 +6935,8 @@ function stepTemplateResult() {
 }
 function stepTemplateV2Review() {
   const w=state.wiz,category=(TEMPLATE_TYPES.find(type=>type.key===w.category)||{}).label||'—';
-  const details=[['File type','Template CSV'],['File name',w.fileName||'template_transactions.csv'],['File description',fileDescriptionValue(w)||'—'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[]),['Transaction total','USD 48,500.00']];
-  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} File information summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p${label==='File name'?' class="mono"':label==='Transaction total'?' class="money-value"':''}>${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
+  const details=[['File type','Template CSV'],['File name',w.fileName||'template_transactions.csv'],['File description',fileDescriptionValue(w)||'—'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[]),['Records detected', DS_TX_PREVIEW.length+' transaction records']];
+  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} File information summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p${label==='File name'?' class="mono"':''}>${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
 }
 
 function viewWizardTemplate() {
@@ -7122,11 +7166,11 @@ function mappingControlHTML(controlHTML, iconKind, iconLabel, extraHTML) {
   return `<div class="map-col-arrow"><span class="mapping-direction" aria-hidden="true">${I.mapArrow}</span></div>
     <div class="uploaded-choice">
       <div class="uploaded-choice-control">
-        ${controlHTML}
-        ${mappingStatusIconHTML(iconKind, iconLabel)}
-      </div>
-      ${extraHTML || ''}
-    </div>`;
+      ${controlHTML}
+      ${mappingStatusIconHTML(iconKind, iconLabel)}
+    </div>
+    ${extraHTML || ''}
+  </div>`;
 }
 function erp2StaticMapRow(source, w) {
   const target = (w.mappings && w.mappings[source.id]) || '';
@@ -7202,7 +7246,7 @@ function erpFileColumnOptions(targetName, sources, mappings, selectedSource) {
     const usedBy = targetsUsingSource(w, source.id, mappings).filter(name => name !== targetName);
     const selected = !!(selectedSource && selectedSource.id === source.id);
     const usedHint = usedBy.length ? ` · Used for ${usedBy.map(erpRequiredLabel).join(', ')}` : '';
-    return `<option value="${source.id}" ${selected?'selected':''}>${erpFileColumnCode(source)}${usedHint}</option>`;
+    return `<option value="${source.id}" ${selected?'selected':''}>${fileColumnLabel(erpFileColumnCode(source))}${usedHint}</option>`;
   }).join('');
 }
 function erpFieldHasManualAnswer(w, targetName) {
@@ -7380,9 +7424,17 @@ function erpUnmatchedDetailsIntro(count) {
   const plural = count !== 1;
   return `The other ${count} detail${plural?'s':''} ${plural?'are':'is'} required too, but we couldn't find ${plural?'them':'it'} in your file. Select the matching column for each one, or "None of the above" if your file doesn't have it.`;
 }
+function erpMissingInFileTableIntro(count) {
+  return `Another ${count} required settlement columns could not be found in your file. If the file contains related information, select the matching column headers.`;
+}
 function erpMatchedColumnsIntro(matchedCount, totalCount) {
   return `<div class="erp-match-intro">
-    <p>${matchedCount} columns in your file were identified as the required system details. The table below lists the matches. Please confirm and complete them.</p>
+    <p>${matchedCount} columns in your file can be used for settlement. The table below maps the required settlement details to these ${matchedCount} columns in your file. Please confirm each one.</p>
+  </div>`;
+}
+function erp3MatchedColumnsIntro(matchedCount, missingCount) {
+  return `<div class="erp-match-intro">
+    <p>${matchedCount} columns in your file can be used for settlement, and ${missingCount} required columns are missing. The table below maps every settlement detail to a column in your file. Please confirm each one.</p>
   </div>`;
 }
 function stepERP2Confirm(w) {
@@ -7395,7 +7447,7 @@ function stepERP2Confirm(w) {
     : 'Review the file, then match any columns you recognize in the next step.';
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
-      <h2>Check the columns we matched</h2>
+      <h2>Confirm the usable information in your file</h2>
     </div>
     ${erp2FileSummary(w, stats)}
     <div>
@@ -7443,13 +7495,14 @@ function stepERP2Unrecognized(w) {
   }
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
-      <h2>${zeroMatchAlert ? 'Match columns manually' : 'Do you have these details in your file?'}</h2>
-      <p>${zeroMatchAlert
-        ? 'No columns were matched automatically. Select the matching column for each required detail, or re-upload a corrected file.'
-        : erpUnmatchedDetailsIntro(resolutionNames.length)}</p>
+      <h2>${zeroMatchAlert ? 'Match columns manually' : 'Confirm the missing information in your file'}</h2>
+      ${zeroMatchAlert
+        ? `<p>No columns were matched automatically. Select the matching column for each required detail, or re-upload a corrected file.</p>`
+        : ''}
     </div>
     ${erp2FileSummary(w, stats)}
     ${zeroMatchAlert ? erpZeroMatchAlertHTML({ canMatch:true }) : ''}
+    ${zeroMatchAlert ? '' : `<div class="erp-match-intro"><p>${erpMissingInFileTableIntro(resolutionNames.length)}</p></div>`}
     ${erp2TargetMappingTable(resolutionNames, stats.sources, w.mappings, 'updateERP2TargetMapping', true)}
   </div>`;
 }
@@ -7488,31 +7541,19 @@ function stepERP2Missing(w) {
   }
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
-      <h2>Update and re-upload</h2>
+      <h2>Add the missing fields and re-upload</h2>
+      <p>These required fields are still missing. Fill in the new columns and upload the complete file.</p>
     </div>
     ${erp2FileSummary(w, stats)}
-    <div class="erp2-missing-card">
-      <div class="erp2-missing-card-h">
-        <h3>${missingNames.length === 1 ? 'This detail is missing:' : 'These details are missing:'}</h3>
-        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${erpRequiredLabel(name)}</span>`).join('')}</div>
-      </div>
-      <div class="erp2-supplement-body">
-        ${uiAlertHTML({ tone:'error', content:'To continue, add the missing column and complete the required information in your file, then upload the updated file again.' })}
-        ${w.erp2ReplacementState === 'processing' ? busyUploadBox('Analyzing the corrected file and reusing previous mappings…') : emptyUploadBox({
-            meta: 'CSV · Max 50 MB',
-            hint: `Include all original columns plus the ${formatMissingFieldsList(missingNames)} columns.`,
-            onClick: 'openERPCorrectedFilePicker()',
-          })}
-      </div>
-    </div>
+    ${erpMissingFieldsReuploadCardHTML(missingNames, w.erp2ReplacementState === 'processing')}
   </div>`;
 }
 
 function erp2Steps(w) {
   const stats = getERPMappingStats(w);
   const steps = [{n:1,label:'Upload CSV'}];
-  if (!w.erp2SkippedConfirm) steps.push({n:2,label:'Confirm info'});
-  if (w.erp2HadUnrecognized || w.erp2ZeroMatchAlert) steps.push({n:3,label:'Match remaining fields'});
+  if (!w.erp2SkippedConfirm) steps.push({n:2,label:'Confirm usable information'});
+  if (w.erp2HadUnrecognized || w.erp2ZeroMatchAlert) steps.push({n:3,label:'Confirm missing information'});
   if (stats.missing.length || w.erp2ReplacementState === 'done' || w.erp2ReplacementOutcome) steps.push({n:4,label:'Update and re-upload'});
   steps.push({n:5,label:'File description'});
   steps.push({n:6,label:'Review'});
@@ -7592,7 +7633,7 @@ function erp2Next() {
         : 'Update the file to include every missing required column, then upload it again.');
       render();
       requestAnimationFrame(() => {
-        const target = document.querySelector('.map-row.needs-selection, .erp2-missing-card');
+        const target = document.querySelector('.map-row.needs-selection, .erp3-corrected-card, .erp2-missing-card, .alert-error');
         if (target) target.scrollIntoView({ behavior:'smooth', block:'center' });
       });
       return;
@@ -7622,7 +7663,7 @@ function viewWizardERP2(w) {
       : stage === 3 ? (!zeroMatchBlocked && !erpMappingHasConflicts(stats))
         : stage === 4 ? stats.valid && erpReplacementFieldsComplete(w) && !getERP2SupplementStats(w).duplicateTargets.length
           : stage === 5 ? true
-            : stats.valid;
+          : stats.valid;
   const versionControl = stage === 1 ? erpVersionSelector() : '';
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('erp',w) : erp2Steps(w);
   const displayStep = w.uploadOriginVersion===2 ? uploadV2ERPDisplayStep(w) : stage;
@@ -7666,7 +7707,6 @@ function erp3StatusHint(status, attempted) {
 function erp3TargetMappingTable(w) {
   const stats = getERPMappingStats(w);
   const rows = getERP3FieldRows(w);
-  const mappedCount = rows.filter(row => row.source && row.status !== 'conflict').length;
   const availableSources = stats.sources.filter(source => !source.unmappable);
   return `<div class="map-table erp2-target-map erp3-map">
     ${mapTableHead()}
@@ -7698,8 +7738,7 @@ function erp3TargetMappingTable(w) {
         ${mapSampleCell(selectedSource ? selectedSource.sample : '')}
       </div>`;
     }).join('')}
-  </div>
-  <p style="font-size:12px;color:var(--muted-foreground);margin-top:10px">${mappedCount} of ${ERP_REQUIRED_FIELDS.length} required fields are mapped.</p>`;
+  </div>`;
 }
 function simulateERP3CorrectedUpload(outcome) {
   const w = state.wiz; if (!w || w.erpFlowVersion !== 'v3') { render(); return; }
@@ -7725,10 +7764,10 @@ function stepERP3Confirm(w) {
   const mappedCount = rows.filter(row => row.source && row.status !== 'conflict').length;
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
-      <h2>Check the columns we matched</h2>
+      <h2>Confirm the usable information in your file</h2>
     </div>
     ${erp2FileSummary(w, stats)}
-    ${erpMatchedColumnsIntro(mappedCount, ERP_REQUIRED_FIELDS.length)}
+    ${erp3MatchedColumnsIntro(mappedCount, Math.max(0, ERP_REQUIRED_FIELDS.length - mappedCount))}
     ${erp3TargetMappingTable(w)}
   </div>`;
 }
@@ -7753,25 +7792,12 @@ function stepERP3Missing(w) {
       <p>These required fields are still missing. Fill in the new columns and upload the complete file.</p>
     </div>
     ${erp2FileSummary(w, stats)}
-    <div class="erp3-corrected-card">
-      <div class="erp3-corrected-card-h">
-        <h3>Details about the ${formatMissingFieldsList(missingNames)} are missing</h3>
-        <p>All original headers have been renamed to the fields we need, and the missing headers have already been added. You only need to fill in the corresponding data.</p>
-        <div class="erp2-required-headers">${missingNames.map(name=>`<span>${erpRequiredLabel(name)}</span>`).join('')}</div>
-      </div>
-      <div class="erp3-corrected-body">
-        ${w.erp3ReplacementState === 'processing' ? busyUploadBox('Analyzing the corrected file and reusing previous mappings…') : emptyUploadBox({
-            meta: 'CSV · Max 50 MB',
-            hint: `Include every required header and the missing ${formatMissingFieldsList(missingNames)} data.`,
-            onClick: 'openERPCorrectedFilePicker()',
-          })}
-      </div>
-    </div>
+    ${erpMissingFieldsReuploadCardHTML(missingNames, w.erp3ReplacementState === 'processing')}
   </div>`;
 }
 
 function erp3Steps(w) {
-  const steps = [{n:1,label:'Upload CSV'},{n:2,label:'Confirm info'}];
+  const steps = [{n:1,label:'Upload CSV'},{n:2,label:'Confirm the processing results'}];
   if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
   steps.push({n:4,label:'File description'});
   steps.push({n:5,label:'Review'});
@@ -7864,7 +7890,7 @@ function viewWizardERP3(w) {
     : stage === 2 ? !erpMappingHasConflicts(stats)
       : stage === 3 ? stats.valid && erpReplacementFieldsComplete(w)
         : stage === 4 ? true
-          : stats.valid;
+        : stats.valid;
   const versionControl = stage === 1 ? erpVersionSelector() : '';
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('erp',w) : erp3Steps(w);
   const displayStep = w.uploadOriginVersion===2 ? uploadV2ERPDisplayStep(w) : (stage <= 2 ? stage : (w.erp3NeedsReplacement ? stage : stage - 1));
@@ -8104,7 +8130,7 @@ function stepERPReview() {
     <div class="review-card">
       <div class="review-card-h">${I.file} File information summary</div>
       <div class="review-card-b"><div class="kv-grid">
-        ${[['File type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['File name',erpDisplayedFileName(w)||(isERP2?'erp_export.csv':'erp_export.xlsx')],['File description',fileDescriptionValue(w)||'—'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['Upload date','2026-07-20'],['Records detected', DS_TX_PREVIEW.length+' transaction records'],['Transaction total','USD 48,500.00']].map(([k,v])=>`<div><label>${k}</label><p${k==='File name'?' class="mono"':k==='Transaction total'?' class="money-value"':''}>${escapeHTML(v)}</p></div>`).join('')}
+        ${[['File type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['File name',erpDisplayedFileName(w)||(isERP2?'erp_export.csv':'erp_export.xlsx')],['File description',fileDescriptionValue(w)||'—'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['Upload date','2026-07-20'],['Records detected', DS_TX_PREVIEW.length+' transaction records']].map(([k,v])=>`<div><label>${k}</label><p${k==='File name'?' class="mono"':''}>${escapeHTML(v)}</p></div>`).join('')}
       </div></div>
     </div>
     ${paymentLinkingActive?`<div class="review-card">
@@ -8174,8 +8200,8 @@ function viewWizardERP() {
     ? `submitWizard()`
     : w.step===5
       ? `attemptERPDescriptionNext()`
-      : w.step===2
-        ? `attemptERPNext()`
+    : w.step===2
+      ? `attemptERPNext()`
         : `state.wiz.step=5;render()`;
   const nextLabel = w.step===4 ? 'Submit' : 'Next';
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('erp',w) : steps;
@@ -8262,7 +8288,7 @@ function tradeBusinessTypeField(opts) {
   const compact = !!(opts && opts.compact);
   if (w.uploadOriginVersion === 2) {
     return `<div class="field" style="width:100%">
-      <label style="font-size:14px;font-weight:600;color:var(--foreground);margin-bottom:8px">Business type</label>
+      ${compact ? '' : `<label style="font-size:14px;font-weight:600;color:var(--foreground);margin-bottom:8px">Business type</label>`}
       <div style="height:var(--control-height);display:flex;align-items:center;padding:0 12px;border:1px solid var(--border);border-radius:var(--control-radius);background:var(--muted);font-weight:500">${selected?selected.label:'—'}</div>
       <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin-top:8px">${compact ? 'Return to Upload V2 to change the category.' : 'Selected in Upload V2. Return to Upload V2 to change the category.'}</p>
     </div>`;
@@ -8270,16 +8296,16 @@ function tradeBusinessTypeField(opts) {
   const emptyHint = compact ? '' : 'Choose the category that best describes the transaction in your document.';
   const hint = selected ? selected.desc : emptyHint;
   return `<div class="field" style="width:100%">
-    <label style="font-size:14px;font-weight:600;color:var(--foreground);margin-bottom:8px">
-      Select your business type <span style="color:var(--destructive)">*</span>
-    </label>
-    <div class="business-type-select-wrap">
-      <select class="business-type-select ${w.source?'':'placeholder'}" aria-label="Select your business type" onchange="setTradeSource(this.value)">
-        <option value="">Select a business type</option>
-        ${TRADE_SOURCES.map(type => `<option value="${type.key}" ${w.source===type.key?'selected':''}>${type.label}</option>`).join('')}
-      </select>
-      <span class="business-type-chevron" aria-hidden="true">${I.chevron}</span>
-    </div>
+    ${compact ? '' : `<label style="font-size:14px;font-weight:600;color:var(--foreground);margin-bottom:8px">
+        Select your business type <span style="color:var(--destructive)">*</span>
+    </label>`}
+      <div class="business-type-select-wrap">
+        <select class="business-type-select ${w.source?'':'placeholder'}" aria-label="Select your business type" onchange="setTradeSource(this.value)">
+          <option value="">Select a business type</option>
+          ${TRADE_SOURCES.map(type => `<option value="${type.key}" ${w.source===type.key?'selected':''}>${type.label}</option>`).join('')}
+        </select>
+        <span class="business-type-chevron" aria-hidden="true">${I.chevron}</span>
+      </div>
     ${hint ? `<p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin-top:8px">${hint}</p>` : ''}
   </div>`;
 }
@@ -8365,10 +8391,8 @@ function setTradeOcrField(key, value) {
     wrap.classList.toggle('trade-ocr-miss', empty);
     const control = wrap.querySelector('input, select');
     if (control) control.classList.toggle('invalid', !!(empty && w.tradeOcrAttempted));
-    const chip = wrap.querySelector('.trade-ocr-chip');
     const hint = wrap.querySelector('.trade-ocr-hint');
     const note = wrap.querySelector('.trade-ocr-note');
-    if (chip) chip.hidden = !empty;
     if (hint) hint.hidden = !empty;
     if (note) note.hidden = empty;
   }
@@ -8384,7 +8408,6 @@ function tradeOcrFieldHTML(opts) {
   const req = opts.required === false ? '' : '<span style="color:var(--destructive)">*</span>';
   const extraClass = opts.extraClass || '';
   const invalidClass = empty && attempted ? 'invalid' : '';
-  const chip = `<span class="chip chip-amber trade-ocr-chip"${empty?'':' hidden'}>${tradeFieldLabel('Unrecognized', '无法识别')}</span>`;
   const hint = `<p class="trade-ocr-hint"${empty?'':' hidden'}>${tradeFieldNote('We couldn’t read this from your document. Please fill it in.', '系统未能从单据中识别此字段，请手动填写。')}</p>`;
   const note = opts.note ? `<div class="trade-ocr-note"${empty?' hidden':''}>${opts.note}</div>` : '';
   const control = opts.options
@@ -8394,7 +8417,7 @@ function tradeOcrFieldHTML(opts) {
       </select>`
     : `<input id="trade-ocr-input-${key}" class="${extraClass} ${invalidClass}" type="${opts.type || 'text'}" value="${escapeHTML(value)}" placeholder="${escapeHTML(opts.placeholder || '')}" oninput="setTradeOcrField('${key}',this.value)" />`;
   return `<div class="field${opts.full?' full':''}${empty?' trade-ocr-miss':''}" id="trade-ocr-${key}">
-    <label>${opts.label} ${req} ${chip}</label>
+    <label>${opts.label} ${req}</label>
     ${control}
     ${hint}
     ${note}
@@ -8404,8 +8427,8 @@ function tradeOcrAlertHTML() {
   const missing = tradeOcrIncomplete(state.wiz || {});
   return `<div id="trade-ocr-alert"${missing.length?'':' style="display:none"'}>${uiAlertHTML({
     tone:'warning',
-    title: tradeFieldLabel('Some fields could not be recognized', '部分字段无法识别'),
-    content: tradeFieldNote('We prefilled the details we could read. Please fill in the highlighted fields before continuing.', '系统已根据单据预填可识别信息。请先填写高亮标注的字段后再继续。'),
+    title: tradeFieldLabel('Complete the following transaction details', '完善以下交易信息'),
+    content: tradeFieldNote('We prefilled some details from your document. Please confirm them.', '系统已根据单据预填部分信息，请确认。'),
   })}</div>`;
 }
 function ensureTradeOcrFilled() {
@@ -8535,7 +8558,7 @@ function tradeServiceDetailsBlock() {
         <div class="field"><label>Service amount</label><input value="USD 48,500.00" readonly /></div>
       </div>
     </div>
-  </div>`;
+    </div>`;
 }
 
 function tradeAdvertisementBlock() {
@@ -8551,7 +8574,7 @@ function tradeAdvertisementBlock() {
           <div class="field">
             <label>Business subcategory/transaction mode ${req}</label>
             <select disabled><option>B2C</option><option>D2C</option><option selected>B2B</option></select>
-          </div>
+              </div>
           <div class="field">
             <label>Trade type ${req}</label>
             <input value="Advertisement" readonly />
@@ -8642,9 +8665,9 @@ function tradeAdvertisementBlock() {
             <input value="张伟" readonly />
             ${tradeFieldNoteHtml('The Chinese name of the domestic cardholder who received the funds. Enter this in Chinese.', '境内持卡收款人的中文姓名，请用中文填写。')}
           </div>
-        </div>
-      </div>
-    </div>`;
+            </div>
+          </div>
+        </div>`;
 }
 
 function tradeTourismBlock() {
@@ -8777,7 +8800,7 @@ function tradeSoftwareBlock() {
             <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
             <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
             ${note('Select the transaction mode, for example B2C, D2C, or B2B.', '选择交易方式，例如 B2C、D2C 或 B2B。')}
-          </div>
+    </div>
           <div class="field">
             <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
             <input value="Software" readonly />
@@ -8867,8 +8890,8 @@ function tradeSoftwareBlock() {
             note: note('The developer or publisher name as shown on the app store or software listing.', '应用商店或软件列表上显示的开发者或发行方名称。'),
           })}
         </div>
-      </div>
-    </div>`;
+    </div>
+  </div>`;
 }
 
 function tradeAirTicketBlock() {
@@ -8884,7 +8907,7 @@ function tradeAirTicketBlock() {
             <label>${tradeFieldLabel('Business category', '贸易类型大类')} ${req}</label>
             <select disabled><option>Goods</option><option selected>Service</option></select>
             ${note('Select Goods or Service.', '选择货物或服务。')}
-          </div>
+    </div>
           <div class="field">
             <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
             <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
@@ -8935,8 +8958,8 @@ function tradeAirTicketBlock() {
     </div>
     <div class="review-card">
       <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.store} ${tradeFieldLabel('Flight info', '航班信息')}</span></div>
-      <div class="review-card-b">
-        <div class="field-grid">
+    <div class="review-card-b">
+      <div class="field-grid">
           <div class="field">
             <label>${tradeFieldLabel('Flight departure country', '航班出发地')} ${req}</label>
             <input value="China" readonly />
@@ -9103,9 +9126,9 @@ function tradeAccommodationBlock() {
             <label>${tradeFieldLabel('Product quantity', '产品数量')} ${req}</label>
             <input class="mono" value="1" readonly />
           </div>
-        </div>
       </div>
-    </div>`;
+    </div>
+  </div>`;
 }
 
 function renderTradeLogisticsAnchored() {
@@ -9252,12 +9275,12 @@ function tradeLogisticsBlock() {
             <input id="logistics-company-name" class="${companyInvalid?'invalid':''}" value="${w.logisticsCompany || ''}" oninput="if(state.wiz){state.wiz.logisticsCompany=this.value;state.wiz.logisticsCompanyAttempted=false}" />
             ${note('The logistics company name as shown on the shipping documents. Use the original language from those documents. Required when shipped.', '物流公司名称，请按运输单据上的原文填写。已发货时必填。')}
             ${companyInvalid?`<p class="field-error" style="display:block">${tradeFieldNote('Enter the logistics company name.', '请填写物流公司名称。')}</p>`:''}
-          </div>
+        </div>
           <div class="field">
             <label for="logistics-tracking-number">${tradeFieldLabel('Logistics tracking number', '物流追踪号')} ${req}</label>
             <input id="logistics-tracking-number" class="mono ${trackingInvalid?'invalid':''}" value="${w.logisticsTrackingNumber || ''}" oninput="if(state.wiz){state.wiz.logisticsTrackingNumber=this.value;state.wiz.logisticsTrackingAttempted=false}" />
             ${trackingInvalid?`<p class="field-error" style="display:block">${tradeFieldNote('Enter 1 tracking number, up to 6.', '请填写 1 个物流追踪号，最多 6 个。')}</p>`:''}
-          </div>
+              </div>
         </div>` : ''}
     </div>
   </div>`;
@@ -9515,7 +9538,7 @@ function stepTradeDynamic() {
           onDelete: 'deleteUploadedTradeFile()',
         })}
         ${uiAlertHTML({ tone:'info', content:'Preparing the document for automatic analysis…' })}
-      </div>`;
+    </div>`;
   } else if (w.uploadState === 'processing') {
     fileBlock = busyUploadBox('Analyzing document…', extractCopy);
   } else {
@@ -9531,7 +9554,7 @@ function stepTradeDynamic() {
       <section class="trade-stage">
         <div class="trade-stage-head">
           <span class="trade-stage-number">1</span>
-          <div><h3>${fromUploadV2?'Business type':'Choose the business type'}</h3><p>${fromUploadV2?'Selected in Upload V2.':'This helps us extract the correct transaction information.'}</p></div>
+          <div><h3>${fromUploadV2?'Business type':'Choose the transaction business type'}</h3>${fromUploadV2?'<p>Selected in Upload V2.</p>':''}</div>
         </div>
         ${tradeBusinessTypeField({ compact: true })}
       </section>
@@ -9577,7 +9600,7 @@ function viewWizardTrade() {
         : wizNavFooter("state.wiz.tradeStage=2;state.wiz.step=2;render()", 'Previous', 'attemptTradeSubmit()', 'Submit', true);
   return wizShell({
     title:'Upload trade documents',
-    sub:'Complete the document details, review the submission summary, and submit.',
+    sub:'',
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body:tradeBody,
     footer:tradeFooter
@@ -10102,10 +10125,10 @@ function viewTradeRecordDetails(ctx, backView, backLabel) {
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">${tradeFieldLabel('Order information', '订单信息')}</h3>
         ${detailsFieldGrid(tradeOrderReadRows(ctx))}
       </div>
-      <div class="card card-lg">
+        <div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">${tradeFieldLabel('Goods information', '货物信息')}</h3>
         ${detailsFieldGrid([[tradeFieldLabel('Product name', '产品中文名称'), goods.productName], [tradeFieldLabel('Product quantity', '产品数量'), goods.productQty]], 2)}
-      </div>
+          </div>
       <div class="card card-lg">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:16px">${tradeFieldLabel('Logistics information', '物流信息')}</h3>
         ${detailsFieldGrid(logisticsRows, ctx.unshipped ? 2 : 3)}
@@ -10302,7 +10325,7 @@ function uploadV2OptionsIntro() {
     <ul class="support-list">
       <li>Trade documents, and the system will identify transaction information from the document</li>
       <li>Transaction records completed using our template (CSV format), please in advance <button type="button" class="inline-link" onclick="state.templateGuide=true;render()">download the template and complete it as required</button></li>
-      <li>Transaction records exported from your business system (CSV format), and the system matches column headers to the required details to identify the table contents</li>
+      <li>Transaction records exported from your business system (CSV format). The system will identify the details required for settlement from the file</li>
     </ul>
   </section>`;
 }
@@ -10320,7 +10343,7 @@ function uploadV2Body(w) {
     <div><h2 style="font-size:20px;font-weight:700">${marketplaceOnly?'Upload marketplace CSV':'Upload your document'}</h2></div>
     ${marketplaceOnly?'':uploadV2OptionsIntro()}
     <div class="template-upload-fields">${marketplaceOnly?'':`<div class="field"><label>What was this transaction for? <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.category?'':'placeholder'}" onchange="setUploadV2Category(this.value)"><option value="">Select a category</option>${wizardCategoryOptions(w).map(type=>`<option value="${type.key}" ${w.category===type.key?'selected':''}>${type.label}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div>${selected?`<p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">${selected.desc}</p>`:''}</div>`}
-    ${w.category==='marketplace'?`<div class="field"><label>Select the marketplace <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.marketplace?'':'placeholder'}" onchange="setUploadV2Marketplace(this.value)"><option value="">Select a marketplace</option>${MARKETPLACE_UPLOAD_OPTIONS.map(name=>`<option value="${name}" ${w.marketplace===name?'selected':''}>${name}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Choose the marketplace associated with these transaction records.</p></div>`:''}
+    ${w.category==='marketplace'?`<div class="field"><label>Marketplace these transaction records belong to <span style="color:var(--destructive)">*</span></label><div class="business-type-select-wrap"><select class="business-type-select ${w.marketplace?'':'placeholder'}" onchange="setUploadV2Marketplace(this.value)"><option value="">Select a marketplace</option>${MARKETPLACE_UPLOAD_OPTIONS.map(name=>`<option value="${name}" ${w.marketplace===name?'selected':''}>${name}</option>`).join('')}</select><span class="business-type-chevron" aria-hidden="true">${I.chevron}</span></div></div>`:''}
     ${uploadV2NeedsSellerId(w)?`<div class="field"><label>Seller ID <span style="color:var(--destructive)">*</span></label><input maxlength="100" value="${escapeHTML(w.sellerId)}" placeholder="Enter your ${w.marketplace} Seller ID" oninput="setUploadV2SellerId(this.value)" /><p style="font-size:12px;color:var(--muted-foreground);line-height:1.45">Required to associate this upload with the correct store.</p></div>`:''}</div>
     ${uploadBoxBlock('Upload file', fileContent)}
   </div>`;
@@ -10620,7 +10643,7 @@ const CN_UI_REPLACEMENTS = [
   [/Back to template download/g, '返回模板下载'],
   [/Simulates different ERP header-matching results\./g, '模拟不同的 ERP 表头识别结果。'],
   [/Upload transaction documents, and we’ll increase your quota based on the transaction amounts\./g, '上传交易材料，额度将按交易金额提高。'],
-  [/Back to CNY quota management/g, '返回人民币结汇额度管理'], [/Return to CNY quota management/g, '返回人民币结汇额度管理'], [/CNY quota management/g, '人民币结汇额度管理'], [/Increase CNY settlement quota/g, '提升结汇额度'], [/Your quota is calculated from all submitted transaction details\. Choose how you will submit transaction information based on the payment source\. If you have more than one source, you can submit each separately\./g, '额度根据提交的所有交易信息计算。请根据收款来源，选择您将提交交易信息的方式。有多种来源时，可分别提交。'],
+  [/Back to CNY quota management/g, '返回人民币结汇额度管理'], [/Return to CNY quota management/g, '返回人民币结汇额度管理'], [/CNY quota management/g, '人民币结汇额度管理'], [/Increase CNY settlement quota/g, '提升结汇额度'], [/Your quota is calculated from all submitted transaction details\. Choose how you will submit transaction information based on the payment source\. If you have more than one source, you can submit each separately\./g, '额度根据所有交易信息计算。请根据交易来源，选择您提供交易信息的方式。有多种来源时，可分别提交。'],
   [/Review and submit/g, '确认信息'],
   [/SHEIN\.COM, TikTok Shop, Wayfair, and other marketplaces/g, 'SHEIN.COM、TikTok Shop、Wayfair 等电商平台'],
   [/Physical products, including retail, wholesale, and drop shipping/g, '实体商品，包括零售、批发和代发货'],
@@ -10644,30 +10667,34 @@ const CN_UI_REPLACEMENTS = [
   [/Review the file, then match any columns you recognize in the next step\./g, '请先查看文件，然后在下一步匹配可识别的列。'],
   [/Full match/g, '完全匹配'], [/Partial match/g, '部分匹配'], [/No match/g, '无匹配'],
   [/PDF document/g, 'PDF 单据'], [/standard template/g, '标准模板'], [/ERP transaction export/g, 'ERP 交易导出文件'], [/Select a category to enable upload\./g, '选择类别后即可上传。'], [/Select a category before uploading\./g, '请先选择类别再上传。'],
-  [/Select the marketplace/g, '选择电商平台'], [/Choose the marketplace associated with these transaction records\./g, '请选择这些交易记录所属的电商平台。'], [/Complete the category details to enable upload\./g, '请先补充类别相关信息，再上传文件。'],
+  [/Select the marketplace/g, '选择电商平台'], [/Complete the category details to enable upload\./g, '请先补充类别相关信息，再上传文件。'],
   [/Select a marketplace before uploading\./g, '请先选择电商平台再上传。'], [/Enter the Seller ID for (.+) before uploading\./g, '请先填写 $1 的卖家 ID 再上传。'], [/Required to associate this upload with the correct store\./g, '用于将本次上传绑定到正确店铺。'],
-  [/Select the transaction category/g, '选择业务类型'], [/Select the business type/g, '选择业务类型'], [/What was this transaction for\?/g, '收款来源'], [/Choose the category that best describes the records or document you will upload\./g, '请选择最符合待上传记录或单据的类别。'], [/The selected category determines which processing and validation flow is used\./g, ''],
+  [/Select the transaction category/g, '选择业务类型'], [/Select the business type/g, '选择业务类型'], [/What was this transaction for\?/g, '业务类型'], [/Choose the category that best describes the records or document you will upload\./g, '请选择最符合待上传记录或单据的类别。'], [/The selected category determines which processing and validation flow is used\./g, ''],
   [/Select category/g, '选择类别'], [/Select a category, upload a file, and continue with the matching processing flow\./g, '选择类别并上传文件后，进入对应的处理流程。'],
   [/Transaction category/g, '交易类别'], [/Selected in Upload V2\. Return to Upload V2 to change the category\./g, '已在 Upload V2 中选择。如需更改类别，请返回 Upload V2。'], [/Return to Upload V2 to change the category\./g, '如需更改类别，请返回 Upload V2。'], [/Selected in Upload V2\./g, '已在 Upload V2 中选择。'],
   [/Back to Upload V2/g, '返回 Upload V2'], [/Back to upload options/g, '返回上传选项'],
   [/Complete upload details/g, '补充上传信息'], [/Review the selected category and complete any required marketplace information\./g, '请确认所选类别，并补充所需的电商平台信息。'],
   [/Review Upload V2 details/g, '查看 Upload V2 信息'], [/The category and marketplace association were completed before upload\./g, '交易类别及电商平台信息已在上传前完成。'],
   [/Confirm the uploaded CSV information, then submit\./g, '提交前，请确认单据信息。'], [/Confirm the details of your document before submitting\./g, '提交前，请确认单据信息。'],
-  [/Upload your document/g, '上传交易材料'], [/You may upload:/g, '您可上传：'], [/Trade documents, and the system will identify transaction information from the document/g, '贸易单据，系统将从单据中识别交易信息'], [/Transaction records completed using our template \(CSV format\), please in advance /g, '使用模板填写的交易记录（CSV格式），请提前'], [/download the template and complete it as required/g, '下载模板并按要求填写'], [/Transaction records exported from your business system \(CSV format\), and the system matches column headers to the required details to identify the table contents/g, '从业务系统导出的交易记录（CSV格式），系统会将列标题和所需信息对应来识别表格内容'], [/Upload transaction document/g, '上传交易单据'],
+  [/Upload your document/g, '上传交易材料'], [/You may upload:/g, '您可上传：'], [/Trade documents, and the system will identify transaction information from the document/g, '贸易单据，系统将从单据中识别交易信息'], [/Transaction records completed using our template \(CSV format\), please in advance /g, '使用模板填写的交易记录（CSV格式），请提前'], [/download the template and complete it as required/g, '下载模板并按要求填写'], [/Transaction records exported from your business system \(CSV format\)\. The system will identify the details required for settlement from the file/g, '从业务系统导出的交易记录（CSV格式），系统将从文件中识别结汇所需信息'], [/Upload transaction document/g, '上传交易单据'],
   [/Complete trade info/g, '完善贸易信息'], [/Complete the trade info below/g, '完善下方贸易信息'], [/Confirm the following details we prefilled based on your document\./g, '确认以下根据单据预填的信息。'],
+  [/Complete the following transaction details/g, '完善以下交易信息'],
+  [/We prefilled some details from your document\. Please confirm them\./g, '系统已根据单据预填部分信息，请确认。'],
   [/Some fields could not be recognized/g, '部分字段无法识别'],
   [/We prefilled the details we could read\. Please fill in the highlighted fields before continuing\./g, '系统已根据单据预填可识别信息。请先填写高亮标注的字段后再继续。'],
   [/We couldn’t read this from your document\. Please fill it in\./g, '系统未能从单据中识别此字段，请手动填写。'],
   [/Select buyer type/g, '请选择买家类型'], [/Select an option/g, '请选择'],
   [/Unrecognized(?=<)/g, '无法识别'],
-  [/Check the columns we matched/g, '核对已匹配的列'], [/Confirm the processing results/g, '确认处理结果'],
+  [/Confirm the usable information in your file/g, '确认文件中的可用信息'], [/Check the columns we matched/g, '核对已匹配的列'], [/Confirm the processing results/g, '确认处理结果'], [/Confirm usable information/g, '确认可用信息'], [/Confirm missing information/g, '确认缺失信息'], [/Confirm the missing information in your file/g, '确认文件中的缺失信息'],
   [/What we did/g, '我们已完成'], [/What you need to do/g, '您需要做的'],
+  [/(\d+) columns in your file can be used for settlement, and (\d+) required columns are missing\. The table below maps every settlement detail to a column in your file\. Please confirm each one\./g, '您文件中的 $1 列信息可用于结汇，另有 $2 列信息缺失。以下表格中，所有结汇所需信息已对应到您文件中的具体列，请逐一确认。'],
+  [/(\d+) columns in your file can be used for settlement\. The table below maps the required settlement details to these \1 columns in your file\. Please confirm each one\./g, '您文件中的 $1 列信息可用于结汇。以下表格中，结汇所需信息已对应到您文件中的这 $1 列，请逐一确认。'],
   [/(\d+) columns in your file were identified as the required system details\. The table below lists the matches\. Please confirm and complete them\./g, '您文件中的 $1 列信息已被识别为系统所需信息，如下表格中列出了对应关系，请确认并完善。'],
   [/To declare your transactions for CNY settlement, we need specific details from your file\. Column names vary between business systems, so we matched yours to the required details — (\d+) of the (\d+) are matched\./g, '为进行人民币结汇申报，我们需要从文件中获取指定信息。各业务系统的列名可能不同，因此我们已将您的列与所需信息匹配 — 目前 $2 项中已匹配 $1 项。'],
   [/Review the matches below\. If a detail is matched to the wrong column, select the correct column from your file\./g, '请核对下方匹配结果。如某项信息对应到了错误的列，请从文件中选择正确的列。'],
   [/We identified (\d+) columns as what we require\. Modify the result if needed\./g, '已识别 $1 个所需字段，可按需修改。'],
   [/Unmapped column(?!s)/g, '未匹配列'], [/^Sample$/g, '示例'],
-  [/Fields we need/g, '所需字段'], [/Field we need/g, '所需字段'], [/System required column/g, '系统所需列'], [/Column required/g, '所需列'], [/Column in the uploaded file/g, '上传文件中的列'], [/Column in your file/g, '文件中的列'], [/Sample value in the uploaded file/g, '上传文件中的示例值'], [/Sample value in your file/g, '文件中的示例值'], [/Still required — (\d+) left/g, '仍需补充 — 还剩 $1 个'],
+  [/Fields we need/g, '所需字段'], [/Field we need/g, '所需字段'], [/System required column/g, '结汇所需信息'], [/Column required/g, '所需列'], [/Column in the uploaded file/g, '上传文件中的列标题'], [/Column in your file/g, '文件中的列'], [/Sample value in the uploaded file/g, '上传文件中的示例值'], [/Sample value in your file/g, '文件中的示例值'], [/Still required — (\d+) left/g, '仍需补充 — 还剩 $1 个'],
   [/Info we ask for/g, '所需信息'], [/What we find in your document/g, '单据中已识别的信息'],
   [/Match the columns in your file to the fields we need\./g, '请将文件中的列与所需字段对应。'],
   [/Confirm processing results, manually verify available columns, and complete any remaining required fields\./g, '确认处理结果，手动核对可用字段，并补充剩余必填信息。'],
@@ -10713,7 +10740,7 @@ const CN_UI_REPLACEMENTS = [
   [/available for manual matching\./g, '可供手动选择。'],
   [/There aren’t enough candidates to resolve every missing field manually\./g, '可选项不足，无法在页面上处理全部缺失字段。'],
   [/Your file is missing this required column:/g, '文件缺少以下必填列：'], [/Your file is missing these \d+ required columns:/g, '文件缺少以下必填列：'], [/to the file, then upload the corrected version\./g, '添加到文件后，上传修正后的版本。'],
-  [/(\d+) transaction records/g, '$1 条交易记录'], [/(\d+) columns mapped · All required fields covered/g, '$1 列已处理 · 已覆盖全部必填字段'], [/(\d+) columns detected/g, '识别到 $1 列'],
+  [/(\d+) transaction records/g, '$1 行交易记录'], [/(\d+) columns mapped · All required fields covered/g, '$1 列已处理 · 已覆盖全部必填字段'], [/(\d+) columns detected/g, '识别到 $1 列'],
   [/Product or service name is missing/g, '缺少产品或服务名称'], [/File is empty/g, '文件为空'], [/Fix the file and upload again/g, '请修正文件后重新上传'], [/Fix the remaining rows and upload again/g, '请修正剩余行后重新上传'], [/Try uploading the file again/g, '请重新上传文件'],
   [/Row validation summary/g, '行校验汇总'], [/Accepted rows/g, '已接受行数'], [/Issue rows/g, '问题行数'], [/Calculated from (\d+) accepted rows/g, '根据 $1 条已接受记录计算'],
   [/Quantity must be greater than 0/g, '数量必须大于 0'], [/Order date cannot be in the future/g, '订单日期不能晚于当前日期'], [/Use a valid 3-letter currency code/g, '请使用有效的 3 位货币代码'],
@@ -10744,13 +10771,13 @@ const CN_UI_REPLACEMENTS = [
   [/Pool quota/g, '额度明细'], [/All balances/g, '全部余额'],
   [/Connect a marketplace once, and eligible payments can increase your quota automatically\./g, '绑定电商平台后，符合条件的收款可自动提高额度。'],
   [/After you connect a store, your quota increases automatically when the store receives a new payment\./g, '绑定店铺后，当店铺收到新收款时，额度会自动提高。'],
-  [/Amazon, Shopify, and Walmart payments/g, 'Amazon、Shopify、Walmart 收款'], [/Amazon, Shopify, and Walmart/g, '亚马逊、Shopify和沃尔玛'], [/Connect Stores/g, '绑定店铺'], [/Connect stores/g, '绑定店铺'], [/Connect store/g, '绑定店铺'], [/Connect a Store/g, '绑定店铺'],
+  [/Amazon, Shopify, and Walmart payments/g, '亚马逊、Shopify 或沃尔玛销售'], [/Amazon, Shopify, and Walmart/g, '亚马逊、Shopify和沃尔玛'], [/Connect Stores/g, '绑定店铺'], [/Connect stores/g, '绑定店铺'], [/Connect store/g, '绑定店铺'], [/Connect a Store/g, '绑定店铺'],
   [/(\d+) stores connected/g, '已绑定 $1 家店铺'], [/(\d+) connected/g, '已绑定 $1 家'], [/Not connected/g, '未绑定'], [/(\d+) to connect/g, '可绑定 $1 家'], [/No stores connected yet/g, '尚未绑定店铺'],
   [/Choose your e-commerce platform/g, '选择电商平台'], [/Creative Marketplace/g, '创意商品平台'], [/Social Commerce/g, '社交电商'],
-  [/Other platform and trade payments/g, '其他平台收款、外贸收款'], [/Goods or service trading/g, '货物或服务贸易'], [/Upload transaction documents, and we’ll increase your quota based on the transaction amounts\./g, '上传交易材料，额度将按交易金额提高。'],
+  [/Other platform and trade payments/g, '其他平台销售、外贸'], [/Goods or service trading/g, '货物或服务贸易'], [/Upload transaction documents, and we’ll increase your quota based on the transaction amounts\./g, '上传交易材料，额度将按交易金额提高。'],
   [/Upload trade documents or transaction records\. We increase your quota based on the transaction amounts\./g, '上传贸易单据或交易记录。额度将按交易金额提高。'],
   [/You can upload:/g, '可上传：'],
-  [/What was your transaction for\?/g, '收款来源'],
+  [/What was your transaction for\?/g, '业务类型'],
   [/Next step/g, '下一步'],
   [/下一步 step/g, '下一步'],
   [/^Check $/g, '查看'],
@@ -10762,7 +10789,7 @@ const CN_UI_REPLACEMENTS = [
   [/The following transaction types may be used to increase your quota:/g, '以下交易类型可用于提升额度：'],
   [/Information your documents need to include/g, '材料需包含的信息'],
   [/Requirements layout/g, '单据要求布局'],
-  [/Field name/g, '字段名称'],
+  [/Field name/g, '信息'],
   [/Unique invoice or contract identifier/g, '发票或合同的唯一标识'], [/Company purchasing the software/g, '采购软件的公司'],
   [/Software product, license, or subscription being billed/g, '计费的软件产品、许可或订阅'], [/Number of licenses or seats/g, '许可或席位数量'],
   [/Price per license — no currency symbol/g, '每个许可的价格，不含货币符号'], [/Start and end of the subscription or license term/g, '订阅或许可期限的起止日期'],
@@ -10842,6 +10869,7 @@ const CN_UI_REPLACEMENTS = [
   [/Save the file in \.csv format, keep it under 10 MB, and use English letters and digits in the file name\./g, '将文件保存为 .csv 格式，大小不超过 10 MB，文件名使用英文字母和数字。'], [/Do not change or delete the column headers\./g, '请勿修改或删除表头。'],
   [/Download and complete the transaction information/g, '下载并填写交易信息'], [/Complete one row for each item in an order\. If the same item is sold at different prices, combine it into one row and use the average unit price\./g, '订单中的每件商品填写一行。同一商品如有不同售价，请合并为一行并填写平均单价。'],
   [/Example: If Item 1 is sold once at USD 10 and once at USD 15, enter one row with a quantity of 2 and a unit price of USD 12\.50\./g, '示例：商品 1 分别以 USD 10 和 USD 15 售出一次，请填写一行，数量为 2，单价为 USD 12.50。'],
+  [/Select a template based on your business type/g, '请根据业务类型选择模板'],
   [/Template fields/g, '模板字段'], [/Store name/g, '店铺名称'], [/The name of your store on the ecommerce marketplace\./g, '店铺在电商平台上的名称。'], [/Store URL/g, '店铺网址'], [/The URL of your store on the marketplace\./g, '店铺在电商平台上的网址。'],
   [/Order ID/g, '订单编号'], [/The order number in the marketplace\./g, '电商平台中的订单号。'], [/Order date/g, '订单日期'], [/Use YYYYMMDD or YYYY-MM-DD, including leading zeros\. The date must be within the past 365 days\./g, '使用 YYYYMMDD 或 YYYY-MM-DD 格式，保留开头的 0。日期必须在过去 365 天内。'],
   [/Item ID/g, '商品编号'], [/The goods item number in the marketplace\./g, '电商平台中的商品编号。'], [/Item name/g, '商品名称'], [/The goods item name in the marketplace\./g, '电商平台中的商品名称。'], [/The stock keeping unit identifier\./g, '库存单位标识。'],
@@ -10870,7 +10898,7 @@ const CN_UI_REPLACEMENTS = [
   [/Transaction types that can increase your CNY quota/g, '可提高人民币额度的交易类型'], [/Marketplace transactions that can increase your CNY quota/g, '可提高人民币额度的电商平台交易'],
   [/Uploaded successfully/g, '上传成功'], [/Your trade documents have been submitted and the corresponding CNY quota has been released\./g, '贸易单据已提交，对应人民币额度已释放。'], [/Your file has been submitted and the corresponding CNY quota has been released\./g, '文件已提交，对应人民币额度已释放。'],
   [/View upload history/g, '查看上传历史'], [/Upload another file/g, '上传其他文件'], [/Select a transaction category before choosing a file\./g, '请先选择交易类别，再选择文件。'], [/Select a category and upload your file, then review the details before submitting\./g, '选择类别并上传文件，然后在提交前核对详情。'], [/Select the transaction category/g, '选择交易类别'], [/Select a category/g, '选择类别'],
-  [/Choose the same category used when downloading and completing the template\./g, '请选择下载和填写模板时使用的同一类别。'], [/Select a transaction category\./g, '请选择交易类别。'], [/Marketplace where the payment was received/g, '收款所在的电商平台'], [/Select a marketplace/g, '选择电商平台'],
+  [/Choose the same category used when downloading and completing the template\./g, '请选择下载和填写模板时使用的同一类别。'], [/Select a transaction category\./g, '请选择交易类别。'], [/Marketplace these transaction records belong to/g, '交易记录所属的电商平台'], [/Marketplace where the payment was received/g, '交易记录所属的电商平台'], [/Select a marketplace/g, '选择电商平台'],
   [/Select the marketplace represented by the transaction rows in this file\./g, '请选择文件中交易记录所属的电商平台。'], [/Seller ID/g, '卖家 ID'], [/Required to associate this .* file with the correct store\./g, '用于将文件绑定到正确店铺。'],
   [/Upload marketplace CSV/g, '上传电商平台 CSV'], [/Select a marketplace and upload your file, then review the details before submitting\./g, '选择电商平台并上传文件，然后在提交前核对详情。'], [/Select a marketplace, then upload the completed CSV template\./g, '选择电商平台，然后上传填写好的 CSV 模板。'], [/Select a marketplace, upload a file, and continue with the matching processing flow\./g, '选择电商平台、上传文件，然后进入对应处理流程。'], [/Select a marketplace to enable file upload\./g, '请先选择电商平台，再上传文件。'], [/Complete the required marketplace information before continuing\./g, '请先填写必填的电商平台信息，再继续。'],
   [/Upload completed transaction records/g, '上传填写完的交易记录'], [/Upload exported transaction records/g, '上传导出的交易记录'], [/Upload transaction CSV/g, '上传交易 CSV'], [/Template CSV/g, '模板 CSV'],
@@ -10940,6 +10968,7 @@ const CN_UI_REPLACEMENTS = [
   [/Choose an uploaded file column for/g, '为以下字段选择上传文件列：'], [/Select a column from your file/g, '从您的文件中选择一列'], [/— Select an uploaded file column —/g, '— 选择上传文件中的列 —'], [/None of above/g, '以上均不匹配'],
   [/File column selected/g, '已选择文件列'], [/No file column selected/g, '未选择文件列'], [/Used for/g, '已用于'],
   [/Do you have these details in your file\?/g, '文件中是否包含这些信息？'],
+  [/Another (\d+) required settlement columns could not be found in your file\. If the file contains related information, select the matching column headers\./g, '另有 $1 列结汇所需信息未能在您的文件中找到。若文件中包含相关信息，请选择对应的列标题。'],
   [/The other (\d+) details? (?:is|are) required too, but we couldn't find (?:it|them) in your file\. Select the matching column for each one, or "None of the above" if your file doesn't have it\./g, '另外 $1 项信息也是必填的，但未能在文件中找到。请为每一项选择对应列；如文件中没有，请选择“以上均不匹配”。'],
   [/For the other details we ask for, tell us whether you have those in your document\./g, '其余所需信息，请说明文件中是否已包含。'],
   [/For each missing required system field, choose a corresponding column from your uploaded file\./g, '请为每个缺少的系统必填字段选择对应的上传文件列。'],
@@ -11024,7 +11053,7 @@ const CN_UI_REPLACEMENTS = [
   [/Supplementary CSV/g, '补充 CSV'], [/A supplementary file uses /g, '补充文件使用 '], [/ to add required fields to the original records\./g, ' 绑定原始记录并补充必填字段。'],
   [/Supplementary file not uploaded/g, '尚未上传补充文件'],
   [/Linked by /g, '通过 '], [/ · Added field: /g, ' 绑定 · 已补充字段：'], [/Merged/g, '已合并'],
-  [/Records detected/g, '识别到的记录'], [/Records processed/g, '已处理记录'], [/Records with errors/g, '错误记录'],
+  [/Records detected/g, '识别到的行数'], [/Records processed/g, '已处理记录'], [/Records with errors/g, '错误记录'],
   [/Columns in your file/g, '文件中的列'], [/Mapped columns/g, '已处理列'], [/Unmapped columns/g, '待处理列'], [/Missing required columns/g, '缺失的必填列'], [/You can’t continue yet/g, '暂时无法继续'],
   [/Field mapping results/g, '核对结果'], [/Resolve issues from top to bottom, then review all successful mappings\./g, '请从上到下处理问题，再检查已完成的列。'], [/Changes are saved automatically/g, '更改会自动保存'],
   [/Your file columns/g, '文件列'], [/Source columns and sample values/g, '来源列和示例值'], [/System field \(target\)/g, '系统字段（目标）'], [/Choose where each column maps/g, '选择每列对应的系统字段'], [/Required target/g, '必填目标'],
@@ -11046,11 +11075,11 @@ const CN_UI_REPLACEMENTS = [
   [/Shein August template records/g, 'Shein 8 月模板交易记录'], [/May 2026 ERP order export/g, '2026 年 5 月 ERP 订单导出'],
   [/Wayfair July template records/g, 'Wayfair 7 月模板交易记录'],
   [/File description/g, '文件描述'],
-  [/Records detected/g, '识别到的记录'], [/Mapping status/g, '处理状态'], [/Processing summary/g, '处理结果汇总'], [/Your file field/g, '文件表头字段'], [/Sample values/g, '示例值'], [/Mapped field/g, '系统对应表头字段'],
+  [/Records detected/g, '识别到的行数'], [/Mapping status/g, '处理状态'], [/Processing summary/g, '处理结果汇总'], [/Your file field/g, '文件表头字段'], [/Sample values/g, '示例值'], [/Mapped field/g, '系统对应表头字段'],
   [/Upload & map/g, '上传并处理'], [/Order information/g, '订单信息'], [/Upload CSV from ERP/g, '上传 ERP 文件'], [/Upload your ERP CSV export for field mapping and quota release\./g, '上传 ERP 导出文件，核对字段并释放额度。'],
   [/Select a business type to enable document upload\./g, '选择业务类型后才能上传单据。'], [/Upload a sales contract, purchase order, PI, CI, shipping, or customs document\./g, '上传销售合同、采购订单、PI、CI、运输或报关单据。'], [/Upload a service agreement, invoice, or contract\./g, '上传服务协议、发票或合同。'],
   [/Upload trade document/g, '上传贸易单据'], [/Uploaded · Analysis starts automatically/g, '已上传 · 将自动开始分析'], [/Preparing the document for automatic analysis…/g, '正在准备自动分析单据…'], [/Analyzing document…/g, '正在分析单据…'],
-  [/Choose the business type/g, '选择业务类型'], [/This helps us extract the correct transaction information\./g, '便于准确提取交易信息。'], [/Upload the document/g, '上传材料'], [/The file is analyzed automatically, and extracted fields appear below on this page\./g, '文件会自动分析，提取结果将显示在本页下方。'],
+  [/Choose the transaction business type/g, '选择交易的业务类型'], [/Choose the business type/g, '选择业务类型'], [/This helps us extract the correct transaction information\./g, '便于准确提取交易信息。'], [/Upload the document/g, '上传材料'], [/The file is analyzed automatically, and extracted fields appear below on this page\./g, '文件会自动分析，提取结果将显示在本页下方。'],
   [/Review the extracted information/g, '检查提取的信息'], [/Confirm or complete the details, then submit directly\./g, '确认或补充信息后即可提交。'], [/Confirm or complete the details, then continue to review\./g, '确认或补充信息后，进入提交前检查。'], [/Choose a business type, upload a document, review the extracted details, and submit\./g, '选择业务类型、上传单据，核对提取信息后提交。'],
   [/Complete the document details, review the submission summary, and submit\./g, '补充单据信息，检查提交汇总后提交。'], [/^Review$/g, '确认信息'],
   [/Upload & complete/g, '上传并补充信息'], [/Review the submission information before submitting\./g, '提交前，请检查提交信息。'],
@@ -11096,7 +11125,7 @@ const CN_UI_REPLACEMENTS = [
   [/Order currency\/feeType/g, '订单币种'], [/Order amount\/totalFee/g, '订单金额'], [/Order time\/orderDate/g, '订单签约时间/发票时间'],
   [/The name of the person or company that paid\. Use the individual name for personal bookings, or the company name for business bookings\./g, '付款的个人或公司名称。个人预订请填个人姓名，企业预订请填公司名称。'],
   [/Signing date \/ invoice date\./g, '签约日期或发票日期。'],
-  [/Conditional:/g, '条件：'], [/^Conditional$/g, '条件必填'],
+  [/Conditional:/g, '条件：'], [/^Conditional$/g, '符合条件时必填'],
   [/Buyer'?s English Name\/Payer name/g, '买家名称'],
   [/Buyer's English name\/payer name/g, '买家名称'],
   [/E-commerce platform name\/business website name/g, '店铺网站名称'],
@@ -11198,7 +11227,7 @@ const CN_UI_REPLACEMENTS = [
   [/Transaction record using our template/g, '使用模板填写的交易记录'],
   [/We’ll automatically identify transaction information from the document\./g, '我们将从单据中自动识别交易信息'],
   [/Once completed as required, the upload process will finish quickly\./g, '按要求完整填写后，上传流程将快速完成'],
-  [/We’ll match each column header to the information the system needs, to identify the contents\./g, '我们会将每列标题和系统所需信息对应，以识别内容'],
+  [/We’ll match each column header to the information the system needs, to identify the contents\./g, '我们会自动识别出其中可用于结汇的列信息'],
   [/A completed transaction record in CSV/g, '已完成的 CSV 交易记录'],
   [/Transaction record exported from your business system/g, '从业务系统导出的交易记录'],
   [/A CSV exported from your ERP, marketplace, accounting, or other business system/g, '从 ERP、电商平台、财务或其他业务系统导出的 CSV'],
