@@ -3694,15 +3694,15 @@ function detectUploadV2Route(category,extension,headers,fileName) {
   return {route:'',error:'This file format is not supported.'};
 }
 function uploadV2StepsForRoute(route,w) {
-  if (route === 'template') return [{n:1,label:'Upload document'},{n:2,label:'File description'},{n:3,label:'Review'}];
-  if (route === 'trade') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'File description'},{n:4,label:'Review'}];
+  if (route === 'template') return [{n:1,label:'Upload document'},{n:2,label:'Add a description'},{n:3,label:'Confirm upload'}];
+  if (route === 'trade') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Add a description'},{n:4,label:'Confirm upload'}];
   if (route === 'erp') {
-    if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'File description'},{n:4,label:'Review'}];
+    if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Add a description'},{n:4,label:'Confirm upload'}];
     if (w && w.erpFlowVersion === 'v3') {
       const steps = [{n:1,label:'Upload document'},{n:2,label:'Confirm the processing results'}];
       if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
-      steps.push({n:steps.length + 1,label:'File description'});
-      steps.push({n:steps.length + 1,label:'Review'});
+      steps.push({n:steps.length + 1,label:'Add a description'});
+      steps.push({n:steps.length + 1,label:'Confirm upload'});
       return steps;
     }
     const stats = w && w.kind === 'erp' ? getERPMappingStats(w) : null;
@@ -3712,8 +3712,8 @@ function uploadV2StepsForRoute(route,w) {
     if (!(w && w.erp2SkippedConfirm)) steps.push({n:steps.length + 1,label:'Confirm usable information'});
     if (hasUnrecognized) steps.push({n:steps.length + 1,label:'Confirm missing information'});
     if (needsReplacement) steps.push({n:steps.length + 1,label:'Update and re-upload'});
-    steps.push({n:steps.length + 1,label:'File description'});
-    steps.push({n:steps.length + 1,label:'Review'});
+    steps.push({n:steps.length + 1,label:'Add a description'});
+    steps.push({n:steps.length + 1,label:'Confirm upload'});
     return steps;
   }
   return [{n:1,label:'Upload document'}];
@@ -3726,18 +3726,18 @@ function uploadV2ERPDisplayStep(w) {
     if (stage <= 1) label = 'Upload document';
     else if (stage === 2) label = 'Confirm the processing results';
     else if (stage === 3 && w.erp3NeedsReplacement) label = 'Update and re-upload';
-    else if (stage === 4) label = 'File description';
-    else label = 'Review';
+    else if (stage === 4) label = 'Add a description';
+    else label = 'Confirm upload';
   } else if (w && w.erpFlowVersion === 'v1') {
-    label = w.step === 4 ? 'Review' : w.step === 5 ? 'File description' : 'Confirm info';
+    label = w.step === 4 ? 'Confirm upload' : w.step === 5 ? 'Add a description' : 'Confirm info';
   } else {
     const stage = (w && w.erp2Stage) || 1;
     if (stage <= 1) label = 'Upload document';
     else if (stage === 2) label = 'Confirm usable information';
     else if (stage === 3) label = 'Confirm missing information';
     else if (stage === 4) label = 'Update and re-upload';
-    else if (stage === 5) label = 'File description';
-    else label = 'Review';
+    else if (stage === 5) label = 'Add a description';
+    else label = 'Confirm upload';
   }
   const idx = steps.findIndex(step => step.label === label);
   return idx >= 0 ? idx + 1 : steps.length;
@@ -6367,7 +6367,7 @@ function erpReplacementNewColumnsSection(w) {
   const cannotMatch = needsMatch && (!matchable.length || noneSelected.length > 0);
   const table = erp2TargetMappingTable(newHeaders, stats.sources, w.mappings, 'updateERP2TargetMapping', true);
   if (!needsMatch) {
-    return `<div class="mapping-c2-success">${I.check}<div><strong>New columns mapped</strong><p>The corrected file replaced the previous upload. Existing mappings were reused, and the new columns were mapped.</p></div></div>
+    return `<div class="mapping-c2-success">${I.check}<div><strong>All required settlement details were found</strong></div></div>
       ${table}`;
   }
   const remainingNames = unmapped.length ? unmapped : newHeaders;
@@ -6386,7 +6386,7 @@ function erpReplacementResultHTML(w) {
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
       <h2>Update and re-upload</h2>
-      <p>${needsMatch ? 'We reviewed the new columns in your file.' : 'The missing fields have been added and matched.'}</p>
+      ${needsMatch ? '<p>We reviewed the new columns in your file.</p>' : ''}
     </div>
     ${erp2FileSummary(w, stats)}
     ${erpReplacementNewColumnsSection(w)}
@@ -6936,7 +6936,7 @@ function stepTemplateResult() {
 function stepTemplateV2Review() {
   const w=state.wiz,category=(TEMPLATE_TYPES.find(type=>type.key===w.category)||{}).label||'—';
   const details=[['File type','Template CSV'],['File name',w.fileName||'template_transactions.csv'],['File description',fileDescriptionValue(w)||'—'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[]),['Records detected', DS_TX_PREVIEW.length+' transaction records']];
-  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} File information summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p${label==='File name'?' class="mono"':''}>${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Confirm the file and submit</h2></div><div class="review-card"><div class="review-card-h">${I.file} File summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p${label==='File name'?' class="mono"':''}>${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
 }
 
 function viewWizardTemplate() {
@@ -6944,7 +6944,7 @@ function viewWizardTemplate() {
   if (!state.wiz) state.wiz = w;
   if (w.done) return wizSuccess('template');
   const stage = w.templateStage || 1;
-  const steps = [{n:1,label:'Upload document'},{n:2,label:'File description'},{n:3,label:'Review'}];
+  const steps = [{n:1,label:'Upload document'},{n:2,label:'Add a description'},{n:3,label:'Confirm upload'}];
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('template',w) : steps;
   const displayStep = stage;
   const canContinue = w.csvState === 'mapped' && getTemplateUploadIssues(w).length === 0;
@@ -7433,8 +7433,11 @@ function erpMatchedColumnsIntro(matchedCount, totalCount) {
   </div>`;
 }
 function erp3MatchedColumnsIntro(matchedCount, missingCount) {
+  const intro = missingCount
+    ? `${matchedCount} columns in your file can be used for settlement, and ${missingCount} required columns are missing. The table below maps every settlement detail to a column in your file. Please confirm each one.`
+    : `${matchedCount} columns in your file can be used for settlement. The table below maps every settlement detail to a column in your file. Please confirm each one.`;
   return `<div class="erp-match-intro">
-    <p>${matchedCount} columns in your file can be used for settlement, and ${missingCount} required columns are missing. The table below maps every settlement detail to a column in your file. Please confirm each one.</p>
+    <p>${intro}</p>
   </div>`;
 }
 function stepERP2Confirm(w) {
@@ -7551,12 +7554,12 @@ function stepERP2Missing(w) {
 
 function erp2Steps(w) {
   const stats = getERPMappingStats(w);
-  const steps = [{n:1,label:'Upload CSV'}];
+  const steps = [{n:1,label:'Upload file'}];
   if (!w.erp2SkippedConfirm) steps.push({n:2,label:'Confirm usable information'});
   if (w.erp2HadUnrecognized || w.erp2ZeroMatchAlert) steps.push({n:3,label:'Confirm missing information'});
   if (stats.missing.length || w.erp2ReplacementState === 'done' || w.erp2ReplacementOutcome) steps.push({n:4,label:'Update and re-upload'});
-  steps.push({n:5,label:'File description'});
-  steps.push({n:6,label:'Review'});
+  steps.push({n:5,label:'Add a description'});
+  steps.push({n:6,label:'Confirm upload'});
   return steps.map((step,index) => Object.assign({}, step, { displayN:index + 1 }));
 }
 function erp2Back() {
@@ -7797,10 +7800,10 @@ function stepERP3Missing(w) {
 }
 
 function erp3Steps(w) {
-  const steps = [{n:1,label:'Upload CSV'},{n:2,label:'Confirm the processing results'}];
+  const steps = [{n:1,label:'Upload file'},{n:2,label:'Confirm the processing results'}];
   if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
-  steps.push({n:4,label:'File description'});
-  steps.push({n:5,label:'Review'});
+  steps.push({n:4,label:'Add a description'});
+  steps.push({n:5,label:'Confirm upload'});
   return steps.map((step,index) => Object.assign({}, step, { displayN:index + 1 }));
 }
 function erp3Back() {
@@ -8124,11 +8127,10 @@ function stepERPReview() {
   const paymentLinkingActive = LINK_PAYMENT_VISIBLE && !w.skipLink;
   return `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
     <div>
-      <h2 style="font-size:18px;font-weight:700">Review</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p>
+      <h2 style="font-size:18px;font-weight:700">Confirm the file and submit</h2>
     </div>
     <div class="review-card">
-      <div class="review-card-h">${I.file} File information summary</div>
+      <div class="review-card-h">${I.file} File summary</div>
       <div class="review-card-b"><div class="kv-grid">
         ${[['File type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['File name',erpDisplayedFileName(w)||(isERP2?'erp_export.csv':'erp_export.xlsx')],['File description',fileDescriptionValue(w)||'—'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['Upload date','2026-07-20'],['Records detected', DS_TX_PREVIEW.length+' transaction records']].map(([k,v])=>`<div><label>${k}</label><p${k==='File name'?' class="mono"':''}>${escapeHTML(v)}</p></div>`).join('')}
       </div></div>
@@ -8163,24 +8165,24 @@ function viewWizardERP() {
       ? [
         {n:2,displayN:1,label:'Upload & map'},
         {n:3,displayN:2,label:'Link payment'},
-        {n:5,displayN:3,label:'File description'},
-        {n:4,displayN:4,label:'Review'},
+        {n:5,displayN:3,label:'Add a description'},
+        {n:4,displayN:4,label:'Confirm upload'},
       ]
       : [
         {n:2,label:'Order information'},
         {n:3,label:'Link Payment'},
-        {n:5,label:'File description'},
+        {n:5,label:'Add a description'},
         {n:4,label:'Review & Submit'},
       ])
     : (state.concept !== 2
       ? [
         {n:2,displayN:1,label:'Upload & map'},
-        {n:5,displayN:2,label:'File description'},
-        {n:4,displayN:3,label:'Review'},
+        {n:5,displayN:2,label:'Add a description'},
+        {n:4,displayN:3,label:'Confirm upload'},
       ]
       : [
         {n:2,displayN:1,label:'Order information'},
-        {n:5,displayN:2,label:'File description'},
+        {n:5,displayN:2,label:'Add a description'},
         {n:4,displayN:3,label:'Review & Submit'},
       ]);
   let body = '';
@@ -9492,11 +9494,10 @@ function stepTradeReview() {
   const srcLabel = (TRADE_SOURCES.find(s=>s.key===w.source)||{}).label || '—';
   return `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
     <div>
-      <h2 style="font-size:18px;font-weight:700">Review</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p>
+      <h2 style="font-size:18px;font-weight:700">Confirm the file and submit</h2>
     </div>
     <div class="review-card">
-      <div class="review-card-h">${I.file} File information summary</div>
+      <div class="review-card-h">${I.file} File summary</div>
       <div class="review-card-b">
         <div class="kv-grid">
           <div><label>Business type</label><p>${srcLabel}</p></div>
@@ -9589,7 +9590,7 @@ function viewWizardTrade() {
     }, 0);
   }
   const canReview = !!w.source && w.uploadState === 'done' && tradeLogisticsComplete(w);
-  const steps = [{n:1,label:'Upload & complete'},{n:2,label:'File description'},{n:3,label:'Review'}];
+  const steps = [{n:1,label:'Upload & complete'},{n:2,label:'Add a description'},{n:3,label:'Confirm upload'}];
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('trade',w) : steps;
   const displayStep = w.uploadOriginVersion===2 ? (stage===1?2:stage===2?3:4) : stage;
   const tradeBody = stage === 1 ? stepTradeDynamic() : stage === 2 ? stepFileDescription() : stepTradeReview();
@@ -10656,7 +10657,7 @@ const CN_UI_REPLACEMENTS = [
   [/Tour packages, destination services, and related travel fees/g, '旅游套餐、目的地服务及相关旅行费用'],
   [/Switch page version/g, '切换页面版本'], [/Upload V1/g, '上传 V1'], [/Upload V2/g, '上传 V2'], [/Upload V2 starts with a category and routes the file automatically\./g, 'Upload V2 先选择交易类别，再自动识别并分流文件。'], [/Upload flow version/g, '上传流程版本'],
   [/Select a category and upload/g, '上传材料'], [/Choose a transaction category, then upload a related file on this page\./g, ''],
-  [/^Upload document$/g, '上传材料'], [/^Confirm info$/g, '确认信息'], [/^Match remaining fields$/g, '匹配剩余字段'], [/^Identify other details$/g, '确认其他信息'], [/^Update and re-upload$/g, '更新并重新上传'], [/^Resubmit$/g, '重新提交'], [/^Review$/g, '确认信息'],
+  [/^Upload document$/g, '上传材料'], [/^Confirm info$/g, '确认信息'], [/^Match remaining fields$/g, '匹配剩余字段'], [/^Identify other details$/g, '确认其他信息'], [/^Update and re-upload$/g, '更新并重新上传'], [/^Resubmit$/g, '重新提交'], [/^Add a description$/g, '添加描述'], [/^Confirm upload$/g, '确认上传'], [/Confirm the file and submit/g, '确认文件并提交'], [/^Review$/g, '确认信息'],
   [/Process & review/g, '确认信息'], [/Choose a sample file/g, '选择模拟文件'], [/This prototype simulates file selection and processing\./g, '此原型将模拟文件选择和处理。'],
   [/All columns are recognized and mapped automatically/g, '系统可识别并精准匹配所有列'],
   [/Some headers are unrecognized, but you can map them all manually/g, '系统未能识别部分表头，但可通过手动匹配全部补全'],
@@ -10688,6 +10689,7 @@ const CN_UI_REPLACEMENTS = [
   [/Confirm the usable information in your file/g, '确认文件中的可用信息'], [/Check the columns we matched/g, '核对已匹配的列'], [/Confirm the processing results/g, '确认处理结果'], [/Confirm usable information/g, '确认可用信息'], [/Confirm missing information/g, '确认缺失信息'], [/Confirm the missing information in your file/g, '确认文件中的缺失信息'],
   [/What we did/g, '我们已完成'], [/What you need to do/g, '您需要做的'],
   [/(\d+) columns in your file can be used for settlement, and (\d+) required columns are missing\. The table below maps every settlement detail to a column in your file\. Please confirm each one\./g, '您文件中的 $1 列信息可用于结汇，另有 $2 列信息缺失。以下表格中，所有结汇所需信息已对应到您文件中的具体列，请逐一确认。'],
+  [/(\d+) columns in your file can be used for settlement\. The table below maps every settlement detail to a column in your file\. Please confirm each one\./g, '您文件中的 $1 列信息可用于结汇。以下表格中，所有结汇所需信息已对应到您文件中的具体列，请逐一确认。'],
   [/(\d+) columns in your file can be used for settlement\. The table below maps the required settlement details to these \1 columns in your file\. Please confirm each one\./g, '您文件中的 $1 列信息可用于结汇。以下表格中，结汇所需信息已对应到您文件中的这 $1 列，请逐一确认。'],
   [/(\d+) columns in your file were identified as the required system details\. The table below lists the matches\. Please confirm and complete them\./g, '您文件中的 $1 列信息已被识别为系统所需信息，如下表格中列出了对应关系，请确认并完善。'],
   [/To declare your transactions for CNY settlement, we need specific details from your file\. Column names vary between business systems, so we matched yours to the required details — (\d+) of the (\d+) are matched\./g, '为进行人民币结汇申报，我们需要从文件中获取指定信息。各业务系统的列名可能不同，因此我们已将您的列与所需信息匹配 — 目前 $2 项中已匹配 $1 项。'],
@@ -10996,6 +10998,7 @@ const CN_UI_REPLACEMENTS = [
   [/All unrecognized columns have been reviewed/g, '所有未识别字段均已处理'], [/Continue to check whether any required system fields are still missing\./g, '继续检查是否仍缺少必填字段。'],
   [/^Update and re-upload$/g, '更新并重新上传'], [/Resubmit your document/g, '重新提交单据'], [/Complete missing columns/g, '补充缺少字段'], [/Check whether the file still needs any required system fields\./g, '检查文件是否仍缺少必填字段。'],
   [/Simulate a corrected CSV after adding the missing columns\./g, '模拟补充缺失列后的修正 CSV。'],
+  [/All required settlement details were found/g, '已找到所有结汇所需信息'],
   [/New columns mapped/g, '新增列已匹配'], [/Unable to recognize new columns/g, '无法识别新增列'],
   [/Unable to recognize the new columns/g, '无法识别新增列'],
   [/These new columns still cannot be matched/g, '新增列仍无法匹配'],
@@ -11062,7 +11065,7 @@ const CN_UI_REPLACEMENTS = [
   [/Review & Submit/g, '检查并提交'], [/Review & submit/g, '检查并提交'],
   [/Original file processing summary/g, '原文件处理结果汇总'], [/Supplementary file processing summary/g, '补充文件处理结果汇总'],
   [/Headers detected/g, '识别到的表头'], [/Headers matched/g, '已对应表头'], [/Processing status/g, '处理状态'], [/All supplementary headers matched/g, '补充文件表头已全部对应'], [/Review required/g, '需要核对'], [/(\d+) columns/g, '$1 个表头'],
-  [/File information summary/g, '文件信息摘要'], [/File name/g, '文件名'], [/File type/g, '文件类型'],
+  [/File summary/g, '文件摘要'], [/File name/g, '文件名'], [/File type/g, '文件类型'],
   [/Enter a file description before continuing\./g, '请先填写文件描述后再继续。'], [/Enter a file description\./g, '请填写文件描述。'],
   [/Describe this file so you can find it later in Upload History\./g, '填写文件描述，便于之后在上传历史中查找。'],
   [/Add a short description so this file is easy to find in Upload History\./g, '填写简短描述，便于之后在上传历史中查找。'],

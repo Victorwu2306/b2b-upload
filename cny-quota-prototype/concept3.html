@@ -3661,15 +3661,15 @@ function detectUploadV2Route(category,extension,headers,fileName) {
   return {route:'',error:'This file format is not supported.'};
 }
 function uploadV2StepsForRoute(route,w) {
-  if (route === 'template') return [{n:1,label:'Upload document'},{n:2,label:'File description'},{n:3,label:'Review'}];
-  if (route === 'trade') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'File description'},{n:4,label:'Review'}];
+  if (route === 'template') return [{n:1,label:'Upload document'},{n:2,label:'Add a description'},{n:3,label:'Confirm upload'}];
+  if (route === 'trade') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Add a description'},{n:4,label:'Confirm upload'}];
   if (route === 'erp') {
-    if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'File description'},{n:4,label:'Review'}];
+    if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Add a description'},{n:4,label:'Confirm upload'}];
     if (w && w.erpFlowVersion === 'v3') {
       const steps = [{n:1,label:'Upload document'},{n:2,label:'Confirm the processing results'}];
       if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
-      steps.push({n:steps.length + 1,label:'File description'});
-      steps.push({n:steps.length + 1,label:'Review'});
+      steps.push({n:steps.length + 1,label:'Add a description'});
+      steps.push({n:steps.length + 1,label:'Confirm upload'});
       return steps;
     }
     const stats = w && w.kind === 'erp' ? getERPMappingStats(w) : null;
@@ -3679,8 +3679,8 @@ function uploadV2StepsForRoute(route,w) {
     if (!(w && w.erp2SkippedConfirm)) steps.push({n:steps.length + 1,label:'Confirm usable information'});
     if (hasUnrecognized) steps.push({n:steps.length + 1,label:'Confirm missing information'});
     if (needsReplacement) steps.push({n:steps.length + 1,label:'Update and re-upload'});
-    steps.push({n:steps.length + 1,label:'File description'});
-    steps.push({n:steps.length + 1,label:'Review'});
+    steps.push({n:steps.length + 1,label:'Add a description'});
+    steps.push({n:steps.length + 1,label:'Confirm upload'});
     return steps;
   }
   return [{n:1,label:'Upload document'}];
@@ -3693,18 +3693,18 @@ function uploadV2ERPDisplayStep(w) {
     if (stage <= 1) label = 'Upload document';
     else if (stage === 2) label = 'Confirm the processing results';
     else if (stage === 3 && w.erp3NeedsReplacement) label = 'Update and re-upload';
-    else if (stage === 4) label = 'File description';
-    else label = 'Review';
+    else if (stage === 4) label = 'Add a description';
+    else label = 'Confirm upload';
   } else if (w && w.erpFlowVersion === 'v1') {
-    label = w.step === 4 ? 'Review' : w.step === 5 ? 'File description' : 'Confirm info';
+    label = w.step === 4 ? 'Confirm upload' : w.step === 5 ? 'Add a description' : 'Confirm info';
   } else {
     const stage = (w && w.erp2Stage) || 1;
     if (stage <= 1) label = 'Upload document';
     else if (stage === 2) label = 'Confirm usable information';
     else if (stage === 3) label = 'Confirm missing information';
     else if (stage === 4) label = 'Update and re-upload';
-    else if (stage === 5) label = 'File description';
-    else label = 'Review';
+    else if (stage === 5) label = 'Add a description';
+    else label = 'Confirm upload';
   }
   const idx = steps.findIndex(step => step.label === label);
   return idx >= 0 ? idx + 1 : steps.length;
@@ -6310,7 +6310,7 @@ function erpReplacementNewColumnsSection(w) {
   const cannotMatch = needsMatch && (!matchable.length || noneSelected.length > 0);
   const table = erp2TargetMappingTable(newHeaders, stats.sources, w.mappings, 'updateERP2TargetMapping', true);
   if (!needsMatch) {
-    return `<div class="mapping-c2-success">${I.check}<div><strong>New columns mapped</strong><p>The corrected file replaced the previous upload. Existing mappings were reused, and the new columns were mapped.</p></div></div>
+    return `<div class="mapping-c2-success">${I.check}<div><strong>All required settlement details were found</strong></div></div>
       ${table}`;
   }
   const remainingNames = unmapped.length ? unmapped : newHeaders;
@@ -6329,7 +6329,7 @@ function erpReplacementResultHTML(w) {
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
       <h2>Update and re-upload</h2>
-      <p>${needsMatch ? 'We reviewed the new columns in your file.' : 'The missing fields have been added and matched.'}</p>
+      ${needsMatch ? '<p>We reviewed the new columns in your file.</p>' : ''}
     </div>
     ${erp2FileSummary(w, stats)}
     ${erpReplacementNewColumnsSection(w)}
@@ -6879,7 +6879,7 @@ function stepTemplateResult() {
 function stepTemplateV2Review() {
   const w=state.wiz,category=(TEMPLATE_TYPES.find(type=>type.key===w.category)||{}).label||'—';
   const details=[['File type','Template CSV'],['File name',w.fileName||'template_transactions.csv'],['File description',fileDescriptionValue(w)||'—'],['Category',category],...(w.category==='marketplace'?[['Marketplace',w.marketplace||'—']]:[]),...(templateNeedsSellerId(w)?[['Seller ID',w.sellerId||'—']]:[]),['Records detected', DS_TX_PREVIEW.length+' transaction records']];
-  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Review</h2><p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p></div><div class="review-card"><div class="review-card-h">${I.file} File information summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p${label==='File name'?' class="mono"':''}>${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:20px;width:100%"><div><h2 style="font-size:18px;font-weight:700">Confirm the file and submit</h2></div><div class="review-card"><div class="review-card-h">${I.file} File summary</div><div class="review-card-b"><div class="kv-grid">${details.map(([label,value])=>`<div><label>${label}</label><p${label==='File name'?' class="mono"':''}>${escapeHTML(value)}</p></div>`).join('')}</div></div></div></div>`;
 }
 
 function viewWizardTemplate() {
@@ -6887,7 +6887,7 @@ function viewWizardTemplate() {
   if (!state.wiz) state.wiz = w;
   if (w.done) return wizSuccess('template');
   const stage = w.templateStage || 1;
-  const steps = [{n:1,label:'Upload document'},{n:2,label:'File description'},{n:3,label:'Review'}];
+  const steps = [{n:1,label:'Upload document'},{n:2,label:'Add a description'},{n:3,label:'Confirm upload'}];
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('template',w) : steps;
   const displayStep = stage;
   const canContinue = w.csvState === 'mapped' && getTemplateUploadIssues(w).length === 0;
@@ -7376,8 +7376,11 @@ function erpMatchedColumnsIntro(matchedCount, totalCount) {
   </div>`;
 }
 function erp3MatchedColumnsIntro(matchedCount, missingCount) {
+  const intro = missingCount
+    ? `${matchedCount} columns in your file can be used for settlement, and ${missingCount} required columns are missing. The table below maps every settlement detail to a column in your file. Please confirm each one.`
+    : `${matchedCount} columns in your file can be used for settlement. The table below maps every settlement detail to a column in your file. Please confirm each one.`;
   return `<div class="erp-match-intro">
-    <p>${matchedCount} columns in your file can be used for settlement, and ${missingCount} required columns are missing. The table below maps every settlement detail to a column in your file. Please confirm each one.</p>
+    <p>${intro}</p>
   </div>`;
 }
 function stepERP2Confirm(w) {
@@ -7494,12 +7497,12 @@ function stepERP2Missing(w) {
 
 function erp2Steps(w) {
   const stats = getERPMappingStats(w);
-  const steps = [{n:1,label:'Upload CSV'}];
+  const steps = [{n:1,label:'Upload file'}];
   if (!w.erp2SkippedConfirm) steps.push({n:2,label:'Confirm usable information'});
   if (w.erp2HadUnrecognized || w.erp2ZeroMatchAlert) steps.push({n:3,label:'Confirm missing information'});
   if (stats.missing.length || w.erp2ReplacementState === 'done' || w.erp2ReplacementOutcome) steps.push({n:4,label:'Update and re-upload'});
-  steps.push({n:5,label:'File description'});
-  steps.push({n:6,label:'Review'});
+  steps.push({n:5,label:'Add a description'});
+  steps.push({n:6,label:'Confirm upload'});
   return steps.map((step,index) => Object.assign({}, step, { displayN:index + 1 }));
 }
 function erp2Back() {
@@ -7740,10 +7743,10 @@ function stepERP3Missing(w) {
 }
 
 function erp3Steps(w) {
-  const steps = [{n:1,label:'Upload CSV'},{n:2,label:'Confirm the processing results'}];
+  const steps = [{n:1,label:'Upload file'},{n:2,label:'Confirm the processing results'}];
   if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
-  steps.push({n:4,label:'File description'});
-  steps.push({n:5,label:'Review'});
+  steps.push({n:4,label:'Add a description'});
+  steps.push({n:5,label:'Confirm upload'});
   return steps.map((step,index) => Object.assign({}, step, { displayN:index + 1 }));
 }
 function erp3Back() {
@@ -8067,11 +8070,10 @@ function stepERPReview() {
   const paymentLinkingActive = LINK_PAYMENT_VISIBLE && !w.skipLink;
   return `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
     <div>
-      <h2 style="font-size:18px;font-weight:700">Review</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p>
+      <h2 style="font-size:18px;font-weight:700">Confirm the file and submit</h2>
     </div>
     <div class="review-card">
-      <div class="review-card-h">${I.file} File information summary</div>
+      <div class="review-card-h">${I.file} File summary</div>
       <div class="review-card-b"><div class="kv-grid">
         ${[['File type',isERP2?'CSV file (.csv)':'Excel Spreadsheet (.xlsx)'],['File name',erpDisplayedFileName(w)||(isERP2?'erp_export.csv':'erp_export.xlsx')],['File description',fileDescriptionValue(w)||'—'],...(w.entryCategory?[['Category',(TEMPLATE_TYPES.find(type=>type.key===w.entryCategory)||{}).label||w.entryCategory]]:[]),...(w.entryCategory==='marketplace'&&w.marketplace?[['Marketplace',w.marketplace]]:[]),...(w.entryCategory==='marketplace'&&w.sellerId?[['Seller ID',w.sellerId]]:[]),['Upload date','2026-07-20'],['Records detected', DS_TX_PREVIEW.length+' transaction records']].map(([k,v])=>`<div><label>${k}</label><p${k==='File name'?' class="mono"':''}>${escapeHTML(v)}</p></div>`).join('')}
       </div></div>
@@ -8106,24 +8108,24 @@ function viewWizardERP() {
       ? [
         {n:2,displayN:1,label:'Upload & map'},
         {n:3,displayN:2,label:'Link payment'},
-        {n:5,displayN:3,label:'File description'},
-        {n:4,displayN:4,label:'Review'},
+        {n:5,displayN:3,label:'Add a description'},
+        {n:4,displayN:4,label:'Confirm upload'},
       ]
       : [
         {n:2,label:'Order information'},
         {n:3,label:'Link Payment'},
-        {n:5,label:'File description'},
+        {n:5,label:'Add a description'},
         {n:4,label:'Review & Submit'},
       ])
     : (state.concept !== 2
       ? [
         {n:2,displayN:1,label:'Upload & map'},
-        {n:5,displayN:2,label:'File description'},
-        {n:4,displayN:3,label:'Review'},
+        {n:5,displayN:2,label:'Add a description'},
+        {n:4,displayN:3,label:'Confirm upload'},
       ]
       : [
         {n:2,displayN:1,label:'Order information'},
-        {n:5,displayN:2,label:'File description'},
+        {n:5,displayN:2,label:'Add a description'},
         {n:4,displayN:3,label:'Review & Submit'},
       ]);
   let body = '';
@@ -9435,11 +9437,10 @@ function stepTradeReview() {
   const srcLabel = (TRADE_SOURCES.find(s=>s.key===w.source)||{}).label || '—';
   return `<div style="display:flex;flex-direction:column;gap:20px;width:100%">
     <div>
-      <h2 style="font-size:18px;font-weight:700">Review</h2>
-      <p style="font-size:14px;color:var(--muted-foreground);margin-top:4px">Confirm the details of your document before submitting.</p>
+      <h2 style="font-size:18px;font-weight:700">Confirm the file and submit</h2>
     </div>
     <div class="review-card">
-      <div class="review-card-h">${I.file} File information summary</div>
+      <div class="review-card-h">${I.file} File summary</div>
       <div class="review-card-b">
         <div class="kv-grid">
           <div><label>Business type</label><p>${srcLabel}</p></div>
@@ -9532,7 +9533,7 @@ function viewWizardTrade() {
     }, 0);
   }
   const canReview = !!w.source && w.uploadState === 'done' && tradeLogisticsComplete(w);
-  const steps = [{n:1,label:'Upload & complete'},{n:2,label:'File description'},{n:3,label:'Review'}];
+  const steps = [{n:1,label:'Upload & complete'},{n:2,label:'Add a description'},{n:3,label:'Confirm upload'}];
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('trade',w) : steps;
   const displayStep = w.uploadOriginVersion===2 ? (stage===1?2:stage===2?3:4) : stage;
   const tradeBody = stage === 1 ? stepTradeDynamic() : stage === 2 ? stepFileDescription() : stepTradeReview();
