@@ -3661,12 +3661,12 @@ function detectUploadV2Route(category,extension,headers,fileName) {
   return {route:'',error:'This file format is not supported.'};
 }
 function uploadV2StepsForRoute(route,w) {
-  if (route === 'template') return [{n:1,label:'Upload document'},{n:2,label:'Add a description'},{n:3,label:'Confirm upload'}];
-  if (route === 'trade') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Add a description'},{n:4,label:'Confirm upload'}];
+  if (route === 'template') return [{n:1,label:'Upload file'},{n:2,label:'Add a description'},{n:3,label:'Confirm upload'}];
+  if (route === 'trade') return [{n:1,label:'Upload file'},{n:2,label:'Confirm info'},{n:3,label:'Add a description'},{n:4,label:'Confirm upload'}];
   if (route === 'erp') {
-    if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Add a description'},{n:4,label:'Confirm upload'}];
+    if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload file'},{n:2,label:'Confirm info'},{n:3,label:'Add a description'},{n:4,label:'Confirm upload'}];
     if (w && w.erpFlowVersion === 'v3') {
-      const steps = [{n:1,label:'Upload document'},{n:2,label:'Confirm the processing results'}];
+      const steps = [{n:1,label:'Upload file'},{n:2,label:'Confirm the processing results'}];
       if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
       steps.push({n:steps.length + 1,label:'Add a description'});
       steps.push({n:steps.length + 1,label:'Confirm upload'});
@@ -3675,7 +3675,7 @@ function uploadV2StepsForRoute(route,w) {
     const stats = w && w.kind === 'erp' ? getERPMappingStats(w) : null;
     const hasUnrecognized = !!(w && (w.erp2HadUnrecognized || w.erp2ZeroMatchAlert));
     const needsReplacement = !!(stats && (stats.missing.length || (w && (w.erp2ReplacementState === 'done' || w.erp2ReplacementOutcome))));
-    const steps = [{n:1,label:'Upload document'}];
+    const steps = [{n:1,label:'Upload file'}];
     if (!(w && w.erp2SkippedConfirm)) steps.push({n:steps.length + 1,label:'Confirm usable information'});
     if (hasUnrecognized) steps.push({n:steps.length + 1,label:'Confirm missing information'});
     if (needsReplacement) steps.push({n:steps.length + 1,label:'Update and re-upload'});
@@ -3683,14 +3683,14 @@ function uploadV2StepsForRoute(route,w) {
     steps.push({n:steps.length + 1,label:'Confirm upload'});
     return steps;
   }
-  return [{n:1,label:'Upload document'}];
+  return [{n:1,label:'Upload file'}];
 }
 function uploadV2ERPDisplayStep(w) {
   const steps = uploadV2StepsForRoute('erp', w);
-  let label = 'Upload document';
+  let label = 'Upload file';
   if (w && w.erpFlowVersion === 'v3') {
     const stage = w.erp3Stage || 1;
-    if (stage <= 1) label = 'Upload document';
+    if (stage <= 1) label = 'Upload file';
     else if (stage === 2) label = 'Confirm the processing results';
     else if (stage === 3 && w.erp3NeedsReplacement) label = 'Update and re-upload';
     else if (stage === 4) label = 'Add a description';
@@ -3699,7 +3699,7 @@ function uploadV2ERPDisplayStep(w) {
     label = w.step === 4 ? 'Confirm upload' : w.step === 5 ? 'Add a description' : 'Confirm info';
   } else {
     const stage = (w && w.erp2Stage) || 1;
-    if (stage <= 1) label = 'Upload document';
+    if (stage <= 1) label = 'Upload file';
     else if (stage === 2) label = 'Confirm usable information';
     else if (stage === 3) label = 'Confirm missing information';
     else if (stage === 4) label = 'Update and re-upload';
@@ -6869,7 +6869,7 @@ function stepTemplateUpload() {
       onDelete: 'deleteUploadedTemplateFile()',
     });
   }
-  body += `${uploadBoxBlock('Template CSV', fileControl)}</div>`;
+  body += `${uploadBoxBlock('Upload file', fileControl)}</div>`;
   return body;
 }
 
@@ -6887,7 +6887,7 @@ function viewWizardTemplate() {
   if (!state.wiz) state.wiz = w;
   if (w.done) return wizSuccess('template');
   const stage = w.templateStage || 1;
-  const steps = [{n:1,label:'Upload document'},{n:2,label:'Add a description'},{n:3,label:'Confirm upload'}];
+  const steps = [{n:1,label:'Upload file'},{n:2,label:'Add a description'},{n:3,label:'Confirm upload'}];
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('template',w) : steps;
   const displayStep = stage;
   const canContinue = w.csvState === 'mapped' && getTemplateUploadIssues(w).length === 0;

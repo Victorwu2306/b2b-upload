@@ -3694,12 +3694,12 @@ function detectUploadV2Route(category,extension,headers,fileName) {
   return {route:'',error:'This file format is not supported.'};
 }
 function uploadV2StepsForRoute(route,w) {
-  if (route === 'template') return [{n:1,label:'Upload document'},{n:2,label:'Add a description'},{n:3,label:'Confirm upload'}];
-  if (route === 'trade') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Add a description'},{n:4,label:'Confirm upload'}];
+  if (route === 'template') return [{n:1,label:'Upload file'},{n:2,label:'Add a description'},{n:3,label:'Confirm upload'}];
+  if (route === 'trade') return [{n:1,label:'Upload file'},{n:2,label:'Confirm info'},{n:3,label:'Add a description'},{n:4,label:'Confirm upload'}];
   if (route === 'erp') {
-    if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload document'},{n:2,label:'Confirm info'},{n:3,label:'Add a description'},{n:4,label:'Confirm upload'}];
+    if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload file'},{n:2,label:'Confirm info'},{n:3,label:'Add a description'},{n:4,label:'Confirm upload'}];
     if (w && w.erpFlowVersion === 'v3') {
-      const steps = [{n:1,label:'Upload document'},{n:2,label:'Confirm the processing results'}];
+      const steps = [{n:1,label:'Upload file'},{n:2,label:'Confirm the processing results'}];
       if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
       steps.push({n:steps.length + 1,label:'Add a description'});
       steps.push({n:steps.length + 1,label:'Confirm upload'});
@@ -3708,7 +3708,7 @@ function uploadV2StepsForRoute(route,w) {
     const stats = w && w.kind === 'erp' ? getERPMappingStats(w) : null;
     const hasUnrecognized = !!(w && (w.erp2HadUnrecognized || w.erp2ZeroMatchAlert));
     const needsReplacement = !!(stats && (stats.missing.length || (w && (w.erp2ReplacementState === 'done' || w.erp2ReplacementOutcome))));
-    const steps = [{n:1,label:'Upload document'}];
+    const steps = [{n:1,label:'Upload file'}];
     if (!(w && w.erp2SkippedConfirm)) steps.push({n:steps.length + 1,label:'Confirm usable information'});
     if (hasUnrecognized) steps.push({n:steps.length + 1,label:'Confirm missing information'});
     if (needsReplacement) steps.push({n:steps.length + 1,label:'Update and re-upload'});
@@ -3716,14 +3716,14 @@ function uploadV2StepsForRoute(route,w) {
     steps.push({n:steps.length + 1,label:'Confirm upload'});
     return steps;
   }
-  return [{n:1,label:'Upload document'}];
+  return [{n:1,label:'Upload file'}];
 }
 function uploadV2ERPDisplayStep(w) {
   const steps = uploadV2StepsForRoute('erp', w);
-  let label = 'Upload document';
+  let label = 'Upload file';
   if (w && w.erpFlowVersion === 'v3') {
     const stage = w.erp3Stage || 1;
-    if (stage <= 1) label = 'Upload document';
+    if (stage <= 1) label = 'Upload file';
     else if (stage === 2) label = 'Confirm the processing results';
     else if (stage === 3 && w.erp3NeedsReplacement) label = 'Update and re-upload';
     else if (stage === 4) label = 'Add a description';
@@ -3732,7 +3732,7 @@ function uploadV2ERPDisplayStep(w) {
     label = w.step === 4 ? 'Confirm upload' : w.step === 5 ? 'Add a description' : 'Confirm info';
   } else {
     const stage = (w && w.erp2Stage) || 1;
-    if (stage <= 1) label = 'Upload document';
+    if (stage <= 1) label = 'Upload file';
     else if (stage === 2) label = 'Confirm usable information';
     else if (stage === 3) label = 'Confirm missing information';
     else if (stage === 4) label = 'Update and re-upload';
@@ -6926,7 +6926,7 @@ function stepTemplateUpload() {
       onDelete: 'deleteUploadedTemplateFile()',
     });
   }
-  body += `${uploadBoxBlock('Template CSV', fileControl)}</div>`;
+  body += `${uploadBoxBlock('Upload file', fileControl)}</div>`;
   return body;
 }
 
@@ -6944,7 +6944,7 @@ function viewWizardTemplate() {
   if (!state.wiz) state.wiz = w;
   if (w.done) return wizSuccess('template');
   const stage = w.templateStage || 1;
-  const steps = [{n:1,label:'Upload document'},{n:2,label:'Add a description'},{n:3,label:'Confirm upload'}];
+  const steps = [{n:1,label:'Upload file'},{n:2,label:'Add a description'},{n:3,label:'Confirm upload'}];
   const displaySteps = w.uploadOriginVersion===2 ? uploadV2StepsForRoute('template',w) : steps;
   const displayStep = stage;
   const canContinue = w.csvState === 'mapped' && getTemplateUploadIssues(w).length === 0;
@@ -10657,7 +10657,7 @@ const CN_UI_REPLACEMENTS = [
   [/Tour packages, destination services, and related travel fees/g, '旅游套餐、目的地服务及相关旅行费用'],
   [/Switch page version/g, '切换页面版本'], [/Upload V1/g, '上传 V1'], [/Upload V2/g, '上传 V2'], [/Upload V2 starts with a category and routes the file automatically\./g, 'Upload V2 先选择交易类别，再自动识别并分流文件。'], [/Upload flow version/g, '上传流程版本'],
   [/Select a category and upload/g, '上传材料'], [/Choose a transaction category, then upload a related file on this page\./g, ''],
-  [/^Upload document$/g, '上传材料'], [/^Confirm info$/g, '确认信息'], [/^Match remaining fields$/g, '匹配剩余字段'], [/^Identify other details$/g, '确认其他信息'], [/^Update and re-upload$/g, '更新并重新上传'], [/^Resubmit$/g, '重新提交'], [/^Add a description$/g, '添加描述'], [/^Confirm upload$/g, '确认上传'], [/Confirm the file and submit/g, '确认文件并提交'], [/^Review$/g, '确认信息'],
+  [/^Upload document$/g, '上传文件'], [/^Confirm info$/g, '确认信息'], [/^Match remaining fields$/g, '匹配剩余字段'], [/^Identify other details$/g, '确认其他信息'], [/^Update and re-upload$/g, '更新并重新上传'], [/^Resubmit$/g, '重新提交'], [/^Add a description$/g, '添加描述'], [/^Confirm upload$/g, '确认上传'], [/Confirm the file and submit/g, '确认文件并提交'], [/^Review$/g, '确认信息'],
   [/Process & review/g, '确认信息'], [/Choose a sample file/g, '选择模拟文件'], [/This prototype simulates file selection and processing\./g, '此原型将模拟文件选择和处理。'],
   [/All columns are recognized and mapped automatically/g, '系统可识别并精准匹配所有列'],
   [/Some headers are unrecognized, but you can map them all manually/g, '系统未能识别部分表头，但可通过手动匹配全部补全'],
