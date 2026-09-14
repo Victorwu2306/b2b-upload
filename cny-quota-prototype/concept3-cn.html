@@ -3062,16 +3062,21 @@ function fileMissingDetailsTitleHTML(names) {
   return usesChineseCopy() ? `文件中缺少${joined}相关信息` : `The file is missing ${joined} details`;
 }
 function fileStillMissingDetailsTitleHTML(names) {
-  const joined = joinMissingFieldChipsHTML(names);
-  return usesChineseCopy() ? `文件仍缺少${joined}相关信息` : `The file is still missing ${joined} details`;
+  return missingDetailsStillNotFoundTitleHTML(names);
 }
 function addMissingColumnsReuploadCopy(count) {
   return usesChineseCopy()
     ? `请在原文件中，添加这${count}列信息，再重新上传补充完整的文件。`
     : `Please add these ${count} columns to the original file, then re-upload the complete file.`;
 }
-function missingDetailsStillNotFoundTitle() {
-  return usesChineseCopy() ? '缺失信息在文件中仍未找到' : 'The missing details were still not found in the file';
+function missingDetailsStillNotFoundTitleHTML(names) {
+  const joined = joinMissingFieldChipsHTML(names);
+  return usesChineseCopy() ? `${joined}相关信息仍未找到` : `${joined} details were still not found`;
+}
+function missingDetailsSelectOrReuploadCopy(count) {
+  return usesChineseCopy()
+    ? `如果文件中存在，请在下表中选择对应列。如果不存在，请在原文件中添加这${count}列信息后重新上传。`
+    : `If they exist in the file, select the matching columns in the table below. If they do not exist, add these ${count} columns to the original file, then re-upload.`;
 }
 function erpMissingFieldsReuploadCardHTML(missingNames, isProcessing) {
   return `<div class="erp3-corrected-card">
@@ -3712,7 +3717,7 @@ function uploadV2StepsForRoute(route,w) {
     if (w && w.erpFlowVersion === 'v1') return [{n:1,label:'Upload file'},{n:2,label:'Confirm info'},{n:3,label:'Name the file'},{n:4,label:'Confirm upload'}];
     if (w && w.erpFlowVersion === 'v3') {
       const steps = [{n:1,label:'Upload file'},{n:2,label:'Confirm the processing results'}];
-      if (w.erp3NeedsReplacement) steps.push({n:3,label:'Add file information and re-upload'});
+      if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
       steps.push({n:steps.length + 1,label:'Name the file'});
       steps.push({n:steps.length + 1,label:'Confirm upload'});
       return steps;
@@ -3723,7 +3728,7 @@ function uploadV2StepsForRoute(route,w) {
     const steps = [{n:1,label:'Upload file'}];
     if (!(w && w.erp2SkippedConfirm)) steps.push({n:steps.length + 1,label:'Confirm usable information'});
     if (hasUnrecognized) steps.push({n:steps.length + 1,label:'Confirm missing information'});
-    if (needsReplacement) steps.push({n:steps.length + 1,label:'Add file information and re-upload'});
+    if (needsReplacement) steps.push({n:steps.length + 1,label:'Update and re-upload'});
     steps.push({n:steps.length + 1,label:'Name the file'});
     steps.push({n:steps.length + 1,label:'Confirm upload'});
     return steps;
@@ -3737,7 +3742,7 @@ function uploadV2ERPDisplayStep(w) {
     const stage = w.erp3Stage || 1;
     if (stage <= 1) label = 'Upload file';
     else if (stage === 2) label = 'Confirm the processing results';
-    else if (stage === 3 && w.erp3NeedsReplacement) label = 'Add file information and re-upload';
+    else if (stage === 3 && w.erp3NeedsReplacement) label = 'Update and re-upload';
     else if (stage === 4) label = 'Name the file';
     else label = 'Confirm upload';
   } else if (w && w.erpFlowVersion === 'v1') {
@@ -3747,7 +3752,7 @@ function uploadV2ERPDisplayStep(w) {
     if (stage <= 1) label = 'Upload file';
     else if (stage === 2) label = 'Confirm usable information';
     else if (stage === 3) label = 'Confirm missing information';
-    else if (stage === 4) label = 'Add file information and re-upload';
+    else if (stage === 4) label = 'Update and re-upload';
     else if (stage === 5) label = 'Name the file';
     else label = 'Confirm upload';
   }
@@ -5284,59 +5289,53 @@ function marketplaceResourcesPanel() {
   </div>`;
 }
 
-function homepage2MarketplaceSupportPanel() {
-  if (!state.homepage2MarketplaceSupport) return '';
+function supportedMarketplacesDrawerHTML(closeExpr) {
   const automaticMarketplaces = [
     'eBay', 'Etsy', 'JM Technologies', 'Joom SIA', 'Joom USA', 'Lazada',
     'LLC Internet Projects', 'Ruten', 'Shopee', 'Tophatter', 'Wish',
   ];
-  const connectMarketplaces = [
-    ['Amazon', '<div class="platform-logo" style="color:#FF9900;font-style:italic;font-family:serif;border:none">a</div>'],
-    ['Shopify', '<div class="platform-logo" style="background:#95BF47;color:#fff;border:none;font-size:11px">S</div>'],
-    ['Walmart', '<div class="platform-logo" style="background:#0071CE;color:#FFC220;border:none">★</div>'],
-  ];
-  return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.homepage2MarketplaceSupport=false;render()}">
+  return `<div class="drawer-backdrop open" onclick="if(event.target===this){${closeExpr}}">
     <div class="drawer wide">
       <div class="drawer-h">
         <div>
           <h3>Supported marketplaces</h3>
-          <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;font-weight:400">Choose the relevant path based on how your marketplace is supported.</p>
+          <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;font-weight:400">Marketplace transactions that can increase your CNY quota</p>
         </div>
-        <button type="button" onclick="state.homepage2MarketplaceSupport=false;render()">${I.x}</button>
+        <button type="button" onclick="${closeExpr}">${I.x}</button>
       </div>
-      <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:16px">
-        <section style="padding:16px;border:1px solid rgba(91,59,232,.24);border-radius:8px;background:var(--accent)">
-          <p style="font-size:14px;font-weight:600">Connect a marketplace</p>
-          <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin:4px 0 12px">Connect these marketplaces to increase quota automatically from eligible payments.</p>
-          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
-            ${connectMarketplaces.map(([name,logo]) => `<div style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid rgba(91,59,232,.18);border-radius:8px;background:#fff">${logo}<strong style="font-size:12px">${name}</strong></div>`).join('')}
+      <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:20px">
+        <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
+          We support transactions from these marketplaces to increase your quota.
+        </p>
+        <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
+          <p style="font-size:14px;font-weight:600;margin-bottom:4px">Automatic quota increase</p>
+          <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:14px">
+            Your quota increases automatically when you receive payments to these stores. You don’t need to upload documents or connect stores.
+          </p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px 20px">
+            ${automaticMarketplaces.map(name => `<div style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--foreground)"><span style="color:var(--success)">${I.check}</span>${name}</div>`).join('')}
           </div>
-        </section>
-
-        <section style="padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-          <p style="font-size:14px;font-weight:600">Automatic quota increase</p>
-          <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin:4px 0 12px">Eligible payments from these marketplaces can update your quota automatically.</p>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 18px">
-            ${automaticMarketplaces.map(name => `<div style="display:flex;align-items:center;gap:7px;font-size:12px"><span style="color:var(--success)">${I.check}</span>${name}</div>`).join('')}
-          </div>
-        </section>
-
-        <section style="padding:16px;border:1px solid var(--border);border-radius:8px;background:#fff">
-          <p style="font-size:14px;font-weight:600">Upload using the marketplace template</p>
-          <p style="font-size:12px;color:var(--muted-foreground);line-height:1.45;margin:4px 0 14px">Use the marketplace CSV template for transaction records from these marketplaces.</p>
+        </div>
+        <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:#fff">
+          <p style="font-size:14px;font-weight:600;margin-bottom:6px">Upload documents required</p>
+          <div style="margin-bottom:16px">${uiAlertHTML({ tone:'info', content:'<strong>Amazon, Walmart, and Shopify:</strong> You can manually upload documents for these stores, but connecting them lets us automatically increase quota with your new payments.' })}</div>
           <div style="display:flex;flex-direction:column;gap:12px">
             ${Object.entries(MARKETPLACE_UPLOAD_GROUPS).map(([letter,names]) => `
               <div style="display:grid;grid-template-columns:24px 1fr;gap:10px">
                 <strong style="font-size:13px;color:var(--primary)">${letter}</strong>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;font-size:12px">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;font-size:13px;color:var(--foreground)">
                   ${names.map(name => `<span>${name}</span>`).join('')}
                 </div>
               </div>`).join('')}
           </div>
-        </section>
+        </div>
       </div>
     </div>
   </div>`;
+}
+function homepage2MarketplaceSupportPanel() {
+  if (!state.homepage2MarketplaceSupport) return '';
+  return supportedMarketplacesDrawerHTML('state.homepage2MarketplaceSupport=false;render()');
 }
 
 function goodsTradeRequirementsPanel() {
@@ -5375,48 +5374,7 @@ function goodsTradeRequirementsPanel() {
 
 function supportedMarketplacesPanel() {
   if (!state.supportedMarketplacesPanel) return '';
-  const automaticMarketplaces = [
-    'eBay', 'Etsy', 'JM Technologies', 'Joom SIA', 'Joom USA', 'Lazada',
-    'LLC Internet Projects', 'Ruten', 'Shopee', 'Tophatter', 'Wish',
-  ];
-  return `<div class="drawer-backdrop open" onclick="if(event.target===this){state.supportedMarketplacesPanel=false;render()}">
-    <div class="drawer wide">
-      <div class="drawer-h">
-        <div>
-          <h3>Supported marketplaces</h3>
-          <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px;font-weight:400">Marketplace transactions that can increase your CNY quota</p>
-      </div>
-        <button type="button" onclick="state.supportedMarketplacesPanel=false;render()">${I.x}</button>
-      </div>
-      <div class="drawer-b" style="padding:20px 24px;display:flex;flex-direction:column;gap:20px">
-    <p style="font-size:13px;color:var(--muted-foreground);line-height:1.5">
-      We support transactions from these marketplaces to increase your quota.
-    </p>
-    <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--muted)">
-      <p style="font-size:14px;font-weight:600;margin-bottom:4px">Automatic quota increase</p>
-      <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45;margin-bottom:14px">
-        Your quota increases automatically when you receive payments to these stores. You don’t need to upload documents or connect stores.
-      </p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px 20px">
-        ${automaticMarketplaces.map(name => `<div style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--foreground)"><span style="color:var(--success)">${I.check}</span>${name}</div>`).join('')}
-      </div>
-    </div>
-    <div style="padding:16px;border:1px solid var(--border);border-radius:8px;background:#fff">
-      <p style="font-size:14px;font-weight:600;margin-bottom:6px">Upload documents required</p>
-          <div style="margin-bottom:16px">${uiAlertHTML({ tone:'info', content:'<strong>Amazon, Walmart, and Shopify:</strong> You can manually upload documents for these stores, but connecting them lets us automatically increase quota with your new payments.' })}</div>
-      <div style="display:flex;flex-direction:column;gap:12px">
-        ${Object.entries(MARKETPLACE_UPLOAD_GROUPS).map(([letter,names]) => `
-          <div style="display:grid;grid-template-columns:24px 1fr;gap:10px">
-            <strong style="font-size:13px;color:var(--primary)">${letter}</strong>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;font-size:13px;color:var(--foreground)">
-              ${names.map(name => `<span>${name}</span>`).join('')}
-            </div>
-          </div>`).join('')}
-          </div>
-        </div>
-      </div>
-      </div>
-    </div>`;
+  return supportedMarketplacesDrawerHTML('state.supportedMarketplacesPanel=false;render()');
 }
 
 function viewDocumentRequirements() {
@@ -6380,11 +6338,13 @@ function erpReplacementNewColumnsSection(w) {
     return `<div class="mapping-c2-success">${I.check}<div><strong>All required settlement details were found</strong></div></div>
       ${table}`;
   }
-  const remainingNames = unmapped.length ? unmapped : newHeaders;
+  const remainingNames = stats.missing.length
+    ? stats.missing.map(field => field.name)
+    : (unmapped.length ? unmapped : newHeaders);
   return `${uiAlertHTML({
         tone:'error',
-        title: cannotMatch ? fileStillMissingDetailsTitleHTML(remainingNames) : missingDetailsStillNotFoundTitle(),
-        content: addMissingColumnsReuploadCopy(remainingNames.length),
+        title: missingDetailsStillNotFoundTitleHTML(remainingNames),
+        content: missingDetailsSelectOrReuploadCopy(remainingNames.length),
         action:'Re-upload file',
         actionOnclick:'retryERPCorrectedUpload()',
       })}
@@ -6811,7 +6771,7 @@ function attemptERPNext() {
   const unanswered = getERPUnansweredManualFields(w, w.manualResolutionFields);
   if (unanswered.length) {
     w.mappingAttempted = true;
-    toast('Select a file column or None of above for every field. The selection cannot be empty.');
+    toast('Select a file column or Not in the file for every field. The selection cannot be empty.');
     render();
     requestAnimationFrame(() => {
       const target = document.querySelector('.map-row.needs-selection');
@@ -7077,7 +7037,7 @@ function stepERPInfoConcept2(w, stats) {
         <h2>Do you have these details in your file?</h2>
         <p>${erpUnmatchedDetailsIntro(resolutionNames.length)}</p>
       </div>
-      ${uiAlertHTML({ tone:'info', content:'If no uploaded column matches a field, select <strong>None of above</strong> and upload a complete corrected file below.' })}
+      ${uiAlertHTML({ tone:'info', content:'If no uploaded column matches a field, select <strong>Not in the file</strong> and upload a complete corrected file below.' })}
       ${erp2TargetMappingTable(resolutionNames, stats.sources, w.mappings, 'updateERP2TargetMapping', true)}
       <div class="mapping-c2-or">or</div>
       <div class="mapping-c2-choice reupload">
@@ -7163,7 +7123,7 @@ function mappingStatusIconHTML(kind, label) {
   return `<span class="map-status-icon ${cls}"${title ? ` title="${title}" aria-label="${title}"` : ' aria-hidden="true"'}>${svg}</span>`;
 }
 function mappingStatusFromState(rowState, selectedSource) {
-  if (rowState === 'none') return { kind:'pending', label:'None of above' };
+  if (rowState === 'none') return { kind:'pending', label:'Not in the file' };
   if (rowState === 'unmapped' || rowState === 'unrecognized' || rowState === 'missing') {
     return { kind:'warning', label: rowState === 'missing' ? 'Missing from your file' : 'Select a column from your file' };
   }
@@ -7289,7 +7249,7 @@ function erp2TargetMappingTable(targetNames, sources, mappings, updater, manualS
       const status = mappingStatusFromState(rowState, selectedSource);
       const extra = conflict
         ? duplicateSourceErrorHTML(selectedSource, otherTargets)
-        : showError ? `<div class="field-error">${I.alert}<span>${replacementReview?'Unable to recognize this column. Select a matching column from your file.':'Select a file column or None of above.'}</span></div>` : '';
+        : showError ? `<div class="field-error">${I.alert}<span>${replacementReview?'Unable to recognize this column. Select a matching column from your file.':'Select a file column or Not in the file.'}</span></div>` : '';
       const columnSources = manualStage
         ? erpUnrecognizedFileColumns(state.wiz, availableSources, selectedSource)
         : availableSources;
@@ -7432,15 +7392,13 @@ function stepERP2Upload(w) {
 }
 function erpUnmatchedDetailsIntro(count) {
   const plural = count !== 1;
-  return `The other ${count} detail${plural?'s':''} ${plural?'are':'is'} required too, but we couldn't find ${plural?'them':'it'} in your file. Select the matching column for each one, or "None of the above" if your file doesn't have it.`;
+  return `The other ${count} detail${plural?'s':''} ${plural?'are':'is'} required too, but we couldn't find ${plural?'them':'it'} in your file. Select the matching column for each one, or "Not in the file" if your file doesn't have it.`;
 }
 function erpMissingInFileTableIntro(count) {
   return `Another ${count} required settlement columns could not be found in your file. If the file contains related information, select the matching column headers.`;
 }
 function erpMatchedColumnsIntro(matchedCount, totalCount) {
-  return `<div class="erp-match-intro">
-    <p>${matchedCount} columns in your file can be used for settlement. The table below maps the required settlement details to these ${matchedCount} columns in your file. Please confirm each one.</p>
-  </div>`;
+  return `${matchedCount} columns in your file can be used for settlement. The table below maps the required settlement details to these ${matchedCount} columns in your file. Please confirm each one.`;
 }
 function erp3MatchedColumnsIntro(matchedCount, missingCount) {
   return missingCount
@@ -7458,10 +7416,10 @@ function stepERP2Confirm(w) {
   return `<div class="erp2-stage">
     <div class="erp2-stage-head">
       <h2>Confirm the usable information in your file</h2>
+      ${identifiedTargetNames.length ? `<p>${erpMatchedColumnsIntro(identifiedTargetNames.length, ERP_REQUIRED_FIELDS.length)}</p>` : ''}
     </div>
     ${erp2FileSummary(w, stats)}
     <div>
-      ${erpMatchedColumnsIntro(identifiedTargetNames.length, ERP_REQUIRED_FIELDS.length)}
       ${identifiedTargetNames.length
         ? erp2TargetMappingTable(identifiedTargetNames, stats.sources, w.mappings, 'updateERP2TargetMapping', false)
         : uiAlertHTML({ tone: w.erpScenario === 'no-match-unrecognized' ? 'error' : 'info', content: emptyHint })}
@@ -7508,11 +7466,10 @@ function stepERP2Unrecognized(w) {
       <h2>${zeroMatchAlert ? 'Match columns manually' : 'Confirm the missing information in your file'}</h2>
       ${zeroMatchAlert
         ? `<p>No columns were matched automatically. Select the matching column for each required detail, or re-upload a corrected file.</p>`
-        : ''}
+        : `<p>${erpMissingInFileTableIntro(resolutionNames.length)}</p>`}
     </div>
     ${erp2FileSummary(w, stats)}
     ${zeroMatchAlert ? erpZeroMatchAlertHTML({ canMatch:true }) : ''}
-    ${zeroMatchAlert ? '' : `<div class="erp-match-intro"><p>${erpMissingInFileTableIntro(resolutionNames.length)}</p></div>`}
     ${erp2TargetMappingTable(resolutionNames, stats.sources, w.mappings, 'updateERP2TargetMapping', true)}
   </div>`;
 }
@@ -7563,7 +7520,7 @@ function erp2Steps(w) {
   const steps = [{n:1,label:'Upload file'}];
   if (!w.erp2SkippedConfirm) steps.push({n:2,label:'Confirm usable information'});
   if (w.erp2HadUnrecognized || w.erp2ZeroMatchAlert) steps.push({n:3,label:'Confirm missing information'});
-  if (stats.missing.length || w.erp2ReplacementState === 'done' || w.erp2ReplacementOutcome) steps.push({n:4,label:'Add file information and re-upload'});
+  if (stats.missing.length || w.erp2ReplacementState === 'done' || w.erp2ReplacementOutcome) steps.push({n:4,label:'Update and re-upload'});
   steps.push({n:5,label:'Name the file'});
   steps.push({n:6,label:'Confirm upload'});
   return steps.map((step,index) => Object.assign({}, step, { displayN:index + 1 }));
@@ -7617,7 +7574,7 @@ function erp2Next() {
     const unanswered = getERPUnansweredManualFields(w, w.manualResolutionFields);
     if (unanswered.length) {
       w.mappingAttempted = true;
-      toast('Select a file column or None of above for every field. The selection cannot be empty.');
+      toast('Select a file column or Not in the file for every field. The selection cannot be empty.');
       render();
       requestAnimationFrame(() => {
         const target = document.querySelector('.map-row.needs-selection');
@@ -7687,7 +7644,7 @@ function viewWizardERP2(w) {
 }
 
 function erpNoneOfAboveOption(selected) {
-  return `<option disabled class="erp-option-divider" value="__divider__">────────</option><option value="__none__" class="erp-none-option" ${selected?'selected':''}>None of above</option>`;
+  return `<option disabled class="erp-option-divider" value="__divider__">────────</option><option value="__none__" class="erp-none-option" ${selected?'selected':''}>Not in the file</option>`;
 }
 function getERP3FieldRows(w) {
   const stats = getERPMappingStats(w);
@@ -7707,8 +7664,8 @@ function getERP3FieldRows(w) {
 function erp3StatusHint(status, attempted) {
   if (status === 'mapped') return 'Mapped';
   if (status === 'manually-matched') return 'Manually matched';
-  if (status === 'unrecognized') return attempted ? 'Select a file column or None of above' : 'Unrecognized — select a file column';
-  if (status === 'none') return 'None of above';
+  if (status === 'unrecognized') return attempted ? 'Select a file column or Not in the file' : 'Unrecognized — select a file column';
+  if (status === 'none') return 'Not in the file';
   if (status === 'missing') return 'Missing from your file';
   if (status === 'conflict') return 'Resolve the duplicate mapping';
   return '';
@@ -7729,7 +7686,7 @@ function erp3TargetMappingTable(w) {
       const status = mappingStatusFromState(row.status, selectedSource);
       const extra = conflict
         ? duplicateSourceErrorHTML(selectedSource, otherTargets)
-        : showError ? `<div class="field-error">${I.alert}<span>Select a file column or None of above.</span></div>` : '';
+        : showError ? `<div class="field-error">${I.alert}<span>Select a file column or Not in the file.</span></div>` : '';
       const columnSources = (row.status === 'unrecognized' || row.status === 'none')
         ? erpUnrecognizedFileColumns(w, availableSources, selectedSource)
         : availableSources;
@@ -7806,7 +7763,7 @@ function stepERP3Missing(w) {
 
 function erp3Steps(w) {
   const steps = [{n:1,label:'Upload file'},{n:2,label:'Confirm the processing results'}];
-  if (w.erp3NeedsReplacement) steps.push({n:3,label:'Add file information and re-upload'});
+  if (w.erp3NeedsReplacement) steps.push({n:3,label:'Update and re-upload'});
   steps.push({n:4,label:'Name the file'});
   steps.push({n:5,label:'Confirm upload'});
   return steps.map((step,index) => Object.assign({}, step, { displayN:index + 1 }));
@@ -7843,7 +7800,7 @@ function erp3Next() {
     }
     if (unrecognizedEmpty) {
       w.mappingAttempted = true;
-      toast('Select a file column or None of above for every field. The selection cannot be empty.');
+      toast('Select a file column or Not in the file for every field. The selection cannot be empty.');
       render();
       return;
     }
@@ -10662,7 +10619,7 @@ const CN_UI_REPLACEMENTS = [
   [/Tour packages, destination services, and related travel fees/g, '旅游套餐、目的地服务及相关旅行费用'],
   [/Switch page version/g, '切换页面版本'], [/Upload V1/g, '上传 V1'], [/Upload V2/g, '上传 V2'], [/Upload V2 starts with a category and routes the file automatically\./g, 'Upload V2 先选择交易类别，再自动识别并分流文件。'], [/Upload flow version/g, '上传流程版本'],
   [/Select a category and upload/g, '上传材料'], [/Choose a transaction category, then upload a related file on this page\./g, ''],
-  [/^Upload document$/g, '上传文件'], [/^Confirm info$/g, '确认信息'], [/^Match remaining fields$/g, '匹配剩余字段'], [/^Identify other details$/g, '确认其他信息'], [/Add file information and re-upload/g, '补充文件信息并重新上传'], [/^Resubmit$/g, '重新提交'], [/^Name the file$/g, '命名文件'], [/^Confirm upload$/g, '确认上传'], [/Confirm the file and submit/g, '确认文件并提交'], [/^Review$/g, '确认信息'],
+  [/^Upload document$/g, '上传文件'], [/^Confirm info$/g, '确认信息'], [/^Match remaining fields$/g, '匹配剩余字段'], [/^Identify other details$/g, '确认其他信息'], [/Add file information and re-upload/g, '补充文件信息并重新上传'], [/^Update and re-upload$/g, '更新并重新上传'], [/^Resubmit$/g, '重新提交'], [/^Name the file$/g, '命名文件'], [/^Confirm upload$/g, '确认上传'], [/Confirm the file and submit/g, '确认文件并提交'], [/^Review$/g, '确认信息'],
   [/Process & review/g, '确认信息'], [/Choose a sample file/g, '选择模拟文件'], [/This prototype simulates file selection and processing\./g, '此原型将模拟文件选择和处理。'],
   [/All columns are recognized and mapped automatically/g, '系统可识别并精准匹配所有列'],
   [/Some headers are unrecognized, but you can map them all manually/g, '系统未能识别部分表头，但可通过手动匹配全部补全'],
@@ -10952,9 +10909,9 @@ const CN_UI_REPLACEMENTS = [
   [/Resolve the duplicate mapping/g, '请处理重复对应'],
   [/Not found in your file/g, '文件中未找到'],
   [/(\d+) of the (\d+) required fields are mapped\./g, '已匹配 $2 个必填字段中的 $1 个。'],
-  [/Select a file column or None of above for every field\. The selection cannot be empty\./g, '请为每个字段选择文件列或“以上均不匹配”，不可留空。'],
-  [/Select a file column or None of above\./g, '请选择文件列或“以上均不匹配”。'],
-  [/Select a file column or None of above/g, '请选择文件列或“以上均不匹配”'],
+  [/Select a file column or Not in the file for every field\. The selection cannot be empty\./g, '请为每个字段选择文件列或“文件中不存在”，不可留空。'],
+  [/Select a file column or Not in the file\./g, '请选择文件列或“文件中不存在”。'],
+  [/Select a file column or Not in the file/g, '请选择文件列或“文件中不存在”'],
   [/Each required field can only be mapped once\. Resolve duplicate mappings before continuing\./g, '每个必填字段只能对应一列。请先处理重复对应，再继续。'],
   [/Each file column can only map to one required field\. Resolve duplicate selections before continuing\./g, '每个文件列只能对应一个必填字段。请先处理重复选择，再继续。'],
   [/(.+) is already mapped to (.+)\. Choose a different column\./g, '$1已对应$2。请选择其他列。'],
@@ -10972,11 +10929,11 @@ const CN_UI_REPLACEMENTS = [
   [/Review identified fields/g, '核对已识别字段'], [/Review identified/g, '核对已识别字段'], [/For each required system field, verify the selected uploaded file column or choose a different one\./g, '请逐一核对每个必填字段对应的上传列，也可重新选择。'],
   [/Identified system fields/g, '已识别的系统字段'], [/System required field/g, '系统必填字段'], [/Field required for processing/g, '处理文件所需的字段'],
   [/Your uploaded file column/g, '上传文件中的列'], [/Choose a file header and review its sample value/g, '选择文件表头并核对示例值'],
-  [/Choose an uploaded file column for/g, '为以下字段选择上传文件列：'], [/Select a column from your file/g, '从您的文件中选择一列'], [/— Select an uploaded file column —/g, '— 选择上传文件中的列 —'], [/None of above/g, '以上均不匹配'],
+  [/Choose an uploaded file column for/g, '为以下字段选择上传文件列：'], [/Select a column from your file/g, '从您的文件中选择一列'], [/— Select an uploaded file column —/g, '— 选择上传文件中的列 —'], [/Not in the file/g, '文件中不存在'],
   [/File column selected/g, '已选择文件列'], [/No file column selected/g, '未选择文件列'], [/Used for/g, '已用于'],
   [/Do you have these details in your file\?/g, '文件中是否包含这些信息？'],
   [/Another (\d+) required settlement columns could not be found in your file\. If the file contains related information, select the matching column headers\./g, '另有 $1 列结汇所需信息未能在您的文件中找到。若文件中包含相关信息，请选择对应的列标题。'],
-  [/The other (\d+) details? (?:is|are) required too, but we couldn't find (?:it|them) in your file\. Select the matching column for each one, or "None of the above" if your file doesn't have it\./g, '另外 $1 项信息也是必填的，但未能在文件中找到。请为每一项选择对应列；如文件中没有，请选择“以上均不匹配”。'],
+  [/The other (\d+) details? (?:is|are) required too, but we couldn't find (?:it|them) in your file\. Select the matching column for each one, or "Not in the file" if your file doesn't have it\./g, '另外 $1 项信息也是必填的，但未能在文件中找到。请为每一项选择对应列；如文件中没有，请选择“文件中不存在”。'],
   [/For the other details we ask for, tell us whether you have those in your document\./g, '其余所需信息，请说明文件中是否已包含。'],
   [/For each missing required system field, choose a corresponding column from your uploaded file\./g, '请为每个缺少的系统必填字段选择对应的上传文件列。'],
   [/Review how required system fields correspond to uploaded file headers\./g, '查看系统必填字段与上传文件表头的对应关系。'],
@@ -10991,7 +10948,7 @@ const CN_UI_REPLACEMENTS = [
   [/For each missing required field, select a corresponding column from your uploaded file\./g, '请为每个缺少的必填字段选择对应上传列。'],
   [/Move on to next if you don't have any of those in your document\./g, '如果文件中没有这些信息，请继续下一步。'],
   [/If no uploaded column matches a field, leave it unselected and continue to the next step\./g, '如无对应上传列，请保持未选择并继续。'],
-  [/If no uploaded column matches a field, select None of above and upload a complete corrected file below\./g, '如无对应上传列，请选择“以上均不匹配”，并在下方上传完整修正版。'],
+  [/If no uploaded column matches a field, select Not in the file and upload a complete corrected file below\./g, '如无对应上传列，请选择“文件中不存在”，并在下方上传完整修正版。'],
   [/If no uploaded column matches a field, select /g, '如果没有对应的上传列，请选择'], [/ and upload a complete corrected file below\./g, '，并在下方上传完整修正版。'], [/^or$/g, '或'], [/^OR$/g, '或'],
   [/Upload a complete corrected file/g, '上传完整修正版'], [/Add the missing headers to the original document\. Existing automatic and manual mappings will be reused\./g, '请在原文件中补充缺少的表头。已有对应关系将保留。'], [/Missing headers:/g, '缺少的表头：'],
   [/No manual matching is needed\. Continue to check whether anything else is missing\./g, '无需手动对应。请继续检查是否还有缺少内容。'],
