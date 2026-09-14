@@ -3026,16 +3026,21 @@ function joinMissingFieldChipsHTML(names) {
   return chips.slice(0, -1).join(listJoin) + andJoin + chips[chips.length - 1];
 }
 function fileMissingDetailsTitleHTML(names) {
-  const joined = joinMissingFieldChipsHTML(names);
-  return usesChineseCopy() ? `文件中缺少${joined}相关信息` : `The file is missing ${joined} details`;
+  const list = names || [];
+  const joined = joinMissingFieldChipsHTML(list);
+  const count = list.length;
+  const countLabel = count === 1 ? '一' : count === 2 ? '两' : String(count);
+  return usesChineseCopy()
+    ? `请在文件中添加${joined}${countLabel}列信息`
+    : `Please add the ${joined} ${count===1?'column':'columns'} to your file`;
 }
 function fileStillMissingDetailsTitleHTML(names) {
   return missingDetailsStillNotFoundTitleHTML(names);
 }
-function addMissingColumnsReuploadCopy(count) {
+function addMissingColumnsReuploadCopy() {
   return usesChineseCopy()
-    ? `请在原文件中，添加这${count}列信息，再重新上传补充完整的文件。`
-    : `Please add these ${count} columns to the original file, then re-upload the complete file.`;
+    ? '补充完成后重新上传，新文件需保留原有全部信息。'
+    : 'After you finish, re-upload. The new file must keep all existing information.';
 }
 function missingDetailsStillNotFoundTitleHTML(names) {
   const joined = joinMissingFieldChipsHTML(names);
