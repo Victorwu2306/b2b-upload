@@ -5147,7 +5147,7 @@ function homeCardsHomepage2() {
         <div class="homepage2-doc-items">
           <div>
             <strong>Trade documents</strong>
-            <p>Commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents.</p>
+            <p>Commercial invoices (CI) or proforma invoices (PI), purchase orders, contracts, or shipping and customs documents.</p>
           </div>
           <div>
             <strong>Transaction records (CSV format)</strong>
@@ -7044,7 +7044,7 @@ function stepTemplateUpload() {
   const marketplaceOnly = isMarketplaceOnlyWizard(w);
   const canChooseFile = !!w.category && (w.category !== 'marketplace' || !!w.marketplace);
   const selectedCategory = TEMPLATE_TYPES.find(type => type.key === w.category);
-  const heading = fromUploadV2 ? 'Review Upload V2 details' : (marketplaceOnly ? 'Upload transaction records' : 'Upload completed transaction records');
+  const heading = fromUploadV2 ? 'Review Upload V2 details' : (marketplaceOnly ? 'Upload transaction records' : 'Upload transaction records completed using the template');
   const subcopy = fromUploadV2
     ? 'The category and marketplace association were completed before upload.'
     : '';
@@ -7286,7 +7286,7 @@ function erp2FileSummary(w, stats) {
 }
 function mapTableHead() {
   return `<div class="map-head">
-    <div class="map-col-field"><div class="map-head-copy"><strong>System required column</strong></div></div>
+    <div class="map-col-field"><div class="map-head-copy"><strong>System-required settlement details</strong></div></div>
     <div class="map-col-arrow" aria-hidden="true"></div>
     <div class="map-col-file"><div class="map-head-copy"><strong>Which column in your file is this under?</strong></div></div>
     <div class="map-col-sample"><div class="map-head-copy"><strong>Example from your file</strong></div></div>
@@ -9746,7 +9746,7 @@ function viewWizardTrade() {
         : wizNavFooter("state.wiz.tradeStage=2;state.wiz.step=2;render()", 'Previous', 'attemptTradeSubmit()', 'Submit', true);
   return wizShell({
     title:'Upload trade documents',
-    sub:'',
+    sub: stage === 1 ? 'Commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents' : '',
     steps:displaySteps, step:displayStep, onBack:wizHomeBack(w), backLabel:wizBackLabel(w),
     body:tradeBody,
     footer:tradeFooter
@@ -10381,7 +10381,7 @@ function viewUploadDetails() {
         </div>
         <div class="details-table-wrap" style="margin-top:16px">
           <table class="data">
-            <thead><tr>${['System required column','Which column in your file is this under?','Example from your file'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+            <thead><tr>${['System-required settlement details','Which column in your file is this under?','Example from your file'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
             <tbody>${erpFieldMappings.map(([source,target,method,sample])=>`<tr>
               <td>
                 <div style="font-weight:700">${formatFieldLabel(target)}</div>
@@ -10470,9 +10470,9 @@ function uploadV2OptionsIntro() {
   return `<section class="upload-options">
     <p class="support-lead">You may upload:</p>
     <ul class="support-list">
-      <li>Trade documents, and the system will identify transaction information from the document</li>
+      <li>Trade documents, such as commercial invoices or proforma invoices, purchase orders, contracts, or shipping and customs documents</li>
       <li>Transaction records completed using our template (CSV format), please in advance <button type="button" class="inline-link" onclick="openTemplateFillGuide()">download the template and complete it as required</button></li>
-      <li>Transaction records exported from ERP or similar systems (CSV format). The system will identify the details required for settlement from the file</li>
+      <li>Transaction records exported from ERP, marketplaces, accounting software, or similar systems (CSV format)</li>
     </ul>
   </section>`;
 }
