@@ -3191,7 +3191,7 @@ const UNSHIPPED_LIMIT = 1000000;
 const UPLOAD_METHODS = [
   { key:'trade', label:'Trade document', desc:'We’ll automatically identify transaction information from the document.', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
   { key:'template', label:'Transaction record using our template', desc:'Once completed as required, the upload process will finish quickly.', ico:'upload', formats:'CSV · Max 50 MB' },
-  { key:'erp', label:'Transaction record exported from your business system', desc:'We’ll match each column header to the information the system needs, to identify the contents.', ico:'db', formats:'CSV · Max 50 MB' },
+  { key:'erp', label:'Transaction record exported from ERP or similar systems', desc:'We’ll match each column header to the information the system needs, to identify the contents.', ico:'db', formats:'CSV · Max 50 MB' },
 ];
 
 const UPLOAD_HISTORY = [
@@ -4969,9 +4969,9 @@ function homeCardsConcept2() {
               <div class="action-body">
                 <p class="support-lead">You can upload:</p>
                 <ul class="support-list">
-                  <li>Trade documents, such as commercial or proforma invoices, purchase orders, contracts, or shipping and customs documents</li>
+                  <li>Trade documents, such as commercial invoices (CI) or proforma invoices (PI), purchase orders, contracts, or shipping and customs documents</li>
                   <li>Transaction records completed using our template</li>
-                  <li>Transaction records exported from your business system like ERP or your marketplace</li>
+                  <li>Transaction records exported from ERP or similar systems</li>
                 </ul>
                 <p class="support-note">Before you upload, be sure to read <button type="button" class="inline-link" style="text-decoration:none" onclick="openDocumentRequirements()">the supported settlement business types and document requirements</button>.</p>
               </div>
@@ -7235,7 +7235,7 @@ function mapTableHead() {
   return `<div class="map-head">
     <div class="map-col-field"><div class="map-head-copy"><strong>System required column</strong></div></div>
     <div class="map-col-arrow" aria-hidden="true"></div>
-    <div class="map-col-file"><div class="map-head-copy"><strong>Which column in your file has this?</strong></div></div>
+    <div class="map-col-file"><div class="map-head-copy"><strong>Which column in your file is this under?</strong></div></div>
     <div class="map-col-sample"><div class="map-head-copy"><strong>Example from your file</strong></div></div>
   </div>`;
 }
@@ -7497,7 +7497,7 @@ function stepERP2Upload(w) {
   if (w.dsState === 'issue') {
     return `<div class="erp2-stage">${erpScenarioControl()}
       <div class="erp2-stage-head">
-        <h2>Upload exported transaction records</h2>
+        <h2>Upload transaction records exported from ERP or similar systems</h2>
       </div>
       ${uploadBoxBlock('Uploaded file', uploadedFileCard({
         fileName: erpDisplayedFileName(w) || (w.erpFileIssue === 'empty' ? 'erp_empty.csv' : 'erp_header_only.csv'),
@@ -7508,7 +7508,7 @@ function stepERP2Upload(w) {
   }
   return `<div class="erp2-stage">${erpScenarioControl()}
     <div class="erp2-stage-head">
-      <h2>Upload exported transaction records</h2>
+      <h2>Upload transaction records exported from ERP or similar systems</h2>
     </div>
     ${w.dsState === 'mapped' ? `${erp2FileSummary(w, stats)}
       ${uiAlertHTML({ tone:'info', content:'Your file has already been analyzed. Continue to review the identified columns.' })}` : `
@@ -10324,7 +10324,7 @@ function viewUploadDetails() {
         </div>
         <div class="details-table-wrap" style="margin-top:16px">
           <table class="data">
-            <thead><tr>${['System required column','Which column in your file has this?','Example from your file'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+            <thead><tr>${['System required column','Which column in your file is this under?','Example from your file'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
             <tbody>${erpFieldMappings.map(([source,target,method,sample])=>`<tr>
               <td>
                 <div style="font-weight:700">${formatFieldLabel(target)}</div>
@@ -10418,7 +10418,7 @@ function uploadV2OptionsIntro() {
     <ul class="support-list">
       <li>Trade documents, and the system will identify transaction information from the document</li>
       <li>Transaction records completed using our template (CSV format), please in advance <button type="button" class="inline-link" onclick="openTemplateFillGuide()">download the template and complete it as required</button></li>
-      <li>Transaction records exported from your business system (CSV format). The system will identify the details required for settlement from the file</li>
+      <li>Transaction records exported from ERP or similar systems (CSV format). The system will identify the details required for settlement from the file</li>
     </ul>
   </section>`;
 }
