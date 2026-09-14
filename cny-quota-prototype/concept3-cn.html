@@ -4986,10 +4986,10 @@ function homeKpiBlock() {
             <div class="kpi-col">
               <div class="kpi-label-row">
                 <div class="kpi-label">
-                  Total CNY quota (USD equivalent)
+                  Total CNY settlement (USD equivalent)
                   <div class="tooltip ${state.tooltip?'open':''}" onclick="event.stopPropagation()">
                     <div class="tooltip-title">
-                      Total CNY quota breakdown (USD equivalent)
+                      Total CNY settlement breakdown (USD equivalent)
                       <button type="button" onclick="state.tooltip=false;render()">${I.x}</button>
                     </div>
                     <div class="tooltip-row"><span>${I.store} Connect Stores</span><strong>${money(CONNECT_STORES_QUOTA)}</strong></div>
@@ -10966,8 +10966,8 @@ const CN_UI_REPLACEMENTS = [
   [/Increase your quota by connecting a store or uploading transaction records\./g, '绑定店铺或上传交易记录，可提高额度。'],
   [/Increase your available CNY settlement quota by connecting your stores or uploading supporting files\./g, '绑定店铺或上传材料，可提高人民币结汇额度。'],
   [/Manage your CNY settlement quota and upload supporting documents to increase your available quota\./g, '管理人民币结汇额度。上传材料可提高可用额度。'],
-  [/Total CNY quota breakdown \(USD equivalent\)/g, '人民币总额度明细（折算成美元）'],
-  [/Total CNY quota \(USD equivalent\)/g, '人民币总额度（折算成美元）'],
+  [/Total CNY settlement breakdown \(USD equivalent\)/g, '人民币结汇总额明细（折算成美元）'],
+  [/Total CNY settlement \(USD equivalent\)/g, '人民币结汇总额（折算成美元）'],
   [/Total funds in all balances \(USD equivalent\)/g, '所有余额中的资金总额（折算成美元）'],
   [/Based on last 12 months’ transactions from your connected stores and uploaded records/g, '按已绑定店铺和已上传记录中近 12 个月交易计算'],
   [/Unshipped orders temporarily occupy quota\. To release it, filter "Unshipped" in Upload History and click Supplement Logistics\./g, '未发货订单会暂时占用额度。如需释放，请在上传历史筛选“未发货”，再点“补充物流信息”。'],
