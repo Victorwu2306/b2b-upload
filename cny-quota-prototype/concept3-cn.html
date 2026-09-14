@@ -835,18 +835,34 @@ table.data tr:hover td { background: var(--muted); }
 .alert-action {
   flex: 0 0 auto;
   align-self: center;
+  flex-shrink: 0;
   margin: 0 0 0 12px;
-  padding: 0;
+  height: 36px;
+  padding: 0 16px;
   border: 0;
-  background: transparent;
-  color: inherit;
-  font: 700 12px/16px var(--font-sans);
-  letter-spacing: .04em;
-  text-transform: uppercase;
+  border-radius: 6px;
+  background: #175CD3;
+  color: #fff;
+  font: 600 14px/20px var(--font-sans);
+  letter-spacing: 0;
+  text-transform: none;
   white-space: nowrap;
   cursor: pointer;
 }
-.alert-action:hover { text-decoration: underline; text-underline-offset: 2px; }
+.alert-action:hover { background: #1849A9; }
+.alert-action:focus-visible { outline: 2px solid var(--foreground); outline-offset: 2px; }
+.alert-info .alert-action { background: #175CD3; }
+.alert-info .alert-action:hover { background: #1849A9; }
+.alert-neutral .alert-action { background: #414651; }
+.alert-neutral .alert-action:hover { background: #252B37; }
+.alert-error .alert-action { background: #D92D20; }
+.alert-error .alert-action:hover { background: #B42318; }
+.alert-warning .alert-action,
+.alert-warn .alert-action { background: #DC6803; }
+.alert-warning .alert-action:hover,
+.alert-warn .alert-action:hover { background: #B54708; }
+.alert-success .alert-action { background: #067647; }
+.alert-success .alert-action:hover { background: #05603A; }
 .alert-dismiss {
   flex: 0 0 auto;
   align-self: flex-start;
