@@ -1081,11 +1081,146 @@ table.data tr:hover td { background: var(--muted); }
   overflow-y:auto;
   grid-template-columns:none;
 }
-.sample-group { display:flex; flex-direction:column; gap:8px; }
-.sample-group-h {
-  font-size:12px; font-weight:600; color:var(--muted-foreground);
-  letter-spacing:.02em; text-transform:uppercase; padding:2px 2px 0;
+.modal.file-dialog {
+  width: 760px;
+  max-width: min(92vw, 820px);
+  max-height: 86vh;
+  margin: 16px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
 }
+.file-dialog-h {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px 12px;
+}
+.file-dialog-h h3 { font-size: 16px; font-weight: 600; }
+.file-dialog-h p { font-size: 13px; color: var(--muted-foreground); margin-top: 2px; }
+.file-dialog-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 16px 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #F7F7F9;
+  font-size: 13px;
+}
+.file-dialog-path {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+.file-dialog-sep { color: var(--muted-foreground); font-weight: 500; }
+.file-dialog-cols {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 88px 72px;
+  gap: 12px;
+  padding: 6px 20px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: #FAFAFB;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+.file-dialog-list {
+  min-height: 280px;
+  max-height: min(52vh, 440px);
+  overflow-y: auto;
+  background: #fff;
+}
+.file-dialog-folder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: #F7F7F9;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.file-dialog-folder-icon { display: inline-flex; width: 20px; height: 20px; }
+.file-dialog-row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 88px 72px;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 8px 20px 8px 48px;
+  border: 0;
+  border-bottom: 1px solid #F0F0F3;
+  border-radius: 0;
+  background: #fff;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.file-dialog-row:hover { background: #F5F6F8; }
+.file-dialog-row.is-selected,
+.file-dialog-row.is-selected:hover { background: #EEF0FF; }
+.file-dialog-name { display: flex; align-items: flex-start; gap: 10px; min-width: 0; }
+.file-dialog-type-icon {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  margin-top: 1px;
+}
+.file-dialog-type-icon.is-pdf { background: #D92D20; }
+.file-dialog-type-icon.is-csv { background: #067647; }
+.file-dialog-name-text { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.file-dialog-filename { font-size: 13px; font-weight: 600; line-height: 18px; overflow-wrap: anywhere; }
+.file-dialog-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--muted-foreground);
+  line-height: 1.35;
+}
+.file-dialog-kind,
+.file-dialog-size {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+.file-dialog-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--border);
+  background: #FAFAFB;
+}
+.file-dialog-selected {
+  min-width: 0;
+  font-size: 13px;
+  color: var(--foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-dialog-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.file-dialog-actions .btn { height: 36px; padding: 0 16px; }
 .sample-use-case { font-size:12px; color:var(--muted-foreground); margin-top:4px; line-height:1.45; }
 .sample-use-case-tag {
   display:inline-block; margin-right:8px; padding:1px 8px; border-radius:999px;
@@ -3768,9 +3903,94 @@ function openUploadV2SamplePicker() {
     }
   }
   w.v2PickerOpen = true;
+  w.samplePickerSelectedId = '';
   render();
 }
 function closeUploadV2SamplePicker(){const w=state.wiz;if(!w)return;w.v2PickerOpen=false;render();}
+function fileDialogFolderIcon() {
+  return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.5 8.5A2 2 0 0 1 5.5 6.5H9l1.2 1.5H18.5A2 2 0 0 1 20.5 10v7a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-8.5Z" fill="#F6C945" stroke="#D4A017" stroke-width="1.2"/><path d="M3.5 10.2h17" stroke="#E8B323" stroke-width="1.1"/></svg>`;
+}
+function fileDialogTypeIcon(extension) {
+  const isPdf = String(extension || '').toLowerCase() === 'pdf';
+  return `<span class="file-dialog-type-icon ${isPdf?'is-pdf':'is-csv'}">${isPdf?'PDF':'CSV'}</span>`;
+}
+function sampleFileDialogHTML(opts) {
+  const o = opts || {};
+  const selectedName = o.selectedName || '';
+  return `<div class="modal-backdrop open" style="align-items:center" onclick="if(event.target===this)${o.onClose}()">
+    <div class="modal file-dialog" role="dialog" aria-labelledby="file-dialog-title">
+      <div class="file-dialog-h">
+        <div>
+          <h3 id="file-dialog-title">${o.title}</h3>
+          <p>${o.subtitle}</p>
+        </div>
+        <button type="button" onclick="${o.onClose}()">${I.x}</button>
+      </div>
+      <div class="file-dialog-toolbar">
+        <span class="file-dialog-path"><span>Desktop</span><span class="file-dialog-sep">›</span><span>Sample files</span></span>
+      </div>
+      <div class="file-dialog-cols"><span>Name</span><span>Kind</span><span>Size</span></div>
+      <div class="file-dialog-list">${o.list || ''}</div>
+      <div class="file-dialog-foot">
+        <div class="file-dialog-selected">${selectedName ? escapeHTML(selectedName) : 'No file selected'}</div>
+        <div class="file-dialog-actions">
+          <button type="button" class="btn btn-secondary" onclick="${o.onClose}()">Cancel</button>
+          <button type="button" class="btn btn-primary file-dialog-open" onclick="${o.onConfirm}()" ${o.canOpen?'':'disabled'}>Open</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function samplePickerFileRow(file, selectedId, onSelect, onOpen) {
+  const selected = selectedId === file.id;
+  const useCase = file.useCase;
+  const hint = useCase
+    ? `<span class="sample-use-case-tag ${useCase.tone}">${useCase.title}</span><span>${useCase.detail}</span>`
+    : `<span>${file.label || ''} · ${file.detail || ''}</span>`;
+  const kind = String(file.extension || '').toLowerCase() === 'pdf' ? 'PDF' : 'CSV';
+  const size = String(file.extension || '').toLowerCase() === 'pdf' ? '2.4 MB' : '1.2 MB';
+  return `<button type="button" class="file-dialog-row ${selected?'is-selected':''}" data-file-id="${file.id}" onclick="${onSelect}('${file.id}')" ondblclick="${onOpen}('${file.id}')">
+    <span class="file-dialog-name">${fileDialogTypeIcon(file.extension)}<span class="file-dialog-name-text"><span class="file-dialog-filename mono">${escapeHTML(file.name)}</span><span class="file-dialog-hint">${hint}</span></span></span>
+    <span class="file-dialog-kind">${kind}</span>
+    <span class="file-dialog-size">${size}</span>
+  </button>`;
+}
+function samplePickerFolderBlock(title, rows) {
+  if (!rows) return '';
+  return `<div class="file-dialog-folder"><span class="file-dialog-folder-icon">${fileDialogFolderIcon()}</span><span>${title}</span></div>${rows}`;
+}
+function markSamplePickerSelection(id, fileName) {
+  document.querySelectorAll('.file-dialog-row').forEach(el => {
+    el.classList.toggle('is-selected', el.getAttribute('data-file-id') === id);
+  });
+  const nameEl = document.querySelector('.file-dialog-selected');
+  if (nameEl) nameEl.textContent = fileName || 'No file selected';
+  const openBtn = document.querySelector('.file-dialog-open');
+  if (openBtn) openBtn.disabled = !id;
+}
+function selectUploadV2SampleFile(id) {
+  const w = state.wiz; if (!w) return;
+  const file = uploadV2SampleFiles(samplePickerCategory(w)).find(item => item.id === id);
+  if (!file) return;
+  w.samplePickerSelectedId = id;
+  markSamplePickerSelection(id, file.name);
+}
+function confirmUploadV2SamplePicker() {
+  const w = state.wiz; if (!w || !w.samplePickerSelectedId) return;
+  simulateUploadV2File(w.samplePickerSelectedId);
+}
+function selectERPCorrectedSampleFile(id) {
+  const w = state.wiz; if (!w) return;
+  w.samplePickerSelectedId = id || 'erp-corrected';
+  markSamplePickerSelection(w.samplePickerSelectedId, erpCorrectedSampleName(w, erpCorrectedPickerUseCase(w)));
+}
+function confirmERPCorrectedSamplePicker() {
+  const w = state.wiz; if (!w) return;
+  chooseERPCorrectedFile();
+}
+function openSelectedERPCorrectedFile() {
+  confirmERPCorrectedSamplePicker();
+}
 function samplePickerCategory(w) {
   return (w && (w.category || w.entryCategory)) || 'transaction';
 }
@@ -3918,27 +4138,22 @@ function uploadV2SamplePicker(w) {
     { key:'template', title:'Template CSV' },
     { key:'erp', title:'ERP CSV' },
   ];
-  const card = file => {
-    const useCase = file.useCase;
-    const icon = file.group === 'trade' ? I.clipboard : file.group === 'template' ? I.upload : I.db;
-    const meta = useCase
-      ? `<p class="sample-use-case"><span class="sample-use-case-tag ${useCase.tone}">${useCase.title}</span> ${useCase.detail}</p>`
-      : `<p style="font-size:12px;color:var(--muted-foreground);margin-top:3px">${file.label} · ${file.detail}</p>`;
-    return `<button type="button" class="source-card" style="text-align:left;width:100%;flex-direction:row;align-items:flex-start;padding:14px" onclick="simulateUploadV2File('${file.id}')"><div class="ico" style="margin-bottom:0;flex:0 0 40px">${icon}</div><div style="min-width:0"><strong class="mono">${file.name}</strong>${meta}</div></button>`;
-  };
-  return `<div class="modal-backdrop open" style="align-items:center" onclick="if(event.target===this)closeUploadV2SamplePicker()">
-    <div class="modal" style="width:640px;max-width:92vw;max-height:86vh;display:flex;flex-direction:column">
-      <div class="modal-h"><div><h3>Choose a sample file</h3><p>This prototype simulates file selection and processing.</p></div><button type="button" onclick="closeUploadV2SamplePicker()">${I.x}</button></div>
-      <div class="modal-b sample-picker-body">
-        ${groups.map(group => {
-          const items = files.filter(file => file.group === group.key);
-          if (!items.length) return '';
-          const heading = items.some(file => file.useCase) ? `<div class="sample-group-h">${group.title}</div>` : '';
-          return `<div class="sample-group">${heading}${items.map(card).join('')}</div>`;
-        }).join('')}
-      </div>
-    </div>
-  </div>`;
+  const selectedId = w.samplePickerSelectedId || '';
+  const selected = files.find(file => file.id === selectedId);
+  const list = groups.map(folder => {
+    const items = files.filter(file => file.group === folder.key);
+    if (!items.length) return '';
+    return samplePickerFolderBlock(folder.title, items.map(file => samplePickerFileRow(file, selectedId, 'selectUploadV2SampleFile', 'simulateUploadV2File')).join(''));
+  }).join('');
+  return sampleFileDialogHTML({
+    title: 'Choose a sample file',
+    subtitle: 'This prototype simulates file selection and processing.',
+    list,
+    selectedName: selected ? selected.name : '',
+    canOpen: !!selected,
+    onClose: 'closeUploadV2SamplePicker',
+    onConfirm: 'confirmUploadV2SamplePicker',
+  });
 }
 function uploadV2Back(){go('home');}
 function routeUploadV2() {
@@ -6240,6 +6455,7 @@ function openERPCorrectedFilePicker() {
     w.erp2NewHeaders = getERPMappingStats(w).missing.map(field => field.name);
   }
   w.erpCorrectedPickerOpen = true;
+  w.samplePickerSelectedId = 'erp-corrected';
   render();
 }
 function closeERPCorrectedFilePicker() {
@@ -6270,23 +6486,26 @@ function chooseERPCorrectedFile(outcome) {
 function erpCorrectedFilePicker(w) {
   if (!w || !w.erpCorrectedPickerOpen) return '';
   const useCase = erpCorrectedPickerUseCase(w);
-  const outcome = useCase && useCase.id === 'full-match' ? 'mapped' : 'unrecognized';
   const fileName = erpCorrectedSampleName(w, useCase);
-  const icon = outcome === 'mapped' ? I.check : I.alert;
-  const meta = useCase
-    ? `<p class="sample-use-case"><span class="sample-use-case-tag ${useCase.tone}">${useCase.title}</span> ${useCase.detail}</p>`
-    : '';
-  return `<div class="modal-backdrop open" style="align-items:center" onclick="if(event.target===this)closeERPCorrectedFilePicker()">
-    <div class="modal" style="width:640px;max-width:92vw">
-      <div class="modal-h"><div><h3>Choose a sample file</h3><p>Simulate a corrected CSV after adding the missing columns.</p></div><button type="button" onclick="closeERPCorrectedFilePicker()">${I.x}</button></div>
-      <div class="modal-b" style="display:flex;flex-direction:column;gap:10px">
-        <button type="button" class="source-card" style="text-align:left;width:100%;flex-direction:row;align-items:flex-start;padding:14px" onclick="chooseERPCorrectedFile('${outcome}')">
-          <div class="ico" style="margin-bottom:0;flex:0 0 40px">${icon}</div>
-          <div style="min-width:0"><strong class="mono">${escapeHTML(fileName)}</strong>${meta}</div>
-        </button>
-      </div>
-    </div>
-  </div>`;
+  const file = {
+    id: 'erp-corrected',
+    name: fileName,
+    extension: 'csv',
+    label: 'ERP CSV',
+    detail: 'Corrected export',
+    useCase,
+  };
+  const selectedId = w.samplePickerSelectedId || 'erp-corrected';
+  const list = samplePickerFolderBlock('ERP CSV', samplePickerFileRow(file, selectedId, 'selectERPCorrectedSampleFile', 'openSelectedERPCorrectedFile'));
+  return sampleFileDialogHTML({
+    title: 'Choose a sample file',
+    subtitle: 'Simulate a corrected CSV after adding the missing columns.',
+    list,
+    selectedName: fileName,
+    canOpen: true,
+    onClose: 'closeERPCorrectedFilePicker',
+    onConfirm: 'confirmERPCorrectedSamplePicker',
+  });
 }
 function erpReplacementNewColumnsSection(w) {
   const stats = getERPMappingStats(w);
