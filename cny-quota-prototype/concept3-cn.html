@@ -3423,9 +3423,9 @@ const UNSHIPPED_LIMIT = 1000000;
 
 /* Concept 2 — unified upload history & quota breakdown (derived from UPLOAD_HISTORY) */
 const UPLOAD_METHODS = [
-  { key:'trade', label:'Trade document', desc:'We’ll automatically identify transaction information from the document.', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
-  { key:'template', label:'Transaction record using our template', desc:'Once completed as required, the upload process will finish quickly.', ico:'upload', formats:'CSV · Max 50 MB' },
-  { key:'erp', label:'Transaction record exported from ERP or similar systems', desc:'We’ll match each column header to the information the system needs, to identify the contents.', ico:'db', formats:'CSV · Max 50 MB' },
+  { key:'trade', label:'Trade document', desc:'Commercial invoices (CI) or proforma invoices (PI), purchase orders, contracts, or shipping and customs documents', ico:'clipboard', formats:'PDF, JPG, PNG, TIFF, DOC, DOCX · Max 50MB' },
+  { key:'template', label:'Transaction record using our template', desc:'A file saved in CSV format', ico:'upload', formats:'CSV · Max 50 MB' },
+  { key:'erp', label:'Transaction record exported from ERP or similar systems', desc:'CSV files exported from ERP, marketplaces, accounting software, or similar systems', ico:'db', formats:'CSV · Max 50 MB' },
 ];
 
 const UPLOAD_HISTORY = [
@@ -5834,9 +5834,6 @@ function wizSuccess(kind) {
     : (kind==='template' ? "go('templates')" : kind==='trade' ? "go('trade-orders')" : "go('erp')");
   const histLabel = 'View upload history';
   const againLabel = 'Upload another file';
-  const msg = kind==='trade'
-    ? 'Your trade documents have been submitted and the corresponding CNY quota has been released.'
-    : 'Your file has been submitted and the corresponding CNY quota has been released.';
   return `<div class="focused active wizard-shell">
     <div class="focused-top">
       <div class="focused-back-row">
@@ -5847,8 +5844,8 @@ function wizSuccess(kind) {
     <div class="success-wrap">
       <div class="success-box">
         <div class="success-icon">${I.checkCircle}</div>
-        <h2 style="font-size:28px;font-weight:700;margin-bottom:12px">Uploaded successfully</h2>
-        <p style="font-size:16px;color:var(--muted-foreground);line-height:1.5;margin-bottom:32px">${msg}</p>
+        <h2 style="font-size:28px;font-weight:700;margin-bottom:12px">Submitted for review</h2>
+        <p style="font-size:16px;color:var(--muted-foreground);line-height:1.5;margin-bottom:32px">Review will be completed within 2 hours. You’ll receive an email when it’s done.</p>
         <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
           <button class="btn btn-primary" onclick="${hist}">${I.eye} ${histLabel}</button>
           <button class="btn btn-secondary" onclick="${again}">${I.upload} ${againLabel}</button>
@@ -11162,7 +11159,7 @@ const CN_UI_REPLACEMENTS = [
   [/Automatic quota increase/g, '自动提高额度'], [/Eligible payments from these marketplaces can update your quota automatically\./g, '这些电商平台的符合条件收款，可自动更新额度。'], [/Upload using the marketplace template/g, '使用电商平台模板上传'],
   [/Use the marketplace CSV template for transaction records from these marketplaces\./g, '这些电商平台的交易记录请使用电商平台 CSV 模板。'], [/Marketplace sales/g, '电商平台销售'], [/Marketplace transactions/g, '电商平台交易'], [/Goods trading/g, '货物贸易'], [/Foreign trade/g, '外贸'], [/Physical goods/g, '货物'], [/Services/g, '服务'],
   [/Transaction types that can increase your CNY quota/g, '可提高人民币额度的交易类型'], [/Marketplace transactions that can increase your CNY quota/g, '可提高人民币额度的电商平台交易'],
-  [/Uploaded successfully/g, '上传成功'], [/Your trade documents have been submitted and the corresponding CNY quota has been released\./g, '贸易单据已提交，对应人民币额度已释放。'], [/Your file has been submitted and the corresponding CNY quota has been released\./g, '文件已提交，对应人民币额度已释放。'],
+  [/Submitted for review/g, '已提交审核'], [/Review will be completed within 2 hours\. You’ll receive an email when it’s done\./g, '审核将在 2 小时内完成，完成后您将收到邮件通知。'], [/Uploaded successfully/g, '上传成功'],
   [/View upload history/g, '查看上传历史'], [/Upload another file/g, '上传其他文件'], [/Select a transaction category before choosing a file\./g, '请先选择交易类别，再选择文件。'], [/Select a category and upload your file, then review the details before submitting\./g, '选择类别并上传文件，然后在提交前核对详情。'], [/Select the transaction category/g, '选择交易类别'], [/Select a category/g, '选择类别'],
   [/Choose the same category used when downloading and completing the template\./g, '请选择下载和填写模板时使用的同一类别。'], [/Select a transaction category\./g, '请选择交易类别。'], [/Marketplace these transaction records belong to/g, '交易记录所属的电商平台'], [/Marketplace where the payment was received/g, '交易记录所属的电商平台'], [/Select a marketplace/g, '选择电商平台'],
   [/Select the marketplace represented by the transaction rows in this file\./g, '请选择文件中交易记录所属的电商平台。'], [/Seller ID/g, '卖家 ID'], [/Required to associate this .* file with the correct store\./g, '用于将文件绑定到正确店铺。'],
@@ -11501,11 +11498,14 @@ const CN_UI_REPLACEMENTS = [
   [/Drag file here or /g, '将文件拖放到此处，或 '], [/^browse$/g, '浏览'], [/Supported file types:/g, '支持的文件类型：'], [/Maximum file size:/g, '文件大小上限：'],
   [/All file types supported/g, '支持所有文件类型'], [/Max 50MB/g, '最大 50MB'], [/Max 50 MB/g, '最大 50 MB'],
   [/Transaction record using our template/g, '使用模板填写的交易记录'],
+  [/Commercial invoices \(CI\) or proforma invoices \(PI\), purchase orders, contracts, or shipping and customs documents/g, '商业发票（CI）或形式发票（PI）、采购订单、合同、运输及报关单据'],
+  [/A file saved in CSV format/g, '保存为 CSV 格式的文件'],
+  [/CSV files exported from ERP, marketplaces, accounting software, or similar systems/g, '从 ERP、电商平台、财务软件等系统导出的 CSV 格式文件'],
   [/We’ll automatically identify transaction information from the document\./g, '我们将从单据中自动识别交易信息'],
   [/Once completed as required, the upload process will finish quickly\./g, '按要求完整填写后，上传流程将快速完成'],
   [/We’ll match each column header to the information the system needs, to identify the contents\./g, '我们会自动识别出其中可用于结汇的列信息'],
   [/A completed transaction record in CSV/g, '已完成的 CSV 交易记录'],
-  [/Transaction record exported from ERP or similar systems/g, '从 ERP 等系统导出的交易记录'],
+  [/Transaction record exported from ERP or similar systems/g, 'ERP 等系统导出的交易记录'],
   [/A CSV exported from your ERP, marketplace, accounting, or other business system/g, '从 ERP、电商平台、财务或其他业务系统导出的 CSV'],
   [/(\d+) uploads/g, '$1 次上传'], [/(\d+) drafts?/g, '$1 个草稿'], [/(\d+) pending/g, '$1 个待处理'], [/Potential /g, '预计 '], [/Est\. /g, '预计 '], [/ of /g, ' / '],
   [/(\d+) selected/g, '已选择 $1 项'], [/High/g, '高'], [/Medium/g, '中'], [/Available/g, '可用'],
