@@ -99,7 +99,7 @@ a { color: inherit; }
 .topbar-right { display: flex; align-items: center; gap: 16px; }
 .icon-btn { color: var(--foreground); display: grid; place-items: center; }
 .icon-btn:hover { color: var(--primary); }
-.icon-btn svg, .back-ico svg, .btn svg, .btn-link svg, .action-icon svg { width: 16px; height: 16px; flex-shrink: 0; }
+.icon-btn svg, .back-ico svg, .btn svg, .btn-link svg, .action-icon svg, .history-note-edit svg { width: 16px; height: 16px; flex-shrink: 0; }
 .action-icon svg { width: 20px; height: 20px; }
 .avatar {
   width: 32px; height: 32px; border-radius: 50%; background: var(--primary);
@@ -985,6 +985,22 @@ table.data tr:hover td { background: var(--muted); }
   border: 1px solid var(--border); border-radius: 6px; text-align: left;
 }
 .store-opt:hover { border-color: var(--primary); background: var(--secondary); }
+.modal-f {
+  display: flex; justify-content: flex-end; gap: 12px;
+  padding: 16px 24px; border-top: 1px solid var(--border);
+}
+.modal.history-note-modal .modal-b {
+  display: flex; flex-direction: column; gap: 8px; padding: 24px;
+}
+.history-note-cell {
+  display: flex; align-items: center; gap: 8px; min-width: 0;
+}
+.history-note-cell span { min-width: 0; overflow-wrap: anywhere; }
+.history-note-edit {
+  flex-shrink: 0; width: 32px; height: 32px; border-radius: 6px;
+  display: grid; place-items: center; color: var(--muted-foreground);
+}
+.history-note-edit:hover { background: var(--accent); color: var(--primary); }
 .drawer-backdrop {
   display: none; position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.3);
   justify-content: flex-end;
@@ -3512,6 +3528,7 @@ const I = {
   package: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.3 9 5.2M7.5 4.3 3 7v10l9 5 9-5V7l-4.5-2.7M12 22V12M3 7l9 5 9-5"/></svg>`,
   cart: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L21.2 7H6.2"/></svg>`,
   file: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>`,
+  edit: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`,
 
 };
 
@@ -3556,6 +3573,8 @@ const state = {
   lockedFlow: null,
   uploadId: null,
   drafts: [],
+  historyNoteEdit: null,
+  historyNoteDraft: '',
 };
 
 const FINAL_FLOWS = {
@@ -4413,6 +4432,8 @@ function wizBackLabel(w) {
   return w.uploadOriginVersion === 2 ? 'Back to Upload V2' : 'Back to upload options';
 }
 function openUploadDetail(id) {
+  state.historyNoteEdit = null;
+  state.historyNoteDraft = '';
   if (id && String(id).indexOf('draft-') === 0) { resumeDraft(id); return; }
   const rec = UPLOAD_HISTORY.find(item => item.id === id);
   state.uploadId = id;
@@ -4463,6 +4484,10 @@ function go(view, recordId) {
     state.detailReturn = null;
   }
   if (view === 'upload-history') state.uploadHistoryTab = 'uploads';
+  else {
+    state.historyNoteEdit = null;
+    state.historyNoteDraft = '';
+  }
   if (view === 'upload-history' || view === 'home') state.uploadId = null;
   state.moreId = null;
   state.tooltip = false;
@@ -4663,6 +4688,87 @@ function fileDescriptionValue(w) {
 }
 function uploadRecordDescription(r) {
   return escapeHTML(String((r && (r.fileDescription || r.fileName)) || '—'));
+}
+function historyFileNoteValue(r) {
+  return String((r && r.fileName) || '').trim();
+}
+function historyFileNoteCell(id, fileName, source) {
+  const note = String(fileName || '').trim() || '—';
+  return `<td>
+    <div class="history-note-cell">
+      <span>${escapeHTML(note)}</span>
+      <button type="button" class="history-note-edit" onclick="openHistoryFileNoteEditor('${escapeHTML(id)}','${source}')" aria-label="Edit file note" title="Edit file note">${I.edit}</button>
+    </div>
+  </td>`;
+}
+function findHistoryNoteRecord(id, source) {
+  if (source === 'draft') return (state.drafts || []).find(d => d.id === id) || null;
+  return UPLOAD_HISTORY.find(r => r.id === id) || null;
+}
+function openHistoryFileNoteEditor(id, source) {
+  const rec = findHistoryNoteRecord(id, source);
+  if (!rec) return;
+  state.historyNoteEdit = { id, source, attempted: false };
+  state.historyNoteDraft = historyFileNoteValue(rec);
+  render();
+  const input = document.getElementById('history-file-note');
+  if (input) {
+    input.focus();
+    input.select();
+  }
+}
+function closeHistoryFileNoteEditor() {
+  state.historyNoteEdit = null;
+  state.historyNoteDraft = '';
+  render();
+}
+function saveHistoryFileNote() {
+  const edit = state.historyNoteEdit;
+  if (!edit) return;
+  const note = String(state.historyNoteDraft || '').trim();
+  if (!note) {
+    state.historyNoteEdit = { id: edit.id, source: edit.source, attempted: true };
+    render();
+    const input = document.getElementById('history-file-note');
+    if (input) input.focus();
+    return;
+  }
+  const rec = findHistoryNoteRecord(edit.id, edit.source);
+  if (rec) {
+    rec.fileName = note;
+    if (rec.wizard) rec.wizard.fileName = note;
+  }
+  state.historyNoteEdit = null;
+  state.historyNoteDraft = '';
+  render();
+  toast('File note saved.');
+}
+function historyFileNoteModal() {
+  const edit = state.historyNoteEdit;
+  if (!edit) return '';
+  const invalid = !!(edit.attempted && !String(state.historyNoteDraft || '').trim());
+  return `<div class="modal-backdrop open" style="align-items:center" onclick="if(event.target===this)closeHistoryFileNoteEditor()">
+    <div class="modal history-note-modal" role="dialog" aria-modal="true" aria-labelledby="history-file-note-title">
+      <div class="modal-h">
+        <div>
+          <h3 id="history-file-note-title">Edit file note</h3>
+          <p>This note appears in upload history so you can recognize the file later.</p>
+        </div>
+        <button type="button" onclick="closeHistoryFileNoteEditor()">${I.x}</button>
+      </div>
+      <div class="modal-b">
+        <div class="field">
+          <label for="history-file-note"><span>File note</span> *</label>
+          <input id="history-file-note" maxlength="200" class="${invalid?'invalid':''}" value="${escapeHTML(state.historyNoteDraft)}" placeholder="e.g. Shenzhen Global July invoices" oninput="state.historyNoteDraft=this.value;if(this.value.trim()){this.classList.remove('invalid');const error=this.parentElement.querySelector('.field-error');if(error)error.remove()}" onkeydown="if(event.key==='Enter'){event.preventDefault();saveHistoryFileNote()}" />
+          ${invalid ? `<div class="field-error">${I.alert}<span>Enter a file note.</span></div>` : ''}
+        </div>
+      </div>
+      <div class="modal-f">
+        <button type="button" class="btn btn-secondary" onclick="closeHistoryFileNoteEditor()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="saveHistoryFileNote()">Save</button>
+      </div>
+    </div>
+  </div>`;
 }
 
 function draftTypeKey(w) {
@@ -10757,12 +10863,11 @@ function viewUploadHistory() {
         </div>` : ''}
 
         <div class="table-card">
-          <div style="overflow-x:auto"><table class="data" style="min-width:1120px">
+          <div style="overflow-x:auto"><table class="data" style="min-width:980px">
             <thead><tr>
               <th>Upload time</th>
               <th>File type</th>
-              <th>File name</th>
-              <th>File description</th>
+              <th>File note</th>
               <th>Status</th>
               <th>Quota added</th>
               <th>Action</th>
@@ -10772,8 +10877,7 @@ function viewUploadHistory() {
               <tr class="draft-row">
                 <td class="mono" style="color:var(--muted-foreground);white-space:nowrap">${formatUploadTime(d.uploadDate)}</td>
                 <td>${d.fileType}</td>
-                <td class="mono">${escapeHTML(d.fileName || '—')}</td>
-                <td style="font-weight:500">${uploadRecordDescription(d)}</td>
+                ${historyFileNoteCell(d.id, d.fileName, 'draft')}
                 <td>${uploadHistoryStatus('Draft')}</td>
                 <td><span style="color:var(--switch)">—</span></td>
                 <td>${draftContinueBtn(d.id)}</td>
@@ -10781,8 +10885,7 @@ function viewUploadHistory() {
               <tr>
                 <td class="mono" style="color:var(--muted-foreground);white-space:nowrap">${formatUploadTime(r.uploadDate)}</td>
                 <td>${r.fileType}</td>
-                <td class="mono">${escapeHTML(r.fileName || '—')}</td>
-                <td style="font-weight:500">${uploadRecordDescription(r)}</td>
+                ${historyFileNoteCell(r.id, r.fileName, 'upload')}
                 <td>${uploadHistoryStatus(r.status)}</td>
                 <td>${r.quotaAdded
                   ? `<strong class="money-value">${money(r.quotaAdded)}</strong>`
@@ -10799,7 +10902,7 @@ function viewUploadHistory() {
         </div>
       </div>
     </div>
-  </div>`;
+  </div>` + historyFileNoteModal();
 }
 
 function render() {
