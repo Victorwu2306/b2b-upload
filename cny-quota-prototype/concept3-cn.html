@@ -299,28 +299,40 @@ a { color: inherit; }
 .breakdown-card .bd-label { font-size:13px; font-weight:600; color:var(--muted-foreground); margin-bottom:8px; display:flex; align-items:center; gap:8px; }
 .breakdown-card .bd-value { font-size:24px; font-weight:700; font-family:var(--font-mono); letter-spacing:-0.02em; }
 .breakdown-card .bd-sub { font-size:12px; color:var(--muted-foreground); margin-top:6px; }
+.history-quota-wrap { container-type:inline-size; width:100%; min-width:0; }
 .upload-quota-overview {
-  display:grid; grid-template-columns:minmax(320px,1.15fr) minmax(0,2fr);
+  display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,2fr);
   padding:0; overflow:hidden;
 }
 .upload-quota-primary {
   padding:24px; display:flex; flex-direction:column; justify-content:center;
   background:linear-gradient(135deg,#F6F3FF 0%,#fff 78%);
-  border-right:1px solid var(--border);
+  border-right:1px solid var(--border); min-width:0;
 }
-.upload-quota-primary .bd-value { font-size:38px; color:var(--primary); }
+.upload-quota-primary .bd-value {
+  font-size:38px; color:var(--primary); overflow-wrap:anywhere; word-break:break-word;
+}
 .upload-quota-methods {
   display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); min-width:0;
 }
 .upload-quota-method {
-  padding:22px 20px; display:flex; flex-direction:column; justify-content:center; min-width:0;
+  padding:22px 16px; display:flex; flex-direction:column; justify-content:center; min-width:0;
 }
 .upload-quota-method + .upload-quota-method { border-left:1px solid var(--border); }
-.upload-quota-method .bd-label { font-size:12px; margin-bottom:10px; }
-.upload-quota-method .bd-value { font-size:20px; }
-@media (max-width:1100px) {
+.upload-quota-method .bd-label { font-size:12px; margin-bottom:10px; overflow-wrap:anywhere; }
+.upload-quota-method .bd-value { font-size:20px; overflow-wrap:anywhere; word-break:break-word; }
+.breakdown-card .bd-sub { overflow-wrap:anywhere; }
+@media (max-width:1440px) {
   .upload-quota-overview { grid-template-columns:1fr; }
   .upload-quota-primary { border-right:0; border-bottom:1px solid var(--border); }
+}
+@container (max-width:1100px) {
+  .history-quota-wrap .upload-quota-overview { grid-template-columns:1fr; }
+  .history-quota-wrap .upload-quota-primary { border-right:0; border-bottom:1px solid var(--border); }
+}
+@media (max-width:720px) {
+  .upload-quota-methods { grid-template-columns:1fr; }
+  .upload-quota-method + .upload-quota-method { border-left:0; border-top:1px solid var(--border); }
 }
 .upload-type-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
 .upload-type-page-title { font-size:24px; line-height:32px; font-weight:600; margin:0; }
@@ -990,12 +1002,28 @@ table.data tr:hover td { background: var(--muted); }
 .history-note-cell {
   display: flex; align-items: center; gap: 8px; min-width: 0;
 }
-.history-note-cell span { min-width: 0; overflow-wrap: anywhere; }
+.history-note-cell span {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 .history-note-edit {
   flex-shrink: 0; width: 32px; height: 32px; border-radius: 6px;
   display: grid; place-items: center; color: var(--muted-foreground);
 }
 .history-note-edit:hover { background: var(--accent); color: var(--primary); }
+.history-table-wrap { overflow-x: auto; min-width: 0; }
+table.data.history-data {
+  min-width: 720px;
+  table-layout: fixed;
+}
+table.data.history-data .history-col-time { width: 118px; }
+table.data.history-data .history-col-type { width: 16%; }
+table.data.history-data .history-col-note { width: 30%; }
+table.data.history-data .history-col-status { width: 108px; }
+table.data.history-data .history-col-quota { width: 18%; }
+table.data.history-data .history-col-action { width: 112px; }
+table.data.history-data th,
+table.data.history-data td { overflow: hidden; }
+table.data.history-data td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; }
 .drawer-backdrop {
   display: none; position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.3);
   justify-content: flex-end;
@@ -2381,8 +2409,11 @@ body.concept-3 {
 .concept-3 .breakdown-card .bd-value { font-weight:600; }
 .concept-3 .upload-quota-primary .bd-value {
   color:var(--foreground); font-size:24px; line-height:32px; font-weight:600;
+  overflow-wrap:anywhere; word-break:break-word;
 }
-.concept-3 .upload-quota-method .bd-value { font-size:18px; line-height:26px; }
+.concept-3 .upload-quota-method .bd-value {
+  font-size:16px; line-height:24px; overflow-wrap:anywhere; word-break:break-word;
+}
 .concept-3 .btn { height:40px; padding:0 24px; border-radius:6px; }
 .concept-3 .btn-primary,
 .concept-3 .btn-gradient {
@@ -4629,7 +4660,7 @@ function historyFileNoteCell(id, fileName, source) {
   const note = String(fileName || '').trim() || '—';
   return `<td>
     <div class="history-note-cell">
-      <span>${escapeHTML(note)}</span>
+      <span title="${escapeHTML(note)}">${escapeHTML(note)}</span>
       <button type="button" class="history-note-edit" onclick="openHistoryFileNoteEditor('${escapeHTML(id)}','${source}')" aria-label="Edit file note" title="Edit file note">${I.edit}</button>
     </div>
   </td>`;
@@ -10660,7 +10691,7 @@ function viewUploadHistory() {
           <button type="button" role="tab" class="history-tab ${activeTab==='drafts'?'on':''}" aria-selected="${activeTab==='drafts'}" onclick="state.uploadHistoryTab='drafts';render()">Drafts (${drafts.length})</button>
         </div>` : ''}
 
-        ${activeTab === 'uploads' ? `<div class="breakdown-card upload-quota-overview">
+        ${activeTab === 'uploads' ? `<div class="history-quota-wrap"><div class="breakdown-card upload-quota-overview">
           <div class="upload-quota-primary">
             <div class="bd-label">${I.upload} Total quota from uploads</div>
             <div class="bd-value">${money(QUOTA_UPLOAD_TOTAL)}</div>
@@ -10683,10 +10714,18 @@ function viewUploadHistory() {
             <div class="bd-sub">${counts.erp} uploads</div>
             </div>
           </div>
-        </div>` : ''}
+        </div></div>` : ''}
 
         <div class="table-card">
-          <div style="overflow-x:auto"><table class="data" style="min-width:980px">
+          <div class="history-table-wrap"><table class="data history-data">
+            <colgroup>
+              <col class="history-col-time">
+              <col class="history-col-type">
+              <col class="history-col-note">
+              <col class="history-col-status">
+              <col class="history-col-quota">
+              <col class="history-col-action">
+            </colgroup>
             <thead><tr>
               <th>Upload time</th>
               <th>File type</th>
