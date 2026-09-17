@@ -2702,7 +2702,7 @@ const B2C = [
 const ERP = [
   { id:'erp-1', fileName:'orders_export_2026_07.csv', uploadDate:'2026-07-28', status:'Processed', totalRecords:48, mappedRecords:48, errors:0 },
   { id:'erp-2', fileName:'drop_ship_june_q2.csv', uploadDate:'2026-07-15', status:'Processed', totalRecords:32, mappedRecords:29, errors:3 },
-  { id:'erp-3', fileName:'erp_bulk_2026_06.csv', uploadDate:'2026-06-30', status:'Failed', totalRecords:16, mappedRecords:0, errors:16 },
+  { id:'erp-3', fileName:'erp_bulk_2026_06.csv', uploadDate:'2026-06-30', status:'Processed', totalRecords:16, mappedRecords:16, errors:0 },
   { id:'erp-4', fileName:'fulfillment_may_export.csv', uploadDate:'2026-06-01', status:'Processed', totalRecords:21, mappedRecords:21, errors:0 },
   { id:'erp-5', fileName:'orders_export_2026_05.csv', uploadDate:'2026-05-20', status:'Processing', totalRecords:11, mappedRecords:0, errors:0 },
 ];
@@ -3450,10 +3450,10 @@ const UPLOAD_HISTORY = [
   },
   {
     id:'uh7', uploadDate:'2026-06-30', fileName:'erp_bulk_2026_06.csv', fileDescription:'June 2026 ERP bulk export', fileType:'CSV from ERP', typeKey:'erp',
-    status:'Failed', quotaAdded:0, recordId:'erp-3',
-    message:'Upload failed — no records could be mapped.',
-    tip:'This ERP CSV could not be processed. Fix required columns and re-upload to release quota.',
-    totalRecords:16, mappedRecords:0, errors:16, needsReupload:true,
+    status:'Processed', quotaAdded:116000, recordId:'erp-3',
+    message:'ERP CSV processed successfully.',
+    tip:'All records were mapped. Quota has been released based on accepted mapped rows.',
+    totalRecords:16, mappedRecords:16, errors:0,
   },
   {
     id:'uh8', uploadDate:'2026-06-28', fileName:'PO_Beijing_Nexus_0984.pdf', fileDescription:'Beijing Nexus purchase order', fileType:'Trade documents', typeKey:'trade',
