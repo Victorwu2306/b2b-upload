@@ -3217,6 +3217,10 @@ function formatFieldLabel(name) {
   words[0] = words[0] === 'ID' ? 'ID' : (words[0].charAt(0).toUpperCase() + words[0].slice(1));
   return words.join(' ');
 }
+function erpRequiredLabel(name) {
+  const field = ERP_REQUIRED_FIELDS.find(item => item.name === name);
+  return (field && (field.label || field.labelEN)) || formatFieldLabel(name);
+}
 function formatSentenceFieldLabel(name) {
   const label = formatFieldLabel(name);
   if (!label) return '';
