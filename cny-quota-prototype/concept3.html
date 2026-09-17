@@ -2798,8 +2798,6 @@ const DOCUMENT_REQUIRED_DETAILS = {
     { name:'logistics_number', label:'Logistics number (optional)', labelCN:'物流单号（选填）', desc:'The tracking number from the logistics provider.', descCN:'物流服务商提供的运单号。', example:'MSKU7834521' },
   ],
   goods: [
-    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易方式/交易编码', desc:'Select the transaction mode for this order, for example B2B.', descCN:'选择此订单的交易方式，例如 B2B。', example:'B2B' },
-    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Select the trade type that matches this document.', descCN:'选择与此单据匹配的贸易类型。', example:'Goods' },
     { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单编号', desc:'The unique order number from the original platform or contract, so we can trace the transaction.', descCN:'原平台或合同上的唯一订单号，便于追溯该笔交易。', example:'PO-2026-07-0892' },
     { name:'buyer_payer_name', label:'Buyer\'s English name/payer name', labelCN:'买家名称', desc:'The buyer or payer name. It must match the name on the payment, and be written in Latin letters.', descCN:'买家或付款人名称。须与收款中的名称一致，并使用拉丁字母填写。', example:'Shenzhen Global Trade Co., Ltd.' },
     { name:'destination_country', label:'Destination country', labelCN:'收货国家或地区', desc:'The country or region where the goods are delivered.', descCN:'货物送达的国家或地区。', example:'China' },
@@ -2816,7 +2814,6 @@ const DOCUMENT_REQUIRED_DETAILS = {
     { name:'estimated_shipping_date', label:'Estimated shipping date', labelCN:'人民币订单的预计发货时间', desc:'The expected shipping date. Required when not shipped.', descCN:'预计发货日期。未发货时必填。', example:'2026-08-15' },
   ],
   software: [
-    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'Select the transaction mode, for example B2C, D2C, or B2B.', descCN:'选择交易方式，例如 B2C、D2C 或 B2B。', example:'B2C' },
     { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'The unique order number from your system or the app store.', descCN:'您的系统或应用商店中的唯一订单号。', example:'SW-2026-0142' },
     { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'The currency of the order. Use a 3-letter code, for example USD.', descCN:'订单币种。使用 3 位字母代码，例如 USD。', example:'USD' },
     { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'The total amount of the order.', descCN:'订单总金额。', example:'48,500.00' },
@@ -2827,14 +2824,11 @@ const DOCUMENT_REQUIRED_DETAILS = {
     { name:'software_name', label:'Software name', labelCN:'软件名称', desc:'The name of the software product.', descCN:'软件产品名称。', example:'Adobe Creative Cloud' },
     { name:'launch_date', label:'Launch date', labelCN:'发布日期', desc:'The date this software or version was released.', descCN:'该软件或版本的发布日期。', example:'2026-07-01' },
     { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'The number of licenses or seats in this order.', descCN:'此订单中的许可数或席位数。', example:'25' },
-    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Select Software as the trade type.', descCN:'贸易类型请选择软件服务。', example:'Software' },
     { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'The URL of the software product or developer website.', descCN:'软件产品或开发者网站的网址。', example:'https://www.adobe.com' },
     { name:'platform_order_no', label:'Platform order no./app store order no.', labelCN:'平台或应用商店订单号', desc:'The order number from the app store or sales platform.', descCN:'应用商店或销售平台上的订单号。', example:'APP-STORE-88421' },
     { name:'software_provider', label:'Software provider', labelCN:'软件提供方', desc:'The developer or publisher name as shown on the app store or software listing.', descCN:'应用商店或软件列表上显示的开发者或发行方名称。', example:'Adobe Inc.' },
   ],
   'international-logistics': [
-    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易方式/交易编码', desc:'Select the transaction mode for this order, for example B2B.', descCN:'选择此订单的交易方式，例如 B2B。', example:'B2B' },
-    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Select International logistics as the trade type.', descCN:'贸易类型请选择国际物流。', example:'International logistics' },
     { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单编号', desc:'The unique order number from the original platform or contract, so we can trace the transaction.', descCN:'原平台或合同上的唯一订单号，便于追溯该笔交易。', example:'PO-2026-07-0892' },
     { name:'buyer_payer_name', label:'Buyer\'s English name/payer name', labelCN:'买家名称', desc:'The buyer or payer name. It must match the name on the payment, and be written in Latin letters.', descCN:'买家或付款人名称。须与收款中的名称一致，并使用拉丁字母填写。', example:'Shenzhen Global Trade Co., Ltd.' },
     { name:'destination_country', label:'Destination country', labelCN:'收货国家或地区', desc:'The country or region where the shipment is delivered.', descCN:'货物送达的国家或地区。', example:'China' },
@@ -2852,8 +2846,6 @@ const DOCUMENT_REQUIRED_DETAILS = {
   ],
   advertisement: [
     { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Select Goods or Service. For advertising, this is Service.', descCN:'选择货物或服务。广告业务请选择服务。', example:'Service' },
-    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'Select the transaction mode, for example B2B.', descCN:'选择交易方式，例如 B2B。', example:'B2B' },
-    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Select Advertisement as the trade type.', descCN:'贸易类型请选择广告服务。', example:'Advertisement' },
     { name:'purpose_of_remittance', label:'Purpose of remittance', labelCN:'汇款用途', desc:'Enter Advertisement as the remittance purpose (code 228024).', descCN:'汇款用途请填写广告（编码 228024）。', example:'Advertisement (code 228024)' },
     { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'The unique order number from the advertising platform. Include the order ID, product ID, and sub-order ID.', descCN:'广告平台上的唯一订单号。请同时包含订单号、产品号和子订单号。', example:'YP-20260715-AD-001' },
     { name:'order_time', label:'Order time', labelCN:'订单签约时间/发票时间', desc:'The signing date or invoice date.', descCN:'签约日期或发票日期。', example:'2026-07-15' },
@@ -2880,7 +2872,6 @@ const DOCUMENT_REQUIRED_DETAILS = {
   ],
   'air-ticket': [
     { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Select Goods or Service. For air tickets, this is Service.', descCN:'选择货物或服务。机票业务请选择服务。', example:'Service' },
-    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'Select the transaction mode, for example B2C.', descCN:'选择交易方式，例如 B2C。', example:'B2C' },
     { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'The unique booking or ticket order number.', descCN:'唯一的预订或出票订单号。', example:'TK-2026-7741' },
     { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'The currency of the order. Use a 3-letter code, for example USD.', descCN:'订单币种。使用 3 位字母代码，例如 USD。', example:'USD' },
     { name:'order_amount', label:'Order amount', labelCN:'订单金额', desc:'The total amount of the ticket order.', descCN:'机票订单的总金额。', example:'2,180.00' },
@@ -2890,7 +2881,6 @@ const DOCUMENT_REQUIRED_DETAILS = {
     { name:'flight_destination', label:'Flight destination', labelCN:'航班目的地', desc:'The destination country of the flight.', descCN:'航班目的地国家或地区。', example:'United States' },
     { name:'number_of_passengers', label:'Number of passengers', labelCN:'乘客人数', desc:'The number of passengers on this booking.', descCN:'此预订的乘客人数。', example:'1' },
     { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'The number of tickets in this order.', descCN:'此订单中的机票数量。', example:'1' },
-    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Select Air ticket as the trade type.', descCN:'贸易类型请选择机票。', example:'Air ticket' },
     { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'The airline or booking website URL.', descCN:'航司或订票网站的网址。', example:'https://www.ceair.com' },
     { name:'departure_date', label:'Departure date', labelCN:'出发日期', desc:'The flight departure date.', descCN:'航班航班出发日期。', example:'2026-08-12' },
     { name:'flight_number', label:'Flight number', labelCN:'航班号', desc:'The flight number, for example MU583.', descCN:'航班号，例如 MU583。', example:'MU583' },
@@ -2901,7 +2891,6 @@ const DOCUMENT_REQUIRED_DETAILS = {
   ],
   accommodation: [
     { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Select Goods or Service. For hotels, this is Service.', descCN:'选择货物或服务。酒店业务请选择服务。', example:'Service' },
-    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'Select the transaction mode, for example B2C.', descCN:'选择交易方式，例如 B2C。', example:'B2C' },
     { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'The unique hotel booking number.', descCN:'唯一的酒店预订号。', example:'HT-2026-5520' },
     { name:'order_currency', label:'Order currency/feeType', labelCN:'订单币种', desc:'The currency of the order. Use a 3-letter code, for example USD.', descCN:'订单币种。使用 3 位字母代码，例如 USD。', example:'USD' },
     { name:'order_amount', label:'Order amount/totalFee', labelCN:'订单金额', desc:'The total amount of the booking.', descCN:'预订的总金额。', example:'1,680.00' },
@@ -2914,13 +2903,10 @@ const DOCUMENT_REQUIRED_DETAILS = {
     { name:'check_in_date', label:'Check-in date', labelCN:'入住日期', desc:'The check-in date.', descCN:'入住日期。', example:'2026-08-12' },
     { name:'check_in_days', label:'Check-in days', labelCN:'入住天数', desc:'The number of nights in the stay.', descCN:'入住晚数。', example:'4' },
     { name:'product_quantity', label:'Product quantity', labelCN:'产品数量', desc:'The number of rooms or bookings in this order.', descCN:'此订单中的房间数或预订数。', example:'1' },
-    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Select Accommodation as the trade type.', descCN:'贸易类型请选择住宿。', example:'Accommodation' },
     { name:'business_url', label:'Business URL', labelCN:'业务网址', desc:'The hotel or booking website URL.', descCN:'酒店或预订网站的网址。', example:'https://www.hyatt.com' },
   ],
   tourism: [
     { name:'business_category', label:'Business category', labelCN:'贸易类型大类', desc:'Select Goods or Service. For tourism, this is Service.', descCN:'选择货物或服务。旅游业务请选择服务。', example:'Service' },
-    { name:'business_subcategory', label:'Business subcategory/transaction mode', labelCN:'贸易类型子类', desc:'Select the transaction mode, for example B2C.', descCN:'选择交易方式，例如 B2C。', example:'B2C' },
-    { name:'trade_type', label:'Trade type', labelCN:'贸易类型', desc:'Select Tourism as the trade type.', descCN:'贸易类型请选择旅游服务。', example:'Tourism' },
     { name:'order_date', label:'Order date', labelCN:'下单日期时间', desc:'The date and time the order was placed.', descCN:'下单的日期和时间。', example:'2026-07-15 10:30' },
     { name:'merchant_order_no', label:'Merchant order no.', labelCN:'商户订单号', desc:'The unique booking number from the travel platform.', descCN:'旅游平台上的唯一预订号。', example:'TR-2026-0198' },
     { name:'order_currency', label:'Order currency', labelCN:'订单币种', desc:'The currency of the platform order. Use a 3-letter code, for example USD.', descCN:'平台订单的币种。使用 3 位字母代码，例如 USD。', example:'USD' },
@@ -8670,52 +8656,38 @@ function tradeGoodsTable() {
   };
   const items = (w.goods && w.goods.length ? w.goods : TRADE_GOODS);
   const productQty = items.reduce(function(sum, r) { return sum + (parseFloat(r.qty) || 0); }, 0).toLocaleString('en-US');
-  const isLogistics = w.source === 'international-logistics';
   return `<div class="review-card">
       <div class="review-card-h"><span style="display:flex;align-items:center;gap:8px">${I.file} ${tradeFieldLabel('Order information', '订单信息')}</span></div>
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
-            <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易方式/交易编码')} ${req}</label>
-            <select disabled><option>B2C</option><option>D2C</option><option selected>B2B</option></select>
-            ${note('Select the transaction mode for this order, for example B2B.', '选择此订单的交易方式，例如 B2B。')}
-          </div>
-          <div class="field">
-            <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
-            <select disabled>
-              <option ${isLogistics?'':'selected'}>Goods</option>
-              <option ${isLogistics?'selected':''}>International logistics</option>
-            </select>
-            ${note('Select the trade type that matches this document.', '选择与此单据匹配的贸易类型。')}
-          </div>
-          <div class="field">
             <label>${tradeFieldLabel('Merchant order no.', '商户订单编号')} ${req}</label>
-            <input class="mono" value="PO-2026-07-0892" readonly />
+            <input class="mono" value="PO-2026-07-0892" />
             ${note('The unique order number from the original platform or contract, so we can trace the transaction.', '原平台或合同上的唯一订单号，便于追溯该笔交易。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Buyer\'s English name/payer name', '买家名称')} ${req}</label>
-            <input value="Shenzhen Global Trade Co., Ltd." readonly />
+            <input value="Shenzhen Global Trade Co., Ltd." />
             ${note('The buyer or payer name. It must match the name on the payment, and be written in Latin letters.', '买家或付款人名称。须与收款中的名称一致，并使用拉丁字母填写。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Destination country', '收货国家或地区')} ${req}</label>
-            <select disabled><option selected>China</option><option>United States</option><option>United Kingdom</option><option>Germany</option><option>Japan</option></select>
+            <select><option selected>China</option><option>United States</option><option>United Kingdom</option><option>Germany</option><option>Japan</option></select>
             ${note('The country or region where the goods are delivered.', '货物送达的国家或地区。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order time', '订单签约时间/发票时间')} ${req}</label>
-            <input type="date" value="2026-07-15" readonly />
+            <input type="date" value="2026-07-15" />
             ${note('The contract or invoice date.', '合同或发票上的日期。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order currency', '订单币种')} ${req}</label>
-            <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
+            <select><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
             ${note('The currency of the order. Use a 3-letter code, for example USD.', '订单币种。使用 3 位字母代码，例如 USD。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order amount', '订单金额')} ${req}</label>
-            <input value="48,500.00" readonly />
+            <input value="48,500.00" />
             ${note('The order amount. It should match the amount on the PI, CI, or contract.', '订单金额。应与形式发票、商业发票或合同上的金额一致。')}
           </div>
           ${tradeOcrFieldHTML({
@@ -8746,7 +8718,7 @@ function tradeGoodsTable() {
           })}
           <div class="field">
             <label>${tradeFieldLabel('Product quantity', '产品数量')} ${req}</label>
-            <input class="mono" value="${productQty}" readonly />
+            <input class="mono" value="${productQty}" />
           </div>
         </div>
       </div>
@@ -8762,16 +8734,16 @@ function tradeServiceDetailsBlock() {
     </div>
     <div class="review-card-b">
       <div class="field-grid">
-        <div class="field"><label>Business type</label><input value="${type.label}" readonly /></div>
-        <div class="field"><label>Service period</label><input value="Jul 2026 – Jun 2027" readonly /></div>
+        <div class="field"><label>Business type</label><input value="${type.label}" /></div>
+        <div class="field"><label>Service period</label><input value="Jul 2026 – Jun 2027" /></div>
         ${tradeOcrFieldHTML({
           key:'serviceDescription',
           full: true,
           label: 'Service description',
           placeholder: type.desc,
         })}
-        <div class="field"><label>Quantity</label><input value="1" readonly /></div>
-        <div class="field"><label>Service amount</label><input value="USD 48,500.00" readonly /></div>
+        <div class="field"><label>Quantity</label><input value="1" /></div>
+        <div class="field"><label>Service amount</label><input value="USD 48,500.00" /></div>
       </div>
     </div>
     </div>`;
@@ -8785,35 +8757,27 @@ function tradeAdvertisementBlock() {
         <div class="field-grid">
           <div class="field">
             <label>Business category ${req}</label>
-            <select disabled><option>Goods</option><option selected>Service</option></select>
-          </div>
-          <div class="field">
-            <label>Business subcategory/transaction mode ${req}</label>
-            <select disabled><option>B2C</option><option>D2C</option><option selected>B2B</option></select>
-              </div>
-          <div class="field">
-            <label>Trade type ${req}</label>
-            <input value="Advertisement" readonly />
+            <select><option>Goods</option><option selected>Service</option></select>
           </div>
           <div class="field">
             <label>Purpose of remittance</label>
-            <input value="Advertisement (code 228024)" readonly />
+            <input value="Advertisement (code 228024)" />
           </div>
           <div class="field">
             <label>Merchant order no. ${req}</label>
-            <input class="mono" value="YP-20260715-AD-001" readonly />
+            <input class="mono" value="YP-20260715-AD-001" />
           </div>
           <div class="field">
             <label>Order time ${req}</label>
-            <input type="date" value="2026-07-15" readonly />
+            <input type="date" value="2026-07-15" />
           </div>
           <div class="field">
             <label>Order amount ${req}</label>
-            <input value="48,500.00" readonly />
+            <input value="48,500.00" />
           </div>
           <div class="field">
             <label>Order currency ${req}</label>
-            <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
+            <select><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
             ${tradeFieldNoteHtml('The currency of the advertising revenue. Use a 3-letter code, for example USD.', '广告收入的币种。使用 3 位字母代码，例如 USD。')}
           </div>
         </div>
@@ -8825,15 +8789,15 @@ function tradeAdvertisementBlock() {
         <div class="field-grid">
           <div class="field">
             <label>Advertising brand/product name ${req}</label>
-            <input value="Nike" readonly />
+            <input value="Nike" />
           </div>
           <div class="field">
             <label>Placement region ${req}</label>
-            <input value="Southeast Asia" readonly />
+            <input value="Southeast Asia" />
           </div>
           <div class="field">
             <label>Display times/product quantity ${req}</label>
-            <input class="mono" value="1,250,000" readonly />
+            <input class="mono" value="1,250,000" />
           </div>
           ${tradeOcrFieldHTML({
             key:'adPlatformName',
@@ -8856,11 +8820,11 @@ function tradeAdvertisementBlock() {
         <div class="field-grid">
           <div class="field">
             <label>Resource name ${req}</label>
-            <input value="YouTube — Pre-roll" readonly />
+            <input value="YouTube — Pre-roll" />
           </div>
           <div class="field">
             <label>Resource type/advertising type ${req}</label>
-            <input value="Video" readonly />
+            <input value="Video" />
           </div>
           ${tradeOcrFieldHTML({
             key:'adResourceUrl',
@@ -8878,7 +8842,7 @@ function tradeAdvertisementBlock() {
         <div class="field-grid">
           <div class="field full">
             <label>Payee name ${req}</label>
-            <input value="张伟" readonly />
+            <input value="张伟" />
             ${tradeFieldNoteHtml('The Chinese name of the domestic cardholder who received the funds. Enter this in Chinese.', '境内持卡收款人的中文姓名，请用中文填写。')}
           </div>
             </div>
@@ -8897,39 +8861,30 @@ function tradeTourismBlock() {
         <div class="field-grid">
           <div class="field">
             <label>${tradeFieldLabel('Business category', '贸易类型大类')} ${req}</label>
-            <select disabled><option>Goods</option><option selected>Service</option></select>
+            <select><option>Goods</option><option selected>Service</option></select>
             ${note('Select Goods or Service.', '选择货物或服务。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
-            <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
-            ${note('Select the transaction mode, for example B2C, D2C, or B2B.', '选择交易方式，例如 B2C、D2C 或 B2B。')}
-          </div>
-          <div class="field">
-            <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
-            <input value="Tourism" readonly />
-          </div>
-          <div class="field">
             <label>${tradeFieldLabel('Order date', '下单日期时间')} ${req}</label>
-            <input type="datetime-local" value="2026-07-15T10:30" readonly />
+            <input type="datetime-local" value="2026-07-15T10:30" />
             ${note('The date and time the order was placed.', '下单的日期和时间。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Merchant order no.', '商户订单号')} ${req}</label>
-            <input class="mono" value="TR-2026-0198" readonly />
+            <input class="mono" value="TR-2026-0198" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order currency', '订单币种')} ${req}</label>
-            <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
+            <select><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
             ${note('The currency of the platform order. Use a 3-letter code, for example USD.', '平台订单的币种。使用 3 位字母代码，例如 USD。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order amount', '订单金额')} ${req}</label>
-            <input value="6,400.00" readonly />
+            <input value="6,400.00" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Payer name', '付款人姓名')} ${req}</label>
-            <input value="Chen Wei" readonly />
+            <input value="Chen Wei" />
           </div>
           ${tradeOcrFieldHTML({
             key:'businessUrl',
@@ -8939,7 +8894,7 @@ function tradeTourismBlock() {
           })}
           <div class="field">
             <label>${tradeFieldLabel('Number of guests', '游客人数')} ${req}</label>
-            <input class="mono" value="2" readonly />
+            <input class="mono" value="2" />
             ${note('The total number of travelers on this booking.', '此预订覆盖的游客总人数。')}
           </div>
           ${tradeOcrFieldHTML({
@@ -8958,12 +8913,12 @@ function tradeTourismBlock() {
         <div class="field-grid">
           <div class="field">
             <label>${tradeFieldLabel('Unit price', '单价')} ${req}</label>
-            <input value="3,200.00" readonly />
+            <input value="3,200.00" />
             ${note('The price of one unit of this service.', '该服务的单价。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Product quantity', '数量')} ${req}</label>
-            <input class="mono" value="2" readonly />
+            <input class="mono" value="2" />
             ${note('The number of units purchased.', '购买的数量。')}
           </div>
           ${tradeOcrFieldHTML({
@@ -8973,17 +8928,17 @@ function tradeTourismBlock() {
           })}
           <div class="field full">
             <label>${tradeFieldLabel('Service name', '服务名称')} ${req}</label>
-            <input value="7-day Japan business travel package" readonly />
+            <input value="7-day Japan business travel package" />
             ${note('A clear description of the tourism service, for example a 7-day business travel package.', '旅游服务的明确描述，例如 7 日商务旅行套餐。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Service start date', '服务开始日期')} ${req}</label>
-            <input type="date" value="2026-09-01" readonly />
+            <input type="date" value="2026-09-01" />
             ${note('The scheduled start date of the service.', '服务的计划开始日期。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Service end date', '服务结束日期')} ${req}</label>
-            <input type="date" value="2026-09-07" readonly />
+            <input type="date" value="2026-09-07" />
             ${note('The scheduled end date of the service.', '服务的计划结束日期。')}
           </div>
         </div>
@@ -8995,7 +8950,7 @@ function tradeTourismBlock() {
         <div class="field-grid">
           <div class="field full">
             <label>${tradeFieldLabel("Booker's full name", '预订人全名')} ${req}</label>
-            <input value="Chen Wei" readonly />
+            <input value="Chen Wei" />
             ${note('The full name of the person who made the booking.', '预订人的全名。')}
           </div>
         </div>
@@ -9013,40 +8968,31 @@ function tradeSoftwareBlock() {
       <div class="review-card-b">
         <div class="field-grid">
           <div class="field">
-            <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
-            <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
-            ${note('Select the transaction mode, for example B2C, D2C, or B2B.', '选择交易方式，例如 B2C、D2C 或 B2B。')}
-    </div>
-          <div class="field">
-            <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
-            <input value="Software" readonly />
-          </div>
-          <div class="field">
             <label>${tradeFieldLabel('Merchant order no.', '商户订单号')} ${req}</label>
-            <input class="mono" value="SW-2026-0142" readonly />
+            <input class="mono" value="SW-2026-0142" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Platform order no./app store order no.', '平台或应用商店订单号')} ${req}</label>
-            <input class="mono" value="APP-STORE-88421" readonly />
+            <input class="mono" value="APP-STORE-88421" />
             ${note('The order number from the app store or sales platform.', '应用商店或销售平台上的订单号。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order time', '订单签约时间/发票时间')} ${req}</label>
-            <input type="date" value="2026-07-15" readonly />
+            <input type="date" value="2026-07-15" />
             ${note('The signing date or invoice date.', '签约日期或发票日期。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order amount', '订单金额')} ${req}</label>
-            <input value="48,500.00" readonly />
+            <input value="48,500.00" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order currency', '订单币种')} ${req}</label>
-            <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
+            <select><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
             ${note('The currency of the order. Use a 3-letter code, for example USD.', '订单币种。使用 3 位字母代码，例如 USD。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Payer name', '付款人姓名')} ${req}</label>
-            <input value="Chen Wei" readonly />
+            <input value="Chen Wei" />
           </div>
         </div>
       </div>
@@ -9057,7 +9003,7 @@ function tradeSoftwareBlock() {
         <div class="field-grid">
           <div class="field">
             <label>${tradeFieldLabel('Software category', '软件类别')} ${req}</label>
-            <input value="Productivity" readonly />
+            <input value="Productivity" />
           </div>
           ${tradeOcrFieldHTML({
             key:'softwareIdentifier',
@@ -9067,15 +9013,15 @@ function tradeSoftwareBlock() {
           })}
           <div class="field full">
             <label>${tradeFieldLabel('Software name', '软件名称')} ${req}</label>
-            <input value="Adobe Creative Cloud" readonly />
+            <input value="Adobe Creative Cloud" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Launch date', '发布日期')} ${req}</label>
-            <input type="date" value="2026-07-01" readonly />
+            <input type="date" value="2026-07-01" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Product quantity', '产品数量')} ${req}</label>
-            <input class="mono" value="25" readonly />
+            <input class="mono" value="25" />
           </div>
         </div>
       </div>
@@ -9121,46 +9067,37 @@ function tradeAirTicketBlock() {
         <div class="field-grid">
           <div class="field">
             <label>${tradeFieldLabel('Business category', '贸易类型大类')} ${req}</label>
-            <select disabled><option>Goods</option><option selected>Service</option></select>
+            <select><option>Goods</option><option selected>Service</option></select>
             ${note('Select Goods or Service.', '选择货物或服务。')}
-    </div>
-          <div class="field">
-            <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
-            <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
-            ${note('Select the transaction mode, for example B2C, D2C, or B2B.', '选择交易方式，例如 B2C、D2C 或 B2B。')}
-          </div>
-          <div class="field">
-            <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
-            <input value="Air ticket" readonly />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Merchant order no.', '商户订单号')} ${req}</label>
-            <input class="mono" value="TK-2026-7741" readonly />
+            <input class="mono" value="TK-2026-7741" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order time', '订单创建时间')} ${req}</label>
-            <input type="date" value="2026-07-15" readonly />
+            <input type="date" value="2026-07-15" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order amount', '订单金额')} ${req}</label>
-            <input value="2,180.00" readonly />
+            <input value="2,180.00" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order currency', '订单币种')} ${req}</label>
-            <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
+            <select><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
             ${note('The currency of the order. Use a 3-letter code, for example USD.', '订单币种。使用 3 位字母代码，例如 USD。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Payer name', '付款人姓名')} ${req}</label>
-            <input value="Chen Wei" readonly />
+            <input value="Chen Wei" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Number of passengers', '乘客人数')} ${req}</label>
-            <input class="mono" value="1" readonly />
+            <input class="mono" value="1" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Product quantity', '产品数量')} ${req}</label>
-            <input class="mono" value="1" readonly />
+            <input class="mono" value="1" />
           </div>
           ${tradeOcrFieldHTML({
             key:'businessUrl',
@@ -9178,15 +9115,15 @@ function tradeAirTicketBlock() {
       <div class="field-grid">
           <div class="field">
             <label>${tradeFieldLabel('Flight departure country', '航班出发地')} ${req}</label>
-            <input value="China" readonly />
+            <input value="China" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Flight destination', '航班目的地')} ${req}</label>
-            <input value="United States" readonly />
+            <input value="United States" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Departure date', '出发日期')} ${req}</label>
-            <input type="date" value="2026-08-12" readonly />
+            <input type="date" value="2026-08-12" />
             ${note('The flight departure date.', '航班出发日期。')}
           </div>
           ${tradeOcrFieldHTML({
@@ -9205,17 +9142,17 @@ function tradeAirTicketBlock() {
         <div class="field-grid">
           <div class="field">
             <label>${tradeFieldLabel('Passenger first name', '乘客名字')} ${req}</label>
-            <input value="Wei" readonly />
+            <input value="Wei" />
             ${note('The passenger’s given name, as shown on their ID.', '乘客的名字（名），请与证件一致。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Passenger last name', '乘客姓氏')} ${req}</label>
-            <input value="Zhang" readonly />
+            <input value="Zhang" />
             ${note('The passenger’s surname, as shown on their ID.', '乘客的姓氏，请与证件一致。')}
           </div>
           <div class="field full">
             <label>${tradeFieldLabel('Passenger ID type', '乘客身份证件类型')} ${req}</label>
-            <select disabled><option selected>Passport</option><option>ID Card</option></select>
+            <select><option selected>Passport</option><option>ID Card</option></select>
             ${note('The ID type used for this passenger, for example passport or ID card.', '该乘客使用的证件类型，例如护照或身份证。')}
           </div>
         </div>
@@ -9249,46 +9186,36 @@ function tradeAccommodationBlock() {
         <div class="field-grid">
           <div class="field">
             <label>${tradeFieldLabel('Business category', '贸易类型大类')} ${req}</label>
-            <select disabled><option>Goods</option><option selected>Service</option></select>
+            <select><option>Goods</option><option selected>Service</option></select>
             ${note('Select Goods or Service.', '选择货物或服务。')}
           </div>
           <div class="field">
-            <label>${tradeFieldLabel('Business subcategory/transaction mode', '贸易类型子类')} ${req}</label>
-            <select disabled><option selected>B2C</option><option>D2C</option><option>B2B</option></select>
-            ${note('Select the transaction mode, for example B2C, D2C, or B2B.', '选择交易方式，例如 B2C、D2C 或 B2B。')}
-          </div>
-          <div class="field">
             <label>${tradeFieldLabel('Merchant order no.', '商户订单号')} ${req}</label>
-            <input class="mono" value="HT-2026-5520" readonly />
+            <input class="mono" value="HT-2026-5520" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order currency/feeType', '订单币种')} ${req}</label>
-            <select disabled><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
+            <select><option selected>USD</option><option>EUR</option><option>GBP</option><option>CNY</option></select>
             ${note('The currency of the order. Use a 3-letter code, for example USD.', '订单币种。使用 3 位字母代码，例如 USD。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order amount/totalFee', '订单金额')} ${req}</label>
-            <input value="1,680.00" readonly />
+            <input value="1,680.00" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Order time/orderDate', '订单签约时间/发票时间')} ${req}</label>
-            <input type="date" value="2026-07-15" readonly />
+            <input type="date" value="2026-07-15" />
             ${note('The signing date or invoice date.', '签约日期或发票日期。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Payer name', '付款人姓名')} ${req}</label>
-            <input value="Chen Wei" readonly />
+            <input value="Chen Wei" />
             ${note('The name of the person or company that paid. Use the individual name for personal bookings, or the company name for business bookings.', '付款的个人或公司名称。个人预订请填个人姓名，企业预订请填公司名称。')}
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Number of guests', '入住人数')} ${req}</label>
-            <input class="mono" value="2" readonly />
-          </div>
-          <div class="field">
-            <label>${tradeFieldLabel('Trade type', '贸易类型')} ${req}</label>
-            <input value="Accommodation" readonly />
-          </div>
-          ${tradeOcrFieldHTML({
+            <input class="mono" value="2" />
+          </div>          ${tradeOcrFieldHTML({
             key:'businessUrl',
             full: true,
             type: 'url',
@@ -9314,11 +9241,11 @@ function tradeAccommodationBlock() {
           })}
           <div class="field">
             <label>${tradeFieldLabel('Check-in date', '入住日期')} ${req}</label>
-            <input type="date" value="2026-08-12" readonly />
+            <input type="date" value="2026-08-12" />
           </div>
           <div class="field">
             <label>${tradeFieldLabel('Check-in days', '入住天数')} ${req}</label>
-            <input class="mono" value="4" readonly />
+            <input class="mono" value="4" />
           </div>
         </div>
       </div>
@@ -9329,7 +9256,7 @@ function tradeAccommodationBlock() {
         <div class="field-grid">
           <div class="field full">
             <label>${tradeFieldLabel('Guest name', '入住人姓名')} ${req}</label>
-            <input value="Wei Zhang" readonly />
+            <input value="Wei Zhang" />
           </div>
         </div>
       </div>
@@ -9340,7 +9267,7 @@ function tradeAccommodationBlock() {
         <div class="field-grid">
           <div class="field">
             <label>${tradeFieldLabel('Product quantity', '产品数量')} ${req}</label>
-            <input class="mono" value="1" readonly />
+            <input class="mono" value="1" />
           </div>
       </div>
     </div>
@@ -9625,12 +9552,12 @@ function stepTradeInfo(hideHeading) {
           </div>
           <div class="review-card-b">
             <div class="field-grid">
-              <div class="field"><label>Order number</label><input value="PO-2026-07-0892" readonly /></div>
-              <div class="field"><label>Order date</label><input type="date" value="2026-07-15" readonly /></div>
+              <div class="field"><label>Order number</label><input value="PO-2026-07-0892" /></div>
+              <div class="field"><label>Order date</label><input type="date" value="2026-07-15" /></div>
               <div class="field"><label>Order amount</label>
-                <div style="display:flex;gap:8px"><input value="48,500.00" readonly style="flex:1" /><select disabled style="width:96px"><option>USD</option></select></div>
+                <div style="display:flex;gap:8px"><input value="48,500.00" style="flex:1" /><select style="width:96px"><option>USD</option></select></div>
               </div>
-              <div class="field"><label>Receiving country / region</label><select disabled><option>China (CN)</option></select></div>
+              <div class="field"><label>Receiving country / region</label><select><option>China (CN)</option></select></div>
               ${tradeOcrFieldHTML({
                 key:'buyerType',
                 label: 'Buyer type',
@@ -9643,7 +9570,7 @@ function stepTradeInfo(hideHeading) {
                 label: 'Company URL',
                 placeholder: 'https://example.com',
               })}
-              <div class="field full"><label>Buyer name</label><input value="Shenzhen Global Trade Co., Ltd." readonly /></div>
+              <div class="field full"><label>Buyer name</label><input value="Shenzhen Global Trade Co., Ltd." /></div>
             </div>
           </div>
         </div>`}
@@ -10239,8 +10166,6 @@ function buildTradeDetailContext(order, upload) {
 }
 function tradeOrderReadRows(ctx) {
   return [
-    [tradeFieldLabel('Business subcategory/transaction mode', '贸易方式/交易编码'), 'B2B'],
-    [tradeFieldLabel('Trade type', '贸易类型'), 'Goods'],
     [tradeFieldLabel('Merchant order no.', '商户订单编号'), ctx.orderNumber, 'mono'],
     [tradeFieldLabel("Buyer's English name/payer name", '买家名称'), ctx.buyerName],
     [tradeFieldLabel('Destination country', '收货国家或地区'), 'China'],
@@ -10253,7 +10178,6 @@ function tradeOrderReadRows(ctx) {
 }
 function tradeCompactOrderRows(ctx) {
   return [
-    [tradeFieldLabel('Trade type', '贸易类型'), 'Goods'],
     [tradeFieldLabel('Merchant order no.', '商户订单编号'), ctx.orderNumber],
     [tradeFieldLabel("Buyer's English name/payer name", '买家名称'), ctx.buyerName],
     [tradeFieldLabel('Destination country', '收货国家或地区'), 'China'],
