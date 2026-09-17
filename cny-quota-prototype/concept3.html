@@ -9530,18 +9530,6 @@ function stepTradeInfo(hideHeading) {
       <h3 style="font-size:17px;font-weight:700">Document Preview & Extracted Information</h3>
       <p style="font-size:13px;color:var(--muted-foreground);margin-top:2px">Review the uploaded document.</p>
     </div>`}
-    <div class="trade-source-file">
-      <div style="display:flex;align-items:center;gap:12px;min-width:0">
-        <button type="button" class="trade-source-thumbnail" onclick="state.wiz.tradePreviewOpen=true;render()" aria-label="Enlarge source document preview">
-          <span class="thumb-title"></span><span class="thumb-line"></span><span class="thumb-line short"></span>
-        </button>
-        <div style="min-width:0">
-          <strong>Source document</strong>
-          <small>${w.fileName || 'trade_document.pdf'} · Preview available</small>
-          <button type="button" class="btn-link" style="margin-top:5px" onclick="state.wiz.tradePreviewOpen=true;render()">Enlarge preview</button>
-        </div>
-      </div>
-    </div>
     <p style="font-size:13px;color:var(--muted-foreground);line-height:1.45">Confirm the following details we prefilled based on your document.</p>
     ${tradeOcrAlertHTML()}
     <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
